@@ -72,4 +72,19 @@ internal class GameTime
         };
         return node;
     }
+
+    /**
+     * Loads the time from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _second = int.Parse(node["second"].ToString());
+	    _minute = int.Parse(node["minute"].ToString());
+	    _hour = int.Parse(node["hour"].ToString());
+	    _weekday = int.Parse(node["weekday"].ToString());
+	    _day = int.Parse(node["day"].ToString());
+	    _month = int.Parse(node["month"].ToString());
+	    _year = int.Parse(node["year"].ToString());
+    }
 }

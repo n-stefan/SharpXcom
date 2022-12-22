@@ -26,6 +26,23 @@ namespace SharpXcom.Savegame;
 internal class WeightedOptions
 {
     Dictionary<string, uint> _choices; //!< Options and weights
+    uint _totalWeight; //!< The total weight of all options.
+
+    /**
+	 * Add the weighted options from a YAML::Node to a WeightedOptions.
+	 * The weight option list is not replaced, only values in @a nd will be added /
+	 * changed.
+	 * @param nd The YAML node (containing a map) with the new values.
+	 */
+    internal void load(YamlNode nd)
+	{
+		foreach (var val in ((YamlMappingNode)nd).Children)
+		{
+			string id = val.Key.ToString();
+            uint w = uint.Parse(val.Value.ToString());
+			set(id, w);
+		}
+	}
 
     /**
 	 * Send the WeightedOption contents to a YAML::Emitter.
@@ -54,4 +71,38 @@ internal class WeightedOptions
         }
         return names;
     }
+
+	/**
+	 * Set an option's weight.
+	 * If @a weight is set to 0, the option is removed from the list of choices.
+	 * If @a id already exists, the new weight replaces the old one, otherwise
+	 * @a id is added to the list of choices, with @a weight as the weight.
+	 * @param id The option name.
+	 * @param weight The option's new weight.
+	 */
+	void set(string id, uint weight)
+	{
+		if (_choices.ContainsKey(id))
+		{
+			_totalWeight -= _choices[id];
+			if (0 != weight)
+			{
+				_choices[id] = weight;
+				_totalWeight += weight;
+			}
+			else
+			{
+				_choices.Remove(id);
+			}
+		}
+		else if (0 != weight)
+		{
+			_choices.Add(id, weight);
+			_totalWeight += weight;
+		}
+	}
+
+    /// Is this empty?
+    internal bool empty() =>
+		0 == _totalWeight;
 }

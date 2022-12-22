@@ -33,6 +33,13 @@ internal class FMath
         Math.Abs(l - r) <= DBL_EPSILON * Math.Max(1.0, Math.Max(Math.Abs(l), Math.Abs(r)));
 
     // Degree operations
+
+    internal static double Deg2Rad(double deg) =>
+        deg * M_PI / 180.0;
+
+    internal static double Xcom2Rad(int deg) =>
+        deg * 0.125 * M_PI / 180.0;
+
     internal static double Nautical(double x) =>
         x * (1 / 60.0) * (M_PI / 180.0);
 }

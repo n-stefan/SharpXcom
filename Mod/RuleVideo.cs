@@ -22,6 +22,10 @@ namespace SharpXcom.Mod;
 internal class RuleVideo : IRule
 {
     string _id;
+    bool _useUfoAudioSequence;
+    List<string> _videos, _audioTracks;
+    SlideshowHeader _slideshowHeader;
+    List<SlideshowSlide> _slides;
 
     RuleVideo(string id) =>
         _id = id;
@@ -30,4 +34,50 @@ internal class RuleVideo : IRule
         new RuleVideo(type);
 
     ~RuleVideo() { }
+
+	internal void load(YamlNode node)
+	{
+		_useUfoAudioSequence = bool.Parse(node["useUfoAudioSequence"].ToString());
+
+		if (node["videos"] is YamlSequenceNode videos)
+		{
+			foreach (var video in videos.Children)
+				_videos.Add(video.ToString());
+		}
+
+		if (node["audioTracks"] is YamlSequenceNode tracks)
+		{
+			foreach (var track in tracks.Children)
+				_audioTracks.Add(track.ToString());
+		}
+
+		if (node["slideshow"] is YamlSequenceNode slideshow)
+		{
+			_slideshowHeader.musicId = slideshow["musicId"].ToString();
+			_slideshowHeader.transitionSeconds = int.Parse(slideshow["transitionSeconds"].ToString());
+
+			foreach (var child in ((YamlSequenceNode)slideshow["slides"]).Children)
+			{
+				var slide = new SlideshowSlide();
+				_loadSlide(slide, child);
+				_slides.Add(slide);
+			}
+		}
+	}
+
+	static void _loadSlide(SlideshowSlide slide, YamlNode node)
+	{
+		slide.imagePath = node["imagePath"].ToString();
+		slide.caption = node["caption"].ToString();
+
+		slide.w = node["captionSize"] != null ? node["captionSize"][0] : Screen.ORIGINAL_WIDTH;
+		slide.h = node["captionSize"] != null ? node["captionSize"][1] : Screen.ORIGINAL_HEIGHT;
+
+		slide.x = node["captionPos"][0];
+		slide.y = node["captionPos"][1];
+
+		slide.color = node["captionColor"] != null ? int.Parse(node["captionColor"].ToString()) : int.MaxValue;
+		slide.transitionSeconds = int.Parse(node["transitionSeconds"].ToString());
+		slide.align = node["captionAlign"] != null ? (TextHAlign)int.Parse(node["captionAlign"].ToString()) : TextHAlign.ALIGN_LEFT;
+	}
 }

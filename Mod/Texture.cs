@@ -26,16 +26,32 @@ namespace SharpXcom.Mod;
 internal class Texture
 {
     int _id;
+    Dictionary<string, int> _deployments;
+    List<TerrainCriteria> _terrain;
 
     /**
      * Initializes a globe texture.
      * @param id Texture identifier.
      */
-    Texture(int id) =>
+    internal Texture(int id) =>
         _id = id;
 
     /**
      *
      */
     ~Texture() { }
+
+    /**
+     * Loads the texture type from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _id = int.Parse(node["id"].ToString());
+        _deployments = ((YamlMappingNode)node["deployments"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
+        _terrain = ((YamlSequenceNode)node["terrain"]).Children.Select(x =>
+        {
+            var terrain = new TerrainCriteria(); terrain.load(x); return terrain;
+        }).ToList();
+    }
 }

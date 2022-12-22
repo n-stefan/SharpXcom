@@ -34,7 +34,7 @@ internal class MapBlock
     /**
      * MapBlock construction.
      */
-    MapBlock(string name)
+    internal MapBlock(string name)
     {
         _name = name;
         _size_x = 10;

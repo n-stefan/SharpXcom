@@ -42,6 +42,10 @@ internal class Armor : IRule
     int _faceColorGroup, _hairColorGroup, _utileColorGroup, _rankColorGroup;
     float[] _damageModifier = new float[DAMAGE_TYPES];
     List<string> _corpseBattle;
+    UnitStats _stats;
+    List<int> _loftempsSet;
+    List<int> _faceColor, _hairColor, _utileColor, _rankColor;
+    List<string> _units;
 
     /**
      * Creates a blank ruleset for a certain
@@ -124,4 +128,68 @@ internal class Armor : IRule
      */
     internal string getStoreItem() =>
 	    _storeItem;
+
+    /**
+     * Loads the armor from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _type = node["type"].ToString();
+	    _spriteSheet = node["spriteSheet"].ToString();
+	    _spriteInv = node["spriteInv"].ToString();
+	    _hasInventory = bool.Parse(node["allowInv"].ToString());
+	    if (node["corpseItem"] != null)
+	    {
+            _corpseBattle.Clear();
+		    _corpseBattle.Add(node["corpseItem"].ToString());
+		    _corpseGeo = _corpseBattle[0];
+	    }
+	    else if (node["corpseBattle"] != null)
+	    {
+            _corpseBattle = ((YamlSequenceNode)node["corpseBattle"]).Children.Select(x => x.ToString()).ToList();
+		    _corpseGeo = _corpseBattle[0];
+	    }
+	    _corpseGeo = node["corpseGeo"].ToString();
+	    _storeItem = node["storeItem"].ToString();
+	    _specWeapon = node["specialWeapon"].ToString();
+	    _frontArmor = int.Parse(node["frontArmor"].ToString());
+	    _sideArmor = int.Parse(node["sideArmor"].ToString());
+	    _rearArmor = int.Parse(node["rearArmor"].ToString());
+	    _underArmor = int.Parse(node["underArmor"].ToString());
+	    _drawingRoutine = int.Parse(node["drawingRoutine"].ToString());
+	    _drawBubbles = bool.Parse(node["drawBubbles"].ToString());
+	    _movementType = (MovementType)int.Parse(node["movementType"].ToString());
+	    _size = int.Parse(node["size"].ToString());
+	    _weight = int.Parse(node["weight"].ToString());
+        var stats = new UnitStats();
+        stats.load(node["stats"]);
+        _stats.merge(stats);
+	    if (node["damageModifier"] is YamlSequenceNode dmg)
+	    {
+		    for (var i = 0; i < dmg.Children.Count && i < (uint)DAMAGE_TYPES; ++i)
+		    {
+			    _damageModifier[i] = float.Parse(dmg.Children[i].ToString());
+		    }
+	    }
+        _loftempsSet = ((YamlSequenceNode)node["loftempsSet"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+	    if (node["loftemps"] != null)
+	    {
+		    _loftempsSet.Clear();
+		    _loftempsSet.Add(int.Parse(node["loftemps"].ToString()));
+	    }
+	    _deathFrames = int.Parse(node["deathFrames"].ToString());
+	    _constantAnimation = bool.Parse(node["constantAnimation"].ToString());
+	    _forcedTorso = (ForcedTorso)int.Parse(node["forcedTorso"].ToString());
+
+	    _faceColorGroup = int.Parse(node["spriteFaceGroup"].ToString());
+	    _hairColorGroup = int.Parse(node["spriteHairGroup"].ToString());
+	    _rankColorGroup = int.Parse(node["spriteRankGroup"].ToString());
+	    _utileColorGroup = int.Parse(node["spriteUtileGroup"].ToString());
+        _faceColor = ((YamlSequenceNode)node["spriteFaceColor"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+        _hairColor = ((YamlSequenceNode)node["spriteHairColor"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+        _rankColor = ((YamlSequenceNode)node["spriteRankColor"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+        _utileColor = ((YamlSequenceNode)node["spriteUtileColor"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+        _units = ((YamlSequenceNode)node["units"]).Children.Select(x => x.ToString()).ToList();
+    }
 }

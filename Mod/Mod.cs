@@ -1457,7 +1457,7 @@ internal class Mod
      * @param name Name of the sound set.
      * @return Pointer to the sound set.
      */
-    SoundSet getSoundSet(string name, bool error) =>
+    SoundSet getSoundSet(string name, bool error = true) =>
         getRule(name, "Sound Set", _sounds, error);
 
     static string[] exts = { string.Empty, ".flac", ".ogg", ".mp3", ".mod", ".wav", string.Empty, string.Empty, ".mid" };
@@ -2119,7 +2119,7 @@ internal class Mod
 		    if (rule != null)
 		    {
 			    _itemListOrder += 100;
-			    rule.load(item, this, _itemListOrder);
+                rule.load(item, this, _itemListOrder);
 		    }
 	    }
 	    foreach (var ufo in ((YamlSequenceNode)doc["ufos"]).Children)
@@ -2136,7 +2136,7 @@ internal class Mod
 		    if (rule != null)
 		    {
 			    _invListOrder += 10;
-			    rule.load(inv, _invListOrder);
+                rule.load(inv, _invListOrder);
 		    }
 	    }
 	    foreach (var terrain in ((YamlSequenceNode)doc["terrains"]).Children)
@@ -2144,7 +2144,7 @@ internal class Mod
             RuleTerrain rule = loadRule(terrain, _terrains, _terrainIndex, "name");
 		    if (rule != null)
 		    {
-			    rule.load(terrain, this);
+                rule.load(terrain, this);
 		    }
 	    }
 	    foreach (var armor in ((YamlSequenceNode)doc["armors"]).Children)
@@ -2176,7 +2176,7 @@ internal class Mod
             AlienRace rule = loadRule(alienRace, _alienRaces, _aliensIndex, "id");
 		    if (rule != null)
 		    {
-			    rule.load(alienRace);
+                rule.load(alienRace);
 		    }
 	    }
 	    foreach (var alienDeployment in ((YamlSequenceNode)doc["alienDeployments"]).Children)
@@ -2246,7 +2246,7 @@ internal class Mod
 				        default: rule = null; break;
 				    }
 				    _ufopaediaArticles[id] = rule;
-				    _ufopaediaIndex.Add(id);
+                    _ufopaediaIndex.Add(id);
 			    }
 			    _ufopaediaListOrder += 100;
 			    rule.load(ufopaedia, _ufopaediaListOrder);
@@ -2359,7 +2359,7 @@ internal class Mod
 			    // doesn't support modIndex
 			    if (type == "TEXTURE.DAT")
 				    data = _modData[0];
-			    extraSprites.load(extraSprite, data);
+                extraSprites.load(extraSprite, data);
 			    _extraSprites[type].Add(extraSprites);
 		    }
 		    else if (extraSprite["delete"] != null)
@@ -2375,7 +2375,7 @@ internal class Mod
 	    {
 		    string type = extraSound["type"].ToString();
 		    ExtraSounds extraSounds = new ExtraSounds();
-		    extraSounds.load(extraSound, _modCurrent);
+            extraSounds.load(extraSound, _modCurrent);
 		    _extraSounds.Add(KeyValuePair.Create(type, extraSounds));
 	    }
 	    foreach (var extraString in ((YamlSequenceNode)doc["extraStrings"]).Children)
@@ -2388,7 +2388,7 @@ internal class Mod
 		    else
 		    {
 			    ExtraStrings extraStrings = new ExtraStrings();
-			    extraStrings.load(extraString);
+                extraStrings.load(extraString);
 			    _extraStrings[type] = extraStrings;
 		    }
 	    }
@@ -2396,7 +2396,7 @@ internal class Mod
 	    foreach (var statString in ((YamlSequenceNode)doc["statStrings"]).Children)
 	    {
 		    StatString stat_String = new StatString();
-		    stat_String.load(statString);
+            stat_String.load(statString);
 		    _statStrings.Add(stat_String);
 	    }
 
@@ -2446,7 +2446,7 @@ internal class Mod
 		    foreach (var command in ((YamlSequenceNode)mapScript["commands"]).Children)
 		    {
                 MapScript map_Script = new MapScript();
-			    map_Script.load(command);
+                map_Script.load(command);
 			    _mapScripts[type].Add(map_Script);
 		    }
 	    }
@@ -2465,8 +2465,8 @@ internal class Mod
             RuleBaseFacility rule = getBaseFacility(facilitiesIndex);
 		    if (rule.getPsiLaboratories() > 0)
 		    {
-			    _psiRequirements = rule.getRequirements();
-			    break;
+                _psiRequirements = rule.getRequirements();
+                break;
 		    }
 	    }
 
@@ -2490,7 +2490,7 @@ internal class Mod
 	    {
 		    string type = commendation["type"].ToString();
 		    RuleCommendations commendations = new RuleCommendations();
-		    commendations.load(commendation);
+            commendations.load(commendation);
 		    _commendations[type] = commendations;
 	    }
 	    var count = 0;
@@ -2507,5 +2507,246 @@ internal class Mod
                 _statAdjustment[i].statGrowth = _statAdjustment[0].statGrowth;
 		    }
 	    }
+    }
+
+    /**
+     * Returns the appropriate mod-based offset for a sound.
+     * If the ID is bigger than the soundset contents, the mod offset is applied.
+     * @param parent Name of parent node, used for better error message
+     * @param sound Member to load new sound ID index.
+     * @param node Node with data
+     * @param set Name of the soundset to lookup.
+     */
+    internal void loadSoundOffset(string parent, int sound, YamlNode node, string set)
+    {
+	    if (node != null)
+	    {
+		    loadOffsetNode(parent, sound, node, getSoundSet(set).getMaxSharedSounds(), set, 1);
+	    }
+    }
+
+    /**
+     * Gets the mod offset array for a certain sound.
+     * @param parent Name of parent node, used for better error message
+     * @param sounds Member to load new list of sound ID indexes.
+     * @param node Node with data
+     * @param set Name of the soundset to lookup.
+     */
+    internal void loadSoundOffset(string parent, List<int> sounds, YamlNode node, string set)
+    {
+	    if (node != null)
+	    {
+		    int maxShared = getSoundSet(set).getMaxSharedSounds();
+		    sounds.Clear();
+		    if (node.NodeType == YamlNodeType.Sequence)
+		    {
+			    foreach (var item in ((YamlSequenceNode)node).Children)
+			    {
+				    sounds.Add(-1);
+				    loadOffsetNode(parent, sounds.Last(), item, maxShared, set, 1);
+			    }
+		    }
+		    else
+		    {
+			    sounds.Add(-1);
+			    loadOffsetNode(parent, sounds.Last(), node, maxShared, set, 1);
+		    }
+	    }
+    }
+
+    /**
+     * Returns the appropriate mod-based offset for a sprite.
+     * If the ID is bigger than the surfaceset contents, the mod offset is applied.
+     * @param parent Name of parent node, used for better error message
+     * @param sprite Member to load new sprite ID index.
+     * @param node Node with data
+     * @param set Name of the surfaceset to lookup.
+     * @param multiplier Value used by `projectile` surface set to convert projectile offset to index offset in surface.
+     */
+    internal void loadSpriteOffset(string parent, int sprite, YamlNode node, string set, uint multiplier = 1)
+    {
+	    if (node != null)
+	    {
+            loadOffsetNode(parent, sprite, node, getRule(set, "Sprite Set", _sets, true).getMaxSharedFrames(), set, multiplier);
+	    }
+    }
+
+    /**
+     * Gets the mod offset array for a certain transparency index.
+     * @param parent Name of parent node, used for better error message.
+     * @param index Member to load new transparency index.
+     * @param node Node with data.
+     */
+    internal void loadTransparencyOffset(string parent, int index, YamlNode node)
+    {
+	    if (node != null)
+	    {
+            loadOffsetNode(parent, index, node, 0, "TransparencyLUTs", 1, ModTransparceySizeReduction);
+	    }
+    }
+
+    /**
+     * Returns the appropriate mod-based offset for a generic ID.
+     * If the ID is bigger than the max, the mod offset is applied.
+     * @param id Numeric ID.
+     * @param max Maximum vanilla value.
+     */
+    internal int getOffset(int id, int max)
+    {
+	    Debug.Assert(_modCurrent != null);
+        if (id > max)
+            return (int)(id + _modCurrent.offset);
+        else
+            return id;
+    }
+
+    /**
+     * Returns the info about a specific map data file.
+     * @param name Datafile name.
+     * @return Rules for the datafile.
+     */
+    internal MapDataSet getMapDataSet(string name)
+    {
+	    if (!_mapDataSets.ContainsKey(name))
+	    {
+		    MapDataSet set = new MapDataSet(name);
+		    _mapDataSets[name] = set;
+		    return set;
+	    }
+	    else
+	    {
+		    return _mapDataSets[name];
+	    }
+    }
+
+    /**
+     * Get offset and index for sound set or sprite set.
+     * @param parent Name of parent node, used for better error message
+     * @param offset Member to load new value.
+     * @param node Node with data
+     * @param shared Max offset limit that is shared for every mod
+     * @param multiplier Value used by `projectile` surface set to convert projectile offset to index offset in surface.
+     * @param sizeScale Value used by transparency colors, reduce total number of avaialbe space for offset.
+     */
+    void loadOffsetNode(string parent, int offset, YamlNode node, int shared, string set, uint multiplier, uint sizeScale = 1)
+    {
+        Debug.Assert(_modCurrent != null);
+        ModData curr = _modCurrent;
+	    if (node.NodeType == YamlNodeType.Scalar)
+	    {
+		    offset = int.Parse(node.ToString());
+	    }
+	    else if (node.NodeType == YamlNodeType.Mapping)
+	    {
+		    offset = int.Parse(node["index"].ToString());
+		    string mod = node["mod"].ToString();
+		    if (mod == ModNameMaster)
+		    {
+			    curr = _modData[0];
+		    }
+		    else if (mod == ModNameCurrent)
+		    {
+			    //nothing
+		    }
+		    else
+		    {
+                ModData n = null;
+			    for (var i = 0; i < _modData.Count; ++i)
+			    {
+				    ModData d = _modData[i];
+				    if (d.name == mod)
+				    {
+					    n = d;
+                        break;
+				    }
+			    }
+
+			    if (n != null)
+			    {
+				    curr = n;
+			    }
+			    else
+			    {
+				    string err = $"Error for '{parent}': unknown mod '{mod}' used";
+				    throw new Exception(err);
+			    }
+		    }
+	    }
+
+	    if (offset < -1)
+	    {
+		    string err = $"Error for '{parent}': offset '{offset}' has incorrect value in set '{set}' at line {node.Start.Line}";
+		    throw new Exception(err);
+	    }
+	    else if (offset == -1)
+	    {
+		    //ok
+	    }
+	    else
+	    {
+		    int f = offset;
+		    f *= (int)multiplier;
+		    if ((uint)f > curr.size / sizeScale)
+		    {
+			    string err = $"Error for '{parent}': offset '{offset}' exceeds mod size limit {(curr.size / multiplier / sizeScale)} in set '{set}'";
+			    throw new Exception(err);
+		    }
+		    if (f >= shared)
+			    f += (int)(curr.offset / sizeScale);
+            offset = f;
+	    }
+    }
+
+    /**
+     * Loads "constants" node.
+     */
+    void loadConstants(YamlNode node)
+    {
+	    loadSoundOffset("constants", DOOR_OPEN, node["doorSound"], "BATTLE.CAT");
+	    loadSoundOffset("constants", SLIDING_DOOR_OPEN, node["slidingDoorSound"], "BATTLE.CAT");
+	    loadSoundOffset("constants", SLIDING_DOOR_CLOSE, node["slidingDoorClose"], "BATTLE.CAT");
+	    loadSoundOffset("constants", SMALL_EXPLOSION, node["smallExplosion"], "BATTLE.CAT");
+	    loadSoundOffset("constants", LARGE_EXPLOSION, node["largeExplosion"], "BATTLE.CAT");
+
+	    loadSpriteOffset("constants", EXPLOSION_OFFSET, node["explosionOffset"], "X1.PCK");
+	    loadSpriteOffset("constants", SMOKE_OFFSET, node["smokeOffset"], "SMOKE.PCK");
+	    loadSpriteOffset("constants", UNDERWATER_SMOKE_OFFSET, node["underwaterSmokeOffset"], "SMOKE.PCK");
+
+	    loadSoundOffset("constants", ITEM_DROP, node["itemDrop"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ITEM_THROW, node["itemThrow"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ITEM_RELOAD, node["itemReload"], "BATTLE.CAT");
+	    loadSoundOffset("constants", WALK_OFFSET, node["walkOffset"], "BATTLE.CAT");
+	    loadSoundOffset("constants", FLYING_SOUND, node["flyingSound"], "BATTLE.CAT");
+
+	    loadSoundOffset("constants", BUTTON_PRESS, node["buttonPress"], "GEO.CAT");
+	    if (node["windowPopup"] != null)
+	    {
+            var k = 0;
+		    for (var j = 0; j < ((YamlSequenceNode)node["windowPopup"]).Children.Count && k < 3; ++j, ++k)
+		    {
+			    loadSoundOffset("constants", WINDOW_POPUP[k], ((YamlSequenceNode)node["windowPopup"]).Children[j], "GEO.CAT");
+		    }
+	    }
+	    loadSoundOffset("constants", UFO_FIRE, node["ufoFire"], "GEO.CAT");
+	    loadSoundOffset("constants", UFO_HIT, node["ufoHit"], "GEO.CAT");
+	    loadSoundOffset("constants", UFO_CRASH, node["ufoCrash"], "GEO.CAT");
+	    loadSoundOffset("constants", UFO_EXPLODE, node["ufoExplode"], "GEO.CAT");
+	    loadSoundOffset("constants", INTERCEPTOR_HIT, node["interceptorHit"], "GEO.CAT");
+	    loadSoundOffset("constants", INTERCEPTOR_EXPLODE, node["interceptorExplode"], "GEO.CAT");
+	    GEOSCAPE_CURSOR = int.Parse(node["geoscapeCursor"].ToString());
+	    BASESCAPE_CURSOR = int.Parse(node["basescapeCursor"].ToString());
+	    BATTLESCAPE_CURSOR = int.Parse(node["battlescapeCursor"].ToString());
+	    UFOPAEDIA_CURSOR = int.Parse(node["ufopaediaCursor"].ToString());
+	    GRAPHS_CURSOR = int.Parse(node["graphsCursor"].ToString());
+	    DAMAGE_RANGE = int.Parse(node["damageRange"].ToString());
+        EXPLOSIVE_DAMAGE_RANGE = int.Parse(node["explosiveDamageRange"].ToString());
+        var num = 0;
+	    for (var j = 0; j < ((YamlSequenceNode)node["fireDamageRange"]).Children.Count && num < 2; ++j)
+	    {
+		    FIRE_DAMAGE_RANGE[num] = int.Parse(((YamlSequenceNode)node["fireDamageRange"]).Children[j].ToString());
+            ++num;
+	    }
+	    DEBRIEF_MUSIC_GOOD = node["goodDebriefingMusic"].ToString();
+        DEBRIEF_MUSIC_BAD = node["badDebriefingMusic"].ToString();
     }
 }

@@ -69,6 +69,21 @@ struct UnitStats
         };
         return node;
     }
+
+    internal void merge(UnitStats stats)
+    {
+        tu = (stats.tu != 0 ? stats.tu : tu);
+        stamina = (stats.stamina != 0 ? stats.stamina : stamina);
+        health = (stats.health != 0 ? stats.health : health);
+        bravery = (stats.bravery != 0 ? stats.bravery : bravery);
+        reactions = (stats.reactions != 0 ? stats.reactions : reactions);
+        firing = (stats.firing != 0 ? stats.firing : firing);
+        throwing = (stats.throwing != 0 ? stats.throwing : throwing);
+        strength = (stats.strength != 0 ? stats.strength : strength);
+        psiStrength = (stats.psiStrength != 0 ? stats.psiStrength : psiStrength);
+        psiSkill = (stats.psiSkill != 0 ? stats.psiSkill : psiSkill);
+        melee = (stats.melee != 0 ? stats.melee : melee);
+    }
 }
 
 struct StatAdjustment
@@ -90,10 +105,15 @@ internal class Unit : IRule
     int _intelligence, _aggression, _energyRecovery;
     SpecialAbility _specab;
     bool _livingWeapon;
-    string _psiWeapon;
+    string _meleeWeapon, _psiWeapon;
     bool _capturable;
     string _race;
     string _rank;
+    UnitStats _stats;
+    string _armor;
+    List<List<string>> _builtInWeapons;
+    string _spawnUnit;
+    List<int> _deathSound;
 
     /**
      * Creates a certain type of unit.
@@ -145,4 +165,53 @@ internal class Unit : IRule
      */
     internal int getSpecialAbility() =>
 	    (int)_specab;
+
+    /**
+     * Loads the unit from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the unit.
+     */
+    internal void load(YamlNode node, Mod mod)
+    {
+	    _type = node["type"].ToString();
+	    _race = node["race"].ToString();
+	    _rank = node["rank"].ToString();
+        var stats = new UnitStats();
+        stats.load(node["stats"]);
+        _stats.merge(stats);
+	    _armor = node["armor"].ToString();
+	    _standHeight = int.Parse(node["standHeight"].ToString());
+	    _kneelHeight = int.Parse(node["kneelHeight"].ToString());
+	    _floatHeight = int.Parse(node["floatHeight"].ToString());
+	    if (_floatHeight + _standHeight > 25)
+	    {
+		    throw new Exception("Error with unit "+ _type +": Unit height may not exceed 25");
+	    }
+	    _value = int.Parse(node["value"].ToString());
+	    _intelligence = int.Parse(node["intelligence"].ToString());
+	    _aggression = int.Parse(node["aggression"].ToString());
+	    _energyRecovery = int.Parse(node["energyRecovery"].ToString());
+	    _specab = (SpecialAbility)int.Parse(node["specab"].ToString());
+	    _spawnUnit = node["spawnUnit"].ToString();
+	    _livingWeapon = bool.Parse(node["livingWeapon"].ToString());
+	    _meleeWeapon = node["meleeWeapon"].ToString();
+	    _psiWeapon = node["psiWeapon"].ToString();
+	    _capturable = bool.Parse(node["capturable"].ToString());
+        foreach (var i in ((YamlSequenceNode)node["builtInWeaponSets"]).Children)
+        {
+            var builtInWeapons = new List<string>();
+            foreach (var j in ((YamlSequenceNode)i).Children)
+            {
+                builtInWeapons.Add(j.ToString());
+            }
+            _builtInWeapons.Add(builtInWeapons);
+        }
+        if (node["builtInWeapons"] != null)
+	    {
+            _builtInWeapons.Add(((YamlSequenceNode)node["builtInWeapons"]).Children.Select(x => x.ToString()).ToList());
+	    }
+	    mod.loadSoundOffset(_type, _deathSound, node["deathSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, _aggroSound, node["aggroSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, _moveSound, node["moveSound"], "BATTLE.CAT");
+    }
 }

@@ -26,6 +26,7 @@ namespace SharpXcom.Mod;
 internal class AlienRace : IRule
 {
     string _id;
+    List<string> _members;
 
     /**
      * Creates a blank alien race.
@@ -38,4 +39,14 @@ internal class AlienRace : IRule
         new AlienRace(type);
 
     ~AlienRace() { }
+
+    /**
+     * Loads the alien race from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _id = node["id"].ToString();
+        _members = ((YamlSequenceNode)node["members"]).Children.Select(x => x.ToString()).ToList();
+    }
 }

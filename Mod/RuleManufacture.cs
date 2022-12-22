@@ -28,6 +28,7 @@ internal class RuleManufacture : IListOrder, IRule
     int _space, _time, _cost;
     int _listOrder;
     Dictionary<string, int> _requiredItems, _producedItems;
+    List<string> _requires;
 
     /**
      * Creates a new Manufacture.
@@ -59,4 +60,33 @@ internal class RuleManufacture : IListOrder, IRule
      */
     public int getListOrder() =>
 	    _listOrder;
+
+    /**
+     * Loads the manufacture project from a YAML file.
+     * @param node YAML node.
+     * @param listOrder The list weight for this manufacture.
+     */
+    internal void load(YamlNode node, int listOrder)
+    {
+	    bool same = (1 == _producedItems.Count && _name == _producedItems.Keys.First());
+	    _name = node["name"].ToString();
+	    if (same)
+	    {
+		    int value = _producedItems.Values.First();
+		    _producedItems.Clear();
+		    _producedItems[_name] = value;
+	    }
+	    _category = node["category"].ToString();
+        _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
+        _space = int.Parse(node["space"].ToString());
+        _time = int.Parse(node["time"].ToString());
+	    _cost = int.Parse(node["cost"].ToString());
+        _requiredItems = ((YamlMappingNode)node["requiredItems"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
+        _producedItems = ((YamlMappingNode)node["producedItems"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
+	    _listOrder = int.Parse(node["listOrder"].ToString());
+	    if (_listOrder == 0)
+	    {
+		    _listOrder = listOrder;
+	    }
+    }
 }

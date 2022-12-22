@@ -56,6 +56,8 @@ internal class RuleItem : IListOrder, IRule
     bool _strengthApplied, _skillApplied, _LOSRequired, _underwaterOnly, _landOnly;
     int _meleeSound, _meleePower, _meleeAnimation, _meleeHitSound, _specialType, _vaporColor, _vaporDensity, _vaporProbability;
     List<string> _compatibleAmmo;
+    List<string> _requires;
+    string _zombieUnit;
 
     /**
      * Creates a blank ruleset for a certain type of item.
@@ -336,4 +338,102 @@ internal class RuleItem : IListOrder, IRule
      */
     public int getListOrder() =>
         _listOrder;
+
+    /**
+     * Loads the item from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the item.
+     * @param listOrder The list weight for this item.
+     */
+    internal void load(YamlNode node, Mod mod, int listOrder)
+    {
+        _type = node["type"].ToString();
+        _name = node["name"].ToString();
+        _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
+	    _size = double.Parse(node["size"].ToString());
+	    _costBuy = int.Parse(node["costBuy"].ToString());
+	    _costSell = int.Parse(node["costSell"].ToString());
+	    _transferTime = int.Parse(node["transferTime"].ToString());
+	    _weight = int.Parse(node["weight"].ToString());
+
+	    mod.loadSpriteOffset(_type, _bigSprite, node["bigSprite"], "BIGOBS.PCK");
+	    mod.loadSpriteOffset(_type, _floorSprite, node["floorSprite"], "FLOOROB.PCK");
+	    mod.loadSpriteOffset(_type, _handSprite, node["handSprite"], "HANDOB.PCK");
+	    // Projectiles: 0-384 entries ((105*33) / (3*3)) (35 sprites per projectile(0-34), 11 projectiles (0-10))
+	    mod.loadSpriteOffset(_type, _bulletSprite, node["bulletSprite"], "Projectiles", 35);
+
+	    mod.loadSoundOffset(_type, _fireSound, node["fireSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, _hitSound, node["hitSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, _meleeSound, node["meleeSound"], "BATTLE.CAT");
+	    mod.loadSpriteOffset(_type, _hitAnimation, node["hitAnimation"], "SMOKE.PCK");
+	    mod.loadSpriteOffset(_type, _meleeAnimation, node["meleeAnimation"], "HIT.PCK");
+	    mod.loadSoundOffset(_type, _meleeHitSound, node["meleeHitSound"], "BATTLE.CAT");
+
+	    _power = int.Parse(node["power"].ToString());
+        _compatibleAmmo = ((YamlSequenceNode)node["compatibleAmmo"]).Children.Select(x => x.ToString()).ToList();
+	    _damageType = (ItemDamageType)int.Parse(node["damageType"].ToString());
+	    _accuracyAuto = int.Parse(node["accuracyAuto"].ToString());
+	    _accuracySnap = int.Parse(node["accuracySnap"].ToString());
+	    _accuracyAimed = int.Parse(node["accuracyAimed"].ToString());
+	    _tuAuto = int.Parse(node["tuAuto"].ToString());
+	    _tuSnap = int.Parse(node["tuSnap"].ToString());
+	    _tuAimed = int.Parse(node["tuAimed"].ToString());
+	    _clipSize = int.Parse(node["clipSize"].ToString());
+	    _accuracyMelee = int.Parse(node["accuracyMelee"].ToString());
+	    _tuMelee = int.Parse(node["tuMelee"].ToString());
+	    _battleType = (BattleType)int.Parse(node["battleType"].ToString());
+	    if ((_battleType == BattleType.BT_MELEE || _battleType == BattleType.BT_FIREARM) && _clipSize == 0 && !_compatibleAmmo.Any())
+	    {
+		    throw new Exception("Weapon " + _type + " has clip size 0 and no ammo defined. Please use 'clipSize: -1' for unlimited ammo, or allocate a compatibleAmmo item.");
+	    }
+	    _twoHanded = bool.Parse(node["twoHanded"].ToString());
+	    _waypoints = int.Parse(node["waypoints"].ToString());
+	    _fixedWeapon = bool.Parse(node["fixedWeapon"].ToString());
+	    _invWidth = int.Parse(node["invWidth"].ToString());
+	    _invHeight = int.Parse(node["invHeight"].ToString());
+	    _painKiller = int.Parse(node["painKiller"].ToString());
+	    _heal = int.Parse(node["heal"].ToString());
+	    _stimulant = int.Parse(node["stimulant"].ToString());
+	    _woundRecovery = int.Parse(node["woundRecovery"].ToString());
+	    _healthRecovery = int.Parse(node["healthRecovery"].ToString());
+	    _stunRecovery = int.Parse(node["stunRecovery"].ToString());
+	    _energyRecovery = int.Parse(node["energyRecovery"].ToString());
+	    _tuUse = int.Parse(node["tuUse"].ToString());
+	    _recoveryPoints = int.Parse(node["recoveryPoints"].ToString());
+	    _armor = int.Parse(node["armor"].ToString());
+	    _turretType = int.Parse(node["turretType"].ToString());
+	    _recover = bool.Parse(node["recover"].ToString());
+	    _ignoreInBaseDefense = bool.Parse(node["ignoreInBaseDefense"].ToString());
+	    _liveAlien = bool.Parse(node["liveAlien"].ToString());
+	    _blastRadius = int.Parse(node["blastRadius"].ToString());
+	    _attraction = int.Parse(node["attraction"].ToString());
+	    _flatRate = bool.Parse(node["flatRate"].ToString());
+	    _arcingShot = bool.Parse(node["arcingShot"].ToString());
+	    _listOrder = int.Parse(node["listOrder"].ToString());
+	    _maxRange = int.Parse(node["maxRange"].ToString());
+	    _aimRange = int.Parse(node["aimRange"].ToString());
+	    _snapRange = int.Parse(node["snapRange"].ToString());
+	    _autoRange = int.Parse(node["autoRange"].ToString());
+	    _minRange = int.Parse(node["minRange"].ToString());
+	    _dropoff = int.Parse(node["dropoff"].ToString());
+	    _bulletSpeed = int.Parse(node["bulletSpeed"].ToString());
+	    _explosionSpeed = int.Parse(node["explosionSpeed"].ToString());
+	    _autoShots = int.Parse(node["autoShots"].ToString());
+	    _shotgunPellets = int.Parse(node["shotgunPellets"].ToString());
+	    _zombieUnit = node["zombieUnit"].ToString();
+	    _strengthApplied = bool.Parse(node["strengthApplied"].ToString());
+	    _skillApplied = bool.Parse(node["skillApplied"].ToString());
+	    _LOSRequired = bool.Parse(node["LOSRequired"].ToString());
+	    _meleePower = int.Parse(node["meleePower"].ToString());
+	    _underwaterOnly = bool.Parse(node["underwaterOnly"].ToString());
+	    _landOnly = bool.Parse(node["landOnly"].ToString());
+	    _specialType = int.Parse(node["specialType"].ToString());
+	    mod.loadTransparencyOffset(_type, _vaporColor, node["vaporColor"]);
+	    _vaporDensity = int.Parse(node["vaporDensity"].ToString());
+	    _vaporProbability = int.Parse(node["vaporProbability"].ToString());
+	    if (_listOrder == 0)
+	    {
+            _listOrder = listOrder;
+	    }
+    }
 }

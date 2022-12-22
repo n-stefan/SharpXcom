@@ -37,6 +37,7 @@ internal class RuleResearch : IListOrder, IRule
     int _cost, _points;
     bool _needItem, _destroyItem;
     int _listOrder;
+    List<string> _dependencies, _unlocks, _getOneFree, _requires;
 
     RuleResearch(string name)
     {
@@ -64,4 +65,34 @@ internal class RuleResearch : IListOrder, IRule
      */
     public int getListOrder() =>
 	    _listOrder;
+
+    /**
+     * Loads the research project from a YAML file.
+     * @param node YAML node.
+     * @param listOrder The list weight for this research.
+     */
+    internal void load(YamlNode node, int listOrder)
+    {
+	    _name = node["name"].ToString();
+	    _lookup = node["lookup"].ToString();
+	    _cutscene = node["cutscene"].ToString();
+	    _cost = int.Parse(node["cost"].ToString());
+	    _points = int.Parse(node["points"].ToString());
+        _dependencies = ((YamlSequenceNode)node["dependencies"]).Children.Select(x => x.ToString()).ToList();
+        _unlocks = ((YamlSequenceNode)node["unlocks"]).Children.Select(x => x.ToString()).ToList();
+        _getOneFree = ((YamlSequenceNode)node["getOneFree"]).Children.Select(x => x.ToString()).ToList();
+        _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
+	    _needItem = bool.Parse(node["needItem"].ToString());
+	    _destroyItem = bool.Parse(node["destroyItem"].ToString());
+        _listOrder = int.Parse(node["listOrder"].ToString());
+	    if (_listOrder == 0)
+	    {
+            _listOrder = listOrder;
+	    }
+	    // This is necessary, research code assumes it!
+	    if (_requires.Any() && _cost != 0)
+	    {
+		    throw new Exception("Research topic " + _name + " has requirements, but the cost is not zero. Sorry, this is not allowed!");
+	    }
+    }
 }

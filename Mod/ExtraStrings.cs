@@ -42,4 +42,29 @@ internal class ExtraStrings
      */
     internal Dictionary<string, string> getStrings() =>
         _strings;
+
+	/**
+	 * Loads the extra strings set from YAML.
+	 * @param node YAML node.
+	 */
+	internal void load(YamlNode node)
+	{
+		foreach (var @string in ((YamlMappingNode)node["strings"]).Children)
+		{
+			// Regular strings
+			if (@string.Value is YamlScalarNode)
+			{
+				_strings[@string.Key.ToString()] = @string.Value.ToString();
+			}
+			// Strings with plurality
+			else if (@string.Value is YamlMappingNode map)
+			{
+				foreach (var child in map.Children)
+				{
+					string s = @string.Key.ToString() + "_" + child.Key.ToString();
+					_strings[s] = child.Value.ToString();
+				}
+			}
+		}
+	}
 }

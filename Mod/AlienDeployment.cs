@@ -45,6 +45,12 @@ internal class AlienDeployment : IRule
     int _objectiveType, _objectivesRequired, _objectiveCompleteScore, _objectiveFailedScore, _despawnPenalty, _points, _turnLimit, _cheatTurn;
     ChronoTrigger _chronoTrigger;
     EscapeType _escapeType;
+    List<DeploymentData> _data;
+    List<string> _terrains, _music;
+    string _nextStage, _race, _script;
+    string _winCutscene, _loseCutscene, _abortCutscene;
+    BriefingData _briefingData;
+    WeightedOptions _genMission;
 
     /**
      * Creates a blank ruleset for a certain
@@ -104,4 +110,76 @@ internal class AlienDeployment : IRule
      */
     internal int getMarkerIcon() =>
 	    _markerIcon;
+
+    /**
+     * Loads the Deployment from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the deployment.
+     */
+    internal void load(YamlNode node, Mod mod)
+    {
+	    _type = node["type"].ToString();
+        _data = ((YamlSequenceNode)node["data"]).Children.Select(x =>
+        {
+            var data = new DeploymentData(); data.load(x); return data;
+        }).ToList();
+	    _width = int.Parse(node["width"].ToString());
+	    _length = int.Parse(node["length"].ToString());
+	    _height = int.Parse(node["height"].ToString());
+	    _civilians = int.Parse(node["civilians"].ToString());
+        _terrains = ((YamlSequenceNode)node["terrains"]).Children.Select(x => x.ToString()).ToList();
+	    _shade = int.Parse(node["shade"].ToString());
+	    _nextStage = node["nextStage"].ToString();
+	    _race = node["race"].ToString();
+	    _finalDestination = bool.Parse(node["finalDestination"].ToString());
+	    _winCutscene = node["winCutscene"].ToString();
+	    _loseCutscene = node["loseCutscene"].ToString();
+	    _abortCutscene = node["abortCutscene"].ToString();
+	    _script = node["script"].ToString();
+	    _alert = node["alert"].ToString();
+	    _alertBackground = node["alertBackground"].ToString();
+        _briefingData.load(node["briefing"]);
+	    _markerName = node["markerName"].ToString();
+	    if (node["markerIcon"] != null)
+	    {
+		    _markerIcon = mod.getOffset(int.Parse(node["markerIcon"].ToString()), 8);
+	    }
+	    if (node["depth"] != null)
+	    {
+		    _minDepth = int.Parse(node["depth"][0].ToString());
+		    _maxDepth = int.Parse(node["depth"][1].ToString());
+	    }
+	    if (node["duration"] != null)
+	    {
+		    _durationMin = int.Parse(node["duration"][0].ToString());
+		    _durationMax = int.Parse(node["duration"][1].ToString());
+	    }
+        _music = ((YamlSequenceNode)node["music"]).Children.Select(x => x.ToString()).ToList();
+	    _objectiveType = int.Parse(node["objectiveType"].ToString());
+	    _objectivesRequired = int.Parse(node["objectivesRequired"].ToString());
+	    _objectivePopup = node["objectivePopup"].ToString();
+
+	    if (node["objectiveComplete"] != null)
+	    {
+		    _objectiveCompleteText = node["objectiveComplete"][0].ToString();
+		    _objectiveCompleteScore = int.Parse(node["objectiveComplete"][1].ToString());
+	    }
+	    if (node["objectiveFailed"] != null)
+	    {
+		    _objectiveFailedText = node["objectiveFailed"][0].ToString();
+		    _objectiveFailedScore = int.Parse(node["objectiveFailed"][1].ToString());
+	    }
+	    _despawnPenalty = int.Parse(node["despawnPenalty"].ToString());
+	    _points = int.Parse(node["points"].ToString());
+	    _cheatTurn = int.Parse(node["cheatTurn"].ToString());
+	    _turnLimit = int.Parse(node["turnLimit"].ToString());
+	    _chronoTrigger = (ChronoTrigger)int.Parse(node["chronoTrigger"].ToString());
+	    _isAlienBase = bool.Parse(node["alienBase"].ToString());
+	    _escapeType = (EscapeType)int.Parse(node["escapeType"].ToString());
+	    if (node["genMission"] != null)
+	    {
+		    _genMission.load(node["genMission"]);
+	    }
+	    _genMissionFrequency = int.Parse(node["genMissionFreq"].ToString());
+    }
 }

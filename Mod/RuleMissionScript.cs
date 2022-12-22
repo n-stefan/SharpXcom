@@ -25,6 +25,8 @@ internal class RuleMissionScript : IRule
     int _firstMonth, _lastMonth, _label, _executionOdds, _targetBaseOdds, _minDifficulty, _maxRuns, _avoidRepeats, _delay;
     bool _useTable, _siteType;
     List<KeyValuePair<uint, WeightedOptions>> _regionWeights, _missionWeights, _raceWeights;
+    List<int> _conditionals;
+    Dictionary<string, bool> _researchTriggers;
 
     /**
      * RuleMissionScript: the rules for the alien mission progression.
@@ -81,4 +83,56 @@ internal class RuleMissionScript : IRule
      */
     internal void setSiteType(bool siteType) =>
 	    _siteType = siteType;
+
+	/**
+	 * Loads a missionScript from a YML file.
+	 * @param node the node within the file we're reading.
+	 */
+	internal void load(YamlNode node)
+	{
+		_varName = node["varName"].ToString();
+		_firstMonth = int.Parse(node["firstMonth"].ToString());
+		_lastMonth = int.Parse(node["lastMonth"].ToString());
+		_label = (int)uint.Parse(node["label"].ToString());
+		_executionOdds = int.Parse(node["executionOdds"].ToString());
+		_targetBaseOdds = int.Parse(node["targetBaseOdds"].ToString());
+		_minDifficulty = int.Parse(node["minDifficulty"].ToString());
+		_maxRuns = int.Parse(node["maxRuns"].ToString());
+		_avoidRepeats = int.Parse(node["avoidRepeats"].ToString());
+		_delay = int.Parse(node["startDelay"].ToString());
+        _conditionals = ((YamlSequenceNode)node["conditionals"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+		if (node["missionWeights"] is YamlNode missionWeights)
+		{
+			foreach (var missionWeight in ((YamlMappingNode)missionWeights).Children)
+			{
+				WeightedOptions nw = new WeightedOptions();
+				nw.load(missionWeight.Value);
+				_missionWeights.Add(KeyValuePair.Create(uint.Parse(missionWeight.Key.ToString()), nw));
+			}
+		}
+		if (node["raceWeights"] is YamlNode raceWeights)
+		{
+			foreach (var raceWeight in ((YamlMappingNode)raceWeights).Children)
+			{
+				WeightedOptions nw = new WeightedOptions();
+				nw.load(raceWeight.Value);
+				_raceWeights.Add(KeyValuePair.Create(uint.Parse(raceWeight.Key.ToString()), nw));
+			}
+		}
+		if (node["regionWeights"] is YamlNode regionWeights)
+		{
+			foreach (var regionWeight in ((YamlMappingNode)regionWeights).Children)
+			{
+				WeightedOptions nw = new WeightedOptions();
+				nw.load(regionWeight.Value);
+				_regionWeights.Add(KeyValuePair.Create(uint.Parse(regionWeight.Key.ToString()), nw));
+			}
+		}
+		_researchTriggers = ((YamlMappingNode)node["researchTriggers"]).Children.ToDictionary(x => x.Key.ToString(), x => bool.Parse(x.Value.ToString()));
+		_useTable = bool.Parse(node["useTable"].ToString());
+		if (string.IsNullOrEmpty(_varName) && (_maxRuns > 0 || _avoidRepeats > 0))
+		{
+			throw new Exception("Error in mission script: " + _type +": no varName provided for a script with maxRuns or repeatAvoidance.");
+		}
+	}
 }

@@ -33,7 +33,7 @@ internal class Polyline
      * Initializes the polyline with arrays to store each point's coordinates.
      * @param points Number of points.
      */
-    Polyline(int points)
+    internal Polyline(int points)
     {
         _points = points;
 
@@ -48,5 +48,27 @@ internal class Polyline
     {
         _lat = null;
         _lon = null;
+    }
+
+    /**
+     * Loads the polyline from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _lat = null;
+	    _lon = null;
+
+        var coords = ((YamlSequenceNode)node).Children.Select(x => double.Parse(x.ToString())).ToList();
+        _points = coords.Count / 2;
+	    _lat = new double[_points];
+	    _lon = new double[_points];
+
+	    for (var i = 0; i < coords.Count; i += 2)
+	    {
+            uint j = (uint)(i / 2);
+		    _lon[j] = Deg2Rad(coords[i]);
+		    _lat[j] = Deg2Rad(coords[i+1]);
+	    }
     }
 }

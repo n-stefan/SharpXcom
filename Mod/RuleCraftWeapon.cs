@@ -70,4 +70,38 @@ internal class RuleCraftWeapon : IRule
      */
     internal string getLauncherItem() =>
 	    _launcher;
+
+    /**
+     * Loads the craft weapon from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the craft weapon.
+     */
+    internal void load(YamlNode node, Mod mod)
+    {
+	    _type = node["type"].ToString();
+	    if (node["sprite"] != null)
+	    {
+		    // used in
+		    // Surface set (baseOffset):
+		    //   BASEBITS.PCK (48)
+		    //   INTICON.PCK (5)
+		    //
+		    // Final index in surfaceset is `baseOffset + sprite + (sprite > 5 ? modOffset : 0)`
+		    _sprite = mod.getOffset(int.Parse(node["sprite"].ToString()), 5);
+	    }
+	    mod.loadSoundOffset(_type, _sound, node["sound"], "GEO.CAT");
+	    _damage = int.Parse(node["damage"].ToString());
+	    _range = int.Parse(node["range"].ToString());
+	    _accuracy = int.Parse(node["accuracy"].ToString());
+	    _reloadCautious = int.Parse(node["reloadCautious"].ToString());
+	    _reloadStandard = int.Parse(node["reloadStandard"].ToString());
+	    _reloadAggressive = int.Parse(node["reloadAggressive"].ToString());
+	    _ammoMax = int.Parse(node["ammoMax"].ToString());
+	    _rearmRate = int.Parse(node["rearmRate"].ToString());
+	    _projectileType = (CraftWeaponProjectileType)int.Parse(node["projectileType"].ToString());
+	    _projectileSpeed = int.Parse(node["projectileSpeed"].ToString());
+	    _launcher = node["launcher"].ToString();
+	    _clip = node["clip"].ToString();
+	    _underwaterOnly = bool.Parse(node["underwaterOnly"].ToString());
+    }
 }

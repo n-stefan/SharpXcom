@@ -40,6 +40,14 @@ internal class RuleAlienMission : IRule
     int _retaliationOdds;
     /// The race distribution over game time.
     List<KeyValuePair<uint, WeightedOptions>> _raceDistribution;
+    /// The mission's waves.
+    List<MissionWave> _waves;
+    /// The UFO to use for spawning.
+    string _spawnUfo;
+    /// The mission's weights.
+    Dictionary<uint, int> _weights;
+    /// the type of missionSite to spawn (if any)
+    string _siteType;
 
     RuleAlienMission(string type)
     {
@@ -66,4 +74,71 @@ internal class RuleAlienMission : IRule
     /// Gets the objective for this mission.
     internal MissionObjective getObjective() =>
         _objective;
+
+	/**
+	 * Loads the mission data from a YAML node.
+	 * @param node YAML node.
+	 */
+	internal void load(YamlNode node)
+	{
+		_type = node["type"].ToString();
+		_points = int.Parse(node["points"].ToString());
+        _waves = new List<MissionWave>();
+        foreach (var wave in ((YamlSequenceNode)node["waves"]).Children)
+        {
+            var missionWave = new MissionWave();
+            _waves.Add(missionWave.load(wave));
+        }
+		_objective = (MissionObjective)int.Parse(node["objective"].ToString());
+		_spawnUfo = node["spawnUfo"].ToString();
+		_spawnZone = int.Parse(node["spawnZone"].ToString());
+        _weights = ((YamlMappingNode)node["missionWeights"]).Children.ToDictionary(x => uint.Parse(x.Key.ToString()), x => int.Parse(x.Value.ToString()));
+		_retaliationOdds = int.Parse(node["retaliationOdds"].ToString());
+		_siteType = node["siteType"].ToString();
+		//Only allow full replacement of mission racial distribution.
+		if (node["raceWeights"] is YamlNode weights)
+		{
+            var assoc = new Dictionary<uint, WeightedOptions>();
+			//Place in the associative container so we can index by month and keep entries sorted.
+			foreach (var raceDistribution in _raceDistribution)
+			{
+				assoc.Add(raceDistribution.Key, raceDistribution.Value);
+			}
+
+			// Now go through the node contents and merge with existing data.
+			foreach (var weight in ((YamlMappingNode)weights).Children)
+			{
+				uint month = uint.Parse(weight.Key.ToString());
+				if (!assoc.ContainsKey(month))
+				{
+					// New entry, load and add it.
+					WeightedOptions nw = new WeightedOptions();
+					nw.load(weight.Value);
+					assoc.Add(month, nw);
+				}
+				else
+				{
+					// Existing entry, update it.
+					assoc[month].load(weight.Value);
+				}
+			}
+
+			// Now replace values in our actual member variable!
+			_raceDistribution.Clear();
+			_raceDistribution = new List<KeyValuePair<uint, WeightedOptions>>(assoc.Count);
+			foreach (var ii in assoc)
+			{
+				if (ii.Value.empty())
+				{
+					// Don't keep empty lists.
+					assoc.Remove(ii.Key);
+				}
+				else
+				{
+					// Place it
+					_raceDistribution.Add(ii);
+				}
+			}
+		}
+	}
 }

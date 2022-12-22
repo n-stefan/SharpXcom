@@ -24,7 +24,7 @@ struct Element
     /// basic rect info, and 3 colors.
     internal int x, y, w, h, color, color2, border;
     /// defines inversion behaviour
-    bool TFTDMode;
+    internal bool TFTDMode;
 };
 
 internal class RuleInterface : IRule
@@ -32,6 +32,8 @@ internal class RuleInterface : IRule
     string _type;
     string _music;
     Dictionary<string, Element> _elements;
+    string _palette;
+    string _parent;
 
     /**
      * Creates a blank ruleset for a certain
@@ -55,4 +57,46 @@ internal class RuleInterface : IRule
 
     internal string getMusic() =>
 	    _music;
+
+	/**
+	 * Loads the elements from a YAML file.
+	 * @param node YAML node.
+	 */
+	internal void load(YamlNode node)
+	{
+		_palette = node["palette"].ToString();
+		_parent = node["parent"].ToString();
+		_music = node["music"].ToString();
+		foreach (var item in ((YamlSequenceNode)node["elements"]).Children)
+		{
+			Element element;
+			if (item["size"] != null)
+			{
+				var pos = item["size"];
+				element.w = int.Parse(pos[0].ToString());
+				element.h = int.Parse(pos[1].ToString());
+			}
+			else
+			{
+				element.w = element.h = int.MaxValue;
+			}
+			if (item["pos"] != null)
+			{
+				var pos = item["pos"];
+				element.x = int.Parse(pos[0].ToString());
+				element.y = int.Parse(pos[1].ToString());
+			}
+			else
+			{
+				element.x = element.y = int.MaxValue;
+			}
+			element.color = int.Parse(item["color"].ToString());
+			element.color2 = int.Parse(item["color2"].ToString());
+			element.border = int.Parse(item["border"].ToString());
+			element.TFTDMode = bool.Parse(item["TFTDMode"].ToString());
+
+			string id = item["id"].ToString();
+			_elements[id] = element;
+		}
+	}
 }

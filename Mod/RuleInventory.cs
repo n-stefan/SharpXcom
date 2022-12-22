@@ -32,6 +32,8 @@ internal class RuleInventory : IListOrder, IRule
     int _x, _y;
     InventoryType _type;
     int _listOrder;
+    List<RuleSlot> _slots;
+    Dictionary<string, int> _costs;
 
     /**
      * Creates a blank ruleset for a certain
@@ -72,4 +74,23 @@ internal class RuleInventory : IListOrder, IRule
 
     public int getListOrder() =>
 	    _listOrder;
+
+    /**
+     * Loads the inventory from a YAML file.
+     * @param node YAML node.
+     * @param listOrder The list weight for this inventory.
+     */
+    internal void load(YamlNode node, int listOrder)
+    {
+	    _id = node["id"].ToString();
+	    _x = int.Parse(node["x"].ToString());
+	    _y = int.Parse(node["y"].ToString());
+	    _type = (InventoryType)int.Parse(node["type"].ToString());
+        _slots = ((YamlSequenceNode)node["slots"]).Children.Select(x =>
+        {
+            var slot = new RuleSlot(); slot.load(x); return slot;
+        }).ToList();
+        _costs = ((YamlSequenceNode)node["costs"]).Children.ToDictionary(x => x[0].ToString(), x => int.Parse(x[1].ToString()));
+	    _listOrder = int.Parse(node["listOrder"].ToString());
+    }
 }

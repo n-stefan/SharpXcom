@@ -234,4 +234,21 @@ internal class ExtraSprites
 		}
 		return false;
 	}
+
+	/**
+	 * Loads the extra sprite set from YAML.
+	 * @param node YAML node.
+	 * @param modIndex the internal index of the associated mod.
+	 */
+	internal void load(YamlNode node, ModData current)
+	{
+		_type = node["type"].ToString();
+		_sprites = ((YamlMappingNode)node["files"]).Children.ToDictionary(x => int.Parse(x.Key.ToString()), x => x.Value.ToString());
+		_width = int.Parse(node["width"].ToString());
+		_height = int.Parse(node["height"].ToString());
+		_singleImage = bool.Parse(node["singleImage"].ToString());
+		_subX = int.Parse(node["subX"].ToString());
+		_subY = int.Parse(node["subY"].ToString());
+		_current = current;
+	}
 }

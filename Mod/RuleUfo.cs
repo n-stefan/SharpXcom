@@ -31,6 +31,7 @@ internal class RuleUfo : IRule
     int _sprite, _marker, _markerLand, _markerCrash;
     int _damageMax, _speedMax, _power, _range, _score, _reload, _breakOffTime, _sightRange, _missionScore;
     RuleTerrain _battlescapeTerrainData;
+    string _modSprite;
 
     /**
      * Creates a blank ruleset for a certain
@@ -94,4 +95,46 @@ internal class RuleUfo : IRule
      */
     internal int getMarker() =>
 	    _marker;
+
+    /**
+     * Loads the UFO from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the UFO.
+     */
+    internal void load(YamlNode node, Mod mod)
+    {
+	    _type = node["type"].ToString();
+	    _size = node["size"].ToString();
+	    _sprite = int.Parse(node["sprite"].ToString());
+	    if (node["marker"] != null)
+	    {
+		    _marker = mod.getOffset(int.Parse(node["marker"].ToString()), 8);
+	    }
+	    if (node["markerLand"] != null)
+	    {
+		    _markerLand = mod.getOffset(int.Parse(node["markerLand"].ToString()), 8);
+	    }
+	    if (node["markerCrash"] != null)
+	    {
+		    _markerCrash = mod.getOffset(int.Parse(node["markerCrash"].ToString()), 8);
+	    }
+	    _damageMax = int.Parse(node["damageMax"].ToString());
+	    _speedMax = int.Parse(node["speedMax"].ToString());
+	    _power = int.Parse(node["power"].ToString());
+	    _range = int.Parse(node["range"].ToString());
+	    _score = int.Parse(node["score"].ToString());
+	    _reload = int.Parse(node["reload"].ToString());
+	    _breakOffTime = int.Parse(node["breakOffTime"].ToString());
+	    _sightRange = int.Parse(node["sightRange"].ToString());
+	    _missionScore = int.Parse(node["missionScore"].ToString());
+	    if (node["battlescapeTerrainData"] is YamlNode terrain)
+	    {
+		    if (_battlescapeTerrainData != null)
+			    _battlescapeTerrainData = null;
+		    RuleTerrain rule = new RuleTerrain(terrain["name"].ToString());
+		    rule.load(terrain, mod);
+		    _battlescapeTerrainData = rule;
+	    }
+	    _modSprite = node["modSprite"].ToString();
+    }
 }

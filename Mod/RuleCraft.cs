@@ -34,6 +34,9 @@ internal class RuleCraft : IListOrder, IRule
     RuleTerrain _battlescapeTerrainData;
     bool _spacecraft;
     int _listOrder, _maxItems, _maxAltitude;
+    List<string> _requires;
+    string _refuelItem;
+    List<List<int>> _deployment;
 
     /**
      * Creates a blank ruleset for a certain
@@ -107,4 +110,73 @@ internal class RuleCraft : IListOrder, IRule
      */
     public int getListOrder() =>
         _listOrder;
+
+    /**
+     * Loads the craft from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the craft.
+     * @param modIndex A value that offsets the sounds and sprite values to avoid conflicts.
+     * @param listOrder The list weight for this craft.
+     */
+    internal void load(YamlNode node, Mod mod, int listOrder)
+    {
+        _type = node["type"].ToString();
+        _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
+	    if (node["sprite"] != null)
+	    {
+            // used in
+            // Surface set (baseOffset):
+            //   BASEBITS.PCK (33)
+            //   INTICON.PCK (11)
+            //   INTICON.PCK (0)
+            //
+            // Final index in surfaceset is `baseOffset + sprite + (sprite > 4 ? modOffset : 0)`
+            _sprite = mod.getOffset(int.Parse(node["sprite"].ToString()), 4);
+	    }
+	    if (node["marker"] != null)
+	    {
+		    _marker = mod.getOffset(int.Parse(node["marker"].ToString()), 8);
+	    }
+	    _fuelMax = int.Parse(node["fuelMax"].ToString());
+	    _damageMax = int.Parse(node["damageMax"].ToString());
+	    _speedMax = int.Parse(node["speedMax"].ToString());
+	    _accel = int.Parse(node["accel"].ToString());
+	    _weapons = int.Parse(node["weapons"].ToString());
+	    _soldiers = int.Parse(node["soldiers"].ToString());
+	    _vehicles = int.Parse(node["vehicles"].ToString());
+	    _costBuy = int.Parse(node["costBuy"].ToString());
+	    _costRent = int.Parse(node["costRent"].ToString());
+	    _costSell = int.Parse(node["costSell"].ToString());
+	    _refuelItem = node["refuelItem"].ToString();
+	    _repairRate = int.Parse(node["repairRate"].ToString());
+	    _refuelRate = int.Parse(node["refuelRate"].ToString());
+	    _radarRange = int.Parse(node["radarRange"].ToString());
+	    _radarChance = int.Parse(node["radarChance"].ToString());
+	    _sightRange = int.Parse(node["sightRange"].ToString());
+	    _transferTime = int.Parse(node["transferTime"].ToString());
+	    _score = int.Parse(node["score"].ToString());
+	    if (node["battlescapeTerrainData"] is YamlNode terrain)
+	    {
+		    RuleTerrain rule = new RuleTerrain(terrain["name"].ToString());
+		    rule.load(terrain, mod);
+		    _battlescapeTerrainData = rule;
+	    }
+        foreach (var i in ((YamlSequenceNode)node["deployment"]).Children)
+        {
+            var deployment = new List<int>();
+            foreach (var j in ((YamlSequenceNode)i).Children)
+            {
+                deployment.Add(int.Parse(j.ToString()));
+            }
+            _deployment.Add(deployment);
+        }
+	    _spacecraft = bool.Parse(node["spacecraft"].ToString());
+	    _listOrder = int.Parse(node["listOrder"].ToString());
+	    if (_listOrder == 0)
+	    {
+		    _listOrder = listOrder;
+	    }
+	    _maxAltitude = int.Parse(node["maxAltitude"].ToString());
+	    _maxItems = int.Parse(node["maxItems"].ToString());
+    }
 }

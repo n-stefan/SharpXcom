@@ -99,13 +99,55 @@ long, nothing will be changed.
 
 internal class StatString
 {
-	/**
+    string _stringToBeAddedIfAllConditionsAreMet;
+    List<StatStringCondition> _conditions;
+
+    /**
 	 * Creates a blank StatString.
 	 */
-	internal StatString() { }
+    internal StatString() { }
 
 	/**
 	 * Cleans up the extra StatString.
 	 */
 	~StatString() { }
+
+	/**
+	 * Loads the StatString from a YAML file.
+	 * @param node YAML node.
+	 */
+	internal void load(YamlNode node)
+	{
+		string[] conditionNames = { "psiStrength", "psiSkill", "bravery", "strength", "firing", "reactions", "stamina", "tu", "health", "throwing", "melee", "psiTraining" };
+		_stringToBeAddedIfAllConditionsAreMet = node["string"].ToString();
+		for (var i = 0; i < conditionNames.Length / conditionNames[0].Length; i++)
+		{
+			if (node[conditionNames[i]] != null)
+			{
+				_conditions.Add(getCondition(conditionNames[i], node));
+			}
+		}
+	}
+
+	/**
+	 * Generates a condition from YAML.
+	 * @param conditionName Stat name of the condition.
+	 * @param node YAML node.
+	 * @return New StatStringCondition.
+	 */
+	StatStringCondition getCondition(string conditionName, YamlNode node)
+	{
+		// These are the defaults from xcomutil
+		int minValue = 0, maxValue = 255;
+		if (node[conditionName][0] != null)
+		{
+			minValue = int.Parse(node[conditionName][0].ToString());
+		}
+		if (node[conditionName][1] != null)
+		{
+			maxValue = int.Parse(node[conditionName][1].ToString());
+		}
+		StatStringCondition thisCondition = new StatStringCondition(conditionName, minValue, maxValue);
+		return thisCondition;
+	}
 }

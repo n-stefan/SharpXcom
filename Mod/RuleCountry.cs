@@ -29,6 +29,7 @@ internal class RuleCountry : IRule
     string _type;
     int _fundingBase, _fundingCap;
     double _labelLon, _labelLat;
+    List<double> _lonMin, _lonMax, _latMin, _latMax;
 
     /**
      * Creates a blank ruleset for a certain
@@ -67,4 +68,39 @@ internal class RuleCountry : IRule
      */
     internal string getType() =>
 	    _type;
+
+    /**
+     * Loads the country type from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _type = node["type"].ToString();
+	    _fundingBase = int.Parse(node["fundingBase"].ToString());
+	    _fundingCap = int.Parse(node["fundingCap"].ToString());
+	    if (node["labelLon"] != null)
+		    _labelLon = Deg2Rad(double.Parse(node["labelLon"].ToString()));
+	    if (node["labelLat"] != null)
+		    _labelLat = Deg2Rad(double.Parse(node["labelLat"].ToString()));
+	    var areas = new List<List<double>>();
+	    foreach (var i in ((YamlSequenceNode)node["areas"]).Children)
+        {
+            var area = new List<double>();
+            foreach (var j in ((YamlSequenceNode)i).Children)
+            {
+                area.Add(double.Parse(j.ToString()));
+            }
+            areas.Add(area);
+        }
+	    for (var i = 0; i != areas.Count; ++i)
+	    {
+		    _lonMin.Add(Deg2Rad(areas[i][0]));
+		    _lonMax.Add(Deg2Rad(areas[i][1]));
+		    _latMin.Add(Deg2Rad(areas[i][2]));
+		    _latMax.Add(Deg2Rad(areas[i][3]));
+
+		    if (_latMin[^1] > _latMax[^1])
+                (_latMax[^1], _latMin[^1]) = (_latMin[^1], _latMax[^1]);
+        }
+    }
 }

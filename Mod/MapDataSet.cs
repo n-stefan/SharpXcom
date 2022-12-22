@@ -35,7 +35,7 @@ internal class MapDataSet
     /**
      * MapDataSet construction.
      */
-    MapDataSet(string name)
+    internal MapDataSet(string name)
     {
         _name = name;
         _surfaceSet = null;

@@ -52,6 +52,9 @@ internal class ArticleDefinition
     internal string section;
     protected UfopaediaTypeId _type_id;
     int _listOrder;
+    string id;
+    string title;
+    List<string> requires;
 
     /**
 	 * Constructor.
@@ -74,6 +77,25 @@ internal class ArticleDefinition
 	 */
     internal int getListOrder() =>
 		_listOrder;
+
+	/**
+	 * Loads the article definition from a YAML file.
+	 * @param node YAML node.
+	 * @param listOrder The list weight for this article.
+	 */
+	internal void load(YamlNode node, int listOrder)
+	{
+		id = title = node["id"].ToString();
+		section = node["section"].ToString();
+        requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
+		title = node["title"].ToString();
+        //_type_id = (UfopaediaTypeId)node["type_id"].as<int>(_type_id);
+        _listOrder = int.Parse(node["listOrder"].ToString());
+		if (_listOrder == 0)
+		{
+            _listOrder = listOrder;
+		}
+	}
 }
 
 /**

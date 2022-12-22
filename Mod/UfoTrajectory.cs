@@ -27,6 +27,7 @@ internal class UfoTrajectory : IRule
 {
     string _id;
     uint _groundTimer;
+    List<TrajectoryWaypoint> _waypoints;
 
     internal UfoTrajectory() { }
 
@@ -45,4 +46,19 @@ internal class UfoTrajectory : IRule
 	 */
     internal string getID() =>
         _id;
+
+    /**
+     * Overwrites trajectory data with the data stored in @a node.
+     * Only the fields contained in the node will be overwritten.
+     * @param node The node containing the new values.
+     */
+    internal void load(YamlNode node)
+    {
+	    _id = node["id"].ToString();
+	    _groundTimer = uint.Parse(node["groundTimer"].ToString());
+        _waypoints = ((YamlSequenceNode)node["waypoints"]).Children.Select(x =>
+        {
+            var waypoint = new TrajectoryWaypoint(); waypoint.load(x); return waypoint;
+        }).ToList();
+    }
 }

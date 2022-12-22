@@ -35,6 +35,7 @@ internal class RuleBaseFacility : IListOrder, IRule
     int _radarRange, _radarChance, _defense, _hitRatio, _fireSound, _hitSound;
     int _listOrder;
     List<string> _requires;
+    string _mapName;
 
     /**
      * Creates a blank ruleset for a certain
@@ -109,4 +110,49 @@ internal class RuleBaseFacility : IListOrder, IRule
      */
     internal List<string> getRequirements() =>
 	    _requires;
+
+    /**
+     * Loads the base facility type from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the facility.
+     * @param listOrder The list weight for this facility.
+     */
+    internal void load(YamlNode node, Mod mod, int listOrder)
+    {
+	    _type = node["type"].ToString();
+	    _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
+
+	    mod.loadSpriteOffset(_type, _spriteShape, node["spriteShape"], "BASEBITS.PCK");
+	    mod.loadSpriteOffset(_type, _spriteFacility, node["spriteFacility"], "BASEBITS.PCK");
+
+	    _lift = bool.Parse(node["lift"].ToString());
+	    _hyper = bool.Parse(node["hyper"].ToString());
+	    _mind = bool.Parse(node["mind"].ToString());
+	    _grav = bool.Parse(node["grav"].ToString());
+	    _size = int.Parse(node["size"].ToString());
+	    _buildCost = int.Parse(node["buildCost"].ToString());
+	    _buildTime = int.Parse(node["buildTime"].ToString());
+	    _monthlyCost = int.Parse(node["monthlyCost"].ToString());
+	    _storage = int.Parse(node["storage"].ToString());
+	    _personnel = int.Parse(node["personnel"].ToString());
+	    _aliens = int.Parse(node["aliens"].ToString());
+	    _crafts = int.Parse(node["crafts"].ToString());
+	    _labs = int.Parse(node["labs"].ToString());
+	    _workshops = int.Parse(node["workshops"].ToString());
+	    _psiLabs = int.Parse(node["psiLabs"].ToString());
+	    _radarRange = int.Parse(node["radarRange"].ToString());
+	    _radarChance = int.Parse(node["radarChance"].ToString());
+	    _defense = int.Parse(node["defense"].ToString());
+	    _hitRatio = int.Parse(node["hitRatio"].ToString());
+
+	    mod.loadSoundOffset(_type, _fireSound, node["fireSound"], "GEO.CAT");
+	    mod.loadSoundOffset(_type, _hitSound, node["hitSound"], "GEO.CAT");
+
+	    _mapName = node["mapName"].ToString();
+	    _listOrder = int.Parse(node["listOrder"].ToString());
+	    if (_listOrder == 0)
+	    {
+            _listOrder = listOrder;
+	    }
+    }
 }

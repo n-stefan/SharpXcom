@@ -69,4 +69,15 @@ internal class RuleMusic : IRule
 		    return _type;
 	    return _name;
     }
+
+    /**
+     * Loads info about the music track.
+     * @param node yaml node to read from.
+     */
+    internal void load(YamlNode node)
+    {
+	    _name = node["name"].ToString();
+	    _catPos = int.Parse(node["catPos"].ToString());
+	    _normalization = float.Parse(node["normalization"].ToString());
+    }
 }

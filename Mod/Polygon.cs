@@ -34,7 +34,7 @@ internal class Polygon
 	 * Initializes the polygon with arrays to store each point's coordinates.
 	 * @param points Number of points.
 	 */
-    Polygon(int points)
+    internal Polygon(int points)
 	{
 		_points = points;
 		_texture = 0;
@@ -122,4 +122,56 @@ internal class Polygon
      */
     internal void setY(int i, short y) =>
         _y[i] = y;
+
+	/**
+	 * Loads the polygon from a YAML file.
+	 * @param node YAML node.
+	 */
+	internal void load(YamlNode node)
+	{
+		_lat = null;
+		_lon = null;
+		_x = null;
+		_y = null;
+
+        var coords = ((YamlSequenceNode)node).Children.Select(x => double.Parse(x.ToString())).ToList();
+        _points = (coords.Count - 1) / 2;
+		_lat = new double[_points];
+		_lon = new double[_points];
+		_x = new short[_points];
+		_y = new short[_points];
+
+		_texture = (int)coords[0];
+		for (var i = 1; i < coords.Count; i += 2)
+		{
+            uint j = (uint)((i - 1) / 2);
+			_lon[j] = Deg2Rad(coords[i]);
+			_lat[j] = Deg2Rad(coords[i+1]);
+			_x[j] = 0;
+			_y[j] = 0;
+		}
+	}
+
+    /**
+     * Changes the latitude of a given point.
+     * @param i Point number (0-max).
+     * @param lon Point's longitude.
+     */
+    internal void setLongitude(int i, double lon) =>
+        _lon[i] = lon;
+
+    /**
+     * Changes the latitude of a given point.
+     * @param i Point number (0-max).
+     * @param lat Point's latitude.
+     */
+    internal void setLatitude(int i, double lat) =>
+        _lat[i] = lat;
+
+    /**
+     * Changes the texture used to draw the polygon.
+     * @param tex Texture sprite number.
+     */
+    internal void setTexture(int tex) =>
+        _texture = tex;
 }

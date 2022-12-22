@@ -30,13 +30,15 @@ internal class RuleTerrain : IRule
     string _name, _script;
     int _minDepth, _maxDepth, _ambience;
     double _ambientVolume;
+    List<MapDataSet> _mapDataSets;
+    List<string> _civilianTypes, _music;
 
     internal RuleTerrain() { }
 
     /**
      * RuleTerrain construction.
      */
-    RuleTerrain(string name)
+    internal RuleTerrain(string name)
     {
         _name = name;
         _script = "DEFAULT";
@@ -54,4 +56,53 @@ internal class RuleTerrain : IRule
      */
     ~RuleTerrain() =>
         _mapBlocks.Clear();
+
+	/**
+	 * Loads the terrain from a YAML file.
+	 * @param node YAML node.
+	 * @param mod Mod for the terrain.
+	 */
+	internal void load(YamlNode node, Mod mod)
+	{
+		if (node["mapDataSets"] is YamlSequenceNode mapDataSets)
+		{
+			_mapDataSets.Clear();
+			foreach (var mapDataSet in mapDataSets.Children)
+			{
+				_mapDataSets.Add(mod.getMapDataSet(mapDataSet.ToString()));
+			}
+		}
+		if (node["mapBlocks"] is YamlSequenceNode mapBlocks)
+		{
+			_mapBlocks.Clear();
+			foreach (var mapBlock in mapBlocks.Children)
+			{
+				MapBlock map_Block = new MapBlock(mapBlock["name"].ToString());
+				map_Block.load(mapBlock);
+				_mapBlocks.Add(map_Block);
+			}
+		}
+		_name = node["name"].ToString();
+		if (node["civilianTypes"] is YamlSequenceNode civs)
+		{
+            _civilianTypes = civs.Children.Select(x => x.ToString()).ToList();
+		}
+		else
+		{
+			_civilianTypes.Add("MALE_CIVILIAN");
+			_civilianTypes.Add("FEMALE_CIVILIAN");
+		}
+		foreach (var music in ((YamlSequenceNode)node["music"]).Children)
+		{
+			_music.Add(music.ToString());
+		}
+		if (node["depth"] != null)
+		{
+			_minDepth = int.Parse(node["depth"][0].ToString());
+			_maxDepth = int.Parse(node["depth"][1].ToString());
+		}
+		mod.loadSoundOffset(_name, _ambience, node["ambience"], "BATTLE.CAT");
+		_ambientVolume = double.Parse(node["ambientVolume"].ToString());
+		_script = node["script"].ToString();
+	}
 }

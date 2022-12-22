@@ -34,7 +34,7 @@ internal class SoldierNamePool
     /**
      * Initializes a new pool with blank lists of names.
      */
-    SoldierNamePool()
+    internal SoldierNamePool()
     {
         _totalWeight = 0;
         _femaleFrequency = -1;
@@ -123,4 +123,53 @@ internal class SoldierNamePool
 	    }
 	    return name;
     }
+
+	/**
+	 * Loads the pool from a YAML file.
+	 * @param filename YAML file.
+	 */
+	internal void load(string filename)
+	{
+        using var input = new StreamReader(filename);
+        var yaml = new YamlStream();
+        yaml.Load(input);
+
+        YamlMappingNode doc = (YamlMappingNode)yaml.Documents[0].RootNode;
+
+		foreach (var maleFirst in ((YamlSequenceNode)doc["maleFirst"]).Children)
+		{
+			string name = maleFirst.ToString();
+			_maleFirst.Add(name);
+		}
+		foreach (var femaleFirst in ((YamlSequenceNode)doc["femaleFirst"]).Children)
+		{
+			string name = femaleFirst.ToString();
+			_femaleFirst.Add(name);
+		}
+		foreach (var maleLast in ((YamlSequenceNode)doc["maleLast"]).Children)
+		{
+			string name = maleLast.ToString();
+			_maleLast.Add(name);
+		}
+		foreach (var femaleLast in ((YamlSequenceNode)doc["femaleLast"]).Children)
+		{
+			string name = femaleLast.ToString();
+			_femaleLast.Add(name);
+		}
+		if (!_femaleFirst.Any())
+		{
+			_femaleFirst = _maleFirst;
+		}
+		if (!_femaleLast.Any())
+		{
+			_femaleLast = _maleLast;
+		}
+        _lookWeights = ((YamlSequenceNode)doc["lookWeights"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+		_totalWeight = 0;
+		foreach (var lookWeight in _lookWeights)
+		{
+			_totalWeight += lookWeight;
+		}
+		_femaleFrequency = int.Parse(doc["femaleFrequency"].ToString());
+	}
 }

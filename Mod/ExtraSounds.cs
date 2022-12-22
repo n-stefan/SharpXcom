@@ -111,4 +111,16 @@ internal class ExtraSounds
 		}
 		sound.load(fullPath);
 	}
+
+	/**
+	 * Loads the extra sound set from YAML.
+	 * @param node YAML node.
+	 * @param modIndex The internal index of the associated mod.
+	 */
+	internal void load(YamlNode node, ModData current)
+	{
+		_type = node["type"].ToString();
+        _sounds = ((YamlMappingNode)node["files"]).Children.ToDictionary(x => int.Parse(x.Key.ToString()), x => x.Value.ToString());
+        _current = current;
+	}
 }

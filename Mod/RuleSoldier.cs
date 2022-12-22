@@ -31,6 +31,9 @@ internal class RuleSoldier : IRule
     int _femaleFrequency, _value, _transferTime;
     List<SoldierNamePool> _names;
     UnitStats _minStats, _maxStats, _statCaps;
+    List<string> _requires;
+    string _armor;
+    List<int> _deathSoundMale, _deathSoundFemale;
 
     /**
      * Creates a blank ruleunit for a certain
@@ -94,4 +97,70 @@ internal class RuleSoldier : IRule
      */
     internal string getType() =>
 	    _type;
+
+    /**
+     * Loads the soldier from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the unit.
+     */
+    internal void load(YamlNode node, Mod mod)
+    {
+	    _type = node["type"].ToString();
+	    // Just in case
+	    if (_type == "XCOM")
+		    _type = "STR_SOLDIER";
+        _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
+        var stats = new UnitStats();
+        stats.load(node["minStats"]);
+        _minStats.merge(stats);
+        stats.load(node["maxStats"]);
+        _maxStats.merge(stats);
+        stats.load(node["statCaps"]);
+        _statCaps.merge(stats);
+	    _armor = node["armor"].ToString();
+	    _costBuy = int.Parse(node["costBuy"].ToString());
+	    _costSalary = int.Parse(node["costSalary"].ToString());
+	    _standHeight = int.Parse(node["standHeight"].ToString());
+	    _kneelHeight = int.Parse(node["kneelHeight"].ToString());
+	    _floatHeight = int.Parse(node["floatHeight"].ToString());
+	    _femaleFrequency = int.Parse(node["femaleFrequency"].ToString());
+	    _value = int.Parse(node["value"].ToString());
+	    _transferTime = int.Parse(node["transferTime"].ToString());
+
+	    mod.loadSoundOffset(_type, _deathSoundMale, node["deathMale"], "BATTLE.CAT");
+        mod.loadSoundOffset(_type, _deathSoundFemale, node["deathFemale"], "BATTLE.CAT");
+
+	    foreach (var soldierName in ((YamlSequenceNode)node["soldierNames"]).Children)
+	    {
+		    string fileName = soldierName.ToString();
+		    if (fileName == "delete")
+		    {
+                _names.Clear();
+		    }
+		    else
+		    {
+			    if (fileName[fileName.Length - 1] == '/')
+			    {
+				    // load all *.nam files in given directory
+				    HashSet<string> names = FileMap.filterFiles(FileMap.getVFolderContents(fileName), "nam");
+				    foreach (var name in names)
+				    {
+					    addSoldierNamePool(fileName + name);
+				    }
+			    }
+			    else
+			    {
+				    // load given file
+				    addSoldierNamePool(fileName);
+			    }
+		    }
+	    }
+    }
+
+    void addSoldierNamePool(string namFile)
+    {
+	    SoldierNamePool pool = new SoldierNamePool();
+	    pool.load(FileMap.getFilePath(namFile));
+	    _names.Add(pool);
+    }
 }
