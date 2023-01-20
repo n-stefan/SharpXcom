@@ -1,6 +1,7 @@
 ﻿
 //TODO:
 // virtual/override methods
+// yaml load defaults
 
 /*
  * Copyright 2010-2016 OpenXcom Developers.

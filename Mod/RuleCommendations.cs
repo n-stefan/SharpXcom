@@ -59,11 +59,7 @@ internal class RuleCommendations
         foreach (var criteria in ((YamlMappingNode)node["criteria"]).Children)
         {
             var key = criteria.Key.ToString();
-            var value = new List<int>();
-            foreach (var child in ((YamlSequenceNode)criteria.Value).Children)
-            {
-                value.Add(int.Parse(child.ToString()));
-            }
+            var value = ((YamlSequenceNode)criteria.Value).Children.Select(x => int.Parse(x.ToString())).ToList();
             _criteria.Add(key, value);
         }
 	    _sprite = int.Parse(node["sprite"].ToString());

@@ -21,6 +21,21 @@ namespace SharpXcom.Mod;
 
 enum InventoryType { INV_SLOT, INV_HAND, INV_GROUND };
 
+struct RuleSlot
+{
+    int x, y;
+
+    /**
+	 * Loads the RuleSlot from a YAML file.
+	 * @param node YAML node.
+	 */
+    internal void load(YamlNode node)
+    {
+        x = int.Parse(node["x"].ToString());
+        y = int.Parse(node["y"].ToString());
+    }
+};
+
 /**
  * Represents a specific section of the inventory,
  * containing information like available slots and

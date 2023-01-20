@@ -60,6 +60,17 @@ internal class Position
         new(a.x / b.x, a.y / b.y, a.z / b.z);
 
     /**
+	 * Loads the Position from a YAML file.
+	 * @param node YAML node.
+	 */
+    internal void load(YamlNode node)
+    {
+        x = int.Parse(node["x"].ToString());
+        y = int.Parse(node["y"].ToString());
+        z = int.Parse(node["z"].ToString());
+    }
+
+    /**
      * Saves the Position to a YAML file.
      * @return YAML node.
      */

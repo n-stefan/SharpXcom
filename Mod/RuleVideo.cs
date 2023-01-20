@@ -19,6 +19,21 @@
 
 namespace SharpXcom.Mod;
 
+struct SlideshowHeader
+{
+    internal string musicId; // just the extension-less filename, like "GMWIN"
+    internal int transitionSeconds; // number of seconds to show each slide
+};
+
+struct SlideshowSlide
+{
+    internal string imagePath; // relative path to slide image
+    internal string caption; // STR id of caption text
+    internal int w, h, x, y, color; // caption rect and color info
+    internal TextHAlign align; // caption alignment
+    internal int transitionSeconds; // number of seconds to show this slide
+};
+
 internal class RuleVideo : IRule
 {
     string _id;
@@ -70,11 +85,11 @@ internal class RuleVideo : IRule
 		slide.imagePath = node["imagePath"].ToString();
 		slide.caption = node["caption"].ToString();
 
-		slide.w = node["captionSize"] != null ? node["captionSize"][0] : Screen.ORIGINAL_WIDTH;
-		slide.h = node["captionSize"] != null ? node["captionSize"][1] : Screen.ORIGINAL_HEIGHT;
+		slide.w = node["captionSize"] != null ? int.Parse(node["captionSize"][0].ToString()) : Screen.ORIGINAL_WIDTH;
+		slide.h = node["captionSize"] != null ? int.Parse(node["captionSize"][1].ToString()) : Screen.ORIGINAL_HEIGHT;
 
-		slide.x = node["captionPos"][0];
-		slide.y = node["captionPos"][1];
+		slide.x = int.Parse(node["captionPos"][0].ToString());
+		slide.y = int.Parse(node["captionPos"][1].ToString());
 
 		slide.color = node["captionColor"] != null ? int.Parse(node["captionColor"].ToString()) : int.MaxValue;
 		slide.transitionSeconds = int.Parse(node["transitionSeconds"].ToString());

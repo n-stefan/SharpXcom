@@ -22,6 +22,49 @@ namespace SharpXcom.Mod;
 enum MissionObjective { OBJECTIVE_SCORE, OBJECTIVE_INFILTRATION, OBJECTIVE_BASE, OBJECTIVE_SITE, OBJECTIVE_RETALIATION, OBJECTIVE_SUPPLY };
 
 /**
+ * @brief Information about a mission wave.
+ * Mission waves control the UFOs that will be generated during an alien mission.
+ */
+struct MissionWave
+{
+    /// The type of the spawned UFOs.
+    string ufoType;
+    /// The number of UFOs that will be generated.
+    /**
+	 * The UFOs are generated sequentially, one every @a spawnTimer minutes.
+	 */
+    uint ufoCount;
+    /// The trajectory ID for this wave's UFOs.
+    /**
+	 * Trajectories control the way UFOs fly around the Geoscape.
+	 */
+    string trajectory;
+    /// Number of minutes between UFOs in the wave.
+    /**
+	 * The actual value used is spawnTimer/4 or 3*spawnTimer/4.
+	 */
+    uint spawnTimer;
+    /// This wave performs the mission objective.
+    /**
+	 * The UFO executes a special action based on the mission objective.
+	 */
+    bool objective;
+
+    /**
+	 * Loads the MissionWave from a YAML file.
+	 * @param node YAML node.
+	 */
+    internal void load(YamlNode node)
+    {
+        ufoType = node["ufoType"].ToString();
+        ufoCount = uint.Parse(node["ufoCount"].ToString());
+        trajectory = node["trajectory"].ToString();
+        spawnTimer = uint.Parse(node["spawnTimer"].ToString());
+        objective = bool.Parse(node["objective"].ToString());
+    }
+};
+
+/**
  * Stores fixed information about a mission type.
  * It stores the mission waves and the distribution of the races that can
  * undertake the mission based on game date.
@@ -83,13 +126,11 @@ internal class RuleAlienMission : IRule
 	{
 		_type = node["type"].ToString();
 		_points = int.Parse(node["points"].ToString());
-        _waves = new List<MissionWave>();
-        foreach (var wave in ((YamlSequenceNode)node["waves"]).Children)
+        _waves = ((YamlSequenceNode)node["waves"]).Children.Select(x =>
         {
-            var missionWave = new MissionWave();
-            _waves.Add(missionWave.load(wave));
-        }
-		_objective = (MissionObjective)int.Parse(node["objective"].ToString());
+            var wave = new MissionWave(); wave.load(x); return wave;
+        }).ToList();
+        _objective = (MissionObjective)int.Parse(node["objective"].ToString());
 		_spawnUfo = node["spawnUfo"].ToString();
 		_spawnZone = int.Parse(node["spawnZone"].ToString());
         _weights = ((YamlMappingNode)node["missionWeights"]).Children.ToDictionary(x => uint.Parse(x.Key.ToString()), x => int.Parse(x.Value.ToString()));

@@ -20,6 +20,37 @@
 namespace SharpXcom.Mod;
 
 /**
+ * Defines a rectangle in polar coordinates.
+ * It is used to define areas for a mission zone.
+ */
+struct MissionArea
+{
+	double lonMin, lonMax, latMin, latMax;
+	int texture;
+	string name;
+
+    public static bool operator ==(MissionArea a, MissionArea b) =>
+		AreSame(a.lonMax, b.lonMax) && AreSame(a.lonMin, b.lonMin) && AreSame(a.latMax, b.latMax) && AreSame(a.latMin, b.latMin);
+
+    public static bool operator !=(MissionArea a, MissionArea b) =>
+        !(a == b);
+
+    bool isPoint() =>
+		AreSame(lonMin, lonMax) && AreSame(latMin, latMax);
+};
+
+/**
+ * A zone (set of areas) on the globe.
+ */
+struct MissionZone
+{
+    List<MissionArea> areas;
+
+    void swap(MissionZone other) =>
+        (other.areas, areas) = (areas, other.areas);
+};
+
+/**
  * Represents a specific region of the world.
  * Contains constant info about a region like area
  * covered and base construction costs.

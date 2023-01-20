@@ -23,6 +23,78 @@ enum ChronoTrigger { FORCE_LOSE, FORCE_ABORT, FORCE_WIN };
 
 enum EscapeType { ESCAPE_NONE, ESCAPE_EXIT, ESCAPE_ENTRY, ESCAPE_EITHER };
 
+struct ItemSet
+{
+    List<string> items;
+
+    /**
+	 * Loads the ItemSet from a YAML file.
+	 * @param node YAML node.
+	 */
+    internal void load(YamlNode node) =>
+        items = ((YamlSequenceNode)node["items"]).Children.Select(x => x.ToString()).ToList();
+};
+
+struct DeploymentData
+{
+    int alienRank;
+    int lowQty, highQty, dQty, extraQty;
+    int percentageOutsideUfo;
+    List<ItemSet> itemSets;
+
+    /**
+	 * Loads the DeploymentData from a YAML file.
+	 * @param node YAML node.
+	 */
+    internal void load(YamlNode node)
+    {
+        alienRank = int.Parse(node["alienRank"].ToString());
+        lowQty = int.Parse(node["lowQty"].ToString());
+        highQty = int.Parse(node["highQty"].ToString());
+        dQty = int.Parse(node["dQty"].ToString());
+        extraQty = int.Parse(node["extraQty"].ToString());
+        percentageOutsideUfo = int.Parse(node["percentageOutsideUfo"].ToString());
+        itemSets = ((YamlSequenceNode)node["itemSets"]).Children.Select(x =>
+        {
+            var set = new ItemSet(); set.load(x); return set;
+        }).ToList();
+    }
+};
+
+struct BriefingData
+{
+    int palette, textOffset;
+    string title, desc, music, background, cutscene;
+    bool showCraft, showTarget;
+    
+    public BriefingData()
+    {
+        palette = 0;
+        textOffset = 0;
+        music = "GMDEFEND";
+        background = "BACK16.SCR";
+        showCraft = true;
+        showTarget = true;
+    }
+
+    /**
+	 * Loads the BriefingData from a YAML file.
+	 * @param node YAML node.
+	 */
+    internal void load(YamlNode node)
+    {
+        palette = int.Parse(node["palette"].ToString());
+        textOffset = int.Parse(node["textOffset"].ToString());
+        title = node["title"].ToString();
+        desc = node["desc"].ToString();
+        music = node["music"].ToString();
+        background = node["background"].ToString();
+        cutscene = node["cutscene"].ToString();
+        showCraft = bool.Parse(node["showCraft"].ToString());
+        showTarget = bool.Parse(node["showTarget"].ToString());
+    }
+};
+
 /**
  * Represents a specific type of Alien Deployment.
  * Contains constant info about a Alien Deployment like

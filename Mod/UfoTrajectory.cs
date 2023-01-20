@@ -20,6 +20,30 @@
 namespace SharpXcom.Mod;
 
 /**
+ * Information for points on a UFO trajectory.
+ */
+struct TrajectoryWaypoint
+{
+    /// The mission zone.
+    uint zone;
+    /// The altitude to reach.
+    uint altitude;
+    /// The speed percentage ([0..100])
+    uint speed;
+
+    /**
+	 * Loads the TrajectoryWaypoint from a YAML file.
+	 * @param node YAML node.
+	 */
+    internal void load(YamlNode node)
+    {
+        zone = uint.Parse(node["zone"].ToString());
+        altitude = uint.Parse(node["altitude"].ToString());
+        speed = uint.Parse(node["speed"].ToString());
+    }
+};
+
+/**
  * Holds information about a specific trajectory.
  * Ufo trajectories are a sequence of mission zones, altitudes and speed percentages.
  */

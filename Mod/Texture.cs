@@ -19,6 +19,36 @@
 
 namespace SharpXcom.Mod;
 
+struct TerrainCriteria
+{
+    string name;
+    int weight;
+    double lonMin, lonMax, latMin, latMax;
+    
+    public TerrainCriteria()
+    {
+        weight = 1;
+        lonMin = 0.0;
+        lonMax = 360.0;
+        latMin = -90.0;
+        latMax = 90.0;
+    }
+
+    /**
+	 * Loads the TerrainCriteria from a YAML file.
+	 * @param node YAML node.
+	 */
+    internal void load(YamlNode node)
+    {
+        name = node["name"].ToString();
+        weight = int.Parse(node["weight"].ToString());
+        lonMin = double.Parse(node["lonMin"].ToString());
+        lonMax = double.Parse(node["lonMax"].ToString());
+        latMin = double.Parse(node["latMin"].ToString());
+        latMax = double.Parse(node["latMax"].ToString());
+    }
+};
+
 /**
  * Represents the relations between a Geoscape texture
  * and the corresponding Battlescape mission attributes.
