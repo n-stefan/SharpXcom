@@ -87,7 +87,7 @@ internal class Surface
     protected int _x, _y;
     protected SDL_Rect _crop, _clear;
     protected bool _visible, _hidden, _redraw, _tftdMode;
-    protected IntPtr /* void* */ _alignedBuffer;
+    protected nint /* void* */ _alignedBuffer;
 
     /**
      * Sets up a blank 8bpp surface with the specified size and position,
@@ -113,7 +113,7 @@ internal class Surface
         _alignedBuffer = NewAligned(bpp, width, height);
 
         var surfacePtr = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, GetPitch(bpp, width), 0, 0, 0, 0);
-        if (surfacePtr == IntPtr.Zero)
+        if (surfacePtr == nint.Zero)
         {
             throw new Exception(SDL_GetError());
         }
@@ -137,9 +137,9 @@ internal class Surface
      */
     unsafe internal Surface(Surface other)
     {
-        IntPtr surfacePtr;
+        nint surfacePtr;
         //if is native OpenXcom aligned surface
-	    if (other._alignedBuffer != IntPtr.Zero)
+	    if (other._alignedBuffer != nint.Zero)
 	    {
             //TODO
             var format = SDL_GetWindowPixelFormat(other._surface.pixels);
@@ -162,7 +162,7 @@ internal class Surface
             _alignedBuffer = 0;
 	    }
 
-        if (surfacePtr == IntPtr.Zero)
+        if (surfacePtr == nint.Zero)
 	    {
             throw new Exception(SDL_GetError());
 	    }
@@ -221,12 +221,12 @@ internal class Surface
      * @param height number of rows
      * @return pointer to memory
      */
-    unsafe IntPtr NewAligned(int bpp, int width, int height)
+    unsafe nint NewAligned(int bpp, int width, int height)
     {
         int pitch = GetPitch(bpp, width);
         int total = pitch * height;
-        IntPtr buffer = Marshal.AllocHGlobal(total);
-        if (buffer == IntPtr.Zero)
+        nint buffer = Marshal.AllocHGlobal(total);
+        if (buffer == nint.Zero)
         {
             throw new Exception("Failed to allocate surface");
         }
@@ -239,9 +239,9 @@ internal class Surface
      * Helper function release aligned memory
      * @param buffer buffer to delete
      */
-    void DeleteAligned(IntPtr buffer)
+    void DeleteAligned(nint buffer)
     {
-        if (buffer != IntPtr.Zero)
+        if (buffer != nint.Zero)
         {
             Marshal.FreeHGlobal(buffer);
         }
@@ -275,17 +275,11 @@ internal class Surface
 	 * @param y Y position of the pixel.
 	 * @return Pointer to the pixel.
 	 */
-    byte getRaw(int x, int y)
-    {
+    nint getRaw(int x, int y)
+	{
         var bpp = getFormat(_surface).BytesPerPixel;
-        return Marshal.ReadByte(_surface.pixels, y * _surface.pitch + x * bpp);
-    }
-
-    void setRaw(int x, int y, byte pixel)
-    {
-        var bpp = getFormat(_surface).BytesPerPixel;
-        Marshal.WriteByte(_surface.pixels, y * _surface.pitch + x * bpp, pixel);
-    }
+        return nint.Add(_surface.pixels, y * _surface.pitch + x * bpp);
+	}
 
     /**
 	 * Returns the color of a specified pixel in the surface.
@@ -299,7 +293,7 @@ internal class Surface
 		{
 			return 0;
 		}
-		return getRaw(x, y);
+		return Marshal.ReadByte(getRaw(x, y));
 	}
 
     /**
@@ -315,7 +309,7 @@ internal class Surface
         {
             return;
         }
-        setRaw(x, y, pixel);
+        Marshal.WriteByte(getRaw(x, y), pixel);
     }
 
     /**
@@ -497,15 +491,15 @@ internal class Surface
 	    // Destroy current surface (will be replaced)
 	    DeleteAligned(_alignedBuffer);
 	    SDL_FreeSurface(_surface.pixels);
-	    _alignedBuffer = IntPtr.Zero;
-	    _surface.pixels = IntPtr.Zero;
+	    _alignedBuffer = nint.Zero;
+	    _surface.pixels = nint.Zero;
 
         Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Loading image: {filename}");
 
 		string utf8 = Unicode.convPathToUtf8(filename);
         _surface.pixels = IMG_Load(utf8);
 
-	    if (_surface.pixels == IntPtr.Zero)
+	    if (_surface.pixels == nint.Zero)
 	    {
 		    string err = filename + ":" + IMG_GetError();
 		    throw new Exception(err);
@@ -597,10 +591,10 @@ internal class Surface
         // Set up new surface
         var bpp = getFormat(_surface).BitsPerPixel;
         int pitch = GetPitch(bpp, width);
-        IntPtr alignedBuffer = NewAligned(bpp, width, height);
-        IntPtr surface = SDL_CreateRGBSurfaceFrom(alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
+        nint alignedBuffer = NewAligned(bpp, width, height);
+        nint surface = SDL_CreateRGBSurfaceFrom(alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
 
-        if (surface == IntPtr.Zero)
+        if (surface == nint.Zero)
         {
             throw new Exception(SDL_GetError());
         }
@@ -608,7 +602,7 @@ internal class Surface
         // Copy old contents
         SDL_SetColorKey(surface, (int)SDL_bool.SDL_TRUE, 0);
         SDL_SetPaletteColors(surface, getPaletteColors(), 0, 256);
-        SDL_BlitSurface(_surface.pixels, IntPtr.Zero, surface, IntPtr.Zero);
+        SDL_BlitSurface(_surface.pixels, nint.Zero, surface, nint.Zero);
 
         // Delete old surface
         DeleteAligned(_alignedBuffer);
@@ -704,7 +698,7 @@ internal class Surface
         try
         {
             using var imgFile = new FileStream(filename, FileMode.Open);
-            Span<byte> buffer = new byte[imgFile.Length];
+            var buffer = new byte[imgFile.Length];
             imgFile.Read(buffer);
             imgFile.Close();
             loadRaw(buffer);
@@ -835,5 +829,45 @@ internal class Surface
         {
 		    throw new Exception(filename + " not found");
         }
+    }
+
+    /**
+     * Loads a raw array of pixels into the surface. The pixels must be
+     * in the same BPP as the surface.
+     * @param bytes Pixel array.
+     */
+    void loadRaw(byte[] bytes)
+    {
+        @lock();
+	    rawCopy(bytes);
+	    unlock();
+    }
+
+    /**
+     * Performs a fast copy of a pixel array, accounting for pitch.
+     * @param src Source array.
+     */
+    unsafe void rawCopy<T>(T[] src)
+    {
+	    // Copy whole thing
+	    if (_surface.pitch == _surface.w)
+	    {
+            int end = Math.Min(_surface.w * _surface.h * getFormat(_surface).BytesPerPixel, src.Length);
+            var source = MemoryExtensions.AsMemory(src, 0, end);
+            Unsafe.Copy(_surface.pixels.ToPointer(), ref source);
+	    }
+	    // Copy row by row
+	    else
+	    {
+		    for (int y = 0; y < _surface.h; ++y)
+		    {
+                int begin = y * _surface.w;
+                int end = Math.Min(begin + _surface.w, src.Length);
+			    if (begin >= src.Length)
+				    break;
+                var source = MemoryExtensions.AsMemory(src, begin, end - begin);
+                Unsafe.Copy(getRaw(0, y).ToPointer(), ref source);
+		    }
+	    }
     }
 }

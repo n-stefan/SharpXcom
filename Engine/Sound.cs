@@ -56,7 +56,7 @@ internal class Sound
      */
     internal void play(int channel = -1, int angle = 0, int distance = 0)
     {
-	    if (!Options.mute && _sound.abuf != IntPtr.Zero)
+	    if (!Options.mute && _sound.abuf != nint.Zero)
  	    {
             int chan = Mix_PlayChannel(channel, _sound.abuf, 0);
 		    if (chan == -1)
@@ -80,11 +80,11 @@ internal class Sound
      */
     internal void load(byte[] data, uint size)
     {
-        IntPtr dataPtr = Marshal.AllocHGlobal(data.Length);
+        nint dataPtr = Marshal.AllocHGlobal(data.Length);
         Marshal.Copy(data, 0, dataPtr, data.Length);
-        IntPtr rw = SDL_RWFromConstMem(dataPtr, (int)size);
+        nint rw = SDL_RWFromConstMem(dataPtr, (int)size);
         _sound.abuf = Mix_LoadWAV_RW(rw, 1);
-        if (_sound.abuf == IntPtr.Zero)
+        if (_sound.abuf == nint.Zero)
         {
             throw new Exception(Mix_GetError());
         }
@@ -98,7 +98,7 @@ internal class Sound
     {
 	    string utf8 = Unicode.convPathToUtf8(filename);
 	    _sound.abuf = Mix_LoadWAV(utf8);
-	    if (_sound.abuf == IntPtr.Zero)
+	    if (_sound.abuf == nint.Zero)
 	    {
 		    string err = filename + ":" + Mix_GetError();
 		    throw new Exception(err);

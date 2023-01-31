@@ -25,13 +25,13 @@ namespace SharpXcom.Engine;
  */
 internal class Music
 {
-    IntPtr /* Mix_Music */ _music;
+    nint /* Mix_Music */ _music;
 
     /**
      * Initializes a new music track.
      */
     internal Music() =>
-        _music = IntPtr.Zero;
+        _music = nint.Zero;
 
     /**
      * Deletes the loaded music content.
@@ -53,7 +53,7 @@ internal class Music
         if (!Options.mute)
         {
             func_mute();
-            Mix_HookMusic(null, IntPtr.Zero);
+            Mix_HookMusic(null, nint.Zero);
             Mix_HaltMusic();
         }
 #endif
@@ -68,7 +68,7 @@ internal class Music
 #if !__NO_MUSIC
         if (!Options.mute)
 	    {
-		    if (_music != IntPtr.Zero)
+		    if (_music != nint.Zero)
 		    {
 			    stop();
 			    if (Mix_PlayMusic(_music, loop) == -1)
@@ -88,12 +88,33 @@ internal class Music
     internal void load(byte[] data, int size)
     {
 #if !__NO_MUSIC
-        IntPtr dataPtr = Marshal.AllocHGlobal(data.Length);
+        nint dataPtr = Marshal.AllocHGlobal(data.Length);
         Marshal.Copy(data, 0, dataPtr, data.Length);
-        IntPtr rwops = SDL_RWFromConstMem(dataPtr, size);
+        nint rwops = SDL_RWFromConstMem(dataPtr, size);
         _music = Mix_LoadMUS_RW(rwops);
         SDL_FreeRW(rwops);
-        if (_music == IntPtr.Zero)
+        if (_music == nint.Zero)
+        {
+            throw new Exception(Mix_GetError());
+        }
+#endif
+    }
+
+    //TODO: Consolidate
+    /**
+     * Loads a music file from a specified memory chunk.
+     * @param data Pointer to the music file in memory
+     * @param size Size of the music file in bytes.
+     */
+    unsafe internal void load(List<byte> data, int size)
+    {
+#if !__NO_MUSIC
+        nint dataPtr = Marshal.AllocHGlobal(data.Count);
+        Unsafe.Copy(dataPtr.ToPointer(), ref data);
+        nint rwops = SDL_RWFromConstMem(dataPtr, size);
+        _music = Mix_LoadMUS_RW(rwops);
+        SDL_FreeRW(rwops);
+        if (_music == nint.Zero)
         {
             throw new Exception(Mix_GetError());
         }
@@ -109,7 +130,7 @@ internal class Music
 #if !__NO_MUSIC
         string utf8 = Unicode.convPathToUtf8(filename);
 	    _music = Mix_LoadMUS(utf8);
-	    if (_music == IntPtr.Zero)
+	    if (_music == nint.Zero)
 	    {
 		    throw new Exception(Mix_GetError());
 	    }

@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ppy.SDL2-CS" Version="1.0.611-alpha" />
-    <PackageReference Include="YamlDotNet" Version="12.0.2" />
+    <PackageReference Include="ppy.SDL2-CS" Version="1.0.630-alpha" />
+    <PackageReference Include="YamlDotNet" Version="12.3.1" />
   </ItemGroup>
 
 </Project>

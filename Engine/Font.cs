@@ -141,8 +141,8 @@ internal class Font
 
         var dosFontPtr = Marshal.AllocHGlobal(DOSFONT_SIZE);
         Marshal.Copy(dosFont, 0, dosFontPtr, DOSFONT_SIZE);
-        /* SDL_RWops */ IntPtr rw = SDL_RWFromConstMem(dosFontPtr, DOSFONT_SIZE);
-        IntPtr s = SDL_LoadBMP_RW(rw, 0);
+        /* SDL_RWops */ nint rw = SDL_RWFromConstMem(dosFontPtr, DOSFONT_SIZE);
+        nint s = SDL_LoadBMP_RW(rw, 0);
         SDL_FreeRW(rw);
         Marshal.FreeHGlobal(dosFontPtr);
         SDL_Surface surface = Marshal.PtrToStructure<SDL_Surface>(s);

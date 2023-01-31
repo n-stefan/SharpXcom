@@ -47,7 +47,7 @@ internal class Screen
     SDL_Rect _clear;
     int _bpp;
     OpenGL glOutput;
-    /* SDL_Window */ IntPtr _window;
+    /* SDL_Window */ nint _window;
     Surface _surface;
 
     /**
@@ -185,25 +185,25 @@ internal class Screen
                 if (!((oldFlags & SDL_WindowFlags.SDL_WINDOW_OPENGL) != 0) && (_flags & SDL_WindowFlags.SDL_WINDOW_OPENGL) != 0)
                 {
                     byte cursor = 0;
-                    string _oldtitle = SDL_GetWindowTitle(IntPtr.Zero); //SDL_WM_GetCaption(&_oldtitle, NULL);
+                    string _oldtitle = SDL_GetWindowTitle(nint.Zero); //SDL_WM_GetCaption(&_oldtitle, NULL);
                     string title = _oldtitle;
                     SDL_QuitSubSystem(SDL_INIT_VIDEO);
                     SDL_InitSubSystem(SDL_INIT_VIDEO);
                     SDL_ShowCursor(SDL_ENABLE);
                     //SDL_EnableUNICODE(1);
-                    SDL_SetWindowTitle(IntPtr.Zero, title); //SDL_WM_SetCaption(title, 0);
+                    SDL_SetWindowTitle(nint.Zero, title); //SDL_WM_SetCaption(title, 0);
                     SDL_SetCursor(SDL_CreateCursor(cursor, cursor, 1, 1, 0, 0));
                 }
             }
 
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Attempting to set display to {width}x{height}x{_bpp}...");
             _window = SDL_CreateWindow(string.Empty, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, _flags);
-            if (_window == IntPtr.Zero)
+            if (_window == nint.Zero)
             {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {SDL_GetError()}");
                 Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Attempting to set display to default resolution...");
                 _window = SDL_CreateWindow(string.Empty, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 400, _flags);
-                if (_window == IntPtr.Zero)
+                if (_window == nint.Zero)
                 {
                     if ((_flags & SDL_WindowFlags.SDL_WINDOW_OPENGL) != 0)
                     {
@@ -414,7 +414,7 @@ internal class Screen
     internal SDL_WindowFlags getFlags() =>
         _flags;
 
-    internal IntPtr getWindow() =>
+    internal nint getWindow() =>
         _window;
 
     /**
@@ -618,7 +618,7 @@ internal class Screen
         }
         else
         {
-            SDL_BlitSurface(_surface.getSurface().pixels, IntPtr.Zero, _window, IntPtr.Zero);
+            SDL_BlitSurface(_surface.getSurface().pixels, nint.Zero, _window, nint.Zero);
         }
 
         // perform any requested palette update
@@ -642,7 +642,7 @@ internal class Screen
      */
     unsafe void screenshot(string filename)
     {
-        IntPtr screenshot = SDL_CreateRGBSurface(0, getWidth() - getWidth() % 4, getHeight(), 24, 0xff, 0xff00, 0xff0000, 0); //SDL_AllocSurface
+        nint screenshot = SDL_CreateRGBSurface(0, getWidth() - getWidth() % 4, getHeight(), 24, 0xff, 0xff00, 0xff0000, 0); //SDL_AllocSurface
         SDL_Surface surface = Marshal.PtrToStructure<SDL_Surface>(screenshot);
 
         if (useOpenGL())
@@ -652,14 +652,14 @@ internal class Screen
 
 		    for (int y = 0; y < getHeight(); ++y)
 		    {
-                glReadPixels(0, getHeight() - (y + 1), getWidth() - getWidth() % 4, 1, format, GL_UNSIGNED_BYTE, IntPtr.Add(surface.pixels, y * surface.pitch));
+                glReadPixels(0, getHeight() - (y + 1), getWidth() - getWidth() % 4, 1, format, GL_UNSIGNED_BYTE, nint.Add(surface.pixels, y * surface.pitch));
 		    }
             glErrorCheck();
 #endif
 	    }
 	    else
 	    {
-            SDL_BlitSurface(_window, IntPtr.Zero, screenshot, IntPtr.Zero);
+            SDL_BlitSurface(_window, nint.Zero, screenshot, nint.Zero);
 	    }
 
         //unsigned error = lodepng::encode(filename, (const unsigned char *)(screenshot->pixels), getWidth() - getWidth()%4, getHeight(), LCT_RGB);

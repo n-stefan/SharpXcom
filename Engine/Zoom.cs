@@ -43,7 +43,7 @@ internal class Zoom
 #if !__NO_OPENGL
             if (glOut.buffer_surface != null)
             {
-                SDL_BlitSurface(src.pixels, IntPtr.Zero, glOut.buffer_surface.getSurface().pixels, IntPtr.Zero); // TODO; this is less than ideal...
+                SDL_BlitSurface(src.pixels, nint.Zero, glOut.buffer_surface.getSurface().pixels, nint.Zero); // TODO; this is less than ideal...
 
                 glOut.refresh(glOut.linear, glOut.iwidth, glOut.iheight, (uint)dst.getWidth(), (uint)dst.getHeight(), topBlackBand, bottomBlackBand, leftBlackBand, rightBlackBand);
                 SDL_GL_SwapWindow(glOut.buffer_surface.getSurface().pixels); //SDL_GL_SwapBuffers()
@@ -62,7 +62,7 @@ internal class Zoom
         }
         else
         {
-            /* SDL_Surface */ IntPtr tmp = SDL_CreateRGBSurface((uint)dst.getFlags(), dstWidth, dstHeight, dst.getBitsPerPixel(), 0, 0, 0, 0);
+            /* SDL_Surface */ nint tmp = SDL_CreateRGBSurface((uint)dst.getFlags(), dstWidth, dstHeight, dst.getBitsPerPixel(), 0, 0, 0, 0);
             //TODO
             //_zoomSurfaceY(src, tmp, 0, 0);
             var palette = Surface.getPalette(src);

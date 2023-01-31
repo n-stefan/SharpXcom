@@ -90,7 +90,7 @@ internal class Game
         CrossPlatform.setWindowIcon(/* IDI_ICON1, */ FileMap.getFilePath("openxcom.png"));
 
         // Set the window caption
-        SDL_SetWindowTitle(IntPtr.Zero, title); //SDL_WM_SetCaption(title, 0);
+        SDL_SetWindowTitle(nint.Zero, title); //SDL_WM_SetCaption(title, 0);
 
         // Set up unicode
         //SDL_EnableUNICODE(1);
@@ -104,7 +104,7 @@ internal class Game
 
         // Create invisible hardware cursor to workaround bug with absolute positioning pointing devices
         SDL_ShowCursor(SDL_ENABLE);
-        IntPtr cursor = 0;
+        nint cursor = 0;
         SDL_SetCursor(SDL_CreateCursor(cursor, cursor, 1, 1, 0, 0));
 
         // Create fps counter

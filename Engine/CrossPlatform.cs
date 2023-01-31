@@ -40,10 +40,10 @@ internal class CrossPlatform
 	internal static void setWindowIcon(string path)
 	{
 		string utf8 = Unicode.convPathToUtf8(path);
-        IntPtr /* SDL_Surface */ icon = IMG_Load(utf8);
-		if (icon != IntPtr.Zero)
+        nint /* SDL_Surface */ icon = IMG_Load(utf8);
+		if (icon != nint.Zero)
 		{
-            SDL_SetWindowIcon(IntPtr.Zero, icon);
+            SDL_SetWindowIcon(nint.Zero, icon);
 			SDL_FreeSurface(icon);
 		}
     }

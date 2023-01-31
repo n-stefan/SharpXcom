@@ -76,13 +76,13 @@ unsafe internal class OpenGL
     uint glprogram;
     internal bool linear;
     bool shader_support;
-    IntPtr buffer;
+    nint buffer;
     internal Surface buffer_surface;
     internal uint iwidth, iheight, iformat, ibpp;
 
     internal static bool checkErrors;
 
-    internal static delegate* unmanaged<int, int, int, int, uint, uint, IntPtr, void> glReadPixels;
+    internal static delegate* unmanaged<int, int, int, int, uint, uint, nint, void> glReadPixels;
     static delegate* unmanaged<uint> glGetError;
     static delegate* unmanaged<uint, uint, out int, void> glGetShaderiv;
     static delegate* unmanaged<uint, int, int[], out string, void> glGetShaderInfoLog;
@@ -106,9 +106,9 @@ unsafe internal class OpenGL
     static delegate* unmanaged<int, int, void> glUniform1i;
     static delegate* unmanaged<int, int, float[], void> glUniform2fv;
     static delegate* unmanaged<int, int, float[], void> glUniform4fv;
-    static delegate* unmanaged<IntPtr> glXGetCurrentDisplay;
+    static delegate* unmanaged<nint> glXGetCurrentDisplay;
     static delegate* unmanaged<uint> glXGetCurrentDrawable;
-    static delegate* unmanaged<IntPtr, uint, int, void> glXSwapIntervalEXT;
+    static delegate* unmanaged<nint, uint, int, void> glXSwapIntervalEXT;
     static delegate* unmanaged<int, uint> wglSwapIntervalEXT;
     static delegate* unmanaged<uint, void> glDisable;
     static delegate* unmanaged<uint, void> glEnable;
@@ -122,12 +122,12 @@ unsafe internal class OpenGL
     static delegate* unmanaged<double, double, double, double, double, double, void> glOrtho;
     static delegate* unmanaged<int, int, int, int, void> glViewport;
     static delegate* unmanaged<uint, int, void> glPixelStorei;
-    static delegate* unmanaged<uint, int, int, int, int, int, uint, uint, IntPtr, void> glTexSubImage2D;
+    static delegate* unmanaged<uint, int, int, int, int, int, uint, uint, nint, void> glTexSubImage2D;
     static delegate* unmanaged<uint, void> glClear;
     static delegate* unmanaged<float, float, float, float, void> glClearColor;
     static delegate* unmanaged<int, uint[], void> glGenTextures;
     static delegate* unmanaged<uint, uint[], void> glBindTexture;
-    static delegate* unmanaged<uint, int, int, int, int, int, uint, uint, IntPtr, void> glTexImage2D;
+    static delegate* unmanaged<uint, int, int, int, int, int, uint, uint, nint, void> glTexImage2D;
 
     OpenGL()
     {
@@ -135,7 +135,7 @@ unsafe internal class OpenGL
         glprogram = 0;
         linear = false;
         shader_support = false;
-        buffer = IntPtr.Zero;
+        buffer = nint.Zero;
         buffer_surface = null;
         iwidth = 0;
         iheight = 0;
@@ -161,9 +161,9 @@ unsafe internal class OpenGL
             glprogram = 0;
         }
 
-        if (buffer != IntPtr.Zero)
+        if (buffer != nint.Zero)
         {
-            buffer = IntPtr.Zero;
+            buffer = nint.Zero;
             iwidth = 0;
             iheight = 0;
         }
@@ -276,7 +276,7 @@ unsafe internal class OpenGL
         glOrtho = (delegate* unmanaged<double, double, double, double, double, double, void>)SDL_GL_GetProcAddress("glOrtho");
         glViewport = (delegate* unmanaged<int, int, int, int, void>)SDL_GL_GetProcAddress("glViewport");
         glPixelStorei = (delegate* unmanaged<uint, int, void>)SDL_GL_GetProcAddress("glPixelStorei");
-        glTexSubImage2D = (delegate* unmanaged<uint, int, int, int, int, int, uint, uint, IntPtr, void>)SDL_GL_GetProcAddress("glTexSubImage2D");
+        glTexSubImage2D = (delegate* unmanaged<uint, int, int, int, int, int, uint, uint, nint, void>)SDL_GL_GetProcAddress("glTexSubImage2D");
         glClear = (delegate* unmanaged<uint, void>)SDL_GL_GetProcAddress("glClear");
         glClearColor = (delegate* unmanaged<float, float, float, float, void>)SDL_GL_GetProcAddress("glClearColor");
         glGenTextures = (delegate* unmanaged<int, uint[], void>)SDL_GL_GetProcAddress("glGenTextures");
@@ -312,9 +312,9 @@ unsafe internal class OpenGL
         && glUniform1i != null && glUniform2fv != null && glUniform4fv != null && glGetAttachedShaders != null
         && glGetShaderiv != null && glGetShaderInfoLog != null && glGetProgramiv != null && glGetProgramInfoLog != null;
 
-        glXGetCurrentDisplay = (delegate* unmanaged<IntPtr>)SDL_GL_GetProcAddress("glXGetCurrentDisplay");
+        glXGetCurrentDisplay = (delegate* unmanaged<nint>)SDL_GL_GetProcAddress("glXGetCurrentDisplay");
         glXGetCurrentDrawable = (delegate* unmanaged<uint>)SDL_GL_GetProcAddress("glXGetCurrentDrawable");
-        glXSwapIntervalEXT = (delegate* unmanaged<IntPtr, uint, int, void>)SDL_GL_GetProcAddress("glXSwapIntervalEXT");
+        glXSwapIntervalEXT = (delegate* unmanaged<nint, uint, int, void>)SDL_GL_GetProcAddress("glXSwapIntervalEXT");
 
         wglSwapIntervalEXT = (delegate* unmanaged<int, uint>)SDL_GL_GetProcAddress("wglSwapIntervalEXT");
 

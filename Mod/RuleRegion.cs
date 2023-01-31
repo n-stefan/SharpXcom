@@ -37,6 +37,20 @@ struct MissionArea
 
     bool isPoint() =>
 		AreSame(lonMin, lonMax) && AreSame(latMin, latMax);
+
+    /**
+     * Loads the MissionArea from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+        lonMin = double.Parse(node["lonMin"].ToString());
+        lonMax = double.Parse(node["lonMax"].ToString());
+        latMin = double.Parse(node["latMin"].ToString());
+        latMax = double.Parse(node["latMax"].ToString());
+        texture = int.Parse(node["texture"].ToString());
+        name = node["name"].ToString();
+    }
 };
 
 /**
@@ -48,6 +62,18 @@ struct MissionZone
 
     void swap(MissionZone other) =>
         (other.areas, areas) = (areas, other.areas);
+
+    /**
+     * Loads the MissionZone from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+        for (var i = 0; i < areas.Count; i++)
+        {
+            areas[i].load(node["areas"][i]);
+        }
+    }
 };
 
 /**
@@ -131,12 +157,10 @@ internal class RuleRegion : IRule
             if (_latMin[^1] > _latMax[^1])
                 (_latMax[^1], _latMin[^1]) = (_latMin[^1], _latMax[^1]);
         }
-        _missionZones = new List<MissionZone>();
-        foreach (var i in ((YamlSequenceNode)node["missionZones"]).Children)
+        _missionZones = ((YamlSequenceNode)node["missionZones"]).Children.Select(x =>
         {
-            var missionZone = new MissionZone();
-            _missionZones.Add(missionZone.load(i));
-        }
+            var zone = new MissionZone(); zone.load(x); return zone;
+        }).ToList();
         if (node["missionWeights"] != null)
 	    {
 		    _missionWeights.load(node["missionWeights"]);
