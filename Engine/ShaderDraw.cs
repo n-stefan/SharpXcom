@@ -19,9 +19,9 @@
 
 namespace SharpXcom.Engine;
 
-internal class Shader
+internal partial class Shader
 {
-	/**
+    /**
 	 * Universal blit function
 	 * @tparam ColorFunc class that contains static function `func` that get 5 arguments
 	 * function is used to modify these arguments.
@@ -31,19 +31,19 @@ internal class Shader
 	 * @param src2_frame surface or scalar
 	 * @param src3_frame surface or scalar
 	 */
-	static void ShaderDraw<ColorFunc, DestType, Src0Type, Src1Type, Src2Type, Src3Type>(DestType dest_frame, Src0Type src0_frame, Src1Type src1_frame, Src2Type src2_frame, Src3Type src3_frame)
-         where DestType : ShaderBase<DestType>, INumber<DestType>
-         where Src0Type : ShaderBase<Src0Type>, INumber<Src0Type>
-         where Src1Type : ShaderBase<Src1Type>, INumber<Src1Type>
-         where Src2Type : ShaderBase<Src2Type>, INumber<Src2Type>
-         where Src3Type : ShaderBase<Src3Type>, INumber<Src3Type>
+    static void ShaderDraw<DestType, Src0Type, Src1Type, Src2Type, Src3Type>(IColorFunc<DestType, Src0Type, Src1Type, Src2Type, Src3Type> colorFunc, IShaderParam dest_frame, IShaderParam src0_frame, IShaderParam src1_frame, IShaderParam src2_frame, IShaderParam src3_frame)
+		where DestType : INumber<DestType>
+        where Src0Type : INumber<Src0Type>
+        where Src1Type : INumber<Src1Type>
+        where Src2Type : INumber<Src2Type>
+        where Src3Type : INumber<Src3Type>
     {
         //creating helper objects
-        var dest = new controller<DestType>(dest_frame);
-		var src0 = new controller<Src0Type>(src0_frame);
-		var src1 = new controller<Src1Type>(src1_frame);
-		var src2 = new controller<Src2Type>(src2_frame);
-		var src3 = new controller<Src3Type>(src3_frame);
+        var dest = new controller<ShaderBase<DestType>, DestType>((ShaderBase<DestType>)dest_frame);
+		var src0 = new controller<ShaderBase<Src0Type>, Src0Type>((ShaderBase<Src0Type>)src0_frame);
+		var src1 = new controller<ShaderBase<Src1Type>, Src1Type>((ShaderBase<Src1Type>)src1_frame);
+		var src2 = new controller<ShaderBase<Src2Type>, Src2Type>((ShaderBase<Src2Type>)src2_frame);
+		var src3 = new controller<ShaderBase<Src3Type>, Src3Type>((ShaderBase<Src3Type>)src3_frame);
 
 		//get basic draw range in 2d space
 		GraphSubset end_temp = dest.get_range();
@@ -102,28 +102,41 @@ internal class Shader
 			//iteration on x-axis
 			for (int x = end_x-begin_x; x>0; --x, dest.inc_x(), src0.inc_x(), src1.inc_x(), src2.inc_x(), src3.inc_x())
 			{
-				ColorFunc.func(dest.get_ref(), src0.get_ref(), src1.get_ref(), src2.get_ref(), src3.get_ref());
+				colorFunc.func(ref dest.get_ref(), src0.get_ref(), src1.get_ref(), src2.get_ref(), src3.get_ref());
 			}
 		}
 	}
 
-	internal static void ShaderDraw<ColorFunc, DestType, Src0Type, Src1Type, Src2Type>(DestType dest_frame, Src0Type src0_frame, Src1Type src1_frame, Src2Type src2_frame)
-         where DestType : ShaderBase<DestType>, INumber<DestType>
-         where Src0Type : ShaderBase<Src0Type>, INumber<Src0Type>
-         where Src1Type : ShaderBase<Src1Type>, INumber<Src1Type>
-         where Src2Type : ShaderBase<Src2Type>, INumber<Src2Type>
-	{
-        ShaderDraw<ColorFunc, DestType, Src0Type, Src1Type, Src2Type, Nothing>(dest_frame, src0_frame, src1_frame, src2_frame, new Nothing());
+	internal static void ShaderDraw<DestType, Src0Type, Src1Type, Src2Type>(IColorFunc<DestType, Src0Type, Src1Type, Src2Type, int> colorFunc, IShaderParam dest_frame, IShaderParam src0_frame, IShaderParam src1_frame, IShaderParam src2_frame)
+        where DestType : INumber<DestType>
+        where Src0Type : INumber<Src0Type>
+        where Src1Type : INumber<Src1Type>
+        where Src2Type : INumber<Src2Type>
+    {
+        ShaderDraw(colorFunc, dest_frame, src0_frame, src1_frame, src2_frame, new Nothing());
 	}
 
-	internal static void ShaderDraw<ColorFunc, DestType, Src0Type, Src1Type>(DestType dest_frame, Src0Type src0_frame, Src1Type src1_frame)
-         where DestType : ShaderBase<DestType>, INumber<DestType>
-         where Src0Type : ShaderBase<Src0Type>, INumber<Src0Type>
-         where Src1Type : ShaderBase<Src1Type>, INumber<Src1Type>
+	internal static void ShaderDraw<DestType, Src0Type, Src1Type>(IColorFunc<DestType, Src0Type, Src1Type, int, int> colorFunc, IShaderParam dest_frame, IShaderParam src0_frame, IShaderParam src1_frame)
+        where DestType : INumber<DestType>
+        where Src0Type : INumber<Src0Type>
+        where Src1Type : INumber<Src1Type>
     {
-		ShaderDraw<ColorFunc, DestType, Src0Type, Src1Type, Nothing, Nothing>(dest_frame, src0_frame, src1_frame, new Nothing(), new Nothing());
-    }
+        ShaderDraw(colorFunc, dest_frame, src0_frame, src1_frame, new Nothing(), new Nothing());
+	}
 
-	internal static Scalar<T> ShaderScalar<T>(T t) =>
+	internal static void ShaderDraw<DestType, Src0Type>(IColorFunc<DestType, Src0Type, int, int, int> colorFunc, IShaderParam dest_frame, IShaderParam src0_frame)
+        where DestType : INumber<DestType>
+        where Src0Type : INumber<Src0Type>
+    {
+        ShaderDraw(colorFunc, dest_frame, src0_frame, new Nothing(), new Nothing(), new Nothing());
+	}
+
+	internal static void ShaderDraw<DestType>(IColorFunc<DestType, int, int, int, int> colorFunc, IShaderParam dest_frame)
+        where DestType : INumber<DestType>
+    {
+        ShaderDraw(colorFunc, dest_frame, new Nothing(), new Nothing(), new Nothing(), new Nothing());
+	}
+
+    internal static Scalar<T> ShaderScalar<T>(T t) =>
 		new(t);
 }

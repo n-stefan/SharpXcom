@@ -21,26 +21,64 @@ namespace SharpXcom.Engine;
 
 internal class ShaderMove<TPixel> : ShaderBase<TPixel>
 {
-    int _move_x;
-    int _move_y;
+	int _move_x;
+	int _move_y;
 
-    internal ShaderMove(Surface s) : base(s)
-    {
-        _move_x = s.getX();
-        _move_y = s.getY();
-    }
+	internal ShaderMove(Surface s) : base(s)
+	{
+		_move_x = s.getX();
+		_move_y = s.getY();
+	}
 
-    internal ShaderMove(Surface s, int move_x, int move_y) : base(s)
-    {
-        _move_x = move_x;
-        _move_y = move_y;
-    }
+	internal ShaderMove(Surface s, int move_x, int move_y) : base(s)
+	{
+		_move_x = move_x;
+		_move_y = move_y;
+	}
 
+	ShaderMove(ShaderMove<TPixel> f) : base(f)
+	{
+		_move_x = f._move_x;
+		_move_y = f._move_y;
+	}
+
+	ShaderMove(List<TPixel> f, int max_x, int max_y) : base(f, max_x, max_y)
+	{
+		_move_x = 0;
+		_move_y = 0;
+	}
+
+	ShaderMove(List<TPixel> f, int max_x, int max_y, int move_x, int move_y) : base(f, max_x, max_y)
+	{
+		_move_x = move_x;
+		_move_y = move_y;
+	}
+
+	GraphSubset getImage()
+	{
+		return base._range_domain.offset(_move_x, _move_y);
+	}
+
+	void setMove(int x, int y)
+	{
+		_move_x = x;
+		_move_y = y;
+	}
+
+	void addMove(int x, int y)
+	{
+		_move_x += x;
+		_move_y += y;
+	}
+};
+
+partial class Shader
+{
     /**
-     * Create warper from Surface
-     * @param s standard 8bit OpenXcom surface
-     * @return
-     */
-    internal static ShaderMove<TPixel> ShaderSurface(Surface s) =>
-        new(s);
+	 * Create warper from Surface
+	 * @param s standard 8bit OpenXcom surface
+	 * @return
+	 */
+    internal static ShaderMove<byte> ShaderSurface(Surface s) =>
+		new(s);
 }

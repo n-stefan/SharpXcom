@@ -60,4 +60,14 @@ internal struct GraphSubset
 		intersection_range(ref ret.beg_y, ref ret.end_y, ref b.beg_y, ref b.end_y);
 		return ret;
 	}
+
+	internal GraphSubset offset(int x, int y)
+	{
+		GraphSubset ret = this;
+		ret.beg_x += x;
+		ret.end_x += x;
+		ret.beg_y += y;
+		ret.end_y += y;
+		return ret;
+	}
 }

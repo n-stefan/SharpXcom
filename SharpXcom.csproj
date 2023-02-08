@@ -11,14 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Engine\ShaderDraw.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Engine\ShaderDraw.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="ppy.SDL2-CS" Version="1.0.630-alpha" />
     <PackageReference Include="YamlDotNet" Version="12.3.1" />
   </ItemGroup>

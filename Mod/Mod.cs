@@ -125,14 +125,14 @@ struct compareSection : IComparer<string>
 /**
 * Recolor class used in UFO
 */
-struct HairXCOM1
+struct HairXCOM1 : IColorFunc<byte, byte, int, int, int>
 {
     const byte Hair = 9 << 4;
 	internal const byte Face = 6 << 4;
 
-	static void func(ref byte src, ref byte cutoff, int _1, int _2, int _3)
-	{
-		if (src > cutoff && src <= Face + ShadeMax)
+	public void func(ref byte src, byte cutoff, int _1, int _2, int _3)
+    {
+        if (src > cutoff && src <= Face + ShadeMax)
 		{
 			src = (byte)(Hair + (src & ShadeMax) - 6); //make hair color like male in xcom_0.pck
 		}
@@ -142,12 +142,12 @@ struct HairXCOM1
 /**
 * Recolor class used in TFTD
 */
-struct HairXCOM2
+struct HairXCOM2 : IColorFunc<byte, int, int, int, int>
 {
     const byte ManHairColor = 4 << 4;
     internal const byte WomanHairColor = 1 << 4;
 
-    static void func(ref byte src, int _1, int _2, int _3, int _4)
+    public void func(ref byte src, int _1, int _2, int _3, int _4)
     {
         if (src >= WomanHairColor && src <= WomanHairColor + ShadeMax)
         {
@@ -159,12 +159,12 @@ struct HairXCOM2
 /**
 * Recolor class used in TFTD
 */
-struct FaceXCOM2
+struct FaceXCOM2 : IColorFunc<byte, int, int, int, int>
 {
     const byte FaceColor = 10 << 4;
     internal const byte PinkColor = 14 << 4;
 
-    static void func(ref byte src, int _1, int _2, int _3, int _4)
+    public void func(ref byte src, int _1, int _2, int _3, int _4)
     {
         if (src >= FaceColor && src <= FaceColor + ShadeMax)
         {
@@ -176,11 +176,11 @@ struct FaceXCOM2
 /**
 * Recolor class used in TFTD
 */
-struct BodyXCOM2
+struct BodyXCOM2 : IColorFunc<byte, int, int, int, int>
 {
     internal const byte IonArmorColor = 8 << 4;
 
-    static void func(ref byte src, int _1, int _2, int _3, int _4)
+    public void func(ref byte src, int _1, int _2, int _3, int _4)
     {
         if (src == 153)
         {
@@ -208,11 +208,11 @@ struct BodyXCOM2
 /**
 * Recolor class used in TFTD
 */
-struct FallXCOM2
+struct FallXCOM2 : IColorFunc<byte, int, int, int, int>
 {
     const byte RoguePixel = 151;
 
-    static void func(ref byte src, int _1, int _2, int _3, int _4)
+    public void func(ref byte src, int _1, int _2, int _3, int _4)
     {
         if (src == RoguePixel)
         {
@@ -1684,10 +1684,14 @@ internal class Mod
         //"fix" of color index in original solders sprites
         if (Options.battleHairBleach)
         {
-            string name;
+            var hairXCOM1 = new HairXCOM1();
+            var hairXCOM2 = new HairXCOM2();
+            var faceXCOM2 = new FaceXCOM2();
+            var fallXCOM2 = new FallXCOM2();
+            var bodyXCOM2 = new BodyXCOM2();
 
             //personal armor
-            name = "XCOM_1.PCK";
+            var name = "XCOM_1.PCK";
             if (_sets.TryGetValue(name, out var xcom_1))
             {
                 for (int i = 0; i < 8; ++i)
@@ -1700,11 +1704,11 @@ internal class Mod
                     dim.beg_y = 6;
                     dim.end_y = 9;
                     head.setDomain(dim);
-                    ShaderDraw<HairXCOM1>(head, ShaderScalar<byte>(HairXCOM1.Face + 5));
+                    ShaderDraw(hairXCOM1, head, ShaderScalar<byte>(HairXCOM1.Face + 5));
                     dim.beg_y = 9;
                     dim.end_y = 10;
                     head.setDomain(dim);
-                    ShaderDraw<HairXCOM1>(head, ShaderScalar<byte>(HairXCOM1.Face + 6));
+                    ShaderDraw(hairXCOM1, head, ShaderScalar<byte>(HairXCOM1.Face + 6));
                     surf.unlock();
                 }
 
@@ -1720,7 +1724,7 @@ internal class Mod
                     dim.end_x = 20;
                     head.setDomain(dim);
                     surf.@lock();
-                    ShaderDraw<HairXCOM1>(head, ShaderScalar<byte>(HairXCOM1.Face + 6));
+                    ShaderDraw(hairXCOM1, head, ShaderScalar<byte>(HairXCOM1.Face + 6));
                     surf.unlock();
                 }
             }
@@ -1745,7 +1749,7 @@ internal class Mod
                             dim.beg_y = 6;
                             dim.end_y = 18;
                             head.setDomain(dim);
-                            ShaderDraw<HairXCOM2>(head);
+                            ShaderDraw(hairXCOM2, head);
 
                             if (j == 2)
                             {
@@ -1766,7 +1770,7 @@ internal class Mod
                         }
 
                         //we change face to pink, to prevent mixup with ION armor backpack that have same color group.
-                        ShaderDraw<FaceXCOM2>(new ShaderMove<byte>(surf));
+                        ShaderDraw(faceXCOM2, new ShaderMove<byte>(surf));
                         surf.unlock();
                     }
 
@@ -1788,10 +1792,10 @@ internal class Mod
                             dim.end_y = 17;
                         }
                         head.setDomain(dim);
-                        ShaderDraw<FallXCOM2>(head);
+                        ShaderDraw(fallXCOM2, head);
 
                         //we change face to pink, to prevent mixup with ION armor backpack that have same color group.
-                        ShaderDraw<FaceXCOM2>(new ShaderMove<byte>(surf));
+                        ShaderDraw(faceXCOM2, new ShaderMove<byte>(surf));
                         surf.unlock();
                     }
 
@@ -1803,7 +1807,7 @@ internal class Mod
                         {
                             Surface surf = xcom_2.getFrame(i);
                             surf.@lock();
-                            ShaderDraw<BodyXCOM2>(new ShaderMove<byte>(surf));
+                            ShaderDraw(bodyXCOM2, new ShaderMove<byte>(surf));
                             surf.unlock();
                         }
                     }

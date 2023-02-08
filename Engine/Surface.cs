@@ -22,7 +22,7 @@ namespace SharpXcom.Engine;
 /**
  * help class used for Surface::blitNShade
  */
-struct ColorReplace
+struct ColorReplace : IColorFunc<byte, byte, int, int, int>
 {
     /**
 	* Function used by ShaderDraw in Surface::blitNShade
@@ -32,7 +32,7 @@ struct ColorReplace
 	* @param shade value of shade of this surface
 	* @param newColor new color to set (it should be offseted by 4)
 	*/
-    static void func(ref byte dest, ref byte src, ref int shade, ref int newColor, ref int _)
+    public void func(ref byte dest, byte src, int shade, int newColor, int _)
 	{
 		if (src != default)
 		{
@@ -49,7 +49,7 @@ struct ColorReplace
 /**
  * help class used for Surface::blitNShade
  */
-struct StandardShade
+struct StandardShade : IColorFunc<byte, byte, int, int, int>
 {
     /**
 	* Function used by ShaderDraw in Surface::blitNShade
@@ -60,7 +60,7 @@ struct StandardShade
 	* @param notused
 	* @param notused
 	*/
-    static void func(ref byte dest, ref byte src, ref int shade, ref int _, ref int __)
+    public void func(ref byte dest, byte src, int shade, int _, int __)
 	{
 		if (src != default)
 		{
@@ -353,13 +353,11 @@ internal class Surface
         {
             --newBaseColor;
             newBaseColor <<= 4;
-            //TODO
-            //ShaderDraw<ColorReplace, ShaderMove<byte>, ShaderMove<byte>, Scalar<int>, Scalar<int>>(ShaderSurface(surface), src, ShaderScalar(off), ShaderScalar(newBaseColor));
+            ShaderDraw(new ColorReplace(), ShaderSurface(surface), src, ShaderScalar(off), ShaderScalar(newBaseColor));
         }
         else
         {
-            //TODO
-            //ShaderDraw<StandardShade, ShaderMove<byte>, ShaderMove<byte>, Scalar<int>>(ShaderSurface(surface), src, ShaderScalar(off));
+            ShaderDraw(new StandardShade(), ShaderSurface(surface), src, ShaderScalar(off));
         }
     }
 
