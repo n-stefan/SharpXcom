@@ -968,4 +968,11 @@ internal class BattleUnit
 
         return node;
     }
+
+    /**
+     * Get the amount of turns this unit is on fire. 0 = no fire.
+     * @return fire : amount of turns this tile is on fire.
+     */
+    internal int getFire() =>
+	    _fire;
 }

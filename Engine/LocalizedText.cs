@@ -55,4 +55,17 @@ internal class LocalizedText
 
     public static implicit operator LocalizedText(string text) =>
         new(text);
+
+	/**
+	 * Replace the next argument placeholder with @a val.
+	 * @tparam T The type of the replacement value. It should be streamable to std::owstringstream.
+	 * @param val The value to place in the next placeholder's position.
+	 * @return The translated string with all occurrences of the marker replaced by @a val.
+	 */
+	internal LocalizedText arg<T>(T val)
+	{
+		_text = _text.Replace($"{{{_nextArg}}}", val.ToString());
+		++_nextArg;
+        return this;
+	}
 }

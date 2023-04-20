@@ -49,6 +49,8 @@ struct TrajectoryWaypoint
  */
 internal class UfoTrajectory : IRule
 {
+    internal const string RETALIATION_ASSAULT_RUN = "__RETALIATION_ASSAULT_RUN";
+
     string _id;
     uint _groundTimer;
     List<TrajectoryWaypoint> _waypoints;

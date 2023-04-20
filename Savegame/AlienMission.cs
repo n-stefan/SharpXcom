@@ -38,7 +38,7 @@ internal class AlienMission
 
     internal AlienMission() { }
 
-    AlienMission(RuleAlienMission rule)
+    internal AlienMission(RuleAlienMission rule)
     {
         _rule = rule;
         _nextWave = 0;
@@ -89,4 +89,11 @@ internal class AlienMission
 	    Debug.Assert(_uniqueID != 0, "Uninitialized mission!");
 	    return _uniqueID;
     }
+
+    /// Gets the mission's ruleset.
+    internal RuleAlienMission getRules() =>
+        _rule;
+
+    /// Increase number of live UFOs.
+    internal void increaseLiveUfos() { ++_liveUfos; }
 }

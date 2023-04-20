@@ -84,6 +84,9 @@ struct UnitStats
         psiSkill = (stats.psiSkill != 0 ? stats.psiSkill : psiSkill);
         melee = (stats.melee != 0 ? stats.melee : melee);
     }
+
+    public static UnitStats operator +(UnitStats a, UnitStats b) =>
+        new() { tu = a.tu + b.tu, stamina = a.stamina + b.stamina, health = a.health + b.health, bravery = a.bravery + b.bravery, reactions = a.reactions + b.reactions, firing = a.firing + b.firing, throwing = a.throwing + b.throwing, strength = a.strength + b.strength, psiStrength = a.psiStrength + b.psiStrength, psiSkill = a.psiSkill + b.psiSkill, melee = a.melee + b.melee };
 }
 
 struct StatAdjustment

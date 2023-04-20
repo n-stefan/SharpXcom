@@ -33,7 +33,7 @@ internal class Region
      * Initializes a region of the specified type.
      * @param rules Pointer to ruleset.
      */
-    Region(RuleRegion rules)
+    internal Region(RuleRegion rules)
     {
         _rules = rules;
         _activityAlien.Add(0);
@@ -59,4 +59,18 @@ internal class Region
         };
         return node;
     }
+
+    /**
+     * Gets the region's alien activity level.
+     * @return activity level.
+     */
+    internal ref List<int> getActivityAlien() =>
+	    ref _activityAlien;
+
+    /**
+     * Gets the region's xcom activity level.
+     * @return activity level.
+     */
+    internal ref List<int> getActivityXcom() =>
+	    ref _activityXcom;
 }

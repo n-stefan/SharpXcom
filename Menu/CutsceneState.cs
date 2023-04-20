@@ -17,27 +17,20 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace SharpXcom.Savegame;
+namespace SharpXcom.Menu;
 
 /**
- * Represents a fixed waypoint on the world.
+ * Shows cutscenes: inspects the relevant rules and loads the appropriate state
+ * for showing slideshows or videos.
  */
-internal class Waypoint : Target
+internal class CutsceneState : State
 {
-    /**
-     * Initializes a waypoint.
-     */
-    internal Waypoint() : base() { }
+    string _cutsceneId;
 
-    /**
-     *
-     */
-    ~Waypoint() { }
+    internal CutsceneState(string cutsceneId)
+    {
+        _cutsceneId = cutsceneId;
+    }
 
-    /**
-     * Returns the globe marker for the waypoint.
-     * @return Marker sprite, -1 if none.
-     */
-    internal override int getMarker() =>
-	    6;
+    ~CutsceneState() { }
 }

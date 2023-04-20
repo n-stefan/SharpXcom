@@ -388,6 +388,13 @@ internal class SavedBattleGame
         _battleState;
 
     /**
+     * Sets the BattlescapeState.
+     * @param bs A Pointer to a BattlescapeState.
+     */
+    internal void setBattleState(BattlescapeState bs) =>
+        _battleState = bs;
+
+    /**
      * Removes the body item that corresponds to the unit.
      */
     internal void removeUnconsciousBodyItem(BattleUnit bu)
@@ -592,4 +599,71 @@ internal class SavedBattleGame
 
         return node;
     }
+
+    /**
+     * uses the depth variable to choose a palette.
+     * @param state the state to set the palette for.
+     */
+    internal void setPaletteByDepth(State state)
+    {
+        if (_depth == 0)
+        {
+            state.setPalette("PAL_BATTLESCAPE");
+        }
+        else
+        {
+            string ss = $"PAL_BATTLESCAPE_{_depth}";
+            state.setPalette(ss);
+        }
+    }
+
+    /**
+     * Loads the resources required by the map in the battle save.
+     * @param mod Pointer to the mod.
+     */
+    internal void loadMapResources(Mod.Mod mod)
+    {
+        foreach (var mapDataSet in _mapDataSets)
+        {
+            mapDataSet.loadData(mod.getMCDPatch(mapDataSet.getName()));
+        }
+
+        int mdsID, mdID;
+
+        for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
+        {
+            for (int part = (int)TilePart.O_FLOOR; part <= (int)TilePart.O_OBJECT; part++)
+            {
+                TilePart tp = (TilePart)part;
+                _tiles[i].getMapData(out mdID, out mdsID, tp);
+                if (mdID != -1 && mdsID != -1)
+                {
+                    _tiles[i].setMapData(_mapDataSets[mdsID].getObject(mdID), mdID, mdsID, tp);
+                }
+            }
+        }
+
+        initUtilities(mod);
+        getTileEngine().calculateSunShading();
+        getTileEngine().calculateTerrainLighting();
+        getTileEngine().calculateUnitLighting();
+        getTileEngine().recalculateFOV();
+    }
+
+    /**
+     * Initializes the map utilities.
+     * @param mod Pointer to mod.
+     */
+    void initUtilities(Mod.Mod mod)
+    {
+        _pathfinding = new Pathfinding(this);
+        _tileEngine = new TileEngine(this, mod.getVoxelData());
+    }
+
+    /**
+     * Gets the global shade.
+     * @return The global shade.
+     */
+    internal int getGlobalShade() =>
+	    _globalShade;
 }

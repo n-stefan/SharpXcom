@@ -231,4 +231,45 @@ internal class StartState : State
 		    loading = LoadingPhase.LOADING_FAILED;
 	    }
     }
+
+    /**
+     * If the loading fails, it shows an error, otherwise moves on to the game.
+     */
+    void think()
+    {
+        base.think();
+        _timer.think(this, null);
+
+        switch (loading)
+        {
+            case LoadingPhase.LOADING_FAILED:
+                CrossPlatform.flashWindow(_game.getScreen().getWindow());
+                addLine(string.Empty);
+                addLine("ERROR: " + error);
+                addLine(string.Empty);
+                addLine("More details here: " + Logger.logFile());
+                addLine("Make sure OpenXcom and any mods are installed correctly.");
+                addLine(string.Empty);
+                addLine("Press any key to continue.");
+                loading = LoadingPhase.LOADING_DONE;
+                break;
+            case LoadingPhase.LOADING_SUCCESSFUL:
+                CrossPlatform.flashWindow(_game.getScreen().getWindow());
+                Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} OpenXcom started successfully!");
+                _game.setState(new GoToMainMenuState());
+                if (_oldMaster != Options.getActiveMaster() && Options.playIntro)
+                {
+                    _game.pushState(new CutsceneState("intro"));
+                }
+                if (Options.reload)
+                {
+                    Options.reload = false;
+                }
+                _game.getCursor().setVisible(true);
+                _game.getFpsCounter().setVisible(Options.fpsCounter);
+                break;
+            default:
+                break;
+        }
+    }
 }

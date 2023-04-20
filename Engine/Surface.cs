@@ -558,6 +558,18 @@ internal class Surface
         ref _crop;
 
     /**
+     * Changes the width of the surface.
+     * @warning This is not a trivial setter!
+     * It will force the surface to be recreated for the new size.
+     * @param width New width in pixels.
+     */
+    internal void setWidth(int width)
+    {
+        resize(width, getHeight());
+        _redraw = true;
+    }
+
+    /**
      * Changes the height of the surface.
      * @warning This is not a trivial setter!
      * It will force the surface to be recreated for the new size.
@@ -867,5 +879,59 @@ internal class Surface
                 Unsafe.Copy(getRaw(0, y).ToPointer(), ref source);
 		    }
 	    }
+    }
+
+    /**
+     * TFTD mode: much like click inversion, but does a colour swap rather than a palette shift.
+     * @param mode set TFTD mode to this.
+     */
+    internal void setTFTDMode(bool mode)
+    {
+        _tftdMode = mode;
+    }
+
+    /// Sets the color of the surface.
+    internal virtual void setColor(byte _ /*color*/) { /* empty by design */ }
+
+    /// Sets the secondary color of the surface.
+    internal virtual void setSecondaryColor(byte _ /*color*/) { /* empty by design */ }
+
+    /// Sets the border colour of the surface.
+    internal virtual void setBorderColor(byte _ /*color*/) { /* empty by design */ }
+
+    /**
+     * Copies the exact contents of another surface onto this one.
+     * Only the content that would overlap both surfaces is copied, in
+     * accordance with their positions. This is handy for applying
+     * effects over another surface without modifying the original.
+     * @param surface Pointer to surface to copy from.
+     */
+    internal void copy(Surface surface)
+    {
+        /*
+        SDL_BlitSurface uses colour matching,
+        and is therefor unreliable as a means
+        to copy the contents of one surface to another
+        instead we have to do this manually
+
+        SDL_Rect from;
+        from.x = getX() - surface->getX();
+        from.y = getY() - surface->getY();
+        from.w = getWidth();
+        from.h = getHeight();
+        SDL_BlitSurface(surface->getSurface(), &from, _surface, 0);
+        */
+        int from_x = getX() - surface.getX();
+        int from_y = getY() - surface.getY();
+
+        @lock();
+
+        for (int x = 0, y = 0; x < getWidth() && y < getHeight();)
+        {
+            byte pixel = surface.getPixel(from_x + x, from_y + y);
+            setPixelIterative(ref x, ref y, pixel);
+        }
+
+        unlock();
     }
 }

@@ -30,6 +30,20 @@ enum GameDifficulty { DIFF_BEGINNER = 0, DIFF_EXPERIENCED, DIFF_VETERAN, DIFF_GE
 enum GameEnding { END_NONE, END_WIN, END_LOSE };
 
 /**
+ * Container for savegame info displayed on listings.
+ */
+struct SaveInfo
+{
+    internal string fileName;
+    internal string displayName;
+    internal long timestamp;
+    internal string isoDate, isoTime;
+    internal string details;
+    List<string> mods;
+    internal bool reserved;
+}
+
+/**
  * The game data that gets written to disk when the game is saved.
  * A saved game holds all the variable info in a game like funds,
  * game time, current bases and contents, world activities, score, etc.
@@ -373,4 +387,107 @@ internal class SavedGame
      */
     internal void setGlobeLatitude(double lat) =>
         _globeLat = lat;
+
+    /**
+     * return the list of income scores
+     * @return list of income scores.
+     */
+    internal ref List<long> getIncomes() =>
+	    ref _incomes;
+
+    /**
+     * Returns the list of countries in the game world.
+     * @return Pointer to country list.
+     */
+    internal List<Country> getCountries() =>
+        _countries;
+
+    /**
+     * Returns the list of world regions.
+     * @return Pointer to region list.
+     */
+    internal List<Region> getRegions() =>
+        _regions;
+
+    /**
+     * return the list of expenditures scores
+     * @return list of expenditures scores.
+     */
+    internal ref List<long> getExpenditures() =>
+	    ref _expenditures;
+
+    /**
+     * return the list of monthly maintenance costs
+     * @return list of maintenances.
+     */
+    internal ref List<long> getMaintenances() =>
+	    ref _maintenance;
+
+    /**
+     * Returns the player's funds for the last 12 months.
+     * @return funds.
+     */
+    internal ref List<long> getFundsList() =>
+	    ref _funds;
+
+    /**
+     * return the list of research scores
+     * @return list of research scores.
+     */
+    internal ref List<int> getResearchScores() =>
+	    ref _researchScores;
+
+    /// Full access to the alien strategy data.
+    internal AlienStrategy getAlienStrategy() =>
+        _alienStrategy;
+
+    /**
+     * Resets the list of unique object IDs.
+     * @param ids New ID list.
+     */
+    internal void setAllIds(Dictionary<string, int> ids) =>
+	    _ids = ids;
+
+    /**
+     * Changes the current time of the game.
+     * @param time Game time.
+     */
+    internal void setTime(GameTime time) =>
+	    _time = time;
+
+    /**
+     * Changes the game's difficulty to a new level.
+     * @param difficulty New difficulty.
+     */
+    internal void setDifficulty(GameDifficulty difficulty) =>
+        _difficulty = difficulty;
+
+    /*
+     * Increment the month counter.
+     */
+    internal void addMonth() =>
+        ++_monthsPassed;
+
+    /**
+     * Returns the latest ID for the specified object
+     * and increases it.
+     * @param name Object name.
+     * @return Latest ID number.
+     */
+    internal int getId(string name)
+    {
+	    if (_ids.TryGetValue(name, out var id))
+	    {
+            return id++;
+        }
+        else
+	    {
+		    _ids[name] = 1;
+		    return _ids[name]++;
+	    }
+    }
+
+    /// Full access to the current alien missions.
+    internal List<AlienMission> getAlienMissions() =>
+        _activeMissions;
 }

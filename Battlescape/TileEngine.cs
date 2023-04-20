@@ -43,7 +43,7 @@ internal class TileEngine
      * @param save Pointer to SavedBattleGame object.
      * @param voxelData List of voxel data.
      */
-    TileEngine(SavedBattleGame save, List<ushort> voxelData)
+    internal TileEngine(SavedBattleGame save, List<ushort> voxelData)
     {
         _save = save;
         _voxelData = voxelData;
@@ -130,7 +130,7 @@ internal class TileEngine
     /**
       * Recalculates lighting for the terrain: objects,items,fire.
       */
-    void calculateTerrainLighting()
+    internal void calculateTerrainLighting()
     {
         const int layer = 1; // Static lighting layer.
         const int fireLightPower = 15; // amount of light a fire generates
@@ -1337,5 +1337,93 @@ internal class TileEngine
         _cacheTilePos = new Position(-1, -1, -1);
         _cacheTile = null;
         _cacheTileBelow = null;
+    }
+
+    /**
+     * Recalculates FOV of all units in-game.
+     */
+    internal void recalculateFOV()
+    {
+        foreach (var unit in _save.getUnits())
+        {
+            if (unit.getTile() != null)
+            {
+                calculateFOV(unit);
+            }
+        }
+    }
+
+    /**
+      * Calculates sun shading for the whole terrain.
+      */
+    internal void calculateSunShading()
+    {
+        const int layer = 0; // Ambient lighting layer.
+
+        for (int i = 0; i < _save.getMapSizeXYZ(); ++i)
+        {
+            _save.getTiles()[i].resetLight(layer);
+            calculateSunShading(_save.getTiles()[i]);
+        }
+    }
+
+    /**
+      * Calculates sun shading for 1 tile. Sun comes from above and is blocked by floors or objects.
+      * TODO: angle the shadow according to the time? - link to Options::globeSeasons (or whatever the realistic lighting one is)
+      * @param tile The tile to calculate sun shading for.
+      */
+    void calculateSunShading(Tile tile)
+    {
+        const int layer = 0; // Ambient lighting layer.
+
+        int power = 15 - _save.getGlobalShade();
+
+        // At night/dusk sun isn't dropping shades blocked by roofs
+        if (_save.getGlobalShade() <= 4)
+        {
+            int block = 0;
+            int x = tile.getPosition().x;
+            int y = tile.getPosition().y;
+            for (int z = _save.getMapSizeZ() - 1; z > tile.getPosition().z; z--)
+            {
+                block += blockage(_save.getTile(new Position(x, y, z)), TilePart.O_FLOOR, ItemDamageType.DT_NONE);
+                block += blockage(_save.getTile(new Position(x, y, z)), TilePart.O_OBJECT, ItemDamageType.DT_NONE, Pathfinding.DIR_DOWN);
+            }
+            if (block > 0)
+            {
+                power -= 2;
+            }
+        }
+        tile.addLight(power, layer);
+    }
+
+    /**
+      * Recalculates lighting for the units.
+      */
+    internal void calculateUnitLighting()
+    {
+        const int layer = 2; // Dynamic lighting layer.
+        const int personalLightPower = 15; // amount of light a unit generates
+        const int fireLightPower = 15; // amount of light a fire generates
+
+        // reset all light to 0 first
+        for (int i = 0; i < _save.getMapSizeXYZ(); ++i)
+        {
+            _save.getTiles()[i].resetLight(layer);
+        }
+
+        foreach (var unit in _save.getUnits())
+        {
+            // add lighting of soldiers
+            if (_personalLighting && unit.getFaction() == UnitFaction.FACTION_PLAYER && !unit.isOut())
+            {
+                addLight(unit.getPosition(), personalLightPower, layer);
+            }
+            // add lighting of units on fire
+            if (unit.getFire() != 0)
+            {
+                addLight(unit.getPosition(), fireLightPower, layer);
+            }
+        }
     }
 }

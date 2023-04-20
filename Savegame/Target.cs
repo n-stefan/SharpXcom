@@ -133,4 +133,53 @@ internal class Target
     /// Gets the target's marker sprite.
     internal virtual int getMarker() =>
         0;
+
+    /**
+     * Changes the target's unique ID.
+     * @param id Unique ID.
+     */
+    internal void setId(int id) =>
+        _id = id;
+
+    /**
+     * Changes the longitude coordinate of the target.
+     * @param lon Longitude in radian.
+     */
+    internal void setLongitude(double lon)
+    {
+        _lon = lon;
+
+        // Keep between 0 and 2xPI
+        while (_lon < 0)
+            _lon += 2 * M_PI;
+        while (_lon >= 2 * M_PI)
+            _lon -= 2 * M_PI;
+    }
+
+    /**
+     * Changes the latitude coordinate of the target.
+     * @param lat Latitude in radian.
+     */
+    internal void setLatitude(double lat)
+    {
+        _lat = lat;
+        // If you travel past a pole, continue on the other side of the globe.
+        if (_lat < -M_PI / 2)
+        {
+            _lat = -M_PI - _lat;
+            setLongitude(_lon + M_PI);
+        }
+        else if (_lat > M_PI / 2)
+        {
+            _lat = M_PI - _lat;
+            setLongitude(_lon - M_PI);
+        }
+    }
+
+    /**
+     * Changes the target's custom name.
+     * @param newName New custom name. If set to blank, the language default is used.
+     */
+    internal void setName(string newName) =>
+	    _name = newName;
 }

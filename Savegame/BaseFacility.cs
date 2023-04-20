@@ -37,7 +37,7 @@ internal class BaseFacility
      * @param rules Pointer to ruleset.
      * @param base Pointer to base of origin.
      */
-    BaseFacility(RuleBaseFacility rules, Base @base)
+    internal BaseFacility(RuleBaseFacility rules, Base @base)
     {
         _rules = rules;
         _base = @base;
@@ -68,4 +68,28 @@ internal class BaseFacility
 		    node.Add("buildTime", _buildTime.ToString());
 	    return node;
     }
+
+    /**
+     * Changes the base facility's X position on the
+     * base grid that it's placed on.
+     * @param x X position in grid squares.
+     */
+    internal void setX(int x) =>
+        _x = x;
+
+    /**
+     * Changes the base facility's Y position on the
+     * base grid that it's placed on.
+     * @param y Y position in grid squares.
+     */
+    internal void setY(int y) =>
+        _y = y;
+
+    /**
+     * Changes the base facility's remaining time
+     * until it's finished building.
+     * @param time Time left in days.
+     */
+    internal void setBuildTime(int time) =>
+        _buildTime = time;
 }

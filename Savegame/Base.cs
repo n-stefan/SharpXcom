@@ -42,7 +42,7 @@ internal class Base : Target
      * Initializes an empty base.
      * @param mod Pointer to mod.
      */
-    Base(Mod.Mod mod) : base()
+    internal Base(Mod.Mod mod) : base()
     {
         _mod = mod;
         _scientists = 0;
@@ -116,4 +116,33 @@ internal class Base : Target
 		    return -1;
 	    return 0;
     }
+
+    /**
+     * Returns the list of facilities in the base.
+     * @return Pointer to the facility list.
+     */
+    internal List<BaseFacility> getFacilities() =>
+        _facilities;
+
+    /**
+     * Changes the amount of engineers currently in the base.
+     * @param engineers Number of engineers.
+     */
+    internal void setEngineers(int engineers) =>
+        _engineers = engineers;
+
+    /**
+     * Changes the amount of scientists currently in the base.
+     * @param scientists Number of scientists.
+     */
+    internal void setScientists(int scientists) =>
+        _scientists = scientists;
+
+    /**
+     * Returns the list of items in the base storage rooms.
+     * Does NOT return items assigned to craft or in transfer.
+     * @return Pointer to the item list.
+     */
+    internal ItemContainer getStorageItems() =>
+        _items;
 }

@@ -34,7 +34,7 @@ internal class MissionSite : Target
     /**
      * Initializes a mission site.
      */
-    MissionSite(RuleAlienMission rules, AlienDeployment deployment) : base()
+    internal MissionSite(RuleAlienMission rules, AlienDeployment deployment) : base()
     {
         _rules = rules;
         _deployment = deployment;
@@ -80,4 +80,25 @@ internal class MissionSite : Target
 		    return 5;
         return _deployment.getMarkerIcon();
     }
+
+    /**
+     * Sets the mission site's detection state.
+     * @param detected whether we want this site to show on the geoscape or not.
+     */
+    internal void setDetected(bool detected) =>
+        _detected = detected;
+
+    /**
+     * Changes the number of seconds before the mission site expires.
+     * @param seconds Amount of seconds.
+     */
+    internal void setSecondsRemaining(uint seconds) =>
+        _secondsRemaining = seconds;
+
+    /**
+     * Changes the alien race currently residing in the mission site.
+     * @param race Alien race.
+     */
+    internal void setAlienRace(string race) =>
+	    _race = race;
 }

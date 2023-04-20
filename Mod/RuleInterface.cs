@@ -19,7 +19,7 @@
 
 namespace SharpXcom.Mod;
 
-struct Element
+record struct Element
 {
     /// basic rect info, and 3 colors.
     internal int x, y, w, h, color, color2, border;
@@ -54,6 +54,12 @@ internal class RuleInterface : IRule
      */
     internal Element getElement(string id) =>
 	    _elements.TryGetValue(id, out var element) ? element : default;
+
+    internal string getPalette() =>
+        _palette;
+
+    internal string getParent() =>
+        _parent;
 
     internal string getMusic() =>
 	    _music;

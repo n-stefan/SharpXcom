@@ -87,4 +87,67 @@ internal class GameTime
 	    _month = int.Parse(node["month"].ToString());
 	    _year = int.Parse(node["year"].ToString());
     }
+
+    /**
+     * Returns the localized representation of the current
+     * ingame day with the cardinal operator.
+     * @param lang Pointer to current language.
+     * @return Localized day string.
+     */
+    internal string getDayString(Language lang)
+    {
+	    string s;
+	    switch (_day)
+	    {
+	        case 1:
+	        case 21:
+	        case 31:
+		        s = "STR_DATE_FIRST";
+		        break;
+	        case 2:
+	        case 22:
+		        s = "STR_DATE_SECOND";
+		        break;
+	        case 3:
+	        case 23:
+		        s = "STR_DATE_THIRD";
+		        break;
+	        default:
+		        s = "STR_DATE_FOURTH";
+                break;
+	    }
+	    return lang.getString(s).arg(_day);
+    }
+
+    /**
+     * Returns a localizable-string representation of
+     * the current ingame month.
+     * @return Month string ID.
+     */
+    internal string getMonthString()
+    {
+        string[] months = { "STR_JAN", "STR_FEB", "STR_MAR", "STR_APR", "STR_MAY", "STR_JUN", "STR_JUL", "STR_AUG", "STR_SEP", "STR_OCT", "STR_NOV", "STR_DEC" };
+        return months[_month - 1];
+    }
+
+    /**
+     * Returns the current ingame year.
+     * @return Year.
+     */
+    internal int getYear() =>
+	    _year;
+
+    /**
+     * Returns the current ingame hour.
+     * @return Hour (0-23).
+     */
+    internal int getHour() =>
+	    _hour;
+
+    /**
+     * Returns the current ingame minute.
+     * @return Minute (0-59).
+     */
+    internal int getMinute() =>
+	    _minute;
 }

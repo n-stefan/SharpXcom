@@ -103,4 +103,19 @@ internal class MapDataSet
 		    throw new Exception(filename + " not found");
         }
     }
+
+    /**
+     * Gets an object in this dataset.
+     * @param i Object index.
+     * @return Pointer to the object.
+     */
+    internal MapData getObject(int i)
+    {
+        if (i >= _objects.Count)
+        {
+            string ss = $"MCD {_name} has no object {i}";
+            throw new Exception(ss);
+        }
+        return _objects[i];
+    }
 }

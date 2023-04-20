@@ -6,6 +6,7 @@ global using SharpXcom.Interface;
 global using SharpXcom.Menu;
 global using SharpXcom.Mod;
 global using SharpXcom.Savegame;
+global using System.Collections.Specialized;
 global using System.Diagnostics;
 global using System.Globalization;
 global using System.Numerics;

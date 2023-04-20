@@ -36,7 +36,7 @@ internal class Country
      * @param rules Pointer to ruleset.
      * @param gen Generate new funding.
      */
-    Country(RuleCountry rules, bool gen)
+    internal Country(RuleCountry rules, bool gen = true)
     {
         _rules = rules;
         _pact = false;
@@ -80,4 +80,37 @@ internal class Country
 	    }
 	    return node;
     }
+
+    /**
+     * Gets the country's alien activity level.
+     * @return activity level.
+     */
+    internal ref List<int> getActivityAlien() =>
+	    ref _activityAlien;
+
+    /**
+     * Gets the country's xcom activity level.
+     * @return activity level.
+     */
+    internal ref List<int> getActivityXcom() =>
+	    ref _activityXcom;
+
+    /**
+     * Returns the country's current monthly funding.
+     * @return Monthly funding.
+     */
+    internal ref List<int> getFunding() =>
+	    ref _funding;
+
+    /**
+     * sign a new pact.
+     */
+    internal void setPact() =>
+        _pact = true;
+
+    /**
+     * sign a new pact at month's end.
+     */
+    internal void setNewPact() =>
+        _newPact = true;
 }

@@ -283,7 +283,7 @@ internal class Mod
     static int EXPLOSIVE_DAMAGE_RANGE;
     static int[] WINDOW_POPUP = new int[3];
     static int[] FIRE_DAMAGE_RANGE = new int[2];
-    static int[] DIFFICULTY_COEFFICIENT = new int[5];
+    internal static int[] DIFFICULTY_COEFFICIENT = new int[5];
     static string DEBRIEF_MUSIC_GOOD;
     static string DEBRIEF_MUSIC_BAD;
 
@@ -908,7 +908,7 @@ internal class Mod
      * @param id Craft type.
      * @return Rules for the craft.
      */
-    RuleCraft getCraft(string id, bool error) =>
+    internal RuleCraft getCraft(string id, bool error) =>
 	    getRule(id, "Craft", _crafts, error);
 
     /**
@@ -916,7 +916,7 @@ internal class Mod
      * @param id Facility type.
      * @return Rules for the facility.
      */
-    RuleBaseFacility getBaseFacility(string id, bool error = false) =>
+    internal RuleBaseFacility getBaseFacility(string id, bool error = false) =>
 	    getRule(id, "Facility", _facilities, error);
 
     /**
@@ -2017,7 +2017,7 @@ internal class Mod
      * @param id Alien mission type.
      * @return Rules for the alien mission.
      */
-    RuleAlienMission getAlienMission(string id, bool error = false) =>
+    internal RuleAlienMission getAlienMission(string id, bool error = false) =>
         getRule(id, "Alien Mission", _alienMissions, error);
 
     /**
@@ -2753,4 +2753,81 @@ internal class Mod
 	    DEBRIEF_MUSIC_GOOD = node["goodDebriefingMusic"].ToString();
         DEBRIEF_MUSIC_BAD = node["badDebriefingMusic"].ToString();
     }
+
+    /**
+    * Gets the rules for the Save Converter.
+    * @return Pointer to converter rules.
+    */
+    internal RuleConverter getConverter() =>
+	    _converter;
+
+    /**
+     * Gets an MCDPatch.
+     * @param id The ID of the MCDPatch we want.
+     * @return The MCDPatch based on ID, or 0 if none defined.
+     */
+    internal MCDPatch getMCDPatch(string id) =>
+        _MCDPatches.TryGetValue(id, out var patch) ? patch : null;
+
+    /**
+     * Returns the list of voxeldata in the mod.
+     * @return Pointer to the list of voxeldata.
+     */
+    internal List<ushort> getVoxelData() =>
+        _voxelData;
+
+    /**
+     * Returns the rules for the specified country.
+     * @param id Country type.
+     * @return Rules for the country.
+     */
+    internal RuleCountry getCountry(string id, bool error) =>
+	    getRule(id, "Country", _countries, error);
+
+    /**
+     * Returns the rules for the specified region.
+     * @param id Region type.
+     * @return Rules for the region.
+     */
+    internal RuleRegion getRegion(string id, bool error) =>
+	    getRule(id, "Region", _regions, error);
+
+    /**
+     * Gets the defined starting time.
+     * @return The time the game starts in.
+     */
+    internal GameTime getStartingTime() =>
+	    _startingTime;
+
+    /**
+     * Returns the info about a specific deployment.
+     * @param name Deployment name.
+     * @return Rules for the deployment.
+     */
+    internal AlienDeployment getDeployment(string name, bool error) =>
+	    getRule(name, "Alien Deployment", _alienDeployments, error);
+
+    /**
+     * Returns the rules for the specified UFO.
+     * @param id UFO type.
+     * @return Rules for the UFO.
+     */
+    internal RuleUfo getUfo(string id, bool error) =>
+	    getRule(id, "UFO", _ufos, error);
+
+    /**
+     * Returns the info about a specific unit.
+     * @param name Unit name.
+     * @return Rules for the units.
+     */
+    internal RuleSoldier getSoldier(string name, bool error) =>
+	    getRule(name, "Soldier", _soldiers, error);
+
+    /**
+     * Returns the list of all soldiers
+     * provided by the mod.
+     * @return List of soldiers.
+     */
+    internal List<string> getSoldiersList() =>
+	    _soldiersIndex;
 }

@@ -401,4 +401,40 @@ internal class InteractiveSurface : Surface
 		    _release.Remove(button);
 	    }
     }
+
+    /**
+     * Sets a function to be called every time a key is pressed when the surface is focused.
+     * @param handler Action handler.
+     * @param key Keyboard button to check for (note: ignores key modifiers). Set to SDLK_ANY for any key.
+     */
+    internal void onKeyboardPress(ActionHandler handler, SDL_Keycode key)
+    {
+        if (key == SDL_Keycode.SDLK_UNKNOWN)
+        {
+            // Ignore unknown keys
+            return;
+        }
+        if (handler != null)
+        {
+            _keyPress[key] = handler;
+        }
+        else
+        {
+            _keyPress.Remove(key);
+        }
+    }
+
+    /**
+     * Sets a function to be called every time the mouse moves over the surface.
+     * @param handler Action handler.
+     */
+    internal void onMouseOver(ActionHandler handler) =>
+        _over = handler;
+
+    /**
+     * Sets a function to be called every time the mouse moves out of the surface.
+     * @param handler Action handler.
+     */
+    internal void onMouseOut(ActionHandler handler) =>
+        _out = handler;
 }

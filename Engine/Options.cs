@@ -250,7 +250,7 @@ internal class Options
      * Saves display settings temporarily to be able
      * to revert to old ones.
      */
-    static void backupDisplay()
+    internal static void backupDisplay()
     {
         newDisplayWidth = displayWidth;
         newDisplayHeight = displayHeight;

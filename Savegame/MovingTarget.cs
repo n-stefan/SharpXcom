@@ -252,4 +252,11 @@ internal class MovingTarget : Target
 	    node.Add("speed", _speed.ToString());
 	    return node;
     }
+
+    /**
+     * Returns the speed of the moving target.
+     * @return Speed in knots.
+     */
+    internal int getSpeed() =>
+	    _speed;
 }

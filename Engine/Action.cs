@@ -146,4 +146,12 @@ internal class Action
      */
     internal double getYScale() =>
 	    _scaleY;
+
+    /**
+     * Returns the interactive surface that triggered
+     * this action (the sender).
+     * @return Pointer to interactive surface.
+     */
+    internal InteractiveSurface getSender() =>
+	    _sender;
 }

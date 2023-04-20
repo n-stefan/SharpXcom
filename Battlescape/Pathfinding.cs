@@ -48,7 +48,7 @@ internal class Pathfinding
      * Sets up a Pathfinding.
      * @param save pointer to SavedBattleGame object.
      */
-    Pathfinding(SavedBattleGame save)
+    internal Pathfinding(SavedBattleGame save)
     {
         _save = save;
         _unit = null;

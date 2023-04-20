@@ -75,4 +75,16 @@ internal class AlienStrategy
         node.Add("missionsRun", new YamlSequenceNode(_missionRuns.Select(x => new YamlMappingNode(x.Key, x.Value.ToString()))));
 		return node;
 	}
+
+	/**
+	 * Increments the number of missions run labelled as "varName".
+	 * @param varName the variable name that we want to use to keep track of this.
+	 * @param increment the value to increment by.
+	 */
+	internal void addMissionRun(string varName, int increment)
+	{
+		if (string.IsNullOrEmpty(varName))
+			return;
+		_missionRuns[varName] += increment;
+	}
 }

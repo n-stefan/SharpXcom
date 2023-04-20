@@ -95,7 +95,7 @@ internal class State
      * @param palette String ID of the palette to load.
      * @param backpals BACKPALS.DAT offset to use.
      */
-    internal void setPalette(string palette, int backpals)
+    internal void setPalette(string palette, int backpals = -1)
     {
 	    setPalette(_game.getMod().getPalette(palette).getColors(), 0, 256, false);
 	    if (palette == "PAL_GEOSCAPE")
@@ -120,7 +120,7 @@ internal class State
 	    }
 	    if (backpals != -1)
 		    setPalette(_game.getMod().getPalette("BACKPALS.DAT").getColors(Palette.blockOffset((byte)backpals)), Palette.backPos, 16, false);
-        setPalette(null); // delay actual update to the end
+        setPalette(colors: null); // delay actual update to the end
     }
 
     /**
@@ -143,6 +143,72 @@ internal class State
             surface.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
 
         _surfaces.Add(surface);
+    }
+
+    /**
+     * As above, except this adds a surface based on an
+     * interface element defined in the ruleset.
+     * @note that this function REQUIRES the ruleset to have been loaded prior to use.
+     * @param surface Child surface.
+     * @param id the ID of the element defined in the ruleset, if any.
+     * @param category the category of elements this interface is associated with.
+     * @param parent the surface to base the coordinates of this element off.
+     * @note if no parent is defined the element will not be moved.
+     */
+    internal void add(Surface surface, string id, string category, Surface parent = null)
+    {
+	    // Set palette
+	    surface.setPalette(_palette);
+
+	    // this only works if we're dealing with a battlescape button
+	    BattlescapeButton bsbtn = (BattlescapeButton)surface;
+
+	    if (_game.getMod().getInterface(category) != null)
+	    {
+		    Element element = _game.getMod().getInterface(category).getElement(id);
+            if (element != default)
+		    {
+			    if (parent != null && element.w != int.MaxValue && element.h != int.MaxValue)
+			    {
+				    surface.setWidth(element.w);
+				    surface.setHeight(element.h);
+			    }
+
+			    if (parent != null && element.x != int.MaxValue && element.y != int.MaxValue)
+			    {
+				    surface.setX(parent.getX() + element.x);
+				    surface.setY(parent.getY() + element.y);
+			    }
+
+			    surface.setTFTDMode(element.TFTDMode);
+
+			    if (element.color != int.MaxValue)
+			    {
+				    surface.setColor((byte)element.color);
+			    }
+			    if (element.color2 != int.MaxValue)
+			    {
+				    surface.setSecondaryColor((byte)element.color2);
+			    }
+			    if (element.border != int.MaxValue)
+			    {
+				    surface.setBorderColor((byte)element.border);
+			    }
+		    }
+	    }
+
+	    if (bsbtn != null)
+	    {
+		    // this will initialize the graphics and settings of the battlescape button.
+		    bsbtn.copy(parent);
+		    bsbtn.initSurfaces();
+	    }
+
+	    // Set default text resources
+	    if (_game.getLanguage() != null && _game.getMod() != null)
+		    surface.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+
+	    _surfaces.Add(surface);
     }
 
     /**
@@ -337,5 +403,57 @@ internal class State
             surface.setX(surface.getX() + _game.getScreen().getDX());
             surface.setY(surface.getY() + _game.getScreen().getDY());
         }
+    }
+
+    /**
+     * Set interface data from the ruleset, also sets the palette for the state.
+     * @param category Name of the interface set.
+     * @param alterPal Should we swap out the backpal colors?
+     * @param battleGame Should we use battlescape palette? (this only applies to options screens)
+     */
+    protected void setInterface(string category, bool alterPal = false, SavedBattleGame battleGame = null)
+    {
+	    int backPal = -1;
+	    string pal = "PAL_GEOSCAPE";
+
+	    _ruleInterface = _game.getMod().getInterface(category);
+	    if (_ruleInterface != null)
+	    {
+		    _ruleInterfaceParent = _game.getMod().getInterface(_ruleInterface.getParent());
+		    pal = _ruleInterface.getPalette();
+		    Element element = _ruleInterface.getElement("palette");
+		    if (_ruleInterfaceParent != null)
+		    {
+			    if (element == default)
+			    {
+				    element = _ruleInterfaceParent.getElement("palette");
+			    }
+			    if (string.IsNullOrEmpty(pal))
+			    {
+				    pal = _ruleInterfaceParent.getPalette();
+			    }
+		    }
+		    if (element != default)
+		    {
+			    int color = alterPal ? element.color2 : element.color;
+			    if (color != int.MaxValue)
+			    {
+				    backPal = color;
+			    }
+		    }
+	    }
+	    if (battleGame != null)
+	    {
+		    battleGame.setPaletteByDepth(this);
+	    }
+	    else if (string.IsNullOrEmpty(pal))
+	    {
+		    pal = "PAL_GEOSCAPE";
+		    setPalette(pal, backPal);
+	    }
+	    else
+	    {
+		    setPalette(pal, backPal);
+	    }
     }
 }

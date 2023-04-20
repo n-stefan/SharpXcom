@@ -46,7 +46,7 @@ internal class Craft : MovingTarget
      * @param base Pointer to base of origin.
      * @param id ID to assign to the craft (0 to not assign).
      */
-    Craft(RuleCraft rules, Base @base, int id) : base()
+    internal Craft(RuleCraft rules, Base @base, int id) : base()
     {
         _rules = rules;
         _base = @base;
@@ -91,7 +91,7 @@ internal class Craft : MovingTarget
      * @param base Pointer to base.
      * @param move Move the craft to the base coordinates.
      */
-    void setBase(Base @base, bool move = true)
+    internal void setBase(Base @base, bool move = true)
     {
         _base = @base;
         if (move)
@@ -136,4 +136,42 @@ internal class Craft : MovingTarget
 		    return 1;
         return _rules.getMarker();
     }
+
+    /**
+     * Changes the ruleset for the craft's type.
+     * @param rules Pointer to ruleset.
+     * @warning ONLY FOR NEW BATTLE USE!
+     */
+    internal void changeRules(RuleCraft rules)
+    {
+        _rules = rules;
+        _weapons.Clear();
+        for (int i = 0; i < _rules.getWeapons(); ++i)
+        {
+            _weapons.Add(new CraftWeapon());
+        }
+    }
+
+    /**
+     * Returns the list of weapons currently equipped
+     * in the craft.
+     * @return Pointer to weapon list.
+     */
+    internal List<CraftWeapon> getWeapons() =>
+        _weapons;
+
+    /**
+     * Returns the list of vehicles currently equipped
+     * in the craft.
+     * @return Pointer to vehicle list.
+     */
+    internal List<Vehicle> getVehicles() =>
+        _vehicles;
+
+    /**
+     * Returns the list of items in the craft.
+     * @return Pointer to the item list.
+     */
+    internal ItemContainer getItems() =>
+        _items;
 }

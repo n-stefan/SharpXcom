@@ -37,7 +37,7 @@ internal class CraftWeapon
      * @param rules Pointer to ruleset.
      * @param ammo Initial ammo.
      */
-    CraftWeapon(RuleCraftWeapon rules, int ammo)
+    internal CraftWeapon(RuleCraftWeapon rules, int ammo)
     {
         _rules = rules;
         _ammo = ammo;

@@ -44,4 +44,22 @@ internal class ItemContainer
      */
     internal YamlNode save() =>
 	    new YamlSequenceNode(_qty.Select(x => new YamlMappingNode(new YamlScalarNode(x.Key), new YamlScalarNode(x.Value.ToString()))));
+
+    /**
+     * Adds an item amount to the container.
+     * @param id Item ID.
+     * @param qty Item quantity.
+     */
+    internal void addItem(string id, int qty = 1)
+    {
+	    if (string.IsNullOrEmpty(id))
+	    {
+		    return;
+	    }
+	    if (!_qty.ContainsKey(id))
+	    {
+		    _qty[id] = 0;
+	    }
+	    _qty[id] += qty;
+    }
 }

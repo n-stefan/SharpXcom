@@ -171,6 +171,33 @@ internal class Tile
 		_objects[(int)part];
 
     /**
+     * get the MapData references of part 0 to 3.
+     * @param mapDataID
+     * @param mapDataSetID
+     * @param part is part of the tile to get data from
+     * @return the object ID
+     */
+    internal void getMapData(out int mapDataID, out int mapDataSetID, TilePart part)
+    {
+	    mapDataID = _mapDataID[(int)part];
+	    mapDataSetID = _mapDataSetID[(int)part];
+    }
+
+    /**
+     * Set the MapData references of part 0 to 3.
+     * @param dat pointer to the data object
+     * @param mapDataID
+     * @param mapDataSetID
+     * @param part Part of the tile to set data of
+     */
+    internal void setMapData(MapData dat, int mapDataID, int mapDataSetID, TilePart part)
+    {
+        _objects[(int)part] = dat;
+        _mapDataID[(int)part] = mapDataID;
+        _mapDataSetID[(int)part] = mapDataSetID;
+    }
+
+    /**
 	 * Gets the tile's position.
 	 * @return position
 	 */

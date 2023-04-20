@@ -58,7 +58,7 @@ struct MissionArea
  */
 struct MissionZone
 {
-    List<MissionArea> areas;
+    internal List<MissionArea> areas;
 
     void swap(MissionZone other) =>
         (other.areas, areas) = (areas, other.areas);
@@ -168,4 +168,11 @@ internal class RuleRegion : IRule
 	    _regionWeight = uint.Parse(node["regionWeight"].ToString());
         _missionRegion = node["missionRegion"].ToString();
     }
+
+    /**
+     * Gets a list of all the missionZones in the region.
+     * @return A list of missionZones.
+     */
+    internal List<MissionZone> getMissionZones() =>
+	    _missionZones;
 }

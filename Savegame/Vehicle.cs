@@ -35,7 +35,7 @@ internal class Vehicle
      * @param ammo Initial ammo.
      * @param size Size in tiles.
      */
-    Vehicle(RuleItem rules, int ammo, int size)
+    internal Vehicle(RuleItem rules, int ammo, int size)
     {
         _rules = rules;
         _ammo = ammo;

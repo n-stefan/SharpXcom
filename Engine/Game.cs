@@ -259,6 +259,13 @@ internal class Game
 	    _save;
 
     /**
+     * Sets a new saved game for the game to use.
+     * @param save Pointer to the saved game.
+     */
+    internal void setSavedGame(SavedGame save) =>
+        _save = save;
+
+    /**
      * Pops all the states currently in stack and pushes in the new state.
      * A shortcut for cleaning up all the old states when they're not necessary
      * like in one-way transitions.
@@ -279,7 +286,7 @@ internal class Game
      * The new state will be used once the next game cycle starts.
      * @param state Pointer to the new state.
      */
-    void pushState(State state)
+    internal void pushState(State state)
     {
         _states.Add(state);
         _init = false;
@@ -291,7 +298,7 @@ internal class Game
      * which is cleared at the start of every cycle, so the transition
      * is seamless.
      */
-    void popState()
+    internal void popState()
     {
         _deleted.Add(_states.Last());
         _states.RemoveAt(_states.Count - 1);
@@ -504,7 +511,7 @@ internal class Game
     /**
      * Stops the state machine and the game is shut down.
      */
-    void quit()
+    internal void quit()
     {
         // Always save ironman
         if (_save != null && _save.isIronman() && !string.IsNullOrEmpty(_save.getName()))

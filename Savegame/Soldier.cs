@@ -56,7 +56,7 @@ internal class Soldier
 	 * @param armor Soldier armor.
 	 * @param id Unique soldier id for soldier generation.
 	 */
-    Soldier(RuleSoldier rules, Armor armor, int id)
+    internal Soldier(RuleSoldier rules, Armor armor, int id = 0)
 	{
 		_id = id;
 		_improvement = 0;
@@ -236,4 +236,11 @@ internal class Soldier
 
 		return node;
 	}
+
+    /**
+     * Assigns the soldier to a new craft.
+     * @param craft Pointer to craft.
+     */
+    internal void setCraft(Craft craft) =>
+        _craft = craft;
 }

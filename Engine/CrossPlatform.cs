@@ -580,4 +580,17 @@ internal class CrossPlatform
 	 */
 	internal static string noExt(string filename) =>
 		Path.GetFileNameWithoutExtension(filename);
+
+	/**
+	 * Notifies the user that maybe he should have a look.
+	 */
+	internal static void flashWindow(nint window)
+	{
+		var wminfo = new SDL_SysWMinfo();
+		SDL_VERSION(out wminfo.version);
+		if (SDL_GetWindowWMInfo(window, ref wminfo) == SDL_bool.SDL_TRUE)
+		{
+            SDL_FlashWindow(window, SDL_FlashOperation.SDL_FLASH_BRIEFLY);
+        }
+	}
 }

@@ -63,4 +63,60 @@ internal class RuleConverter
         _manufacture = ((YamlSequenceNode)node["manufacture"]).Children.Select(x => x.ToString()).ToList();
         _ufopaedia = ((YamlSequenceNode)node["ufopaedia"]).Children.Select(x => x.ToString()).ToList();
 	}
+
+    /// Gets the country ID list.
+    internal List<string> getCountries() =>
+        _countries;
+
+    /// Gets the region ID list.
+    internal List<string> getRegions() =>
+        _regions;
+
+    /// Gets the marker ID list.
+    internal List<string> getMarkers() =>
+        _markers;
+
+    /// Gets the alien mission ID list.
+    internal List<string> getMissions() =>
+        _missions;
+
+    /// Gets the UFO crew ID list.
+    internal List<string> getCrews() =>
+        _crews;
+
+    /// Gets the UFO ID list.
+    internal List<string> getUfos() =>
+        _ufos;
+
+    /// Gets the craft ID list.
+    internal List<string> getCrafts() =>
+        _crafts;
+
+    /// Gets the offset for a specific attribute.
+    internal int getOffset(string id) =>
+        _offsets[id];
+
+    /// Gets the facility ID list.
+    internal List<string> getFacilities() =>
+        _facilities;
+
+    /// Gets the item ID list.
+    internal List<string> getItems() =>
+        _items;
+
+    /// Gets the alien race ID list.
+    internal List<string> getAlienRaces() =>
+        _alienRaces;
+
+    /// Gets the alien rank ID list.
+    internal List<string> getAlienRanks() =>
+        _alienRanks;
+
+    /// Gets the craft weapon ID list.
+    internal List<string> getCraftWeapons() =>
+        _craftWeapons;
+
+    /// Gets the armor ID list.
+    internal List<string> getArmor() =>
+        _armor;
 }

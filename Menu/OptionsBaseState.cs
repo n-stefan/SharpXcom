@@ -17,27 +17,19 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace SharpXcom.Savegame;
+namespace SharpXcom.Menu;
+
+enum OptionsOrigin
+{
+    OPT_MENU,
+    OPT_GEOSCAPE,
+    OPT_BATTLESCAPE
+}
 
 /**
- * Represents a fixed waypoint on the world.
+ * Options base state for common stuff
+ * across Options windows.
  */
-internal class Waypoint : Target
+internal class OptionsBaseState : State
 {
-    /**
-     * Initializes a waypoint.
-     */
-    internal Waypoint() : base() { }
-
-    /**
-     *
-     */
-    ~Waypoint() { }
-
-    /**
-     * Returns the globe marker for the waypoint.
-     * @return Marker sprite, -1 if none.
-     */
-    internal override int getMarker() =>
-	    6;
 }

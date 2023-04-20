@@ -45,7 +45,7 @@ internal class Ufo : MovingTarget
      * Initializes a UFO of the specified type.
      * @param rules Pointer to ruleset.
      */
-    Ufo(RuleUfo rules) : base()
+    internal Ufo(RuleUfo rules) : base()
     {
         _rules = rules;
         _crashId = 0;
@@ -142,4 +142,55 @@ internal class Ufo : MovingTarget
 		    return _rules.getMarker() == -1 ? 2 : _rules.getMarker();
 	    }
     }
+
+    /**
+     * Sets the UFO's crash site ID.
+     * @param id the UFO's crash site ID.
+     */
+    internal void setCrashId(int id) =>
+        _crashId = id;
+
+    /**
+     * Sets the UFO's landing site ID.
+     * @param id landing site ID.
+     */
+    internal void setLandId(int id) =>
+        _landId = id;
+
+    /**
+     * Changes the amount of remaining seconds the UFO has left on the ground.
+     * After this many seconds thet UFO will take off, if landed, or disappear, if
+     * crashed.
+     * @param seconds Amount of seconds.
+     */
+    internal void setSecondsRemaining(uint seconds) =>
+        _secondsRemaining = seconds;
+
+    /**
+     * Changes whether this UFO has been detected by radars.
+     * @param detected Detection status.
+     */
+    internal void setDetected(bool detected) =>
+        _detected = detected;
+
+    /**
+     * Changes the ruleset for the UFO's type.
+     * @param rules Pointer to ruleset.
+     * @warning ONLY FOR NEW BATTLE USE!
+     */
+    internal void changeRules(RuleUfo rules) =>
+	    _rules = rules;
+
+    /// Gets the UFO status
+    internal UfoStatus getStatus() =>
+        _status;
+
+    /**
+     * Returns the amount of remaining seconds the UFO has left on the ground.
+     * After this many seconds thet UFO will take off, if landed, or disappear, if
+     * crashed.
+     * @return Amount of seconds.
+     */
+    internal uint getSecondsRemaining() =>
+	    _secondsRemaining;
 }

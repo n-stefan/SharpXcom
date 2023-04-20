@@ -480,4 +480,49 @@ internal class TextList : InteractiveSurface
         _rows.Clear();
         _redraw = true;
     }
+
+    /**
+     * Changes the horizontal margin placed around the text.
+     * @param margin Margin in pixels.
+     */
+    internal void setMargin(int margin) =>
+        _margin = margin;
+
+    /**
+     * Returns the currently selected row if the text
+     * list is selectable.
+     * @return Selected row, -1 if none.
+     */
+    internal uint getSelectedRow()
+    {
+	    if (!_rows.Any() || _selRow >= _rows.Count)
+	    {
+            unchecked { return (uint)-1; }
+        }
+        else
+	    {
+		    return _rows[(int)_selRow];
+	    }
+    }
+
+    /**
+     * Returns the secondary color of the text in the list.
+     * @return Color value.
+     */
+    internal byte getSecondaryColor() =>
+	    _color2;
+
+    /**
+     * Changes the text color of a whole row in the list.
+     * @param row Row number.
+     * @param color Text color.
+     */
+    internal void setRowColor(int row, byte color)
+    {
+        foreach (var text in _texts[row])
+        {
+            text.setColor(color);
+        }
+        _redraw = true;
+    }
 }

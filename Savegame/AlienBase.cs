@@ -33,7 +33,7 @@ internal class AlienBase : Target
     /**
      * Initializes an alien base
      */
-    AlienBase(AlienDeployment deployment) : base()
+    internal AlienBase(AlienDeployment deployment) : base()
     {
         _inBattlescape = false;
         _discovered = false;
@@ -71,4 +71,18 @@ internal class AlienBase : Target
 		    return -1;
 	    return _deployment.getMarkerIcon();
     }
+
+    /**
+     * Changes the alien race currently residing in the alien base.
+     * @param race Alien race.
+     */
+    internal void setAlienRace(string race) =>
+	    _race = race;
+
+    /**
+     * Sets the alien base's geoscape status.
+     * @param discovered Has the base been discovered?
+     */
+    internal void setDiscovered(bool discovered) =>
+        _discovered = discovered;
 }

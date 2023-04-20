@@ -57,4 +57,59 @@ internal class BattlescapeButton : InteractiveSurface
      */
     ~BattlescapeButton() =>
         _altSurface = null;
+
+    /**
+     * Initializes the alternate surface for swapping out as needed.
+     * performs a colour swap for TFTD style buttons, and a palette inversion for coloured buttons
+     * we use two separate surfaces because it's far easier to keep track of
+     * whether or not this surface is inverted.
+     */
+    internal void initSurfaces()
+    {
+        _altSurface = new Surface(_surface.w, _surface.h, _x, _y);
+        _altSurface.setPalette(getPaletteColors());
+
+        // Lock the surface
+        _altSurface.@lock();
+
+        // tftd mode: use a colour lookup table instead of simple palette inversion for our "pressed" state
+        if (_tftdMode)
+        {
+            // this is our colour lookup table
+            int[] colorFrom = { 1, 2, 3, 4, 7, 8, 31, 47, 153, 156, 159 };
+            int[] colorTo = { 2, 3, 4, 5, 11, 10, 2, 2, 96, 9, 97 };
+
+            for (int x = 0, y = 0; x < getWidth() && y < getHeight();)
+            {
+                byte pixel = getPixel(x, y);
+                for (int i = 0; i != colorFrom.Length / 4 /* sizeof(colorFrom[0]) */; ++i)
+                {
+                    if (pixel == colorFrom[i])
+                    {
+                        pixel = (byte)colorTo[i];
+                        break;
+                    }
+                }
+                _altSurface.setPixelIterative(ref x, ref y, pixel);
+            }
+        }
+        else
+        {
+            for (int x = 0, y = 0; x < getWidth() && y < getHeight();)
+            {
+                byte pixel = getPixel(x, y);
+                if (pixel > 0)
+                {
+                    _altSurface.setPixelIterative(ref x, ref y, (byte)(pixel + 2 * ((int)_color + 3 - (int)pixel)));
+                }
+                else
+                {
+                    _altSurface.setPixelIterative(ref x, ref y, 0);
+                }
+            }
+        }
+
+        // Unlock the surface
+        _altSurface.unlock();
+    }
 }

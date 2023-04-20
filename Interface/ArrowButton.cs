@@ -88,5 +88,13 @@ internal class ArrowButton : ImageButton
         _redraw = true;
     }
 
-
+    /**
+     * Changes the shape for the arrow button.
+     * @param shape Shape of the arrow.
+     */
+    internal void setShape(ArrowShape shape)
+    {
+        _shape = shape;
+        _redraw = true;
+    }
 }
