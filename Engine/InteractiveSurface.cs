@@ -196,7 +196,7 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    void mousePress(Action action, State state)
+    internal void mousePress(Action action, State state)
     {
         if (_press.TryGetValue(0, out ActionHandler handler))
         {
@@ -437,4 +437,33 @@ internal class InteractiveSurface : Surface
      */
     internal void onMouseOut(ActionHandler handler) =>
         _out = handler;
+
+    /**
+     * Sets a function to be called every time the mouse moves into the surface.
+     * @param handler Action handler.
+     */
+    internal void onMouseIn(ActionHandler handler) =>
+        _in = handler;
+
+    /**
+     * Sets a function to be called every time a key is released when the surface is focused.
+     * @param handler Action handler.
+     * @param key Keyboard button to check for (note: ignores key modifiers). Set to SDLK_ANY for any key.
+     */
+    internal void onKeyboardRelease(ActionHandler handler, SDL_Keycode key)
+    {
+        if (key ==  SDL_Keycode.SDLK_UNKNOWN)
+        {
+            // Ignore unknown keys
+            return;
+        }
+        if (handler != null)
+        {
+            _keyRelease[key] = handler;
+        }
+        else
+        {
+            _keyRelease.Remove(key);
+        }
+    }
 }

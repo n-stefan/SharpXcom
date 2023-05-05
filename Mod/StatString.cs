@@ -150,4 +150,89 @@ internal class StatString
 		StatStringCondition thisCondition = new StatStringCondition(conditionName, minValue, maxValue);
 		return thisCondition;
 	}
+
+    /**
+	 * Calculates the list of StatStrings that apply to certain unit stats.
+	 * @param currentStats Unit stats.
+	 * @param statStrings List of statString rules.
+	 * @param psiStrengthEval Are psi stats available?
+	 * @return Resulting string of all valid StatStrings.
+	 */
+    internal static string calcStatString(UnitStats currentStats, List<StatString> statStrings, bool psiStrengthEval, bool inTraining)
+	{
+		string statString = null;
+		Dictionary<string, int> currentStatsMap = getCurrentStats(currentStats);
+		if (inTraining)
+		{
+			currentStatsMap["psiTraining"] = 1;
+		}
+		foreach (var i in statStrings)
+		{
+			bool conditionsMet = true;
+			var conditions = i.getConditions();
+            for (var j = 0; j < conditions.Count && conditionsMet; ++j)
+			{
+				if (currentStatsMap.TryGetValue(conditions[j].getConditionName(), out int name))
+				{
+					conditionsMet = conditionsMet && conditions[j].isMet(name, currentStats.psiSkill > 0 || psiStrengthEval);
+				}
+				else
+				{
+					// if name == currentStatsMap.end() we've searched for a stat that doesn't exist.
+					// this means psi training. if there's no "psiTraining" stat in the statsMap,
+					// this soldier isn't in training, so we won't append his name with the psiTraining tag.
+					// presumably conditionsMet was originally initialized as false, but for whatever reason that was changed, hence this.
+					conditionsMet = false;
+				}
+			}
+			if (conditionsMet)
+			{
+				string wstring = i.getString();
+				statString += wstring;
+				if (wstring.Length > 1)
+				{
+					break;
+				}
+			}
+		}
+		return statString;
+	}
+
+	/**
+	 * Returns the conditions associated with this StatString.
+	 * @return List of StatStringConditions.
+	 */
+	List<StatStringCondition> getConditions() =>
+		_conditions;
+
+    /**
+     * Get a map associating stat names to unit stats.
+     * @param currentStats Unit stats to use.
+     * @return Map of unit stats.
+     */
+    static Dictionary<string, int> getCurrentStats(UnitStats currentStats)
+    {
+        var currentStatsMap = new Dictionary<string, int>
+        {
+            ["psiStrength"] = currentStats.psiStrength,
+            ["psiSkill"] = currentStats.psiSkill,
+            ["bravery"] = currentStats.bravery,
+            ["strength"] = currentStats.strength,
+            ["firing"] = currentStats.firing,
+            ["reactions"] = currentStats.reactions,
+            ["stamina"] = currentStats.stamina,
+            ["tu"] = currentStats.tu,
+            ["health"] = currentStats.health,
+            ["throwing"] = currentStats.throwing,
+            ["melee"] = currentStats.melee
+        };
+        return currentStatsMap;
+    }
+
+	/**
+	 * Returns the string to add to a name for this StatString.
+	 * @return StatString... string.
+	 */
+	string getString() =>
+		_stringToBeAddedIfAllConditionsAreMet;
 }

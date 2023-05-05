@@ -691,7 +691,7 @@ internal class Options
      * @param filename YAML filename.
      * @return Was the loading successful?
      */
-    static bool load(string filename = "options")
+    internal static bool load(string filename = "options")
     {
 	    string s = _configFolder + filename + ".cfg";
 	    try
@@ -809,7 +809,7 @@ internal class Options
 	    }
     }
 
-    static void mapResources()
+    internal static void mapResources()
     {
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Mapping resource files...");
         FileMap.clear();
@@ -1130,4 +1130,27 @@ internal class Options
 
     internal static Dictionary<string, ModInfo> getModInfos() =>
         _modInfos;
+
+    /**
+     * Switches old/new display options for temporarily
+     * testing a new display setup.
+     */
+    internal static void switchDisplay()
+    {
+        (newDisplayWidth, displayWidth) = (displayWidth, newDisplayWidth);
+        (newDisplayHeight, displayHeight) = (displayHeight, newDisplayHeight);
+        (newOpenGL, useOpenGL) = (useOpenGL, newOpenGL);
+        (newScaleFilter, useScaleFilter) = (useScaleFilter, newScaleFilter);
+        (newBattlescapeScale, battlescapeScale) = (battlescapeScale, newBattlescapeScale);
+        (newGeoscapeScale, geoscapeScale) = (geoscapeScale, newGeoscapeScale);
+        (newHQXFilter, useHQXFilter) = (useHQXFilter, newHQXFilter);
+        (newOpenGLShader, useOpenGLShader) = (useOpenGLShader, newOpenGLShader);
+        (newXBRZFilter, useXBRZFilter) = (useXBRZFilter, newXBRZFilter);
+        (newRootWindowedMode, rootWindowedMode) = (rootWindowedMode, newRootWindowedMode);
+        (newWindowedModePositionX, windowedModePositionX) = (windowedModePositionX, newWindowedModePositionX);
+        (newWindowedModePositionY, windowedModePositionY) = (windowedModePositionY, newWindowedModePositionY);
+        (newFullscreen, fullscreen) = (fullscreen, newFullscreen);
+        (newAllowResize, allowResize) = (allowResize, newAllowResize);
+        (newBorderless, borderless) = (borderless, newBorderless);
+    }
 }

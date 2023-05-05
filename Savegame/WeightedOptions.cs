@@ -105,4 +105,7 @@ internal class WeightedOptions
     /// Is this empty?
     internal bool empty() =>
 		0 == _totalWeight;
+
+    /// Remove all entries.
+    internal void clear() { _totalWeight = 0; _choices.Clear(); }
 }

@@ -32,6 +32,13 @@ internal class EquipmentLayoutItem
     int _fuseTimer;
 
     /**
+     * Initializes a new soldier-equipment layout item from YAML.
+     * @param node YAML node.
+     */
+    internal EquipmentLayoutItem(YamlNode node) =>
+	    load(node);
+
+    /**
      * Initializes a new soldier-equipment layout item.
      * @param itemType Item's type.
      * @param slot Occupied slot's id.
@@ -84,5 +91,26 @@ internal class EquipmentLayoutItem
 		    node.Add("fuseTimer", _fuseTimer.ToString());
 	    }
         return node;
+    }
+
+    /**
+     * Returns the slot to be occupied.
+     * @return slot name.
+     */
+    internal string getSlot() =>
+	    _slot;
+
+    /**
+     * Loads the soldier-equipment layout item from a YAML file.
+     * @param node YAML node.
+     */
+    void load(YamlNode node)
+    {
+	    _itemType = node["itemType"].ToString();
+	    _slot = node["slot"].ToString();
+	    _slotX = int.TryParse(node["slotX"].ToString(), out int slotX) ? slotX : 0;
+	    _slotY = int.TryParse(node["slotY"].ToString(), out int slotY) ? slotY : 0;
+	    _ammoItem = node["ammoItem"].ToString() ?? "NONE";
+	    _fuseTimer = int.TryParse(node["fuseTimer"].ToString(), out int fuseTimer) ? fuseTimer : -1;
     }
 }

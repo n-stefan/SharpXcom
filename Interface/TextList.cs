@@ -525,4 +525,15 @@ internal class TextList : InteractiveSurface
         }
         _redraw = true;
     }
+
+    /**
+     * Changes the color of the arrow buttons in the list.
+     * @param color Color value.
+     */
+    internal void setArrowColor(byte color)
+    {
+        _up.setColor(color);
+        _down.setColor(color);
+        _scrollbar.setColor(color);
+    }
 }

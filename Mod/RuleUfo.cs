@@ -137,4 +137,12 @@ internal class RuleUfo : IRule
 	    }
 	    _modSprite = node["modSprite"].ToString();
     }
+
+    /**
+     * Gets the maximum damage (damage the UFO can take)
+     * of the UFO.
+     * @return The maximum damage.
+     */
+    internal int getMaxDamage() =>
+	    _damageMax;
 }

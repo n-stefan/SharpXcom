@@ -1036,4 +1036,229 @@ internal class SaveConverter
             }
         }
     }
+
+    /**
+     * Loads the TRANSFER.DAT file.
+     * Contains transfers to X-COM bases.
+     */
+    void loadDatTransfer()
+    {
+        byte[] data = binaryBuffer("TRANSFER.DAT");
+
+        const int ENTRY_SIZE = 8;
+        int ENTRIES = data.Length / ENTRY_SIZE;
+        for (int i = 0; i < ENTRIES; ++i)
+        {
+            int tdata = i * ENTRY_SIZE;
+            int qty = data[tdata + 0x06];
+            if (qty != 0)
+            {
+                int baseSrc = data[tdata + 0x00];
+                int baseDest = data[tdata + 0x01];
+                Base b = (Base)_targets[baseDest];
+                int hours = data[tdata + 0x02];
+                TransferType type = (TransferType)data[tdata + 0x03];
+                int dat = data[tdata + 0x04];
+
+                Transfer transfer = new Transfer(hours);
+                switch (type)
+                {
+                    case TransferType.TRANSFER_CRAFT:
+                        if (baseSrc == 255)
+                        {
+                            string newCraft = _rules.getCrafts()[dat];
+                            transfer.setCraft(new Craft(_mod.getCraft(newCraft, true), b, _save.getId(newCraft)));
+                        }
+                        else
+                        {
+                            transfer.setCraft((Craft)_targets[dat]);
+                        }
+                        break;
+                    case TransferType.TRANSFER_SOLDIER:
+                        transfer.setSoldier(_soldiers[dat]);
+                        break;
+                    case TransferType.TRANSFER_SCIENTIST:
+                        transfer.setScientists(qty);
+                        break;
+                    case TransferType.TRANSFER_ENGINEER:
+                        transfer.setEngineers(qty);
+                        break;
+                    default:
+                        if (type == TransferType.TRANSFER_ITEM)
+                            transfer.setItems(_rules.getItems()[dat], qty);
+                        else
+                            transfer.setItems(_aliens[dat]);
+                        break;
+                }
+
+                b.getTransfers().Add(transfer);
+            }
+        }
+    }
+
+    /**
+     * Loads the RESEARCH.DAT file.
+     * Contains X-COM research progress.
+     */
+    void loadDatResearch()
+    {
+        byte[] data = binaryBuffer("RESEARCH.DAT");
+
+        int ENTRY_SIZE = data.Length / _rules.getResearch().Count;
+        for (int i = 0; i < _rules.getResearch().Count; ++i)
+        {
+            int rdata = i * ENTRY_SIZE;
+            if (!string.IsNullOrEmpty(_rules.getResearch()[i]))
+            {
+                RuleResearch research = _mod.getResearch(_rules.getResearch()[i]);
+                if (research != null && research.getCost() != 0)
+                {
+                    bool discovered = data[rdata + 0x0A] != 0;
+                    bool popped = data[rdata + 0x12] != 0;
+                    if (discovered)
+                    {
+                        _save.addFinishedResearch(research, _mod, null, false);
+                    }
+                    else if (popped)
+                    {
+                        _save.addPoppedResearch(research);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads the UP.DAT file.
+     * Contains X-COM Ufopaedia progress.
+     */
+    void loadDatUp()
+    {
+        byte[] data = binaryBuffer("UP.DAT");
+
+        int ENTRY_SIZE = data.Length / _rules.getUfopaedia().Count;
+        for (int i = 0; i < _rules.getUfopaedia().Count; ++i)
+        {
+            int rdata = i * ENTRY_SIZE;
+            ArticleDefinition article = _mod.getUfopaediaArticle(_rules.getUfopaedia()[i]);
+            if (article != null && article.section != UFOPAEDIA_NOT_AVAILABLE)
+            {
+                bool discovered = data[rdata + 0x08] == 2;
+                if (discovered)
+                {
+                    var requires = article.requires;
+                    foreach (var r in requires)
+                    {
+                        RuleResearch research = _mod.getResearch(r);
+                        if (research != null && research.getCost() == 0)
+                        {
+                            _save.addFinishedResearch(research, _mod, null, false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads the PROJECT.DAT file.
+     * Contains X-COM research projects.
+     */
+    void loadDatProject()
+    {
+        byte[] data = binaryBuffer("PROJECT.DAT");
+
+        int ENTRIES = _rules.getResearch().Count;
+        // days (Uint16) | scientists (Uint8)
+        int ENTRY_SIZE = ENTRIES * (sizeof(ushort) + sizeof(byte));
+        for (int i = 0; i < _save.getBases().Count; ++i)
+        {
+            Base @base = _save.getBases()[i];
+            int pdata = i * ENTRY_SIZE;
+            //Uint16* arrRemaining = (Uint16*)pdata;
+            //Uint8* arrScientists = (Uint8*)(&arrRemaining[ENTRIES]);
+            for (int j = 0; j < _rules.getResearch().Count; ++j)
+            {
+                int remaining = BitConverter.ToUInt16(data, pdata + j);
+                int scientists = data[pdata + ENTRIES + j];
+                if (remaining != 0 && !string.IsNullOrEmpty(_rules.getResearch()[j]))
+                {
+                    RuleResearch research = _mod.getResearch(_rules.getResearch()[j]);
+                    if (research != null && research.getCost() != 0)
+                    {
+                        ResearchProject project = new ResearchProject(research, research.getCost());
+                        project.setAssigned(scientists);
+                        project.setSpent(project.getCost() - remaining);
+                        @base.addResearch(project);
+                        @base.setScientists(@base.getScientists() - scientists);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads the BPROD.DAT file.
+     * Contains X-COM manufacture projects.
+     */
+    void loadDatBProd()
+    {
+        byte[] data = binaryBuffer("BPROD.DAT");
+
+        int ENTRIES = _rules.getManufacture().Count;
+        // hours (int) | engineers (Uint16) | quantity (Uint16)| produced (Uint16)
+        int ENTRY_SIZE = ENTRIES * (sizeof(int) + 3 * sizeof(ushort));
+        for (int i = 0; i < _save.getBases().Count; ++i)
+        {
+            Base @base = _save.getBases()[i];
+            int pdata = i * ENTRY_SIZE;
+            //int* arrRemaining = (int*)pdata;
+            //Uint16* arrEngineers = (Uint16*)(&arrRemaining[ENTRIES]);
+            //Uint16* arrTotal = (Uint16*)(&arrEngineers[ENTRIES]);
+            //Uint16* arrProduced = (Uint16*)(&arrTotal[ENTRIES]);
+            for (int j = 0; j < _rules.getManufacture().Count; ++j)
+            {
+                int remaining = BitConverter.ToInt32(data, pdata + j);
+                int engineers = BitConverter.ToUInt16(data, pdata + ENTRIES + j);
+                int total = BitConverter.ToUInt16(data, pdata + (ENTRIES * 2) + j);
+                int produced = BitConverter.ToUInt16(data, pdata + (ENTRIES * 3) + j);
+                if (remaining != 0 && !string.IsNullOrEmpty(_rules.getManufacture()[j]))
+                {
+                    RuleManufacture manufacture = _mod.getManufacture(_rules.getManufacture()[j]);
+                    if (manufacture != null)
+                    {
+                        Production project = new Production(manufacture, total);
+                        project.setAssignedEngineers(engineers);
+                        project.setTimeSpent(produced * manufacture.getManufactureTime() + manufacture.getManufactureTime() - remaining);
+                        @base.addProduction(project);
+                        @base.setEngineers(@base.getEngineers() - engineers);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads the XBASES.DAT file.
+     * Contains targeted X-COM bases.
+     */
+    void loadDatXBases()
+    {
+        byte[] data = binaryBuffer("XBASES.DAT");
+        const int REGIONS = 12;
+        for (int i = 0; i < REGIONS; ++i)
+        {
+            int bdata = i * 4;
+            bool detected = BitConverter.ToUInt16(data, bdata + 0x00) != 0;
+            if (detected)
+            {
+                int loc = BitConverter.ToUInt16(data, bdata + 0x02);
+                Base @base = (Base)_targets[loc];
+                if (@base != null)
+                {
+                    @base.setRetaliationTarget(true);
+                }
+            }
+        }
+    }
 }

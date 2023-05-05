@@ -96,4 +96,39 @@ internal class AlienMission
 
     /// Increase number of live UFOs.
     internal void increaseLiveUfos() { ++_liveUfos; }
+
+    /**
+     * Loads the alien mission from a YAML file.
+     * @param node The YAML node containing the data.
+     * @param game The game data, required to locate the alien base.
+     */
+    internal void load(YamlNode node, SavedGame game)
+    {
+	    _region = node["region"].ToString();
+	    _race = node["race"].ToString();
+	    _nextWave = uint.Parse(node["nextWave"].ToString());
+	    _nextUfoCounter = uint.Parse(node["nextUfoCounter"].ToString());
+	    _spawnCountdown = uint.Parse(node["spawnCountdown"].ToString());
+	    _liveUfos = uint.Parse(node["liveUfos"].ToString());
+	    _uniqueID = int.Parse(node["uniqueID"].ToString());
+        YamlNode @base = node["alienBase"];
+        if (@base != null)
+	    {
+		    int id = int.TryParse(@base.ToString(), out int result) ? result : -1;
+		    string type = "STR_ALIEN_BASE";
+		    // New format
+		    if (id == -1)
+		    {
+			    id = int.Parse(@base["id"].ToString());
+			    type = @base["type"].ToString();
+		    }
+            var found = game.getAlienBases().Find(x => x.getId() == id && x.getDeployment().getMarkerName() == type);
+            if (found == null)
+		    {
+			    throw new Exception("Corrupted save: Invalid base for mission.");
+		    }
+		    _base = found;
+	    }
+	    _missionSiteZone = int.Parse(node["missionSiteZone"].ToString());
+    }
 }

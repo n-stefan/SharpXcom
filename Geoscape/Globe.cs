@@ -121,6 +121,8 @@ internal class Globe : InteractiveSurface
 {
     const uint DOGFIGHT_ZOOM = 3;
     const int CITY_MARKER = 8;
+    const double ROTATE_LATITUDE = 0.06;
+    const double ROTATE_LONGITUDE = 0.10;
 
     short _cenX, _cenY;
     double _cenLon, _cenLat, _rotLon, _rotLat, _hoverLon, _hoverLat;
@@ -167,7 +169,7 @@ internal class Globe : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    Globe(Game game, int cenX, int cenY, int width, int height, int x, int y) : base(width, height, x, y)
+    internal Globe(Game game, int cenX, int cenY, int width, int height, int x, int y) : base(width, height, x, y)
     {
         _cenX = (short)cenX;
         _cenY = (short)cenY;
@@ -468,5 +470,235 @@ internal class Globe : InteractiveSurface
 
             cache.Add(p);
         }
+    }
+
+    /**
+     * Returns the current globe zoom factor.
+     * @return Current zoom (0-5).
+     */
+    internal uint getZoom() =>
+	    _zoom;
+
+    /**
+     * Resets the rotation speed and timer.
+     */
+    internal void rotateStop()
+    {
+        _rotLon = 0.0;
+        _rotLat = 0.0;
+        _rotTimer.stop();
+    }
+
+    /**
+     * Resets longitude rotation speed and timer.
+     */
+    internal void rotateStopLon()
+    {
+        _rotLon = 0.0;
+        if (AreSame(_rotLat, 0.0))
+        {
+            _rotTimer.stop();
+        }
+    }
+
+    /**
+     * Resets latitude rotation speed and timer.
+     */
+    internal void rotateStopLat()
+    {
+        _rotLat = 0.0;
+        if (AreSame(_rotLon, 0.0))
+        {
+            _rotTimer.stop();
+        }
+    }
+
+    /**
+     * Checks if a polar point is inside the globe's landmass.
+     * @param lon Longitude of the point.
+     * @param lat Latitude of the point.
+     * @return True if it's inside, False if it's outside.
+     */
+    internal bool insideLand(double lon, double lat) =>
+	    (getPolygonFromLonLat(lon, lat)) != null;
+
+    /**
+     * Sets a downwards rotation speed and starts the timer.
+     */
+    internal void rotateDown()
+    {
+        _rotLat = ROTATE_LATITUDE;
+        if (!_rotTimer.isRunning()) _rotTimer.start();
+    }
+
+    /**
+     * Sets a upwards rotation speed and starts the timer.
+     */
+    internal void rotateUp()
+    {
+        _rotLat = -ROTATE_LATITUDE;
+        if (!_rotTimer.isRunning()) _rotTimer.start();
+    }
+
+    /**
+     * Increases the zoom level on the globe.
+     */
+    internal void zoomIn()
+    {
+        if (_zoom < _zoomRadius.Count - 1)
+        {
+            setZoom(_zoom + 1);
+        }
+    }
+
+    /**
+     * Decreases the zoom level on the globe.
+     */
+    internal void zoomOut()
+    {
+        if (_zoom > 0)
+        {
+            setZoom(_zoom - 1);
+        }
+    }
+
+    /**
+     * Zooms the globe out as far as possible.
+     */
+    internal void zoomMin()
+    {
+        if (_zoom > 0)
+        {
+            setZoom(0);
+        }
+    }
+
+    /**
+     * Zooms the globe in as close as possible.
+     */
+    internal void zoomMax()
+    {
+        if (_zoom < _zoomRadius.Count - 1)
+        {
+            setZoom((uint)(_zoomRadius.Count - 1));
+        }
+    }
+
+    /**
+     * Sets a leftwards rotation speed and starts the timer.
+     */
+    internal void rotateLeft()
+    {
+        _rotLon = -ROTATE_LONGITUDE;
+        if (!_rotTimer.isRunning()) _rotTimer.start();
+    }
+
+    /**
+     * Sets a rightwards rotation speed and starts the timer.
+     */
+    internal void rotateRight()
+    {
+        _rotLon = ROTATE_LONGITUDE;
+        if (!_rotTimer.isRunning()) _rotTimer.start();
+    }
+
+    /**
+     * Stores the zoom used before a dogfight.
+     */
+    internal void saveZoomDogfight() =>
+        _zoomOld = _zoom;
+
+    /**
+     * Zooms the globe smoothly into dogfight level.
+     * @return Is the globe already zoomed in?
+     */
+    internal bool zoomDogfightIn()
+    {
+        if (_zoom < DOGFIGHT_ZOOM)
+        {
+            double radiusNow = _radius;
+            if (radiusNow + _radiusStep >= _zoomRadius[(int)DOGFIGHT_ZOOM])
+            {
+                setZoom(DOGFIGHT_ZOOM);
+            }
+            else
+            {
+                if (radiusNow + _radiusStep >= _zoomRadius[(int)(_zoom + 1)])
+                    _zoom++;
+                setZoom(_zoom);
+                _radius = radiusNow + _radiusStep;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Zooms the globe smoothly out of dogfight level.
+     * @return Is the globe already zoomed out?
+     */
+    internal bool zoomDogfightOut()
+    {
+        if (_zoom > _zoomOld)
+        {
+            double radiusNow = _radius;
+            if (radiusNow - _radiusStep <= _zoomRadius[(int)_zoomOld])
+            {
+                setZoom(_zoomOld);
+            }
+            else
+            {
+                if (radiusNow - _radiusStep <= _zoomRadius[(int)(_zoom - 1)])
+                    _zoom--;
+                setZoom(_zoom);
+                _radius = radiusNow - _radiusStep;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    Polygon getPolygonFromLonLat(double lon, double lat)
+    {
+        const double zDiscard = 0.75f;
+        double coslat = Math.Cos(lat);
+        double sinlat = Math.Sin(lat);
+
+        foreach (var i in _rules.getPolygons())
+        {
+            double x, y, z, x2, y2;
+            double clat, clon;
+            z = 0;
+            for (int j = 0; j < i.getPoints(); ++j)
+            {
+                z = coslat * Math.Cos(i.getLatitude(j)) * Math.Cos(i.getLongitude(j) - lon) + sinlat * Math.Sin(i.getLatitude(j));
+                if (z < zDiscard) break; //discarded
+            }
+            if (z < zDiscard) continue; //discarded
+
+            bool odd = false;
+
+            clat = i.getLatitude(0); //initial point
+            clon = i.getLongitude(0);
+            x = Math.Cos(clat) * Math.Sin(clon - lon);
+            y = coslat * Math.Sin(clat) - sinlat * Math.Cos(clat) * Math.Cos(clon - lon);
+
+            for (int j = 0; j < i.getPoints(); ++j)
+            {
+                int k = (j + 1) % i.getPoints(); //index of next point in poly
+                clat = i.getLatitude(k);
+                clon = i.getLongitude(k);
+
+                x2 = Math.Cos(clat) * Math.Sin(clon - lon);
+                y2 = coslat * Math.Sin(clat) - sinlat * Math.Cos(clat) * Math.Cos(clon - lon);
+                if (((y > 0) != (y2 > 0)) && (0 < (x2 - x) * (0 - y) / (y2 - y) + x))
+                    odd = !odd;
+                x = x2;
+                y = y2;
+
+            }
+            if (odd) return i;
+        }
+        return null;
     }
 }

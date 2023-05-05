@@ -73,4 +73,18 @@ internal class Region
      */
     internal ref List<int> getActivityXcom() =>
 	    ref _activityXcom;
+
+    /**
+     * Returns the ruleset for the region's type.
+     * @return Pointer to ruleset.
+     */
+    internal RuleRegion getRules() =>
+	    _rules;
+
+    /**
+     * Adds to the country's alien activity level.
+     * @param activity how many points to add.
+     */
+    internal void addActivityAlien(int activity) =>
+        _activityAlien[^1] += activity;
 }

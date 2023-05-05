@@ -638,7 +638,7 @@ internal class SavedBattleGame
                 _tiles[i].getMapData(out mdID, out mdsID, tp);
                 if (mdID != -1 && mdsID != -1)
                 {
-                    _tiles[i].setMapData(_mapDataSets[mdsID].getObject(mdID), mdID, mdsID, tp);
+                    _tiles[i].setMapData(_mapDataSets[mdsID].getObject((uint)mdID), mdID, mdsID, tp);
                 }
             }
         }

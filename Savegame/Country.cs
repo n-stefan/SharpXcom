@@ -113,4 +113,18 @@ internal class Country
      */
     internal void setNewPact() =>
         _newPact = true;
+
+    /**
+     * Returns the ruleset for the country's type.
+     * @return Pointer to ruleset.
+     */
+    internal RuleCountry getRules() =>
+	    _rules;
+
+    /**
+     * Adds to the country's alien activity level.
+     * @param activity how many points to add.
+     */
+    internal void addActivityAlien(int activity) =>
+        _activityAlien[^1] += activity;
 }

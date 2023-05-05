@@ -30,7 +30,7 @@ internal class ResearchProject
     int _spent;
     int _cost;
 
-    ResearchProject(RuleResearch p, int c)
+    internal ResearchProject(RuleResearch p, int c)
     {
         _project = p;
         _assigned = 0;
@@ -58,7 +58,7 @@ internal class ResearchProject
      * Returns the cost of the ResearchProject
      * @return the cost of the ResearchProject(in man/day)
      */
-    int getCost() =>
+    internal int getCost() =>
 	    _cost;
 
     /**
@@ -72,9 +72,39 @@ internal class ResearchProject
      * Returns the number of scientist assigned to this project
      * @return Number of assigned scientist.
      */
-    int getAssigned() =>
+    internal int getAssigned() =>
 	    _assigned;
 
-    RuleResearch getRules() =>
+    internal RuleResearch getRules() =>
 	    _project;
+
+    /**
+     * Changes the number of scientist to the ResearchProject
+     * @param nb number of scientist assigned to this ResearchProject
+     */
+    internal void setAssigned(int nb) =>
+        _assigned = nb;
+
+    /**
+     * Changes the cost of the ResearchProject
+     * @param spent new project cost(in man/day)
+     */
+    internal void setSpent(int spent) =>
+        _spent = spent;
+
+    /**
+     * Called every day to compute time spent on this ResearchProject
+     * @return true if the ResearchProject is finished
+     */
+    internal bool step()
+    {
+        _spent += _assigned;
+        return isFinished();
+    }
+
+    /**
+     * gets state of project.
+     */
+    internal bool isFinished() =>
+        _spent >= getCost();
 }

@@ -46,4 +46,34 @@ internal class Vehicle
      *
      */
     ~Vehicle() { }
+
+    /**
+     * Loads the vehicle from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _ammo = int.Parse(node["ammo"].ToString());
+	    _size = int.Parse(node["size"].ToString());
+    }
+
+    /**
+     * Returns the ruleset for the vehicle's type.
+     * @return Pointer to ruleset.
+     */
+    internal RuleItem getRules() =>
+	    _rules;
+
+    /**
+     * Returns the ammo contained in this vehicle.
+     * @return Weapon ammo.
+     */
+    internal int getAmmo()
+    {
+	    if (_ammo == -1)
+	    {
+		    return 255;
+	    }
+	    return _ammo;
+    }
 }

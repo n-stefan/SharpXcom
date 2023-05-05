@@ -132,7 +132,68 @@ internal class RuleMissionScript : IRule
 		_useTable = bool.Parse(node["useTable"].ToString());
 		if (string.IsNullOrEmpty(_varName) && (_maxRuns > 0 || _avoidRepeats > 0))
 		{
-			throw new Exception("Error in mission script: " + _type +": no varName provided for a script with maxRuns or repeatAvoidance.");
+			throw new Exception("Error in mission script: " + _type + ": no varName provided for a script with maxRuns or repeatAvoidance.");
 		}
 	}
+
+	/**
+	 * @return the first month this script should run.
+	 */
+	internal int getFirstMonth() =>
+		_firstMonth;
+
+	/**
+	 * @return the last month this script should run.
+	 */
+	internal int getLastMonth() =>
+		_lastMonth;
+
+	/**
+	 * @return the maximum runs for scripts tracking our varName.
+	 */
+	internal int getMaxRuns() =>
+		_maxRuns;
+
+	/**
+	 * @return the label this command uses for conditional tracking.
+	 */
+	internal int getLabel() =>
+		_label;
+
+	/**
+	 * @return the list of conditions that govern execution of this command.
+	 */
+	internal List<int> getConditionals() =>
+		_conditionals;
+
+	/**
+	 * @return a list of research topics that govern execution of this script.
+	 */
+	internal Dictionary<string, bool> getResearchTriggers() =>
+		_researchTriggers;
+
+	/**
+	 * @return the minimum difficulty for this script to run.
+	 */
+	internal int getMinDifficulty() =>
+		_minDifficulty;
+
+	/**
+	 * @return the name of the variable we want to use to track in the saved game.
+	 */
+	internal string getVarName() =>
+		_varName;
+
+	/**
+	 * Gets the name of this command.
+	 * @return the name of the command.
+	 */
+	internal string getType() =>
+		_type;
+
+	/**
+	 * @return the odds of this command's execution.
+	 */
+	internal int getExecutionOdds() =>
+		_executionOdds;
 }

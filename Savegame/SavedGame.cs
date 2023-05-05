@@ -25,6 +25,11 @@ namespace SharpXcom.Savegame;
 enum GameDifficulty { DIFF_BEGINNER = 0, DIFF_EXPERIENCED, DIFF_VETERAN, DIFF_GENIUS, DIFF_SUPERHUMAN };
 
 /**
+ * Enumerator for the various save types.
+ */
+enum SaveType { SAVE_DEFAULT, SAVE_QUICK, SAVE_AUTO_GEOSCAPE, SAVE_AUTO_BATTLESCAPE, SAVE_IRONMAN, SAVE_IRONMAN_END };
+
+/**
  * Enumerator for the current game ending.
  */
 enum GameEnding { END_NONE, END_WIN, END_LOSE };
@@ -308,7 +313,7 @@ internal class SavedGame
     /*
      * @return the month counter.
      */
-    int getMonthsPassed() =>
+    internal int getMonthsPassed() =>
 	    _monthsPassed;
 
     /**
@@ -490,4 +495,455 @@ internal class SavedGame
     /// Full access to the current alien missions.
     internal List<AlienMission> getAlienMissions() =>
         _activeMissions;
+
+    /**
+     * Add a ResearchProject to the list of already discovered ResearchProject
+     * @param research The newly found ResearchProject
+     * @param mod the game Mod
+     * @param base the base, in which the project was finished
+     * @param score should the score be awarded or not?
+     */
+    internal void addFinishedResearch(RuleResearch research, Mod.Mod mod, Base @base, bool score = true)
+    {
+        // Not really a queue in C++ terminology (we don't need or want pop_front())
+        var queue = new List<RuleResearch> { research };
+
+        int currentQueueIndex = 0;
+	    while (queue.Count > currentQueueIndex)
+	    {
+		    RuleResearch currentQueueItem = queue[currentQueueIndex];
+
+		    // 1. Find out and remember if the currentQueueItem has any undiscovered "protected unlocks"
+		    bool hasUndiscoveredProtectedUnlocks = hasUndiscoveredProtectedUnlock(currentQueueItem, mod);
+
+		    // 2. If the currentQueueItem was *not* already discovered before, add it to discovered research
+		    bool checkRelatedZeroCostTopics = true;
+		    if (!isResearched(currentQueueItem.getName(), false))
+		    {
+			    _discovered.Add(currentQueueItem);
+			    if (!hasUndiscoveredProtectedUnlocks && isResearched(currentQueueItem.getGetOneFree(), false))
+			    {
+				    // If the currentQueueItem can't tell you anything anymore, remove it from popped research
+				    // Note: this is for optimisation purposes only, functionally it is *not* required...
+				    // ... removing it prematurely leads to bugs, maybe we should not do it at all?
+				    removePoppedResearch(currentQueueItem);
+			    }
+			    if (score)
+			    {
+				    addResearchScore(currentQueueItem.getPoints());
+			    }
+		    }
+		    else
+		    {
+			    // If the currentQueueItem *was* already discovered before, check if it has any undiscovered "protected unlocks".
+			    // If not, all zero-cost topics have already been processed before (during the first discovery)
+			    // and we can basically terminate here (i.e. skip step 3.).
+			    if (!hasUndiscoveredProtectedUnlocks)
+			    {
+				    checkRelatedZeroCostTopics = false;
+			    }
+		    }
+
+		    // 3. If currentQueueItem is completed for the *first* time, or if it has any undiscovered "protected unlocks",
+		    // process all related zero-cost topics
+		    if (checkRelatedZeroCostTopics)
+		    {
+			    // 3a. Gather all available research projects
+			    var availableResearch = new List<RuleResearch>();
+			    if (@base != null)
+			    {
+				    // Note: even if two different but related projects are finished in two different bases at the same time,
+				    // the algorithm is robust enough to treat them *sequentially* (i.e. as if one was researched first and the other second),
+				    // thus calling this method for *one* base only is enough
+				    getAvailableResearchProjects(availableResearch, mod, @base);
+			    }
+			    else
+			    {
+				    // Used in vanilla save converter only
+				    getAvailableResearchProjects(availableResearch, mod, null);
+			    }
+
+			    // 3b. Iterate through all available projects and add zero-cost projects to the processing queue
+			    foreach (var itProjectToTest in availableResearch)
+			    {
+				    // We are only interested in zero-cost projects!
+				    if (itProjectToTest.getCost() == 0)
+				    {
+					    // We are only interested in *new* projects (i.e. not processed or scheduled for processing yet)
+					    bool isAlreadyInTheQueue = false;
+					    foreach (var itQueue in queue)
+					    {
+						    if (itQueue.getName() == itProjectToTest.getName())
+						    {
+							    isAlreadyInTheQueue = true;
+							    break;
+						    }
+					    }
+
+					    if (!isAlreadyInTheQueue)
+					    {
+						    if (!itProjectToTest.getRequirements().Any())
+						    {
+							    // no additional checks for "unprotected" topics
+							    queue.Add(itProjectToTest);
+						    }
+						    else
+						    {
+							    // for "protected" topics, we need to check if the currentQueueItem can unlock it or not
+							    foreach (var itUnlocks in currentQueueItem.getUnlocked())
+							    {
+								    if (itProjectToTest.getName() == itUnlocks)
+								    {
+									    queue.Add(itProjectToTest);
+									    break;
+								    }
+							    }
+						    }
+					    }
+				    }
+			    }
+		    }
+
+		    // 4. process remaining items in the queue
+		    ++currentQueueIndex;
+	    }
+    }
+
+    /**
+     * Get the list of RuleResearch which can be researched in a Base.
+     * @param projects the list of ResearchProject which are available.
+     * @param mod the game Mod
+     * @param base a pointer to a Base
+     * @param considerDebugMode Should debug mode be considered or not.
+     */
+    internal void getAvailableResearchProjects(List<RuleResearch> projects, Mod.Mod mod, Base @base, bool considerDebugMode = false)
+    {
+	    // This list is used for topics that can be researched even if *not all* dependencies have been discovered yet (e.g. STR_ALIEN_ORIGINS)
+	    // Note: all requirements of such topics *have to* be discovered though! This will be handled elsewhere.
+	    var unlocked = new List<RuleResearch>();
+	    foreach (var it in _discovered)
+	    {
+		    foreach (var itUnlocked in it.getUnlocked())
+		    {
+			    unlocked.Add(mod.getResearch(itUnlocked, true));
+		    }
+	    }
+
+	    // Create a list of research topics available for research in the given base
+	    foreach (var iter in mod.getResearchList())
+	    {
+		    RuleResearch research = mod.getResearch(iter);
+
+		    if ((considerDebugMode && _debug) || unlocked.Contains(research))
+		    {
+			    // Empty, these research topics are on the "unlocked list", *don't* check the dependencies!
+		    }
+		    else
+		    {
+			    // These items are not on the "unlocked list", we must check if "dependencies" are satisfied!
+			    if (!isResearched(research.getDependencies(), considerDebugMode))
+			    {
+				    continue;
+			    }
+		    }
+
+		    // Check if "requires" are satisfied
+		    // IMPORTANT: research topics with "requires" will NEVER be directly visible to the player anyway
+		    //   - there is an additional filter in NewResearchListState::fillProjectList(), see comments there for more info
+		    //   - there is an additional filter in NewPossibleResearchState::NewPossibleResearchState()
+		    //   - we do this check for other functionality using this method, namely SavedGame::addFinishedResearch()
+		    //     - Note: when called from there, parameter considerDebugMode = false
+		    if (!isResearched(research.getRequirements(), considerDebugMode))
+		    {
+			    continue;
+		    }
+
+		    // Remove the already researched topics from the list *UNLESS* they can still give you something more
+		    if (isResearched(research.getName(), false))
+		    {
+			    if (!isResearched(research.getGetOneFree(), false))
+			    {
+				    // This research topic still has some more undiscovered "getOneFree" topics, keep it!
+			    }
+			    else if (hasUndiscoveredProtectedUnlock(research, mod))
+			    {
+				    // This research topic still has one or more undiscovered "protected unlocks", keep it!
+			    }
+			    else
+			    {
+				    // This topic can't give you anything else anymore, ignore it!
+				    continue;
+			    }
+		    }
+
+		    if (@base != null)
+		    {
+			    // Check if this topic is already being researched in the given base
+			    List<ResearchProject> baseResearchProjects = @base.getResearch();
+			    if (baseResearchProjects.Any(x => x.getRules() == research))
+			    {
+				    continue;
+			    }
+
+			    // Check for needed item in the given base
+			    if (research.needItem() && @base.getStorageItems().getItem(research.getName()) == 0)
+			    {
+				    continue;
+			    }
+		    }
+		    else
+		    {
+			    // Used in vanilla save converter only
+			    if (research.needItem() && research.getCost() == 0)
+			    {
+				    continue;
+			    }
+		    }
+
+		    // Haleluja, all checks passed, add the research topic to the list
+		    projects.Add(research);
+	    }
+    }
+
+    /**
+     * Returns if a certain research topic has been completed.
+     * @param research Research ID.
+     * @param considerDebugMode Should debug mode be considered or not.
+     * @return Whether it's researched or not.
+     */
+    internal bool isResearched(string research, bool considerDebugMode = true)
+    {
+	    //if (research.empty())
+	    //	return true;
+	    if (considerDebugMode && _debug)
+		    return true;
+	    foreach (var i in _discovered)
+	    {
+		    if (i.getName() == research)
+			    return true;
+	    }
+
+	    return false;
+    }
+
+    /**
+     * Returns if a certain list of research topics has been completed.
+     * @param research List of research IDs.
+     * @param considerDebugMode Should debug mode be considered or not.
+     * @return Whether it's researched or not.
+     */
+    internal bool isResearched(List<string> research, bool considerDebugMode = true)
+    {
+	    if (!research.Any())
+		    return true;
+	    if (considerDebugMode && _debug)
+		    return true;
+	    var matches = research;
+        for (var i = 0; i < _discovered.Count; ++i)
+	    {
+		    for (var j = 0; j < matches.Count; ++j)
+		    {
+			    if (_discovered[i].getName() == matches[j])
+			    {
+				    /* j = */ matches.RemoveAt(j);
+				    break;
+			    }
+		    }
+		    if (!matches.Any())
+			    return true;
+	    }
+
+	    return false;
+    }
+
+    /**
+     * adds to this month's research score
+     * @param score the amount to add.
+     */
+    void addResearchScore(int score) =>
+        _researchScores[^1] += score;
+
+    /*
+     * checks for and removes a research project from the "has been popped up" array
+     * @param research is the project we are checking for and removing, if necessary.
+     */
+    void removePoppedResearch(RuleResearch research)
+    {
+        var index = _poppedResearch.IndexOf(research);
+        if (index != -1)
+	    {
+		    _poppedResearch.RemoveAt(index);
+	    }
+    }
+
+    /**
+     * Returns if a research still has undiscovered "protected unlocks".
+     * @param r Research to check.
+     * @param mod the Game Mod
+     * @return Whether it has any undiscovered "protected unlocks" or not.
+     */
+    internal bool hasUndiscoveredProtectedUnlock(RuleResearch r, Mod.Mod mod)
+    {
+	    // Note: checking for not yet discovered unlocks protected by "requires" (which also implies cost = 0)
+	    foreach (var itUnlocked in r.getUnlocked())
+	    {
+		    RuleResearch unlock = mod.getResearch(itUnlocked, true);
+		    if (unlock.getRequirements().Any())
+		    {
+			    if (!isResearched(unlock.getName(), false))
+			    {
+				    return true;
+			    }
+		    }
+	    }
+	    return false;
+    }
+
+    /*
+     * marks a research topic as having already come up as "we can now research"
+     * @param research is the project we want to add to the vector
+     */
+    internal void addPoppedResearch(RuleResearch research)
+    {
+	    if (!wasResearchPopped(research))
+		    _poppedResearch.Add(research);
+    }
+
+    /*
+     * checks if an unresearched topic has previously been popped up.
+     * @param research is the project we are checking for
+     * @return whether or not it has been popped up.
+     */
+    bool wasResearchPopped(RuleResearch research) =>
+        _poppedResearch.Contains(research);
+
+    /**
+     * Returns the current time of the game.
+     * @return Pointer to the game time.
+     */
+    internal GameTime getTime() =>
+	    _time;
+
+    /**
+     * Returns the player's current funds.
+     * @return Current funds.
+     */
+    internal long getFunds() =>
+	    _funds.Last();
+
+    /**
+     * Returns the last selected player base.
+     * @return Pointer to base.
+     */
+    internal Base getSelectedBase()
+    {
+        // in case a base was destroyed or something...
+        if (_selectedBase < _bases.Count)
+        {
+            return _bases[(int)_selectedBase];
+        }
+        else
+        {
+            return _bases.First();
+        }
+    }
+
+    /**
+     * Gives the player his monthly funds, taking in account
+     * all maintenance and profit costs.
+     */
+    internal void monthlyFunding()
+    {
+        _funds[_funds.Count - 1] += getCountryFunding() - getBaseMaintenance();
+        _funds.Add(_funds.Last());
+        _maintenance[_maintenance.Count - 1] = getBaseMaintenance();
+        _maintenance.Add(0);
+        _incomes.Add(getCountryFunding());
+        _expenditures.Add(getBaseMaintenance());
+        _researchScores.Add(0);
+
+        if (_incomes.Count > 12)
+            _incomes.RemoveAt(0);
+        if (_expenditures.Count > 12)
+            _expenditures.RemoveAt(0);
+        if (_researchScores.Count > 12)
+            _researchScores.RemoveAt(0);
+        if (_funds.Count > 12)
+            _funds.RemoveAt(0);
+        if (_maintenance.Count > 12)
+            _maintenance.RemoveAt(0);
+    }
+
+    /**
+     * Adds up the monthly funding of all the countries.
+     * @return Total funding.
+     */
+    int getCountryFunding()
+    {
+	    int total = 0;
+	    foreach (var i in _countries)
+	    {
+		    total += i.getFunding().Last();
+	    }
+	    return total;
+    }
+
+    /**
+     * Adds up the monthly maintenance of all the bases.
+     * @return Total maintenance.
+     */
+    int getBaseMaintenance()
+    {
+	    int total = 0;
+	    foreach (var i in _bases)
+	    {
+		    total += i.getMonthlyMaintenace();
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the game's difficulty level.
+     * @return Difficulty level.
+     */
+    internal GameDifficulty getDifficulty() =>
+	    _difficulty;
+
+    /**
+     * Get the list of newly available manufacture projects once a ResearchProject has been completed. This function check for fake ResearchProject.
+     * @param dependables the list of RuleManufacture which are now available.
+     * @param research The RuleResearch which has just been discovered
+     * @param mod the Game Mod
+     * @param base a pointer to a Base
+     */
+    internal void getDependableManufacture(List<RuleManufacture> dependables, RuleResearch research, Mod.Mod mod, Base _)
+    {
+	    List<string> mans = mod.getManufactureList();
+	    foreach (var iter in mans)
+	    {
+		    RuleManufacture m = mod.getManufacture(iter);
+		    List<string> reqs = m.getRequirements();
+		    if (isResearched(m.getRequirements()) && reqs.Contains(research.getName()))
+		    {
+			    dependables.Add(m);
+		    }
+	    }
+    }
+
+    /**
+     * Changes the player's funds to a new value.
+     * @param funds New funds.
+     */
+    internal void setFunds(long funds)
+    {
+        if (_funds.Last() > funds)
+        {
+            _expenditures[^1] += _funds.Last() - funds;
+        }
+        else
+        {
+            _incomes[^1] += funds - _funds.Last();
+        }
+        _funds[^1] = funds;
+    }
 }

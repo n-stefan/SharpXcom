@@ -254,4 +254,19 @@ internal class AlienDeployment : IRule
 	    }
 	    _genMissionFrequency = int.Parse(node["genMissionFreq"].ToString());
     }
+
+    /**
+     * Returns the globe marker name for this mission.
+     * @return String ID for marker name.
+     */
+    internal string getMarkerName() =>
+	    _markerName;
+
+    /**
+     * Gets the score penalty against XCom for this site existing.
+     * This penalty is applied half-hourly for sites and daily for bases.
+     * @return the number of points the aliens get per half hour.
+     */
+    internal int getPoints() =>
+	    _points;
 }

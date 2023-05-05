@@ -354,7 +354,7 @@ internal class State
      * @param dX delta of X;
      * @param dY delta of Y;
      */
-    void recenter(int dX, int dY)
+    internal void recenter(int dX, int dY)
     {
         foreach (var surface in _surfaces)
         {
@@ -455,5 +455,33 @@ internal class State
 	    {
 		    setPalette(pal, backPal);
 	    }
+    }
+
+    /**
+     * switch all the colours to something a little more battlescape appropriate.
+     */
+    protected void applyBattlescapeTheme()
+    {
+        Element element = _game.getMod().getInterface("mainMenu").getElement("battlescapeTheme");
+        foreach (var i in _surfaces)
+        {
+            i.setColor((byte)element.color);
+            i.setHighContrast(true);
+            Window window = (Window)i;
+            if (window != null)
+            {
+                window.setBackground(_game.getMod().getSurface("TAC00.SCR"));
+            }
+            TextList list = (TextList)i;
+            if (list != null)
+            {
+                list.setArrowColor((byte)element.border);
+            }
+            ComboBox combo = (ComboBox)i;
+            if (combo != null)
+            {
+                combo.setArrowColor((byte)element.border);
+            }
+        }
     }
 }

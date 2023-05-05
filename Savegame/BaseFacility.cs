@@ -92,4 +92,39 @@ internal class BaseFacility
      */
     internal void setBuildTime(int time) =>
         _buildTime = time;
+
+    /**
+     * Returns the ruleset for the base facility's type.
+     * @return Pointer to ruleset.
+     */
+    internal RuleBaseFacility getRules() =>
+	    _rules;
+
+    /**
+     * Returns the base facility's remaining time
+     * until it's finished building (0 = complete).
+     * @return Time left in days.
+     */
+    internal int getBuildTime() =>
+	    _buildTime;
+
+    /**
+     * Handles the facility building every day.
+     */
+    internal void build() =>
+        _buildTime--;
+
+    /**
+     * Gets craft, used for drawing facility.
+     * @return craft
+     */
+    internal Craft getCraft() =>
+	    _craftForDrawing;
+
+    /**
+     * Sets craft, used for drawing facility.
+     * @param craft for drawing hangar.
+     */
+    internal void setCraft(Craft craft) =>
+        _craftForDrawing = craft;
 }

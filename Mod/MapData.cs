@@ -60,12 +60,13 @@ internal class MapData
     ushort _miniMapIndex;
     int[] _loftID = new int[12];
     int[] _block = new int[6];
+    int[] _sprite = new int[8];
 
     /**
      * Creates a new Map Data Object.
      * @param dataset The dataset this object belongs to.
      */
-    MapData(MapDataSet dataset)
+    internal MapData(MapDataSet dataset)
     {
         _dataset = dataset;
         _specialType = SpecialTileType.TILE;
@@ -227,4 +228,252 @@ internal class MapData
      */
     internal int getArmor() =>
 	    _armor;
+
+    /**
+     * Gets the dead object ID.
+     * @return The dead object ID.
+     */
+    internal int getDieMCD() =>
+	    _dieMCD;
+
+    /**
+     * Gets the alternative object ID.
+     * @return The alternative object ID.
+     */
+    internal int getAltMCD() =>
+	    _altMCD;
+
+    /**
+     * Sets the sprite index for a certain frame.
+     * @param frameID Animation frame
+     * @param value The sprite index in the surfaceset of the mapdataset.
+     */
+    internal void setSprite(int frameID, int value) =>
+        _sprite[frameID] = value;
+
+    /**
+     * Sets the offset on the Y axis for drawing this object.
+     * @param value The offset.
+     */
+    internal void setYOffset(int value) =>
+        _yOffset = value;
+
+    /**
+     * Sets a special tile type and object type.
+     * @param value Special tile type.
+     * @param otype Object type.
+     */
+    internal void setSpecialType(int value, TilePart otype)
+    {
+        _specialType = (SpecialTileType)value;
+        _objectType = otype;
+    }
+
+    /**
+     * Sets the TU cost to move over the object.
+     * @param walk The walking TU cost.
+     * @param fly The flying TU cost.
+     * @param slide The sliding TU cost.
+     */
+    internal void setTUCosts(int walk, int fly, int slide)
+    {
+        _TUWalk = walk;
+        _TUFly = fly;
+        _TUSlide = slide;
+    }
+
+    /**
+     * Sets all kinds of flags.
+     * @param isUfoDoor True if this is a ufo door.
+     * @param stopLOS True if this stops line of sight.
+     * @param isNoFloor True if this is a floor.
+     * @param bigWall True if this is a bigWall.
+     * @param isGravLift True if this is a grav lift.
+     * @param isDoor True if this is a normal door.
+     * @param blockFire True if this blocks fire.
+     * @param blockSmoke True if this blocks smoke.
+     * @param baseModule True if this is a base module item.
+     */
+    internal void setFlags(bool isUfoDoor, bool stopLOS, bool isNoFloor, int bigWall, bool isGravLift, bool isDoor, bool blockFire, bool blockSmoke, bool baseModule)
+    {
+        _isUfoDoor = isUfoDoor;
+        _stopLOS = stopLOS;
+        _isNoFloor = isNoFloor;
+        _bigWall = bigWall;
+        _isGravLift = isGravLift;
+        _isDoor = isDoor;
+        _blockFire = blockFire;
+        _blockSmoke = blockSmoke;
+        _baseModule = baseModule;
+    }
+
+    /**
+     * Sets the Y offset for units/objects on this tile.
+     * @param value The Y offset.
+     */
+    internal void setTerrainLevel(int value) =>
+        _terrainLevel = value;
+
+    /**
+     * Sets the index to the footstep sound.
+     * @param value The sound ID.
+     */
+    internal void setFootstepSound(int value) =>
+        _footstepSound = value;
+
+    /**
+     * Sets the alternative object ID.
+     * @param value The alternative object ID.
+     */
+    internal void setAltMCD(int value) =>
+        _altMCD = value;
+
+    /**
+     * Sets the dead object ID.
+     * @param value The dead object ID.
+     */
+    internal void setDieMCD(int value) =>
+        _dieMCD = value;
+
+    /**
+     * Sets the amount of blockage for all types.
+     * @param lightBlock The light blockage.
+     * @param visionBlock The vision blockage.
+     * @param HEBlock The high explosive blockage.
+     * @param smokeBlock The smoke blockage.
+     * @param fireBlock The fire blockage.
+     * @param gasBlock The gas blockage.
+     */
+    internal void setBlockValue(int lightBlock, int visionBlock, int HEBlock, int smokeBlock, int fireBlock, int gasBlock)
+    {
+        _block[0] = lightBlock; // not used...
+        _block[1] = visionBlock == 1 ? 255 : 0;
+        _block[2] = HEBlock;
+        _block[3] = smokeBlock == 1 ? 256 : 0;
+        _block[4] = fireBlock;
+        _block[5] = gasBlock;
+    }
+
+    /**
+     * Sets the amount of light the object is emitting.
+     * @param value The amount of light emitted.
+     */
+    internal void setLightSource(int value) =>
+        _lightSource = value;
+
+    /**
+     * Sets the amount of armor.
+     * @param value The amount of armor.
+     */
+    internal void setArmor(int value) =>
+        _armor = value;
+
+    /**
+     * Sets the amount of flammable (how flammable this object is).
+     * @param value The amount of flammable.
+     */
+    internal void setFlammable(int value) =>
+        _flammable = value;
+
+    /**
+     * Sets the amount of fuel.
+     * @param value The amount of fuel.
+     */
+    internal void setFuel(int value) =>
+        _fuel = value;
+
+    /**
+     * Sets the type of explosive.
+     * @param value The type of explosive.
+     */
+    internal void setExplosiveType(int value) =>
+        _explosiveType = value;
+
+    /**
+     * Sets the amount of explosive.
+     * @param value The amount of explosive.
+     */
+    internal void setExplosive(int value) =>
+        _explosive = value;
+
+    /**
+     * Sets the SCANG.DAT index for minimap.
+     * @param i The minimap index.
+     */
+    internal void setMiniMapIndex(ushort i) =>
+        _miniMapIndex = i;
+
+    /**
+     * Sets the loft index for a certain layer.
+     * @param loft The loft index.
+     * @param layer The layer.
+     */
+    internal void setLoftID(int loft, int layer) =>
+        _loftID[layer] = loft;
+
+    /**
+     * Sets the bigWall value.
+     * @param bigWall The new bigWall value.
+     */
+    internal void setBigWall(int bigWall) =>
+	    _bigWall = bigWall;
+
+    /**
+     * Sets the TUWalk value.
+     * @param TUWalk The new TUWalk value.
+     */
+    internal void setTUWalk(int TUWalk) =>
+	    _TUWalk = TUWalk;
+
+    /**
+     * Sets the TUFly value.
+     * @param TUFly The new TUFly value.
+     */
+    internal void setTUFly(int TUFly) =>
+	    _TUFly = TUFly;
+
+    /**
+     * Sets the TUSlide value.
+     * @param TUSlide The new TUSlide value.
+     */
+    internal void setTUSlide(int TUSlide) =>
+	    _TUSlide = TUSlide;
+
+    /**
+     * Gets the type of object.
+     * @return Type of the part of the tile.
+     */
+    internal TilePart getObjectType() =>
+	    _objectType;
+
+    /**
+     * Sets the amount of HE blockage.
+     * @param HEBlock The high explosive blockage.
+     */
+    internal void setHEBlock(int HEBlock) =>
+        _block[2] = HEBlock;
+
+    /**
+     * Sets the type of object.
+     * @param type New type of the object.
+     */
+    internal void setObjectType(TilePart type) =>
+        _objectType = type;
+
+    /**
+     * set the "no floor" flag.
+     * @param isNoFloor set the flag to THIS.
+     */
+    internal void setNoFloor(bool isNoFloor) =>
+        _isNoFloor = isNoFloor;
+
+    /**
+     * set the "stops LOS" flag.
+     * @param stopLOS set the flag to THIS.
+     */
+    internal void setStopLOS(bool stopLOS)
+    {
+        _stopLOS = stopLOS;
+        _block[1] = stopLOS ? 255 : 0;
+    }
 }

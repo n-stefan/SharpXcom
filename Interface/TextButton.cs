@@ -29,7 +29,7 @@ namespace SharpXcom.Interface;
 internal class TextButton : InteractiveSurface
 {
     byte _color;
-    TextButton[] _group;
+    TextButton _group;
     bool _contrast, _geoscapeButton;
     ComboBox _comboBox;
     Text _text;
@@ -109,4 +109,39 @@ internal class TextButton : InteractiveSurface
      */
     internal Font getFont() =>
 	    _text.getFont();
+
+    /**
+     * Enables/disables high contrast color. Mostly used for
+     * Battlescape UI.
+     * @param contrast High contrast setting.
+     */
+    internal void setHighContrast(bool contrast)
+    {
+        _contrast = contrast;
+        _text.setHighContrast(contrast);
+        _redraw = true;
+    }
+
+    /**
+     * Changes the button group this button belongs to.
+     * @param group Pointer to the pressed button pointer in the group.
+     * Null makes it a regular button.
+     */
+    internal void setGroup(ref TextButton group)
+    {
+        _group = group;
+        _redraw = true;
+    }
+
+    internal void setGeoscapeButton(bool geo) =>
+        _geoscapeButton = geo;
+
+    /**
+     * Changes the text to use the big-size font.
+     */
+    internal void setBig()
+    {
+        _text.setBig();
+        _redraw = true;
+    }
 }

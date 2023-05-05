@@ -19,8 +19,6 @@
 
 namespace SharpXcom.Savegame;
 
-enum BattleType { BT_NONE, BT_FIREARM, BT_AMMO, BT_MELEE, BT_GRENADE, BT_PROXIMITYGRENADE, BT_MEDIKIT, BT_SCANNER, BT_MINDPROBE, BT_PSIAMP, BT_FLARE, BT_CORPSE };
-
 /**
  * Represents a single item in the battlescape.
  * Contains battle-related info about an item like the position, ammo quantity, ...

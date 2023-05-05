@@ -17,8 +17,6 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Action = SharpXcom.Engine.Action;
-
 namespace SharpXcom.Menu;
 
 /**
@@ -130,14 +128,14 @@ internal class ListLoadOriginalState : State
      * Switches to OpenXcom saves.
      * @param action Pointer to an action.
      */
-    void btnNewClick(Action _) =>
+    void btnNewClick(Engine.Action _) =>
         _game.popState();
 
     /**
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Action action)
+    void btnCancelClick(Engine.Action action)
     {
         _game.popState();
         _game.popState();
@@ -148,7 +146,7 @@ internal class ListLoadOriginalState : State
      * Loads the specified save.
      * @param action Pointer to an action.
      */
-    void btnSlotClick(Action action)
+    void btnSlotClick(Engine.Action action)
     {
         int n = 0;
         for (int i = 0; i < SaveConverter.NUM_SAVES; ++i)
@@ -164,7 +162,7 @@ internal class ListLoadOriginalState : State
             if (_saves[n].tactical)
             {
                 string error = $"{tr("STR_LOAD_UNSUCCESSFUL")}{Unicode.TOK_NL_SMALL}Battlescape saves aren't supported.";
-                _game.pushState(new ErrorMessageState(error, _palette, _game.getMod().getInterface("errorMessages").getElement("geoscapeColor").color, "BACK01.SCR", _game.getMod().getInterface("errorMessages").getElement("geoscapePalette").color));
+                _game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("geoscapeColor").color, "BACK01.SCR", _game.getMod().getInterface("errorMessages").getElement("geoscapePalette").color));
             }
             else
             {

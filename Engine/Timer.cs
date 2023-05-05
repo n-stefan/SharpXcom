@@ -165,6 +165,6 @@ internal class Timer
      * Returns if the timer has been started.
      * @return Running state.
      */
-    bool isRunning() =>
+    internal bool isRunning() =>
 	    _running;
 }

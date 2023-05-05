@@ -52,14 +52,86 @@ internal class ItemContainer
      */
     internal void addItem(string id, int qty = 1)
     {
-	    if (string.IsNullOrEmpty(id))
+		if (string.IsNullOrEmpty(id))
 	    {
 		    return;
 	    }
-	    if (!_qty.ContainsKey(id))
+		if (!_qty.ContainsKey(id))
 	    {
 		    _qty[id] = 0;
 	    }
 	    _qty[id] += qty;
     }
+
+	/**
+	 * Returns the quantity of an item in the container.
+	 * @param id Item ID.
+	 * @return Item quantity.
+	 */
+	internal int getItem(string id)
+	{
+		if (string.IsNullOrEmpty(id))
+		{
+			return 0;
+		}
+
+		if (!_qty.ContainsKey(id))
+		{
+			return 0;
+		}
+		else
+		{
+			return _qty[id];
+		}
+	}
+
+    /**
+     * Returns all the items currently contained within.
+     * @return List of contents.
+     */
+    internal Dictionary<string, int> getContents() =>
+        _qty;
+
+	/**
+	 * Loads the item container from a YAML file.
+	 * @param node YAML node.
+	 */
+	internal void load(YamlNode node) =>
+        _qty = ((YamlMappingNode)node).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
+
+	/**
+	 * Removes an item amount from the container.
+	 * @param id Item ID.
+	 * @param qty Item quantity.
+	 */
+	internal void removeItem(string id, int qty)
+	{
+		if (string.IsNullOrEmpty(id) || !_qty.ContainsKey(id))
+		{
+			return;
+		}
+		if (qty < _qty[id])
+		{
+			_qty[id] -= qty;
+		}
+		else
+		{
+			_qty.Remove(id);
+		}
+	}
+
+	/**
+	 * Returns the total size of the items in the container.
+	 * @param mod Pointer to mod.
+	 * @return Total item size.
+	 */
+	internal double getTotalSize(Mod.Mod mod)
+	{
+		double total = 0;
+		foreach (var i in _qty)
+		{
+			total += mod.getItem(i.Key, true).getSize() * i.Value;
+		}
+		return total;
+	}
 }

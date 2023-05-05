@@ -88,6 +88,7 @@ internal class Surface
     protected SDL_Rect _crop, _clear;
     protected bool _visible, _hidden, _redraw, _tftdMode;
     protected nint /* void* */ _alignedBuffer;
+    protected string _tooltip;
 
     /**
      * Sets up a blank 8bpp surface with the specified size and position,
@@ -590,6 +591,24 @@ internal class Surface
         SDL_FillRect(_surface.pixels, ref rect, color);
 
     /**
+     * Draws a filled rectangle on the surface.
+     * @param x X position in pixels.
+     * @param y Y position in pixels.
+     * @param w Width in pixels.
+     * @param h Height in pixels.
+     * @param color Color of the rectangle.
+     */
+    internal void drawRect(short x, short y, short w, short h, byte color)
+    {
+        var rect = new SDL_Rect();
+        rect.w = w;
+        rect.h = h;
+        rect.x = x;
+        rect.y = y;
+        SDL_FillRect(_surface.pixels, ref rect, color);
+    }
+
+    /**
      * Recreates the surface with a new size.
      * Old contents will not be altered, and may be
      * cropped to fit the new size.
@@ -934,4 +953,23 @@ internal class Surface
 
         unlock();
     }
+
+    /// Sets the high contrast color setting of the surface.
+    internal virtual void setHighContrast(bool _ /*contrast*/) { /* empty by design */ }
+
+    /**
+     * Changes the help description of this surface,
+     * for example for showing in tooltips.
+     * @param tooltip String ID.
+     */
+    internal void setTooltip(string tooltip) =>
+	    _tooltip = tooltip;
+
+    /**
+     * Returns the help description of this surface,
+     * for example for showing in tooltips.
+     * @return String ID.
+     */
+    internal string getTooltip() =>
+	    _tooltip;
 }

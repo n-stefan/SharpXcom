@@ -192,4 +192,11 @@ internal class Armor : IRule
         _utileColor = ((YamlSequenceNode)node["spriteUtileColor"]).Children.Select(x => int.Parse(x.ToString())).ToList();
         _units = ((YamlSequenceNode)node["units"]).Children.Select(x => x.ToString()).ToList();
     }
+
+    /**
+     * Gets the corpse item used in the Geoscape.
+     * @return The name of the corpse item.
+     */
+    internal string getCorpseGeoscape() =>
+	    _corpseGeo;
 }

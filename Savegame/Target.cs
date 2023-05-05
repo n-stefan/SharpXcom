@@ -182,4 +182,55 @@ internal class Target
      */
     internal void setName(string newName) =>
 	    _name = newName;
+
+    /**
+     * Returns the target's unique ID.
+     * @return Unique ID, 0 if none.
+     */
+    internal int getId() =>
+	    _id;
+
+    /**
+     * Loads the target from a YAML file.
+     * @param node YAML node.
+     */
+    protected void load(YamlNode node)
+    {
+	    _lon = double.Parse(node["lon"].ToString());
+	    _lat = double.Parse(node["lat"].ToString());
+	    _id = int.Parse(node["id"].ToString());
+        YamlNode name = node["name"];
+        if (name != null)
+	    {
+		    _name = name.ToString();
+	    }
+    }
+
+    /**
+     * Returns the target's user-readable name.
+     * If there's no custom name, the language default is used.
+     * @param lang Language to get strings from.
+     * @return Full name.
+     */
+    internal virtual string getName(Language lang)
+    {
+	    if (string.IsNullOrEmpty(_name))
+		    return getDefaultName(lang);
+	    return _name;
+    }
+
+    /**
+     * Returns the target's unique default name.
+     * @param lang Language to get strings from.
+     * @return Full name.
+     */
+    string getDefaultName(Language lang) =>
+	    lang.getString(getMarkerName()).arg(_id);
+
+    /**
+     * Returns the name on the globe for the target.
+     * @return String ID.
+     */
+    string getMarkerName() =>
+	    getType() + "_";
 }

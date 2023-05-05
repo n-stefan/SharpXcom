@@ -146,4 +146,51 @@ internal class Unicode
      */
     internal static string replace(string str, string find, string replace) =>
         str.Replace(find, replace);
+
+    /**
+     * Compares two UTF-8 strings using natural human ordering.
+     * @param a String A.
+     * @param b String B.
+     * @return String A comes before String B.
+     */
+    internal static int naturalCompare(string a, string b) =>
+        string.Compare(a, b);
+
+    /**
+     * Takes an integer value and formats it as currency,
+     * spacing the thousands and adding a $ sign to the front.
+     * @param funds The funding value.
+     * @return The formatted string.
+     */
+    internal static string formatFunding(long funds) =>
+        formatNumber(funds, "$");
+
+    /**
+     * Takes an integer value and formats it as number with separators (spacing the thousands).
+     * @param value The value.
+     * @param currency Currency symbol.
+     * @return The formatted string.
+     */
+    static string formatNumber(long value, string currency)
+    {
+	    const string thousands_sep = "\xC2\xA0"; // TOK_NBSP
+
+	    bool negative = (value < 0);
+	    string s = (negative ? -value : value).ToString();
+	    int spacer = s.Length - 3;
+	    while (spacer > 0 && spacer < s.Length)
+	    {
+		    s = s.Insert(spacer, thousands_sep);
+		    spacer -= 3;
+	    }
+	    if (!string.IsNullOrEmpty(currency))
+	    {
+		    s = s.Insert(0, currency);
+	    }
+	    if (negative)
+	    {
+		    s = s.Insert(0, "-");
+	    }
+	    return s;
+    }
 }

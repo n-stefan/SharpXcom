@@ -48,4 +48,104 @@ internal class CraftWeapon
      *
      */
     ~CraftWeapon() { }
+
+    /**
+     * Loads the craft weapon from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _ammo = int.Parse(node["ammo"].ToString());
+	    _rearming = bool.Parse(node["rearming"].ToString());
+    }
+
+    /**
+     * Returns the ruleset for the craft weapon's type.
+     * @return Pointer to ruleset.
+     */
+    internal RuleCraftWeapon getRules() =>
+	    _rules;
+
+    /**
+     * Returns whether this craft weapon needs rearming.
+     * @return Rearming status.
+     */
+    internal bool isRearming() =>
+	    _rearming;
+
+    /**
+     * Rearms this craft weapon's ammo.
+     * @param available number of clips available.
+     * @param clipSize number of rounds in said clips.
+     * @return number of clips used.
+     */
+    internal int rearm(int available, int clipSize)
+    {
+	    int ammoUsed = _rules.getRearmRate();
+
+	    if (clipSize > 0)
+	    {	// +(clipSize - 1) correction for rounding up
+		    int needed = Math.Min(_rules.getRearmRate(), _rules.getAmmoMax() - _ammo + clipSize - 1) / clipSize;
+		    ammoUsed = ((needed > available)? available : needed) * clipSize;
+	    }
+
+	    setAmmo(_ammo + ammoUsed);
+
+	    _rearming = _ammo < _rules.getAmmoMax();
+
+	    return (clipSize <= 0)? 0 : ammoUsed / clipSize;
+    }
+
+    /**
+     * Changes the ammo contained in this craft weapon.
+     * @param ammo Weapon ammo.
+     * @return If the weapon ran out of ammo.
+     */
+    bool setAmmo(int ammo)
+    {
+        _ammo = ammo;
+        if (_ammo < 0)
+        {
+            _ammo = 0;
+            return false;
+        }
+        if (_ammo > _rules.getAmmoMax())
+        {
+            _ammo = _rules.getAmmoMax();
+        }
+        return true;
+    }
+
+    /**
+     * Changes whether this craft weapon needs rearming
+     * (for example, in case there's no more ammo).
+     * @param rearming Rearming status.
+     */
+    internal void setRearming(bool rearming) =>
+        _rearming = rearming;
+
+    /**
+     * Returns the ammo contained in this craft weapon.
+     * @return Weapon ammo.
+     */
+    internal int getAmmo() =>
+	    _ammo;
+
+    /*
+     * get how many clips are loaded into this weapon.
+     * @param mod a pointer to the core mod.
+     * @return number of clips loaded.
+     */
+    internal int getClipsLoaded(Mod.Mod mod)
+    {
+	    int retVal = (int)Math.Floor((double)_ammo / _rules.getRearmRate());
+	    RuleItem clip = mod.getItem(_rules.getClipItem());
+
+	    if (clip != null && clip.getClipSize() > 0)
+	    {
+		    retVal = (int)Math.Floor((double)_ammo / clip.getClipSize());
+	    }
+
+	    return retVal;
+    }
 }

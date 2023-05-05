@@ -27,7 +27,7 @@ internal class SoldierDeath
     GameTime _time;
     BattleUnitKills _cause;
 
-    SoldierDeath()
+    internal SoldierDeath()
     {
         _time = new GameTime(0, 0, 0, 0, 0, 0, 0);
         _cause = default;
@@ -63,5 +63,19 @@ internal class SoldierDeath
             node.Add("cause", _cause.save());
 	    }
 	    return node;
+    }
+
+    /**
+     * Loads the death from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _time.load(node["time"]);
+	    if (node["cause"] != null)
+	    {
+		    _cause = new BattleUnitKills();
+		    _cause.load(node["cause"]);
+	    }
     }
 }

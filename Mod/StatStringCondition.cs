@@ -42,4 +42,31 @@ internal class StatStringCondition
      * Cleans up the extra StatStringCondition.
      */
     ~StatStringCondition() { }
+
+    /**
+     * Gets the condition string.
+     * @return Name of the associated stat.
+     */
+    internal string getConditionName() =>
+	    _conditionName;
+
+    /**
+     * Checks if this condition is valid for the current stat.
+     * @param stat The current soldier stat.
+     * @param psi Can we show psi stats?
+     * @return If the condition is met.
+     */
+    internal bool isMet(int stat, bool psi)
+    {
+	    if (_conditionName == "psiTraining")
+	    {
+		    return true;
+	    }
+	    bool conditionMet = (stat >= _minVal && stat <= _maxVal);
+	    if (_conditionName == "psiStrength" || _conditionName == "psiSkill")
+	    {
+		    conditionMet = conditionMet && psi;
+	    }
+	    return conditionMet;
+    }
 }

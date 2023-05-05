@@ -217,4 +217,11 @@ internal class Unit : IRule
 	    mod.loadSoundOffset(_type, _aggroSound, node["aggroSound"], "BATTLE.CAT");
 	    mod.loadSoundOffset(_type, _moveSound, node["moveSound"], "BATTLE.CAT");
     }
+
+    /**
+     * Gets the unit's armor type.
+     * @return The unit's armor type.
+     */
+    internal string getArmor() =>
+	    _armor;
 }

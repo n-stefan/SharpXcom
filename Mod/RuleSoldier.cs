@@ -163,4 +163,25 @@ internal class RuleSoldier : IRule
 	    pool.load(FileMap.getFilePath(namFile));
 	    _names.Add(pool);
     }
+
+    /**
+     * Gets the default armor name.
+     * @return The armor name.
+     */
+    internal string getArmor() =>
+	    _armor;
+
+    /**
+     * Gets the cost of salary for a month.
+     * @return The cost.
+     */
+    internal int getSalaryCost() =>
+	    _costSalary;
+
+    /**
+     * Gets the stat caps.
+     * @return The stat caps.
+     */
+    internal UnitStats getStatCaps() =>
+	    _statCaps;
 }

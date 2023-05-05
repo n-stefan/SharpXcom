@@ -17,8 +17,6 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Action = SharpXcom.Engine.Action;
-
 namespace SharpXcom.Menu;
 
 struct compareSaveName : IComparer<SaveInfo>
@@ -165,14 +163,14 @@ internal class ListGamesState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Action _) =>
+    void btnCancelClick(Engine.Action _) =>
         _game.popState();
 
     /**
      * Shows the details of the currently hovered save.
      * @param action Pointer to an action.
      */
-    void lstSavesMouseOver(Action _)
+    void lstSavesMouseOver(Engine.Action _)
     {
         int sel = (int)(_lstSaves.getSelectedRow() - _firstValidRow);
         string wstr = null;
@@ -187,14 +185,14 @@ internal class ListGamesState : State
      * Clears the details.
      * @param action Pointer to an action.
      */
-    void lstSavesMouseOut(Action _) =>
+    void lstSavesMouseOut(Engine.Action _) =>
         _txtDetails.setText(tr("STR_DETAILS").arg(string.Empty));
 
     /**
      * Deletes the selected save.
      * @param action Pointer to an action.
      */
-    void lstSavesPress(Action action)
+    void lstSavesPress(Engine.Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT && _lstSaves.getSelectedRow() >= _firstValidRow)
         {
@@ -206,7 +204,7 @@ internal class ListGamesState : State
      * Sorts the saves by name.
      * @param action Pointer to an action.
      */
-    void sortNameClick(Action _)
+    void sortNameClick(Engine.Action _)
     {
         if (_sortable)
         {
@@ -228,7 +226,7 @@ internal class ListGamesState : State
      * Sorts the saves by date.
      * @param action Pointer to an action.
      */
-    void sortDateClick(Action _)
+    void sortDateClick(Engine.Action _)
     {
         if (_sortable)
         {

@@ -95,4 +95,74 @@ internal class RuleResearch : IListOrder, IRule
 		    throw new Exception("Research topic " + _name + " has requirements, but the cost is not zero. Sorry, this is not allowed!");
 	    }
     }
+
+    /**
+     * Gets the cost of this ResearchProject.
+     * @return The cost of this ResearchProject (in man/day).
+     */
+    internal int getCost() =>
+	    _cost;
+
+    /**
+     * Gets the list of ResearchProjects granted at random for free by this research.
+     * @return The list of ResearchProjects.
+     */
+    internal List<string> getGetOneFree() =>
+	    _getOneFree;
+
+    /**
+     * Gets the requirements for this ResearchProject.
+     * @return The requirement for this research.
+     */
+    internal List<string> getRequirements() =>
+	    _requires;
+
+    /**
+     * Gets the list of ResearchProjects unlocked by this research.
+     * @return The list of ResearchProjects.
+     */
+    internal List<string> getUnlocked() =>
+	    _unlocks;
+
+    /**
+     * Checks if this ResearchProject needs a corresponding Item to be researched.
+     *  @return True if the ResearchProject needs a corresponding item.
+     */
+    internal bool needItem() =>
+	    _needItem;
+
+    /**
+     * Gets the list of dependencies, i.e. ResearchProjects, that must be discovered before this one.
+     * @return The list of ResearchProjects.
+     */
+    internal List<string> getDependencies() =>
+	    _dependencies;
+
+    /**
+     * Get the points earned for this ResearchProject.
+     * @return The points earned for this ResearchProject.
+     */
+    internal int getPoints() =>
+	    _points;
+
+    /**
+     * Checks if this ResearchProject needs a corresponding Item to be researched.
+     *  @return True if the ResearchProject needs a corresponding item.
+     */
+    internal bool destroyItem() =>
+	    _destroyItem;
+
+    /**
+     * Gets what article to look up in the ufopedia.
+     * @return The article to look up in the ufopaedia
+     */
+    internal string getLookup() =>
+	    _lookup;
+
+    /**
+     * Gets the cutscene to play when this research item is completed.
+     * @return The cutscene id.
+     */
+    internal string getCutscene() =>
+	    _cutscene;
 }

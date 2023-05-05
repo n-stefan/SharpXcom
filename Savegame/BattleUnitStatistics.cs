@@ -154,6 +154,9 @@ record struct BattleUnitKills
         bodypart = UnitBodyPart.BODYPART_HEAD;
     }
 
+	internal BattleUnitKills(YamlNode node) =>
+        load(node);
+
     /// Decide victim name, race and rank.
     internal void setUnitStats(BattleUnit unit)
     {
@@ -283,5 +286,27 @@ record struct BattleUnitKills
 		node.Add("bodypart", ((int)bodypart).ToString());
 		node.Add("id", id.ToString());
         return node;
+	}
+
+	/// Load
+	internal void load(YamlNode node)
+	{
+        YamlNode n = node["name"];
+        if (n != null)
+		{
+			name = n.ToString();
+		}
+		type = node["type"].ToString();
+		rank = node["rank"].ToString();
+		race = node["race"].ToString();
+		weapon = node["weapon"].ToString();
+		weaponAmmo = node["weaponAmmo"].ToString();
+		status = (UnitStatus)int.Parse(node["status"].ToString());
+		faction = (UnitFaction)int.Parse(node["faction"].ToString());
+		mission = int.Parse(node["mission"].ToString());
+		turn = int.Parse(node["turn"].ToString());
+		side = (UnitSide)int.Parse(node["side"].ToString());
+		bodypart = (UnitBodyPart)int.Parse(node["bodypart"].ToString());
+		id = int.Parse(node["id"].ToString());
 	}
 }

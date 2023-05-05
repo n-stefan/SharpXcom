@@ -104,4 +104,28 @@ internal class RuleCraftWeapon : IRule
 	    _clip = node["clip"].ToString();
 	    _underwaterOnly = bool.Parse(node["underwaterOnly"].ToString());
     }
+
+    /**
+     * Gets the language string of the item used to
+     * load this craft weapon with ammo.
+     * @return The item name.
+     */
+    internal string getClipItem() =>
+	    _clip;
+
+    /**
+     * Gets how much ammo is added to the craft weapon
+     * while rearming (the amount of ammo in each clip item).
+     * @return The amount of ammo.
+     */
+    internal int getRearmRate() =>
+	    _rearmRate;
+
+    /**
+     * Gets the maximum amount of ammo the craft weapon
+     * can carry.
+     * @return The amount of ammo.
+     */
+    internal int getAmmoMax() =>
+	    _ammoMax;
 }

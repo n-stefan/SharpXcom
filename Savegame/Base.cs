@@ -145,4 +145,398 @@ internal class Base : Target
      */
     internal ItemContainer getStorageItems() =>
         _items;
+
+    /**
+     * Returns the list of transfers destined
+     * to this base.
+     * @return Pointer to the transfer list.
+     */
+    internal List<Transfer> getTransfers() =>
+        _transfers;
+
+    /**
+     * Returns the list of all base's ResearchProject
+     * @return list of base's ResearchProject
+     */
+    internal List<ResearchProject> getResearch() =>
+	    _research;
+
+    /**
+     * Returns the amount of scientists currently in the base.
+     * @return Number of scientists.
+     */
+    internal int getScientists() =>
+	    _scientists;
+
+    /**
+     * Add A new ResearchProject to Base
+     * @param project The project to add
+     */
+    internal void addResearch(ResearchProject project) =>
+        _research.Add(project);
+
+    /**
+     * Add a new Production to the Base
+     * @param p A pointer to a Production
+     */
+    internal void addProduction(Production p) =>
+        _productions.Add(p);
+
+    /**
+     * Returns the amount of engineers currently in the base.
+     * @return Number of engineers.
+     */
+    internal int getEngineers() =>
+	    _engineers;
+
+    /**
+     * Mark the base as a valid alien retaliation target.
+     * @param mark Mark (if @c true) or unmark (if @c false) the base.
+     */
+    internal void setRetaliationTarget(bool mark) =>
+        _retaliationTarget = mark;
+
+    /**
+     * Returns the total amount of all the maintenance
+     * monthly costs in the base.
+     * @return Maintenance costs.
+     */
+    internal int getMonthlyMaintenace() =>
+	    getCraftMaintenance() + getPersonnelMaintenance() + getFacilityMaintenance();
+
+    /**
+     * Returns the total amount of monthly costs
+     * for maintaining the craft in the base.
+     * @return Maintenance costs.
+     */
+    int getCraftMaintenance()
+    {
+	    int total = 0;
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_CRAFT)
+		    {
+			    total += i.getCraft().getRules().getRentCost();
+		    }
+	    }
+	    foreach (var i in _crafts)
+	    {
+		    total += i.getRules().getRentCost();
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of monthly costs
+     * for maintaining the personnel in the base.
+     * @return Maintenance costs.
+     */
+    int getPersonnelMaintenance()
+    {
+	    int total = 0;
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_SOLDIER)
+		    {
+			    total += i.getSoldier().getRules().getSalaryCost();
+		    }
+	    }
+	    foreach (var i in _soldiers)
+	    {
+		    total += i.getRules().getSalaryCost();
+	    }
+	    total += getTotalEngineers() * _mod.getEngineerCost();
+	    total += getTotalScientists() * _mod.getScientistCost();
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of monthly costs
+     * for maintaining the facilities in the base.
+     * @return Maintenance costs.
+     */
+    int getFacilityMaintenance()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getMonthlyCost();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of engineers contained
+     * in the base.
+     * @return Number of engineers.
+     */
+    int getTotalEngineers()
+    {
+	    int total = _engineers;
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_ENGINEER)
+		    {
+			    total += i.getQuantity();
+		    }
+	    }
+	    foreach (var iter in _productions)
+	    {
+		    total += iter.getAssignedEngineers();
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of scientists contained
+     * in the base.
+     * @return Number of scientists.
+     */
+    int getTotalScientists()
+    {
+	    int total = _scientists;
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_SCIENTIST)
+		    {
+			    total += i.getQuantity();
+		    }
+	    }
+	    foreach (var itResearch in getResearch())
+	    {
+		    total += itResearch.getAssigned();
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of Psi Lab Space
+     * available in the base.
+     * @return Psi Lab space.
+     */
+    internal int getAvailablePsiLabs()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getPsiLaboratories();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Remove a ResearchProject from base
+     * @param project the project to remove
+     */
+    internal void removeResearch(ResearchProject project)
+    {
+        _scientists += project.getAssigned();
+        if (_research.Contains(project))
+        {
+            _research.Remove(project);
+        }
+
+        RuleResearch ruleResearch = project.getRules();
+        if (!project.isFinished())
+        {
+            if (ruleResearch.needItem() && ruleResearch.destroyItem())
+            {
+                getStorageItems().addItem(ruleResearch.getName(), 1);
+            }
+        }
+    }
+
+    /**
+     * Returns the custom name for the base.
+     * @param lang Language to get strings from (unused).
+     * @return Name.
+     */
+    internal string getName(Language lang = null) =>
+	    _name;
+
+    /**
+     * Get the list of Base Production's
+     * @return the list of Base Production's
+     */
+    internal List<Production> getProductions() =>
+	    _productions;
+
+    /**
+     * Remove a Production from the Base
+     * @param p A pointer to a Production
+     */
+    internal void removeProduction(Production p)
+    {
+        _engineers += p.getAssignedEngineers();
+        if (_productions.Contains(p))
+        {
+            _productions.Remove(p);
+        }
+    }
+
+    /**
+     * Checks if the base's stores are overfull.
+     *
+     * Supplying an offset will add/subtract to the used capacity before performing the check.
+     * A positive offset simulates adding items to the stores, whereas a negative offset
+     * can be used to check whether sufficient items have been removed to stop the stores overflowing.
+     * @param offset Adjusts the used capacity.
+     * @return True if the base's stores are over their limit.
+     */
+    internal bool storesOverfull(double offset = 0.0)
+    {
+        int capacity = getAvailableStores() * 100;
+        double used = (getUsedStores() + offset) * 100;
+        return (int)used > capacity;
+    }
+
+    /**
+     * Returns the total amount of stores
+     * available in the base.
+     * @return Storage space.
+     */
+    int getAvailableStores()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getStorage();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the amount of stores used up by equipment in the base,
+     * and equipment about to arrive.
+     * @return Storage space.
+     */
+    double getUsedStores()
+    {
+        double total = _items.getTotalSize(_mod);
+        foreach (var i in _crafts)
+        {
+            total += i.getItems().getTotalSize(_mod);
+            foreach (var j in i.getVehicles())
+            {
+                total += j.getRules().getSize();
+            }
+        }
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_ITEM)
+            {
+                total += i.getQuantity() * _mod.getItem(i.getItems(), true).getSize();
+            }
+            else if (i.getType() == TransferType.TRANSFER_CRAFT)
+            {
+                Craft craft = i.getCraft();
+                total += craft.getItems().getTotalSize(_mod);
+            }
+        }
+        total -= getIgnoredStores();
+        return total;
+    }
+
+    /**
+     * Determines space taken up by ammo clips about to rearm craft.
+     * @return Ignored storage space.
+     */
+    double getIgnoredStores()
+    {
+        double space = 0;
+        foreach (var c in getCrafts())
+        {
+            if (c.getStatus() == "STR_REARMING")
+            {
+                foreach (var w in c.getWeapons())
+                {
+                    if (w != null && w.isRearming())
+                    {
+                        string clip = w.getRules().getClipItem();
+                        int available = getStorageItems().getItem(clip);
+                        if (!string.IsNullOrEmpty(clip) && available > 0)
+                        {
+                            int clipSize = _mod.getItem(clip, true).getClipSize();
+                            int needed = 0;
+                            if (clipSize > 0)
+                            {
+                                needed = (w.getRules().getAmmoMax() - w.getAmmo()) / clipSize;
+                            }
+                            space += Math.Min(available, needed) * _mod.getItem(clip, true).getSize();
+                        }
+                    }
+                }
+            }
+        }
+        return space;
+    }
+
+    /**
+     * Returns the total amount of craft of
+     * a certain type stored in the base.
+     * @param craft Craft type.
+     * @return Number of craft.
+     */
+    internal int getCraftCount(string craft)
+    {
+	    int total = 0;
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_CRAFT && i.getCraft().getRules().getType() == craft)
+		    {
+			    total++;
+		    }
+	    }
+	    foreach (var i in _crafts)
+	    {
+		    if (i.getRules().getType() == craft)
+		    {
+			    total++;
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Removes the craft and all associations from the base (does not destroy it!).
+     * @param craft Pointer to craft.
+     * @param unload Unload craft contents before removing.
+     */
+    internal bool removeCraft(Craft craft, bool unload)
+    {
+        // Unload craft
+        if (unload)
+        {
+            craft.unload(_mod);
+        }
+
+        // Clear hangar
+        foreach (var f in _facilities)
+        {
+            if (f.getCraft() == craft)
+            {
+                f.setCraft(null);
+                break;
+            }
+        }
+
+        // Remove craft
+        foreach (var c in _crafts)
+        {
+            if (c == craft)
+            {
+                return _crafts.Remove(c);
+            }
+        }
+        return false;
+    }
 }

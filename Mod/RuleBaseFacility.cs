@@ -155,4 +155,20 @@ internal class RuleBaseFacility : IListOrder, IRule
             _listOrder = listOrder;
 	    }
     }
+
+    /**
+     * Gets the amount of funds this facility costs monthly
+     * to maintain once it's fully built.
+     * @return The monthly cost.
+     */
+    internal int getMonthlyCost() =>
+	    _monthlyCost;
+
+    /**
+     * Gets the amount of storage space this facility provides
+     * for base equipment.
+     * @return The storage space.
+     */
+    internal int getStorage() =>
+	    _storage;
 }

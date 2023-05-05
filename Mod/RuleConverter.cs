@@ -119,4 +119,16 @@ internal class RuleConverter
     /// Gets the armor ID list.
     internal List<string> getArmor() =>
         _armor;
+
+    /// Gets the research ID list.
+    internal List<string> getResearch() =>
+        _research;
+
+    /// Gets the ufopaedia ID list.
+    internal List<string> getUfopaedia() =>
+        _ufopaedia;
+
+    /// Gets the manufacture ID list.
+    internal List<string> getManufacture() =>
+        _manufacture;
 }

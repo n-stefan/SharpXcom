@@ -54,7 +54,7 @@ internal class ArticleDefinition
     int _listOrder;
     string id;
     string title;
-    List<string> requires;
+    internal List<string> requires;
 
     /**
 	 * Constructor.

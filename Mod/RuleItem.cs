@@ -436,4 +436,20 @@ internal class RuleItem : IListOrder, IRule
             _listOrder = listOrder;
 	    }
     }
+
+    /**
+     * Gets the amount of space this item
+     * takes up in a storage facility.
+     * @return The storage size.
+     */
+    internal double getSize() =>
+	    _size;
+
+    /**
+     * Gets the amount of money this item
+     * is worth to sell.
+     * @return The sell cost.
+     */
+    internal int getSellCost() =>
+	    _costSell;
 }

@@ -29,6 +29,13 @@ internal class SoldierCommendations
     bool _isNew;
 
     /**
+     * Initializes a new commendation entry from YAML.
+     * @param node YAML node.
+     */
+    internal SoldierCommendations(YamlNode node) =>
+	    load(node);
+
+    /**
      * Initializes a soldier commendation.
      */
     SoldierCommendations(string commendationName, string noun)
@@ -57,6 +64,25 @@ internal class SoldierCommendations
         if (_noun != "noNoun") node.Add("noun", _noun);
 	    node.Add("decorationLevel", _decorationLevel.ToString());
 	    return node;
+    }
+
+    /**
+     * Get the soldier's commendation's name.
+     * @return string Commendation name.
+     */
+    internal string getType() =>
+	    _type;
+
+    /**
+     * Loads the commendation from a YAML file.
+     * @param node YAML node.
+     */
+    void load(YamlNode node)
+    {
+	    _type = node["commendationName"].ToString();
+	    _noun = node["noun"].ToString() ?? "noNoun";
+	    _decorationLevel = int.Parse(node["decorationLevel"].ToString());
+	    _isNew = bool.TryParse(node["isNew"].ToString(), out bool isNew) ? isNew : false;
     }
 }
 
@@ -191,5 +217,72 @@ internal class SoldierDiary
 	    if (_globeTrotter) node.Add("globeTrotter", _globeTrotter.ToString());
 	    if (_slaveKillsTotal != 0) node.Add("slaveKillsTotal", _slaveKillsTotal.ToString());
         return node;
+    }
+
+    /**
+     * Loads the diary from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node, Mod.Mod mod)
+    {
+        var commendations = node["commendations"] as YamlSequenceNode;
+        if (commendations != null)
+	    {
+		    foreach (var i in commendations)
+		    {
+			    SoldierCommendations sc = new SoldierCommendations(i);
+			    RuleCommendations commendation = mod.getCommendation(sc.getType());
+			    if (commendation != null)
+			    {
+				    _commendations.Add(sc);
+			    }
+			    else
+			    {
+				    // obsolete commendation, ignore it... otherwise it would cause a crash later
+				    sc = null;
+			    }
+		    }
+	    }
+        var killList = node["killList"] as YamlSequenceNode;
+        if (killList != null)
+	    {
+		    foreach (var i in killList)
+			    _killList.Add(new BattleUnitKills(i));
+	    }
+        _missionIdList = ((YamlSequenceNode)node["missionIdList"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+	    _daysWoundedTotal = int.Parse(node["daysWoundedTotal"].ToString());
+	    _totalShotByFriendlyCounter = int.Parse(node["totalShotByFriendlyCounter"].ToString());
+	    _totalShotFriendlyCounter = int.Parse(node["totalShotFriendlyCounter"].ToString());
+	    _loneSurvivorTotal = int.Parse(node["loneSurvivorTotal"].ToString());
+	    _monthsService = int.Parse(node["monthsService"].ToString());
+	    _unconciousTotal = int.Parse(node["unconciousTotal"].ToString());
+	    _shotAtCounterTotal = int.Parse(node["shotAtCounterTotal"].ToString());
+	    _hitCounterTotal = int.Parse(node["hitCounterTotal"].ToString());
+	    _ironManTotal = int.Parse(node["ironManTotal"].ToString());
+	    _longDistanceHitCounterTotal = int.Parse(node["longDistanceHitCounterTotal"].ToString());
+	    _lowAccuracyHitCounterTotal = int.Parse(node["lowAccuracyHitCounterTotal"].ToString());
+	    _shotsFiredCounterTotal = int.Parse(node["shotsFiredCounterTotal"].ToString());
+	    _shotsLandedCounterTotal = int.Parse(node["shotsLandedCounterTotal"].ToString());
+	    _shotAtCounter10in1Mission = int.Parse(node["shotAtCounter10in1Mission"].ToString());
+	    _hitCounter5in1Mission = int.Parse(node["hitCounter5in1Mission"].ToString());
+	    _timesWoundedTotal = int.Parse(node["timesWoundedTotal"].ToString());
+	    _allAliensKilledTotal = int.Parse(node["allAliensKilledTotal"].ToString());
+	    _allAliensStunnedTotal = int.Parse(node["allAliensStunnedTotal"].ToString());
+	    _woundsHealedTotal = int.Parse(node["woundsHealedTotal"].ToString());
+	    _allUFOs = int.Parse(node["allUFOs"].ToString());
+	    _allMissionTypes = int.Parse(node["allMissionTypes"].ToString());
+	    _statGainTotal = int.Parse(node["statGainTotal"].ToString());
+	    _revivedUnitTotal = int.Parse(node["revivedUnitTotal"].ToString());
+	    _revivedSoldierTotal = int.Parse(node["revivedSoldierTotal"].ToString());
+	    _revivedHostileTotal = int.Parse(node["revivedHostileTotal"].ToString());
+	    _revivedNeutralTotal = int.Parse(node["revivedNeutralTotal"].ToString());
+	    _wholeMedikitTotal = int.Parse(node["wholeMedikitTotal"].ToString());
+	    _braveryGainTotal = int.Parse(node["braveryGainTotal"].ToString());
+	    _bestOfRank = int.Parse(node["bestOfRank"].ToString());
+        _bestSoldier = Convert.ToInt32(bool.Parse(node["bestSoldier"].ToString()));
+        _martyrKillsTotal = int.Parse(node["martyrKillsTotal"].ToString());
+	    _postMortemKills = int.Parse(node["postMortemKills"].ToString());
+	    _globeTrotter = bool.Parse(node["globeTrotter"].ToString());
+	    _slaveKillsTotal = int.Parse(node["slaveKillsTotal"].ToString());
     }
 }

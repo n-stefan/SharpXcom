@@ -136,4 +136,85 @@ internal class MCDPatch
 			}
 		}
 	}
+
+	/**
+	 * Applies an MCD patch to a mapDataSet.
+	 * @param dataSet The MapDataSet we want to modify.
+	 */
+	internal void modifyData(MapDataSet dataSet)
+	{
+		foreach (var i in _bigWalls)
+		{
+			dataSet.getObject(i.Key).setBigWall(i.Value);
+		}
+		foreach (var i in _TUWalks)
+		{
+			dataSet.getObject(i.Key).setTUWalk(i.Value);
+		}
+		foreach (var i in _TUFlys)
+		{
+			dataSet.getObject(i.Key).setTUFly(i.Value);
+		}
+		foreach (var i in _TUSlides)
+		{
+			dataSet.getObject(i.Key).setTUSlide(i.Value);
+		}
+		foreach (var i in _deathTiles)
+		{
+			dataSet.getObject(i.Key).setDieMCD(i.Value);
+		}
+		foreach (var i in _terrainHeight)
+		{
+			dataSet.getObject(i.Key).setTerrainLevel(i.Value);
+		}
+		foreach (var i in _specialTypes)
+		{
+			dataSet.getObject(i.Key).setSpecialType(i.Value, dataSet.getObject(i.Key).getObjectType());
+		}
+		foreach (var i in _explosives)
+		{
+			dataSet.getObject(i.Key).setExplosive(i.Value);
+		}
+		foreach (var i in _armors)
+		{
+			dataSet.getObject(i.Key).setArmor(i.Value);
+		}
+		foreach (var i in _flammabilities)
+		{
+			dataSet.getObject(i.Key).setFlammable(i.Value);
+		}
+		foreach (var i in _fuels)
+		{
+			dataSet.getObject(i.Key).setFuel(i.Value);
+		}
+		foreach (var i in _HEBlocks)
+		{
+			dataSet.getObject(i.Key).setHEBlock(i.Value);
+		}
+		foreach (var i in _footstepSounds)
+		{
+			dataSet.getObject(i.Key).setFootstepSound(i.Value);
+		}
+		foreach (var i in _objectTypes)
+		{
+			dataSet.getObject(i.Key).setObjectType((TilePart)i.Value);
+		}
+		foreach (var i in _noFloors)
+		{
+			dataSet.getObject(i.Key).setNoFloor(i.Value);
+		}
+		foreach (var i in _stopLOSses)
+		{
+			dataSet.getObject(i.Key).setStopLOS(i.Value);
+		}
+		foreach (var i in _LOFTS)
+		{
+			int layer = 0;
+			foreach (var j in i.Value)
+			{
+				dataSet.getObject(i.Key).setLoftID(j, layer);
+				++layer;
+			}
+		}
+	}
 }

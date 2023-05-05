@@ -174,4 +174,332 @@ internal class Craft : MovingTarget
      */
     internal ItemContainer getItems() =>
         _items;
+
+    /**
+     * Loads the craft from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the saved game.
+     * @param save Pointer to the saved game.
+     */
+    internal void load(YamlNode node, Mod.Mod mod, SavedGame save)
+    {
+	    base.load(node);
+	    _fuel = int.Parse(node["fuel"].ToString());
+	    _damage = int.Parse(node["damage"].ToString());
+
+        int j = 0;
+	    foreach (var i in (YamlSequenceNode)node["weapons"])
+	    {
+		    if (_rules.getWeapons() > j)
+		    {
+			    string type = i["type"].ToString();
+			    if (type != "0" && mod.getCraftWeapon(type) != null)
+			    {
+				    CraftWeapon w = new CraftWeapon(mod.getCraftWeapon(type), 0);
+				    w.load(i);
+				    _weapons[j] = w;
+			    }
+			    else
+			    {
+				    _weapons[j] = null;
+				    if (type != "0")
+				    {
+                        Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load craft weapon {type}");
+				    }
+			    }
+			    j++;
+		    }
+	    }
+
+	    _items.load(node["items"]);
+        // Some old saves have bad items, better get rid of them to avoid further bugs
+        var contents = _items.getContents();
+        foreach (var i in contents)
+	    {
+		    if (mod.getItem(i.Key) == null)
+		    {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {i.Key}");
+			    contents.Remove(i.Key);
+		    }
+		    //else
+		    //{
+			//    ++i;
+		    //}
+	    }
+	    foreach (var i in (YamlSequenceNode)node["vehicles"])
+	    {
+		    string type = i["type"].ToString();
+		    if (mod.getItem(type) != null)
+		    {
+			    Vehicle v = new Vehicle(mod.getItem(type), 0, 4);
+			    v.load(i);
+			    _vehicles.Add(v);
+		    }
+		    else
+		    {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {type}");
+		    }
+	    }
+	    _status = node["status"].ToString();
+	    _lowFuel = bool.Parse(node["lowFuel"].ToString());
+	    _mission = bool.Parse(node["mission"].ToString());
+	    _interceptionOrder = int.Parse(node["interceptionOrder"].ToString());
+        YamlNode dest = node["dest"];
+        if (dest != null)
+	    {
+		    string type = dest["type"].ToString();
+		    int id = int.Parse(dest["id"].ToString());
+		    if (type == "STR_BASE")
+		    {
+			    returnToBase();
+		    }
+		    else if (type == "STR_UFO")
+		    {
+			    foreach (var i in save.getUfos())
+			    {
+				    if (i.getId() == id)
+				    {
+					    setDestination(i);
+					    break;
+				    }
+			    }
+		    }
+		    else if (type == "STR_WAY_POINT")
+		    {
+			    foreach (var i in save.getWaypoints())
+			    {
+				    if (i.getId() == id)
+				    {
+					    setDestination(i);
+					    break;
+				    }
+			    }
+		    }
+		    else
+		    {
+			    // Backwards compatibility
+			    if (type == "STR_ALIEN_TERROR")
+				    type = "STR_TERROR_SITE";
+			    bool found = false;
+                var missionSites = save.getMissionSites();
+                for (var i = 0; i < missionSites.Count && !found; ++i)
+			    {
+				    if (missionSites[i].getId() == id && missionSites[i].getDeployment().getMarkerName() == type)
+				    {
+					    setDestination(missionSites[i]);
+					    found = true;
+				    }
+			    }
+                var alienBases = save.getAlienBases();
+                for (var i = 0; i < alienBases.Count && !found; ++i)
+			    {
+				    if (alienBases[i].getId() == id && alienBases[i].getDeployment().getMarkerName() == type)
+				    {
+					    setDestination(alienBases[i]);
+					    found = true;
+				    }
+			    }
+		    }
+	    }
+	    _takeoff = int.Parse(node["takeoff"].ToString());
+	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+	    if (_inBattlescape)
+		    setSpeed(0);
+    }
+
+    /**
+     * Returns the ruleset for the craft's type.
+     * @return Pointer to ruleset.
+     */
+    internal RuleCraft getRules() =>
+	    _rules;
+
+    /**
+     * Returns the current status of the craft.
+     * @return Status string.
+     */
+    internal string getStatus() =>
+	    _status;
+
+    /**
+     * Repairs the craft's damage every hour
+     * while it's docked in the base.
+     */
+    internal void repair()
+    {
+        setDamage(_damage - _rules.getRepairRate());
+        if (_damage <= 0)
+        {
+            _status = "STR_REARMING";
+        }
+    }
+
+    /**
+     * Changes the amount of damage this craft has taken.
+     * @param damage Amount of damage.
+     */
+    void setDamage(int damage)
+    {
+        _damage = damage;
+        if (_damage < 0)
+        {
+            _damage = 0;
+        }
+    }
+
+    /**
+     * Rearms the craft's weapons by adding ammo every hour
+     * while it's docked in the base.
+     * @param mod Pointer to mod.
+     * @return The ammo ID missing for rearming, or "" if none.
+     */
+    internal string rearm(Mod.Mod mod)
+    {
+	    string ammo = null;
+	    for (int i = 0; ; ++i)
+	    {
+		    if (i == _weapons.Count)
+		    {
+			    _status = "STR_REFUELLING";
+			    break;
+		    }
+		    if (_weapons[i] != null && _weapons[i].isRearming())
+		    {
+			    string clip = _weapons[i].getRules().getClipItem();
+			    int available = _base.getStorageItems().getItem(clip);
+			    if (string.IsNullOrEmpty(clip))
+			    {
+                    _weapons[i].rearm(0, 0);
+			    }
+			    else if (available > 0)
+			    {
+				    int used = _weapons[i].rearm(available, mod.getItem(clip).getClipSize());
+
+				    if (used == available && _weapons[i].isRearming())
+				    {
+					    ammo = clip;
+                        _weapons[i].setRearming(false);
+				    }
+
+				    _base.getStorageItems().removeItem(clip, used);
+			    }
+			    else
+			    {
+				    ammo = clip;
+                    _weapons[i].setRearming(false);
+			    }
+			    break;
+		    }
+	    }
+	    return ammo;
+    }
+
+    /**
+     * Checks the condition of all the craft's systems
+     * to define its new status (eg. when arriving at base).
+     */
+    internal void checkup()
+    {
+        int available = 0, full = 0;
+        foreach (var i in _weapons)
+        {
+            if (i == null)
+                continue;
+            available++;
+            if (i.getAmmo() >= i.getRules().getAmmoMax())
+            {
+                full++;
+            }
+            else
+            {
+                i.setRearming(true);
+            }
+        }
+
+        if (_damage > 0)
+        {
+            _status = "STR_REPAIRS";
+        }
+        else if (available != full)
+        {
+            _status = "STR_REARMING";
+        }
+        else
+        {
+            _status = "STR_REFUELLING";
+        }
+    }
+
+    /**
+     * Changes the current status of the craft.
+     * @param status Status string.
+     */
+    internal void setStatus(string status) =>
+	    _status = status;
+
+    /**
+     * Checks if an item can be reused by the craft and
+     * updates its status appropriately.
+     * @param item Item ID.
+     */
+    internal void reuseItem(string item)
+    {
+	    if (_status != "STR_READY")
+		    return;
+	    // Check if it's ammo to reload the craft
+	    foreach (var w in _weapons)
+	    {
+		    if (w != null && item == w.getRules().getClipItem() && w.getAmmo() < w.getRules().getAmmoMax())
+		    {
+			    w.setRearming(true);
+			    _status = "STR_REARMING";
+		    }
+	    }
+	    // Check if it's fuel to refuel the craft
+	    if (item == _rules.getRefuelItem() && _fuel < _rules.getMaxFuel())
+		    _status = "STR_REFUELLING";
+    }
+
+    /**
+     * Unloads all the craft contents to the base.
+     * @param mod Pointer to mod.
+     */
+    internal void unload(Mod.Mod mod)
+    {
+	    // Remove weapons
+	    foreach (var w in _weapons)
+	    {
+		    if (w != null)
+		    {
+			    _base.getStorageItems().addItem(w.getRules().getLauncherItem());
+			    _base.getStorageItems().addItem(w.getRules().getClipItem(), w.getClipsLoaded(mod));
+		    }
+	    }
+
+	    // Remove items
+	    foreach (var it in _items.getContents())
+	    {
+		    _base.getStorageItems().addItem(it.Key, it.Value);
+	    }
+
+	    // Remove vehicles
+	    foreach (var v in _vehicles)
+	    {
+		    _base.getStorageItems().addItem(v.getRules().getType());
+		    if (v.getRules().getCompatibleAmmo().Any())
+		    {
+			    _base.getStorageItems().addItem(v.getRules().getCompatibleAmmo().First(), v.getAmmo());
+		    }
+	    }
+	    _vehicles.Clear();
+
+	    // Remove soldiers
+	    foreach (var s in _base.getSoldiers())
+	    {
+		    if (s.getCraft() == this)
+		    {
+			    s.setCraft(null);
+		    }
+	    }
+    }
 }

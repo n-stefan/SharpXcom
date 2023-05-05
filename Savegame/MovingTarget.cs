@@ -259,4 +259,17 @@ internal class MovingTarget : Target
      */
     internal int getSpeed() =>
 	    _speed;
+
+    /**
+     * Loads the moving target from a YAML file.
+     * @param node YAML node.
+     */
+    protected void load(YamlNode node)
+    {
+	    base.load(node);
+	    _speedLon = double.Parse(node["speedLon"].ToString());
+	    _speedLat = double.Parse(node["speedLat"].ToString());
+	    _speedRadian = double.Parse(node["speedRadian"].ToString());
+	    _speed = int.Parse(node["speed"].ToString());
+    }
 }

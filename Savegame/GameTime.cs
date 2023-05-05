@@ -20,6 +20,11 @@
 namespace SharpXcom.Savegame;
 
 /**
+ * Enumerator for time periods.
+ */
+enum TimeTrigger { TIME_5SEC, TIME_10MIN, TIME_30MIN, TIME_1HOUR, TIME_1DAY, TIME_1MONTH };
+
+/**
  * Stores the current ingame time/date according to GMT.
  * Takes care of managing and representing each component,
  * as well as common time operations.
@@ -150,4 +155,90 @@ internal class GameTime
      */
     internal int getMinute() =>
 	    _minute;
+
+    /**
+     * Returns the current ingame second.
+     * @return Second (0-59).
+     */
+    internal int getSecond() =>
+	    _second;
+
+    /**
+     * Returns a localizable-string representation of
+     * the current ingame weekday.
+     * @return Weekday string ID.
+     */
+    internal string getWeekdayString()
+    {
+	    string[] weekdays = { "STR_SUNDAY", "STR_MONDAY", "STR_TUESDAY", "STR_WEDNESDAY", "STR_THURSDAY", "STR_FRIDAY", "STR_SATURDAY" };
+	    return weekdays[_weekday - 1];
+    }
+
+    /**
+     * Advances the ingame time by 5 seconds, automatically correcting
+     * the other components when necessary and sending out a trigger when
+     * a certain time span has elapsed for time-dependent events.
+     * @return Time span trigger.
+     */
+    internal TimeTrigger advance()
+    {
+        TimeTrigger trigger = TimeTrigger.TIME_5SEC;
+        int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+        // Leap year
+        if ((_year % 4 == 0) && !(_year % 100 == 0 && _year % 400 != 0))
+            monthDays[1]++;
+
+        _second += 5;
+
+        if (_second >= 60)
+        {
+            _minute++;
+            _second = 0;
+            if (_minute % 10 == 0)
+            {
+                trigger = TimeTrigger.TIME_10MIN;
+            }
+            if (_minute % 30 == 0)
+            {
+                trigger = TimeTrigger.TIME_30MIN;
+            }
+        }
+        if (_minute >= 60)
+        {
+            _hour++;
+            _minute = 0;
+            trigger = TimeTrigger.TIME_1HOUR;
+        }
+        if (_hour >= 24)
+        {
+            _day++;
+            _weekday++;
+            _hour = 0;
+            trigger = TimeTrigger.TIME_1DAY;
+        }
+        if (_weekday > 7)
+        {
+            _weekday = 1;
+        }
+        if (_day > monthDays[_month - 1])
+        {
+            _day = 1;
+            _month++;
+            trigger = TimeTrigger.TIME_1MONTH;
+        }
+        if (_month > 12)
+        {
+            _month = 1;
+            _year++;
+        }
+
+        return trigger;
+    }
+
+    /**
+     * Returns the current ingame day.
+     * @return Day (1-31).
+     */
+    internal int getDay() =>
+	    _day;
 }

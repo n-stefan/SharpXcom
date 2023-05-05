@@ -168,7 +168,7 @@ internal class ComboBox : InteractiveSurface
      * Changes the currently selected option.
      * @param sel Selected row.
      */
-    void setSelected(uint sel)
+    internal void setSelected(uint sel)
     {
         _sel = sel;
         if (_sel < _list.getTexts())
@@ -240,4 +240,25 @@ internal class ComboBox : InteractiveSurface
         }
         _arrow.drawRect(ref square, (byte)color);
     }
+
+    /**
+     * Changes the color of the arrow buttons in the list.
+     * @param color Color value.
+     */
+    internal void setArrowColor(byte color) =>
+        _list.setArrowColor(color);
+
+    /**
+     * Sets a function to be called every time the slider's value changes.
+     * @param handler Action handler.
+     */
+    internal void onChange(ActionHandler handler) =>
+        _change = handler;
+
+    /**
+     * Returns the currently selected option.
+     * @return Selected row.
+     */
+    internal uint getSelected() =>
+	    _sel;
 }

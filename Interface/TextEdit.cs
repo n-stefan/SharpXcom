@@ -36,6 +36,7 @@ internal class TextEdit : InteractiveSurface
     State _state;
     Text _text, _caret;
     Engine.Timer _timer;
+    string _value;
 
     /**
      * Sets up a blank text edit with the specified size and position.
@@ -45,7 +46,7 @@ internal class TextEdit : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    TextEdit(State state, int width, int height, int x, int y) : base(width, height, x, y)
+    internal TextEdit(State state, int width, int height, int x, int y) : base(width, height, x, y)
     {
         _blink = true;
         _modal = true;
@@ -85,4 +86,53 @@ internal class TextEdit : InteractiveSurface
         _blink = !_blink;
         _redraw = true;
     }
+
+    /**
+     * Changes the way the text is aligned horizontally
+     * relative to the drawing area.
+     * @param align Horizontal alignment.
+     */
+    internal void setAlign(TextHAlign align) =>
+        _text.setAlign(align);
+
+    /**
+     * Sets a function to be called every time the text changes.
+     * @param handler Action handler.
+     */
+    internal void onChange(ActionHandler handler) =>
+        _change = handler;
+
+    /**
+     * Returns the string displayed on screen.
+     * @return Text string.
+     */
+    internal string getText() =>
+	    Unicode.convUtf32ToUtf8(_value);
+
+    /**
+     * Changes the string displayed on screen.
+     * @param text Text string.
+     */
+    internal void setText(string text)
+    {
+	    _value = Unicode.convUtf8ToUtf32(text);
+	    _caretPos = (uint)_value.Length;
+	    _redraw = true;
+    }
+
+    /**
+     * Changes the text edit to use the big-size font.
+     */
+    internal void setBig()
+    {
+        _text.setBig();
+        _caret.setBig();
+    }
+
+    /**
+     * Restricts the text to only numerical input or signed numerical input.
+     * @param constraint TextEditConstraint to be applied.
+     */
+    internal void setConstraint(TextEditConstraint constraint) =>
+        _textEditConstraint = constraint;
 }

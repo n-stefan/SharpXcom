@@ -583,7 +583,7 @@ internal class Mod
      * @param id Inventory type.
      * @return Inventory ruleset.
      */
-    internal RuleInventory getInventory(string id, bool error) =>
+    internal RuleInventory getInventory(string id, bool error = false) =>
 	    getRule(id, "Inventory", _invs, error);
 
     /**
@@ -908,7 +908,7 @@ internal class Mod
      * @param id Craft type.
      * @return Rules for the craft.
      */
-    internal RuleCraft getCraft(string id, bool error) =>
+    internal RuleCraft getCraft(string id, bool error = false) =>
 	    getRule(id, "Craft", _crafts, error);
 
     /**
@@ -924,7 +924,7 @@ internal class Mod
      * @param id Research project type.
      * @return Rules for the research project.
      */
-    RuleResearch getResearch(string id, bool error) =>
+    internal RuleResearch getResearch(string id, bool error = false) =>
 	    getRule(id, "Research", _research, error);
 
     /**
@@ -932,7 +932,7 @@ internal class Mod
      * @param id Manufacture project type.
      * @return Rules for the manufacture project.
      */
-    RuleManufacture getManufacture(string id, bool error) =>
+    internal RuleManufacture getManufacture(string id, bool error = false) =>
 	    getRule(id, "Manufacture", _manufacture, error);
 
     /**
@@ -2820,7 +2820,7 @@ internal class Mod
      * @param name Unit name.
      * @return Rules for the units.
      */
-    internal RuleSoldier getSoldier(string name, bool error) =>
+    internal RuleSoldier getSoldier(string name, bool error = false) =>
 	    getRule(name, "Soldier", _soldiers, error);
 
     /**
@@ -2830,4 +2830,77 @@ internal class Mod
      */
     internal List<string> getSoldiersList() =>
 	    _soldiersIndex;
+
+    /**
+     * Returns the list of research projects.
+     * @return The list of research projects.
+     */
+    internal List<string> getResearchList() =>
+	    _researchIndex;
+
+    /**
+     * Gets the list of StatStrings.
+     * @return The list of StatStrings.
+     */
+    internal List<StatString> getStatStrings() =>
+	    _statStrings;
+
+    /**
+     * Gets the research-requirements for Psi-Lab (it's a cache for psiStrengthEval)
+     */
+    internal List<string> getPsiRequirements() =>
+	    _psiRequirements;
+
+    /**
+     * Returns the rules for the specified commendation.
+     * @param id Commendation type.
+     * @return Rules for the commendation.
+     */
+    internal RuleCommendations getCommendation(string id, bool error = false) =>
+	    getRule(id, "Commendation", _commendations, error);
+
+    /**
+     * Returns the data for the specified ufo trajectory.
+     * @param id Ufo trajectory id.
+     * @return A pointer to the data for the specified ufo trajectory.
+     */
+    internal UfoTrajectory getUfoTrajectory(string id, bool error = false) =>
+	    getRule(id, "Trajectory", _ufoTrajectories, error);
+
+    /**
+     * Returns the cost of an individual engineer
+     * for purchase/maintenance.
+     * @return Cost.
+     */
+    internal int getEngineerCost() =>
+	    _costEngineer;
+
+    /**
+     * Returns the cost of an individual scientist
+     * for purchase/maintenance.
+     * @return Cost.
+     */
+    internal int getScientistCost() =>
+	    _costScientist;
+
+    internal List<string> getMissionScriptList() =>
+	    _missionScriptIndex;
+
+    internal RuleMissionScript getMissionScript(string name, bool error = false) =>
+	    getRule(name, "Mission Script", _missionScripts, error);
+
+    /**
+     * Returns the info about a specific unit.
+     * @param name Unit name.
+     * @return Rules for the units.
+     */
+    internal Unit getUnit(string name, bool error = false) =>
+	    getRule(name, "Unit", _units, error);
+
+    /**
+     * Returns the list of manufacture projects.
+     * @return The list of manufacture projects.
+     */
+    internal List<string> getManufactureList() =>
+	    _manufactureIndex;
 }

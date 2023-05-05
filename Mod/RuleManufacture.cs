@@ -89,4 +89,56 @@ internal class RuleManufacture : IListOrder, IRule
 		    _listOrder = listOrder;
 	    }
     }
+
+    /**
+     * Gets the time needed to manufacture one object.
+     * @return The time needed to manufacture one object (in man/hour).
+     */
+    internal int getManufactureTime() =>
+	    _time;
+
+    /**
+     * Gets the list of research required to
+     * manufacture this object.
+     * @return A list of research IDs.
+     */
+    internal List<string> getRequirements() =>
+	    _requires;
+
+    /**
+     * Gets the list of items produced by completing "one object" of this project.
+     * @return The list of items produced by completing "one object" of this project.
+     */
+    internal Dictionary<string, int> getProducedItems() =>
+	    _producedItems;
+
+    /**
+     * Gets the category shown in the manufacture list.
+     * @return The category.
+     */
+    internal string getCategory() =>
+	    _category;
+
+    /**
+     * Checks if there's enough funds to manufacture one object.
+     * @param funds Current funds.
+     * @return True if manufacture is possible.
+     */
+    internal bool haveEnoughMoneyForOneMoreUnit(long funds) =>
+	    // either we have enough money, or the production doesn't cost anything
+	    funds >= _cost || _cost <= 0;
+
+    /**
+     * Gets the list of items required to manufacture one object.
+     * @return The list of items required to manufacture one object.
+     */
+    internal Dictionary<string, int> getRequiredItems() =>
+	    _requiredItems;
+
+    /**
+     * Gets the cost of manufacturing one object.
+     * @return The cost of manufacturing one object.
+     */
+    internal int getManufactureCost() =>
+	    _cost;
 }

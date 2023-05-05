@@ -175,4 +175,29 @@ internal class RuleRegion : IRule
      */
     internal List<MissionZone> getMissionZones() =>
 	    _missionZones;
+
+    /**
+     * Checks if a point is inside this region.
+     * @param lon Longitude in radians.
+     * @param lat Latitude in radians.
+     * @return True if it's inside, false if it's outside.
+     */
+    internal bool insideRegion(double lon, double lat)
+    {
+	    for (int i = 0; i < _lonMin.Count; ++i)
+	    {
+		    bool inLon, inLat;
+
+		    if (_lonMin[i] <= _lonMax[i])
+			    inLon = (lon >= _lonMin[i] && lon < _lonMax[i]);
+		    else
+			    inLon = ((lon >= _lonMin[i] && lon < M_PI*2.0) || (lon >= 0 && lon < _lonMax[i]));
+
+		    inLat = (lat >= _latMin[i] && lat < _latMax[i]);
+
+		    if (inLon && inLat)
+			    return true;
+	    }
+	    return false;
+    }
 }

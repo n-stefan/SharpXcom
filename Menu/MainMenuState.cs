@@ -17,8 +17,6 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Action = SharpXcom.Engine.Action;
-
 namespace SharpXcom.Menu;
 
 // Utility class for enqueuing a state in the stack that goes to the main menu
@@ -108,28 +106,28 @@ internal class MainMenuState : State
      * Opens the New Game window.
      * @param action Pointer to an action.
      */
-    void btnNewGameClick(Action _) =>
+    void btnNewGameClick(Engine.Action _) =>
         _game.pushState(new NewGameState());
 
     /**
      * Opens the New Battle screen.
      * @param action Pointer to an action.
      */
-    void btnNewBattleClick(Action _) =>
+    void btnNewBattleClick(Engine.Action _) =>
         _game.pushState(new NewBattleState());
 
     /**
      * Opens the Load Game screen.
      * @param action Pointer to an action.
      */
-    void btnLoadClick(Action _) =>
+    void btnLoadClick(Engine.Action _) =>
         _game.pushState(new ListLoadState(OptionsOrigin.OPT_MENU));
 
     /**
      * Opens the Options screen.
      * @param action Pointer to an action.
      */
-    void btnOptionsClick(Action _)
+    void btnOptionsClick(Engine.Action _)
     {
         Options.backupDisplay();
         _game.pushState(new OptionsVideoState(OptionsOrigin.OPT_MENU));
@@ -139,13 +137,13 @@ internal class MainMenuState : State
 	* Opens the Mods screen.
 	* @param action Pointer to an action.
 	*/
-	void btnModsClick(Action _) =>
+	void btnModsClick(Engine.Action _) =>
 		_game.pushState(new ModListState());
 
     /**
      * Quits the game.
      * @param action Pointer to an action.
      */
-    void btnQuitClick(Action _) =>
+    void btnQuitClick(Engine.Action _) =>
         _game.quit();
 }

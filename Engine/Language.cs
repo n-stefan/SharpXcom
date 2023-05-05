@@ -305,4 +305,31 @@ internal class Language
 		    }
 	    }
     }
+
+    /**
+     * Gets all the languages found in the
+     * Data folder and returns their properties.
+     * @param files List of language filenames.
+     * @param names List of language human-readable names.
+     */
+    internal static void getList(List<string> files, List<string> names)
+    {
+        files = CrossPlatform.getFolderContents(CrossPlatform.searchDataFolder("common/Language"), "yml");
+        names.Clear();
+
+        for (int i = 0; i < files.Count; i++)
+        {
+            files[i] = CrossPlatform.noExt(files[i]);
+            string name;
+            if (_names.TryGetValue(files[i], out string lang))
+            {
+                name = lang;
+            }
+            else
+            {
+                name = files[i];
+            }
+            names.Add(name);
+        }
+    }
 }

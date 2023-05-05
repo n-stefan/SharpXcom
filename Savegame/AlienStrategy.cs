@@ -87,4 +87,40 @@ internal class AlienStrategy
 			return;
 		_missionRuns[varName] += increment;
 	}
+
+	/**
+	 * Loads the data from a YAML file.
+	 * @param node YAML node.
+	 */
+	internal void load(YamlNode node)
+	{
+		// Free allocated memory.
+		_regionMissions.Clear();
+		_regionChances.clear();
+		_regionChances.load(node["regions"]);
+        foreach (var nn in ((YamlSequenceNode)node["possibleMissions"]).Children)
+		{
+			string region = nn["region"].ToString();
+			YamlNode missions = nn["missions"];
+			WeightedOptions options = new WeightedOptions();
+			options.load(missions);
+			_regionMissions.Add(region, options);
+		}
+		foreach (var child in ((YamlSequenceNode)node["missionLocations"]).Children)
+		{
+            _missionLocations.Add(child[0].ToString(), ((YamlSequenceNode)child[1]).Select(x =>
+				KeyValuePair.Create(x[0].ToString(), int.Parse(x[1].ToString()))).ToList());
+        }
+		foreach (var child in ((YamlSequenceNode)node["missionsRun"]).Children)
+		{
+			_missionRuns.Add(child[0].ToString(), int.Parse(child[1].ToString()));
+        }
+	}
+
+	/**
+	 * Checks the number of missions run labelled as "varName".
+	 * @return the number of missions run under the variable name.
+	 */
+	internal int getMissionsRun(string varName) =>
+		_missionRuns.TryGetValue(varName, out int missionRun) ? missionRun : 0;
 }

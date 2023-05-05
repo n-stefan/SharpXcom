@@ -101,4 +101,19 @@ internal class MissionSite : Target
      */
     internal void setAlienRace(string race) =>
 	    _race = race;
+
+    /**
+     * Returns the ruleset for the mission's deployment.
+     * @return Pointer to deployment rules.
+     */
+    internal AlienDeployment getDeployment() =>
+	    _deployment;
+
+    /**
+     * Gets the detection state for this mission site.
+     * used for popups of sites spawned directly rather than by UFOs.
+     * @return whether or not this site has been detected.
+     */
+    internal bool getDetected() =>
+	    _detected;
 }

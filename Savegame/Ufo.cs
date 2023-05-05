@@ -193,4 +193,99 @@ internal class Ufo : MovingTarget
      */
     internal uint getSecondsRemaining() =>
 	    _secondsRemaining;
+
+    /**
+     * Loads the UFO from a YAML file.
+     * @param node YAML node.
+     * @param mod The game mod. Use to access the trajectory rules.
+     * @param game The game data. Used to find the UFO's mission.
+     */
+    internal void load(YamlNode node, Mod.Mod mod, SavedGame game)
+    {
+	    base.load(node);
+	    _crashId = int.Parse(node["crashId"].ToString());
+	    _landId = int.Parse(node["landId"].ToString());
+	    _damage = int.Parse(node["damage"].ToString());
+	    _altitude = node["altitude"].ToString();
+	    _direction = node["direction"].ToString();
+	    _detected = bool.Parse(node["detected"].ToString());
+	    _hyperDetected = bool.Parse(node["hyperDetected"].ToString());
+	    _secondsRemaining = uint.Parse(node["secondsRemaining"].ToString());
+	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+	    double lon = _lon;
+	    double lat = _lat;
+        YamlNode dest = node["dest"];
+        if (dest != null)
+	    {
+		    lon = double.Parse(dest["lon"].ToString());
+		    lat = double.Parse(dest["lat"].ToString());
+	    }
+	    _dest = new Waypoint();
+	    _dest.setLongitude(lon);
+	    _dest.setLatitude(lat);
+        YamlNode status = node["status"];
+        if (status != null)
+	    {
+		    _status = (UfoStatus)int.Parse(status.ToString());
+	    }
+	    else
+	    {
+		    if (isDestroyed())
+		    {
+			    _status = UfoStatus.DESTROYED;
+		    }
+		    else if (isCrashed())
+		    {
+			    _status = UfoStatus.CRASHED;
+		    }
+		    else if (_altitude == "STR_GROUND")
+		    {
+			    _status = UfoStatus.LANDED;
+		    }
+		    else
+		    {
+			    _status = UfoStatus.FLYING;
+		    }
+	    }
+	    if (game.getMonthsPassed() != -1)
+	    {
+		    int missionID = int.Parse(node["mission"].ToString());
+		    var found = game.getAlienMissions().Find(x => x.getId() == missionID);
+		    if (found == null)
+		    {
+			    // Corrupt save file.
+			    throw new Exception("Unknown UFO mission, save file is corrupt.");
+		    }
+		    _mission = found;
+
+		    string tid = node["trajectory"].ToString();
+		    _trajectory = mod.getUfoTrajectory(tid);
+		    if (_trajectory == null)
+		    {
+			    // Corrupt save file.
+			    throw new Exception("Unknown UFO trajectory, save file is corrupt.");
+		    }
+		    _trajectoryPoint = uint.Parse(node["trajectoryPoint"].ToString());
+	    }
+	    _fireCountdown = int.Parse(node["fireCountdown"].ToString());
+	    _escapeCountdown = int.Parse(node["escapeCountdown"].ToString());
+	    if (_inBattlescape)
+		    setSpeed(0);
+    }
+
+    /**
+     * Returns if this UFO took enough damage
+     * to cause it to crash.
+     * @return Crashed status.
+     */
+    bool isDestroyed() =>
+	    (_damage >= _rules.getMaxDamage());
+
+    /**
+     * Returns if this UFO took enough damage
+     * to cause it to crash.
+     * @return Crashed status.
+     */
+    bool isCrashed() =>
+	    (_damage > _rules.getMaxDamage() / 2);
 }

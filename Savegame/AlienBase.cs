@@ -85,4 +85,14 @@ internal class AlienBase : Target
      */
     internal void setDiscovered(bool discovered) =>
         _discovered = discovered;
+
+    internal AlienDeployment getDeployment() =>
+	    _deployment;
+
+    /**
+     * Gets the alien base's geoscape status.
+     * @return Has the base been discovered?
+     */
+    internal bool isDiscovered() =>
+	    _discovered;
 }

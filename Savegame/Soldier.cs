@@ -243,4 +243,179 @@ internal class Soldier
      */
     internal void setCraft(Craft craft) =>
         _craft = craft;
+
+	/**
+	 * Loads the soldier from a YAML file.
+	 * @param node YAML node.
+	 * @param mod Game mod.
+	 * @param save Pointer to savegame.
+	 */
+	internal void load(YamlNode node, Mod.Mod mod, SavedGame save)
+	{
+		_id = int.Parse(node["id"].ToString());
+		_name = node["name"].ToString();
+		_initialStats.load(node["initialStats"]);
+		_currentStats.load(node["currentStats"]);
+		_rank = (SoldierRank)int.Parse(node["rank"].ToString());
+		_gender = (SoldierGender)int.Parse(node["gender"].ToString());
+		_look = (SoldierLook)int.Parse(node["look"].ToString());
+		_missions = int.Parse(node["missions"].ToString());
+		_kills = int.Parse(node["kills"].ToString());
+		_recovery = int.Parse(node["recovery"].ToString());
+		Armor armor = mod.getArmor(node["armor"].ToString());
+		if (armor == null)
+		{
+			armor = mod.getArmor(mod.getSoldier(mod.getSoldiersList().First()).getArmor());
+		}
+		_armor = armor;
+		_psiTraining = bool.Parse(node["psiTraining"].ToString());
+		_improvement = int.Parse(node["improvement"].ToString());
+		_psiStrImprovement = int.Parse(node["psiStrImprovement"].ToString());
+		var layout = node["equipmentLayout"] as YamlSequenceNode;
+        if (layout != null)
+		{
+			foreach (var i in layout)
+			{
+				EquipmentLayoutItem layoutItem = new EquipmentLayoutItem(i);
+				if (mod.getInventory(layoutItem.getSlot()) != null)
+				{
+					_equipmentLayout.Add(layoutItem);
+				}
+				else
+				{
+					layoutItem = null;
+				}
+			}
+		}
+		if (node["death"] != null)
+		{
+			_death = new SoldierDeath();
+			_death.load(node["death"]);
+		}
+		if (node["diary"] != null)
+		{
+			_diary = new SoldierDiary();
+			_diary.load(node["diary"], mod);
+		}
+		calcStatString(mod.getStatStrings(), (Options.psiStrengthEval && save.isResearched(mod.getPsiRequirements())));
+	}
+
+	/**
+	 * Calculates the soldier's statString
+	 * Calculates the soldier's statString.
+	 * @param statStrings List of statString rules.
+	 * @param psiStrengthEval Are psi stats available?
+	 */
+	internal void calcStatString(List<StatString> statStrings, bool psiStrengthEval) =>
+		_statString = StatString.calcStatString(_currentStats, statStrings, psiStrengthEval, _psiTraining);
+
+	/**
+	 * returns whether or not the unit is in psi training
+	 * @return true/false
+	 */
+	internal bool isInPsiTraining() =>
+		_psiTraining;
+
+	/**
+	 * Returns the soldier's rules.
+	 * @return rulesoldier
+	 */
+	internal RuleSoldier getRules() =>
+		_rules;
+
+    /**
+     * Trains a soldier's Psychic abilities after 1 month.
+     */
+    internal void trainPsi()
+    {
+        int psiSkillCap = _rules.getStatCaps().psiSkill;
+        int psiStrengthCap = _rules.getStatCaps().psiStrength;
+
+        _improvement = _psiStrImprovement = 0;
+        // -10 days - tolerance threshold for switch from anytimePsiTraining option.
+        // If soldier has psiskill -10..-1, he was trained 20..59 days. 81.7% probability, he was trained more that 30 days.
+        if (_currentStats.psiSkill < -10 + _rules.getMinStats().psiSkill)
+            _currentStats.psiSkill = _rules.getMinStats().psiSkill;
+        else if (_currentStats.psiSkill <= _rules.getMaxStats().psiSkill)
+        {
+            int max = _rules.getMaxStats().psiSkill + _rules.getMaxStats().psiSkill / 2;
+            _improvement = RNG.generate(_rules.getMaxStats().psiSkill, max);
+        }
+        else
+        {
+            if (_currentStats.psiSkill <= (psiSkillCap / 2)) _improvement = RNG.generate(5, 12);
+            else if (_currentStats.psiSkill < psiSkillCap) _improvement = RNG.generate(1, 3);
+
+            if (Options.allowPsiStrengthImprovement)
+            {
+                if (_currentStats.psiStrength <= (psiStrengthCap / 2)) _psiStrImprovement = RNG.generate(5, 12);
+                else if (_currentStats.psiStrength < psiStrengthCap) _psiStrImprovement = RNG.generate(1, 3);
+            }
+        }
+        _currentStats.psiSkill += _improvement;
+        _currentStats.psiStrength += _psiStrImprovement;
+        if (_currentStats.psiSkill > psiSkillCap) _currentStats.psiSkill = psiSkillCap;
+        if (_currentStats.psiStrength > psiStrengthCap) _currentStats.psiStrength = psiStrengthCap;
+    }
+
+	/**
+	 * Returns the amount of time until the soldier is healed.
+	 * @return Number of days.
+	 */
+	internal int getWoundRecovery() =>
+		_recovery;
+
+    /**
+     * Heals soldier wounds.
+     */
+    internal void heal() =>
+        _recovery--;
+
+    /**
+     * Trains a soldier's Psychic abilities after 1 day.
+     * (anytimePsiTraining option)
+     */
+    internal void trainPsi1Day()
+    {
+        if (!_psiTraining)
+        {
+            _improvement = 0;
+            return;
+        }
+
+        if (_currentStats.psiSkill > 0) // yes, 0. _rules->getMinStats().psiSkill was wrong.
+        {
+            if (8 * 100 >= _currentStats.psiSkill * RNG.generate(1, 100) && _currentStats.psiSkill < _rules.getStatCaps().psiSkill)
+            {
+                ++_improvement;
+                ++_currentStats.psiSkill;
+            }
+
+            if (Options.allowPsiStrengthImprovement)
+            {
+                if (8 * 100 >= _currentStats.psiStrength * RNG.generate(1, 100) && _currentStats.psiStrength < _rules.getStatCaps().psiStrength)
+                {
+                    ++_psiStrImprovement;
+                    ++_currentStats.psiStrength;
+                }
+            }
+        }
+        else if (_currentStats.psiSkill < _rules.getMinStats().psiSkill)
+        {
+            if (++_currentStats.psiSkill == _rules.getMinStats().psiSkill) // initial training is over
+            {
+                _improvement = _rules.getMaxStats().psiSkill + RNG.generate(0, _rules.getMaxStats().psiSkill / 2);
+                _currentStats.psiSkill = _improvement;
+            }
+        }
+        else // minStats.psiSkill <= 0 && _currentStats.psiSkill == minStats.psiSkill
+            _currentStats.psiSkill -= RNG.generate(30, 60);    // set initial training from 30 to 60 days
+    }
+
+	/**
+	 * Returns the craft the soldier is assigned to.
+	 * @return Pointer to craft.
+	 */
+	internal Craft getCraft() =>
+		_craft;
 }

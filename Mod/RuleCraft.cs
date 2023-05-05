@@ -179,4 +179,42 @@ internal class RuleCraft : IListOrder, IRule
 	    _maxAltitude = int.Parse(node["maxAltitude"].ToString());
 	    _maxItems = int.Parse(node["maxItems"].ToString());
     }
+
+    /**
+     * Gets the cost of rent for a month.
+     * @return The cost.
+     */
+    internal int getRentCost() =>
+	    _costRent;
+
+    /**
+     * Gets how much damage is removed from the
+     * craft while repairing.
+     * @return The amount of damage.
+     */
+    internal int getRepairRate() =>
+	    _repairRate;
+
+    /**
+     * Gets what item is required while
+     * the craft is refuelling.
+     * @return The item ID or "" if none.
+     */
+    internal string getRefuelItem() =>
+	    _refuelItem;
+
+    /**
+     * Gets the maximum fuel the craft can contain.
+     * @return The fuel amount.
+     */
+    internal int getMaxFuel() =>
+	    _fuelMax;
+
+    /**
+     * Gets the language string that names
+     * this craft. Each craft type has a unique name.
+     * @return The craft's name.
+     */
+    internal string getType() =>
+	    _type;
 }

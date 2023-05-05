@@ -216,7 +216,7 @@ internal class Game
      * @param music Music volume, from 0 to MIX_MAX_VOLUME.
      * @param ui UI volume, from 0 to MIX_MAX_VOLUME.
      */
-    void setVolume(int sound, int music, int ui)
+    internal void setVolume(int sound, int music, int ui)
     {
         if (!Options.mute)
         {
