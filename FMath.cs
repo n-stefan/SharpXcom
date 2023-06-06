@@ -23,7 +23,7 @@ internal class FMath
 {
     internal const double M_PI = 3.14159265358979323846;
     internal const double M_PI_2 = 1.57079632679489661923;
-    const double M_PI_4 = 0.785398163397448309616;
+    internal const double M_PI_4 = 0.785398163397448309616;
 
     const double DBL_EPSILON = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
 

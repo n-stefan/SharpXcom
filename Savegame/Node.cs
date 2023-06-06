@@ -19,6 +19,8 @@
 
 namespace SharpXcom.Savegame;
 
+enum NodeRank { NR_SCOUT = 0, NR_XCOM, NR_SOLDIER, NR_NAVIGATOR, NR_LEADER, NR_ENGINEER, NR_MISC1, NR_MEDIC, NR_MISC2 };
+
 /**
  * Represents a node/spawnpoint in the battlescape, loaded from RMP files.
  * @sa http://www.ufopaedia.org/index.php?title=ROUTES
@@ -26,6 +28,22 @@ namespace SharpXcom.Savegame;
 internal class Node
 {
     internal const int TYPE_DANGEROUS = 0x04; // an alien was shot here, stop patrolling to it like an idiot with a death wish
+    internal const int TYPE_SMALL = 0x02; // large unit can not spawn here when this bit is set
+    internal const int TYPE_FLYING = 0x01; // non-flying unit can not spawn here when this bit is set
+    internal const int CRAFTSEGMENT = 1000;
+    internal const int UFOSEGMENT = 2000;
+
+    /* following data is the order in which certain alien ranks spawn on certain node ranks */
+    /* note that they all can fall back to rank 0 nodes - which is scout (outside ufo) */
+    internal static int[,] nodeRank = new int[8, 7] {
+	    { 4, 3, 5, 8, 7, 2, 0 }, //commander
+	    { 4, 3, 5, 8, 7, 2, 0 }, //leader
+	    { 5, 4, 3, 2, 7, 8, 0 }, //engineer
+	    { 7, 6, 2, 8, 3, 4, 0 }, //medic
+	    { 3, 4, 5, 2, 7, 8, 0 }, //navigator
+	    { 2, 5, 3, 4, 6, 8, 0 }, //soldier
+	    { 2, 5, 3, 4, 6, 8, 0 }, //terrorist
+	    { 2, 5, 3, 4, 6, 8, 0 }  }; //also terrorist
 
     int _id;
     int _segment;
@@ -39,7 +57,7 @@ internal class Node
     Position _pos;
     List<int> _nodeLinks;
 
-    Node()
+    internal Node()
     {
         _id = 0;
         _segment = 0;
@@ -63,7 +81,7 @@ internal class Node
      * @param reserved
      * @param priority
      */
-    Node(int id, Position pos, int segment, int type, int rank, int flags, int reserved, int priority)
+    internal Node(int id, Position pos, int segment, int type, int rank, int flags, int reserved, int priority)
     {
         _id = id;
         _pos = pos;
@@ -134,4 +152,32 @@ internal class Node
      */
     internal int getID() =>
 	    _id;
+
+    /**
+     * Get the priority of this spawnpoint.
+     * @return priority
+     */
+    internal int getPriority() =>
+	    _priority;
+
+    /**
+     * Get the rank of units that can spawn on this node.
+     * @return noderank
+     */
+    internal NodeRank getRank() =>
+	    (NodeRank)_rank;
+
+    /// get the node's paths
+    internal List<int> getNodeLinks() =>
+        _nodeLinks;
+
+    internal void setDummy(bool dummy) =>
+        _dummy = dummy;
+
+    /**
+     * Gets the Node's segment.
+     * @return segment
+     */
+    internal int getSegment() =>
+	    _segment;
 }

@@ -17,7 +17,7 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace SharpXcom.Ufopaedia;
+namespace SharpXcom;
 
 /**
  * This static class encapsulates all functions related to Ufopaedia
@@ -31,4 +31,11 @@ internal class Ufopaedia
     // but have no own entry in a list. E.g. Ammunition items.
     // Maybe others as well, that should just not be selectable.
     internal const string UFOPAEDIA_NOT_AVAILABLE = "STR_NOT_AVAILABLE";
+
+    /**
+	 * Open Ufopaedia start state, presenting the section selection buttons.
+	 * @param game Pointer to actual game.
+	 */
+    internal static void open(Game game) =>
+        game.pushState(new UfopaediaStartState());
 }

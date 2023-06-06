@@ -413,7 +413,7 @@ internal class Game
 					    // re-gain focus on mouse-over or keypress.
 					    runningState = ApplicationState.RUNNING;
                         // Go on, feed the event to others
-                        break;
+                        goto default;
 				    default:
 					    Action action = new Action(_event, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
                         _screen.handle(action);

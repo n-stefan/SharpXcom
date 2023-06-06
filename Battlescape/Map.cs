@@ -225,4 +225,11 @@ internal class Map : InteractiveSurface
      */
     internal void setUnitDying(bool flag) =>
         _unitDying = flag;
+
+    /**
+     * Gets the pointer to the camera.
+     * @return Pointer to camera.
+     */
+    internal Camera getCamera() =>
+        _camera;
 }

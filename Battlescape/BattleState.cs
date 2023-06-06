@@ -60,10 +60,10 @@ internal class BattleState
     /**
      * Cancels the current BattleState.
      */
-    internal virtual void cancel() { }
+    protected virtual void cancel() { }
 
     /**
      * Start the current BattleState.
      */
-    internal virtual void init() { }
+    protected virtual void init() { }
 }

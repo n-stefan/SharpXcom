@@ -25,7 +25,7 @@ struct GlobeStaticData
     ///size of x & y of noise surface
     internal static int random_surf_size;
     ///array of shading gradient
-    short[] shade_gradient = new short[240];
+    internal static short[] shade_gradient = new short[240];
 
     //initialization
     public GlobeStaticData()
@@ -109,6 +109,36 @@ struct GlobeStaticData
             return ret;
         }
     }
+}
+
+struct CreateShadow
+{
+	internal static byte getShadowValue(Cord earth, Cord sun, short noise)
+	{
+		Cord temp = earth;
+		//diff
+		temp -= sun;
+		//norm
+		temp.x *= temp.x;
+		temp.y *= temp.y;
+		temp.z *= temp.z;
+		temp.x += temp.z + temp.y;
+		//we have norm of distance between 2 vectors, now stored in `x`
+
+		temp.x -= 2;
+		temp.x *= 125.0;
+
+		if (temp.x < -110)
+			temp.x = -31;
+		else if (temp.x > 120)
+			temp.x = 50;
+		else
+			temp.x = GlobeStaticData.shade_gradient[(short)temp.x + 120];
+
+		temp.x -= noise;
+
+		return (byte)Math.Clamp(temp.x, 0.0, 31.0);
+	}
 }
 
 /**
@@ -388,9 +418,9 @@ internal class Globe : InteractiveSurface
      */
     void polarToCart(double lon, double lat, out short x, out short y)
     {
-	    // Orthographic projection
-	    x = (short)(_cenX + (short)Math.Floor(_radius * Math.Cos(lat) * Math.Sin(lon - _cenLon)));
-	    y = (short)(_cenY + (short)Math.Floor(_radius * (Math.Cos(_cenLat) * Math.Sin(lat) - Math.Sin(_cenLat) * Math.Cos(lat) * Math.Cos(lon - _cenLon))));
+        // Orthographic projection
+        x = (short)(_cenX + (short)Math.Floor(_radius * Math.Cos(lat) * Math.Sin(lon - _cenLon)));
+        y = (short)(_cenY + (short)Math.Floor(_radius * (Math.Cos(_cenLat) * Math.Sin(lat) - Math.Sin(_cenLat) * Math.Cos(lat) * Math.Cos(lon - _cenLon))));
     }
 
     /**
@@ -402,7 +432,7 @@ internal class Globe : InteractiveSurface
      */
     bool pointBack(double lon, double lat)
     {
-	    double c = Math.Cos(_cenLat) * Math.Cos(lat) * Math.Cos(lon - _cenLon) + Math.Sin(_cenLat) * Math.Sin(lat);
+        double c = Math.Cos(_cenLat) * Math.Cos(lat) * Math.Cos(lon - _cenLon) + Math.Sin(_cenLat) * Math.Sin(lat);
 
         return c < 0.0;
     }
@@ -477,7 +507,7 @@ internal class Globe : InteractiveSurface
      * @return Current zoom (0-5).
      */
     internal uint getZoom() =>
-	    _zoom;
+        _zoom;
 
     /**
      * Resets the rotation speed and timer.
@@ -520,7 +550,7 @@ internal class Globe : InteractiveSurface
      * @return True if it's inside, False if it's outside.
      */
     internal bool insideLand(double lon, double lat) =>
-	    (getPolygonFromLonLat(lon, lat)) != null;
+        (getPolygonFromLonLat(lon, lat)) != null;
 
     /**
      * Sets a downwards rotation speed and starts the timer.
@@ -700,5 +730,95 @@ internal class Globe : InteractiveSurface
             if (odd) return i;
         }
         return null;
+    }
+
+    /**
+     * Get the polygons texture at a given point
+     * @param lon Longitude of the point.
+     * @param lat Latitude of the point.
+     * @param texture pointer to texture ID returns -1 when polygon not found
+     * @param shade pointer to shade
+     */
+    internal void getPolygonTextureAndShade(double lon, double lat, out int texture, out int shade)
+    {
+        ///this is shade conversion from 0..31 levels of geoscape to battlescape levels 0..15
+        int[] worldshades = {0, 0, 0, 0, 1, 1, 2, 2,
+                             3, 3, 4, 4, 5, 5, 6, 6,
+                             7, 7, 8, 8, 9, 9,10,11,
+                             11,12,12,13,13,14,15,15};
+
+        shade = worldshades[CreateShadow.getShadowValue(new Cord(0.0, 0.0, 1.0), getSunDirection(lon, lat), 0)];
+        Polygon t = getPolygonFromLonLat(lon, lat);
+        texture = (t == null) ? -1 : t.getTexture();
+    }
+
+    /**
+     * Rotates the globe to center on a certain
+     * polar point on the world map.
+     * @param lon Longitude of the point.
+     * @param lat Latitude of the point.
+     */
+    internal void center(double lon, double lat)
+    {
+        _cenLon = lon;
+        _cenLat = lat;
+        _game.getSavedGame().setGlobeLongitude(_cenLon);
+        _game.getSavedGame().setGlobeLatitude(_cenLat);
+        invalidate();
+    }
+
+    /**
+     * Get position of sun from point on globe
+     * @param lon longitude of position
+     * @param lat latitude of position
+     * @return position of sun
+     */
+    Cord getSunDirection(double lon, double lat)
+    {
+        double curTime = _game.getSavedGame().getTime().getDaylight();
+        double rot = curTime * 2 * M_PI;
+        double sun;
+
+        if (Options.globeSeasons)
+        {
+            int[] MonthDays1 = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
+            int[] MonthDays2 = { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 };
+
+            int year = _game.getSavedGame().getTime().getYear();
+            int month = _game.getSavedGame().getTime().getMonth() - 1;
+            int day = _game.getSavedGame().getTime().getDay() - 1;
+
+            double tm = (double)((_game.getSavedGame().getTime().getHour() * 60
+                + _game.getSavedGame().getTime().getMinute()) * 60
+                + _game.getSavedGame().getTime().getSecond()) / 86400; //day fraction is also taken into account
+
+            double CurDay;
+            if (year % 4 == 0 && !(year % 100 == 0 && year % 400 != 0))
+                CurDay = (MonthDays2[month] + day + tm) / 366 - 0.219; //spring equinox (start of astronomic year)
+            else
+                CurDay = (MonthDays1[month] + day + tm) / 365 - 0.219;
+            if (CurDay < 0) CurDay += 1.0;
+
+            sun = -0.261 * Math.Sin(CurDay * 2 * M_PI);
+        }
+        else
+            sun = 0;
+
+        var sun_direction = new Cord(Math.Cos(rot + lon), Math.Sin(rot + lon) * -Math.Sin(lat), Math.Sin(rot + lon) * Math.Cos(lat));
+
+        var pole = new Cord(0, Math.Cos(lat), Math.Sin(lat));
+
+        if (sun > 0)
+            sun_direction *= 1.0 - sun;
+        else
+            sun_direction *= 1.0 + sun;
+
+        pole *= sun;
+        sun_direction += pole;
+        double norm = sun_direction.norm();
+        //norm should be always greater than 0
+        norm = 1.0 / norm;
+        sun_direction *= norm;
+        return sun_direction;
     }
 }

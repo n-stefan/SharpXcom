@@ -452,4 +452,84 @@ internal class RuleItem : IListOrder, IRule
      */
     internal int getSellCost() =>
 	    _costSell;
+
+    /**
+     * Returns the item's Turret Type.
+     * @return The turret index (-1 for no turret).
+     */
+    internal int getTurretType() =>
+	    _turretType;
+
+    /**
+     * Returns the item's armor.
+     * The item is destroyed when an explosion power bigger than its armor hits it.
+     * @return The armor.
+     */
+    internal int getArmor() =>
+	    _armor;
+
+    /**
+     * Draws and centers the hand sprite on a surface
+     * according to its dimensions.
+     * @param texture Pointer to the surface set to get the sprite from.
+     * @param surface Pointer to the surface to draw to.
+     */
+    internal void drawHandSprite(SurfaceSet texture, Surface surface)
+    {
+	    Surface frame = texture.getFrame(this.getBigSprite());
+	    frame.setX((RuleInventory.HAND_W - this.getInventoryWidth()) * RuleInventory.SLOT_W/2);
+	    frame.setY((RuleInventory.HAND_H - this.getInventoryHeight()) * RuleInventory.SLOT_H/2);
+	    texture.getFrame(this.getBigSprite()).blit(surface);
+    }
+
+    /**
+     * Gets the reference in BIGOBS.PCK for use in inventory.
+     * @return The sprite reference.
+     */
+    internal int getBigSprite() =>
+	    _bigSprite;
+
+    /**
+     * Gets the weight of the item.
+     * @return The weight in strength units.
+     */
+    internal int getWeight() =>
+	    _weight;
+
+    /**
+    * Checks if the item can be equipped in base defense mission.
+    * @return True if it can be equipped.
+    */
+    internal bool canBeEquippedBeforeBaseDefense() =>
+	    !_ignoreInBaseDefense;
+
+    /**
+     * Gets the list of research required to
+     * use this item.
+     * @return The list of research IDs.
+     */
+    internal List<string> getRequirements() =>
+	    _requires;
+
+    /**
+     * is this item a rifle?
+     * @return whether or not it is a rifle.
+     */
+    internal bool isRifle() =>
+	    (_battleType == BattleType.BT_FIREARM || _battleType == BattleType.BT_MELEE) && _twoHanded;
+
+    /**
+     * is this item a pistol?
+     * @return whether or not it is a pistol.
+     */
+    internal bool isPistol() =>
+	    (_battleType == BattleType.BT_FIREARM || _battleType == BattleType.BT_MELEE) && !_twoHanded;
+
+    /**
+     * Returns if the item should be recoverable
+     * from the battlescape.
+     * @return True if it is recoverable.
+     */
+    internal bool isRecoverable() =>
+	    _recover;
 }

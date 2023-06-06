@@ -29,4 +29,23 @@ internal struct Cord
         y = 0.0;
         z = 0.0;
     }
+
+    internal Cord(double px, double py, double pz)
+    {
+        x = px;
+        y = py;
+        z = pz;
+    }
+
+    public static Cord operator -(Cord a, Cord b) =>
+        new(a.x - b.x, a.y - b.y, a.z - b.z);
+
+    public static Cord operator *(Cord a, double b) =>
+        new(a.x * b, a.y * b, a.z * b);
+
+    public static Cord operator +(Cord a, Cord b) =>
+        new(a.x + b.x, a.y + b.y, a.z + b.z);
+
+    internal double norm() =>
+        Math.Sqrt(x * x + y * y + z * z);
 }

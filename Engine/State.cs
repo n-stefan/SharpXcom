@@ -253,7 +253,7 @@ internal class State
      * and passes them on to its InteractiveSurface child elements.
      * @param action Pointer to an action.
      */
-    internal virtual void handle(Action action)
+    protected virtual void handle(Action action)
     {
 	    if (_modal == null)
 	    {
@@ -287,7 +287,7 @@ internal class State
      * of states, so they can be created once while being
      * repeatedly switched back into focus).
      */
-    internal virtual void init()
+    protected virtual void init()
     {
         _game.getScreen().setPalette(_palette);
         _game.getCursor().setPalette(_palette);
@@ -367,7 +367,7 @@ internal class State
      * Runs any code the state needs to keep updating every
      * game cycle, like timers and other real-time elements.
      */
-    internal virtual void think()
+    protected virtual void think()
     {
         foreach (var surface in _surfaces)
             surface.think();
@@ -377,7 +377,7 @@ internal class State
      * Blits all the visible Surface child elements onto the
      * display screen, by order of addition.
      */
-    internal virtual void blit()
+    protected virtual void blit()
     {
         foreach (var surface in _surfaces)
             surface.blit(_game.getScreen().getSurface());

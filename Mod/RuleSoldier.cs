@@ -184,4 +184,32 @@ internal class RuleSoldier : IRule
      */
     internal UnitStats getStatCaps() =>
 	    _statCaps;
+
+    /**
+     * Gets the soldier's base value, without experience modifiers.
+     * @return The soldier's value.
+     */
+    internal int getValue() =>
+	    _value;
+
+    /**
+     * Gets the height of the soldier when it's standing.
+     * @return The standing height.
+     */
+    internal int getStandHeight() =>
+	    _standHeight;
+
+    /**
+     * Gets the height of the soldier when it's kneeling.
+     * @return The kneeling height.
+     */
+    internal int getKneelHeight() =>
+	    _kneelHeight;
+
+    /**
+     * Gets the elevation of the soldier when it's flying.
+     * @return The floating height.
+     */
+    internal int getFloatHeight() =>
+	    _floatHeight;
 }

@@ -567,19 +567,19 @@ internal class GeoscapeState : State
             {
                 case TimeTrigger.TIME_1MONTH:
                     time1Month();
-                    break;
+                    goto case TimeTrigger.TIME_1DAY;
                 case TimeTrigger.TIME_1DAY:
                     time1Day();
-                    break;
+                    goto case TimeTrigger.TIME_1HOUR;
                 case TimeTrigger.TIME_1HOUR:
                     time1Hour();
-                    break;
+                    goto case TimeTrigger.TIME_30MIN;
                 case TimeTrigger.TIME_30MIN:
                     time30Minutes();
-                    break;
+                    goto case TimeTrigger.TIME_10MIN;
                 case TimeTrigger.TIME_10MIN:
                     time10Minutes();
-                    break;
+                    goto case TimeTrigger.TIME_5SEC;
                 case TimeTrigger.TIME_5SEC:
                     time5Seconds();
                     break;
@@ -1120,7 +1120,7 @@ internal class GeoscapeState : State
         }
 
         // Handle resupply of alien bases.
-        _game.getSavedGame().getAlienBases().ForEach(x => GenerateSupplyMission(_game.getMod(), _game.getSavedGame()));
+        _game.getSavedGame().getAlienBases().ForEach(x => GenerateSupplyMission(x, _game.getMod(), _game.getSavedGame()));
 
         // Autosave 3 times a month
         int day = _game.getSavedGame().getTime().getDay();
@@ -1216,5 +1216,1064 @@ internal class GeoscapeState : State
                 break;
             }
         }
+    }
+
+    /**
+     * Takes care of any game logic that has to
+     * run every game half hour, like UFO detection.
+     */
+    void time30Minutes()
+    {
+        var alienMissions = _game.getSavedGame().getAlienMissions();
+        // Decrease mission countdowns
+        alienMissions.ForEach(x => x.think(_game, _globe));
+        // Remove finished missions
+        for (var am = 0; am < alienMissions.Count;)
+        {
+            if (alienMissions[am].isOver())
+            {
+                alienMissions.RemoveAt(am);
+            }
+            else
+            {
+                ++am;
+            }
+        }
+
+        // Handle crashed UFOs expiration
+        _game.getSavedGame().getUfos().ForEach(x =>
+	        /// Decrease UFO expiration timer.
+	        {
+		        if (x.getStatus() == UfoStatus.CRASHED)
+		        {
+			        if (x.getSecondsRemaining() >= 30 * 60)
+			        {
+				        x.setSecondsRemaining(x.getSecondsRemaining() - 30 * 60);
+				        return;
+			        }
+			        // Marked expired UFOs for removal.
+                    x.setStatus(UfoStatus.DESTROYED);
+                }
+            }
+        );
+
+        // Handle craft maintenance and alien base detection
+        foreach (var i in _game.getSavedGame().getBases())
+        {
+            foreach (var j in i.getCrafts())
+            {
+                if (j.getStatus() == "STR_REFUELLING")
+                {
+                    string s = j.refuel();
+                    if (!string.IsNullOrEmpty(s))
+                    {
+                        string msg = tr("STR_NOT_ENOUGH_ITEM_TO_REFUEL_CRAFT_AT_BASE")
+                                            .arg(tr(s))
+                                            .arg(j.getName(_game.getLanguage()))
+                                            .arg(i.getName());
+                        popup(new CraftErrorState(this, msg));
+                    }
+                }
+            }
+        }
+
+        // Handle UFO detection and give aliens points
+        foreach (var u in _game.getSavedGame().getUfos())
+        {
+            int points = u.getRules().getMissionScore(); //one point per UFO in-flight per half hour
+            switch (u.getStatus())
+            {
+                case UfoStatus.LANDED:
+                    points *= 2;
+                    goto case UfoStatus.FLYING;
+                case UfoStatus.FLYING:
+                    // Get area
+                    foreach (var k in _game.getSavedGame().getRegions())
+                    {
+                        if (k.getRules().insideRegion(u.getLongitude(), u.getLatitude()))
+                        {
+                            k.addActivityAlien(points);
+                            break;
+                        }
+                    }
+                    // Get country
+                    foreach (var k in _game.getSavedGame().getCountries())
+                    {
+                        if (k.getRules().insideCountry(u.getLongitude(), u.getLatitude()))
+                        {
+                            k.addActivityAlien(points);
+                            break;
+                        }
+                    }
+                    if (!u.getDetected())
+                    {
+                        bool detected = false, hyperdetected = false;
+                        var bases = _game.getSavedGame().getBases();
+                        for (var b = 0; b < bases.Count && !hyperdetected; ++b)
+                        {
+                            switch (bases[b].detect(u))
+                            {
+                                case 2: // hyper-wave decoder
+                                    u.setHyperDetected(true);
+                                    hyperdetected = true;
+                                    goto case 1;
+                                case 1: // conventional radar
+                                    detected = true;
+                                    break;
+                            }
+                            var crafts = bases[b].getCrafts();
+                            for (var c = 0; c < crafts.Count && !detected; ++c)
+                            {
+                                if (crafts[c].getStatus() == "STR_OUT" && crafts[c].detect(u))
+                                {
+                                    detected = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (detected)
+                        {
+                            u.setDetected(true);
+                            popup(new UfoDetectedState(u, this, true, u.getHyperDetected()));
+                        }
+                    }
+                    else
+                    {
+                        bool detected = false, hyperdetected = false;
+                        var bases = _game.getSavedGame().getBases();
+                        for (var b = 0; b < bases.Count && !hyperdetected; ++b)
+                        {
+                            switch (bases[b].insideRadarRange(u))
+                            {
+                                case 2: // hyper-wave decoder
+                                    detected = true;
+                                    hyperdetected = true;
+                                    u.setHyperDetected(true);
+                                    break;
+                                case 1: // conventional radar
+                                    detected = true;
+                                    hyperdetected = u.getHyperDetected();
+                                    break;
+                            }
+                            var crafts = bases[b].getCrafts();
+                            for (var c = 0; c < crafts.Count && !detected; ++c)
+                            {
+                                if (crafts[c].getStatus() == "STR_OUT" && crafts[c].insideRadarRange(u))
+                                {
+                                    detected = true;
+                                    hyperdetected = u.getHyperDetected();
+                                    break;
+                                }
+                            }
+                        }
+                        if (!detected)
+                        {
+                            u.setDetected(false);
+                            u.setHyperDetected(false);
+                            if (u.getFollowers().Any())
+                            {
+                                popup(new UfoLostState(u.getName(_game.getLanguage())));
+                            }
+                        }
+                    }
+                    break;
+                case UfoStatus.CRASHED:
+                case UfoStatus.DESTROYED:
+                    break;
+            }
+        }
+
+        // Processes MissionSites
+        var missionSites = _game.getSavedGame().getMissionSites();
+        for (var site = 0; site < missionSites.Count;)
+        {
+            if (processMissionSite(missionSites[site]))
+            {
+                missionSites.RemoveAt(site);
+            }
+            else
+            {
+                ++site;
+            }
+        }
+    }
+
+    /** @brief Process a MissionSite.
+     * This function object will count down towards expiring a MissionSite, and handle expired MissionSites.
+     * @param ts Pointer to mission site.
+     * @return Has mission site expired?
+     */
+    bool processMissionSite(MissionSite site)
+    {
+	    bool removeSite = site.getSecondsRemaining() < 30 * 60;
+	    if (!removeSite)
+	    {
+		    site.setSecondsRemaining(site.getSecondsRemaining() - 30 * 60);
+	    }
+	    else
+	    {
+		    removeSite = !site.getFollowers().Any(); // CHEEKY EXPLOIT
+	    }
+
+	    int score = removeSite ? site.getDeployment().getDespawnPenalty() : site.getDeployment().getPoints();
+
+	    Region region = _game.getSavedGame().locateRegion(site);
+	    if (region != null)
+	    {
+		    region.addActivityAlien(score);
+	    }
+	    foreach (var k in _game.getSavedGame().getCountries())
+	    {
+		    if (k.getRules().insideCountry(site.getLongitude(), site.getLatitude()))
+		    {
+			    k.addActivityAlien(score);
+			    break;
+		    }
+	    }
+	    if (!removeSite)
+	    {
+		    return false;
+	    }
+        return true;
+    }
+
+    /**
+     * Takes care of any game logic that has to
+     * run every game ten minutes, like fuel consumption.
+     */
+    void time10Minutes()
+    {
+        foreach (var i in _game.getSavedGame().getBases())
+        {
+            // Fuel consumption for XCOM craft.
+            foreach (var j in i.getCrafts())
+            {
+                if (j.getStatus() == "STR_OUT")
+                {
+                    j.consumeFuel();
+                    if (!j.getLowFuel() && j.getFuel() <= j.getFuelLimit())
+                    {
+                        j.setLowFuel(true);
+                        j.returnToBase();
+                        popup(new LowFuelState(j, this));
+                    }
+
+                    if (j.getDestination() == null)
+                    {
+                        double range = Nautical(j.getRules().getSightRange());
+                        foreach (var b in _game.getSavedGame().getAlienBases())
+                        {
+                            if (j.getDistance(b) <= range)
+                            {
+                                if (RNG.percent((int)(50 - (j.getDistance(b) / range) * 50)) && !b.isDiscovered())
+                                {
+                                    b.setDiscovered(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (Options.aggressiveRetaliation)
+        {
+            // Detect as many bases as possible.
+            foreach (var iBase in _game.getSavedGame().getBases())
+            {
+                // Find a UFO that detected this base, if any.
+                if (_game.getSavedGame().getUfos().Any(x => DetectXCOMBase(x, iBase)))
+                {
+                    // Base found
+                    iBase.setRetaliationTarget(true);
+                }
+            }
+        }
+        else
+        {
+            // Only remember last base in each region.
+            var discovered = new Dictionary<Region, Base>();
+            foreach (var iBase in _game.getSavedGame().getBases())
+            {
+                // Find a UFO that detected this base, if any.
+                if (_game.getSavedGame().getUfos().Any(x => DetectXCOMBase(x, iBase)))
+                {
+                    discovered[_game.getSavedGame().locateRegion(iBase)] = iBase;
+                }
+            }
+            // Now mark the bases as discovered.
+            foreach (var d in discovered)
+            {
+                d.Value.setRetaliationTarget(true);
+            }
+        }
+    }
+
+    /**
+     * Only UFOs within detection range of the base have a chance to detect it.
+     * @param ufo Pointer to the UFO attempting detection.
+     * @return If the base is detected by @a ufo.
+     */
+    bool DetectXCOMBase(Ufo ufo, Base @base)
+    {
+	    if (ufo.getTrajectoryPoint() <= 1) return false;
+	    if (ufo.getTrajectory().getZone(ufo.getTrajectoryPoint()) == 5) return false;
+	    if ((ufo.getMission().getRules().getObjective() != MissionObjective.OBJECTIVE_RETALIATION && !Options.aggressiveRetaliation) ||	// only UFOs on retaliation missions actively scan for bases
+		    ufo.getTrajectory().getID() == UfoTrajectory.RETALIATION_ASSAULT_RUN || 									// UFOs attacking a base don't detect!
+		    ufo.isCrashed() ||                                                                                          // Crashed UFOs don't detect!
+            @base.getDistance(ufo) >= Nautical(ufo.getRules().getSightRange()))											// UFOs have a detection range of 80 XCOM units. - we use a great circle fomrula and nautical miles.
+	    {
+		    return false;
+	    }
+	    return RNG.percent((int)@base.getDetectionChance());
+    }
+
+    /**
+     * Takes care of any game logic that has to
+     * run every game second, like craft movement.
+     */
+    void time5Seconds()
+    {
+        // Game over if there are no more bases.
+        if (!_game.getSavedGame().getBases().Any())
+        {
+            _game.getSavedGame().setEnding(GameEnding.END_LOSE);
+        }
+        if (_game.getSavedGame().getEnding() == GameEnding.END_LOSE)
+        {
+            _game.pushState(new CutsceneState(CutsceneState.LOSE_GAME));
+            if (_game.getSavedGame().isIronman())
+            {
+                _game.pushState(new SaveGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_IRONMAN, _palette));
+            }
+            return;
+        }
+
+        // Handle UFO logic
+        foreach (var i in _game.getSavedGame().getUfos())
+        {
+            switch (i.getStatus())
+            {
+                case UfoStatus.FLYING:
+                    i.think();
+                    if (i.reachedDestination())
+                    {
+                        int count = _game.getSavedGame().getMissionSites().Count;
+                        AlienMission mission = i.getMission();
+                        bool detected = i.getDetected();
+                        mission.ufoReachedWaypoint(i, _game, _globe);
+                        if (detected != i.getDetected() && i.getFollowers().Any())
+                        {
+                            if (!(i.getTrajectory().getID() == UfoTrajectory.RETALIATION_ASSAULT_RUN && i.getStatus() == UfoStatus.LANDED))
+                                popup(new UfoLostState(i.getName(_game.getLanguage())));
+                        }
+                        if (count < _game.getSavedGame().getMissionSites().Count)
+                        {
+                            MissionSite site = _game.getSavedGame().getMissionSites().Last();
+                            site.setDetected(true);
+                            popup(new MissionDetectedState(site, this));
+                        }
+                        // If UFO was destroyed, don't spawn missions
+                        if (i.getStatus() == UfoStatus.DESTROYED)
+                            return;
+                        Base @base = (Base)i.getDestination();
+                        if (@base != null)
+                        {
+                            mission.setWaveCountdown((uint)(30 * (RNG.generate(0, 400) + 48)));
+                            i.setDestination(null);
+                            @base.setupDefenses();
+                            timerReset();
+                            if (@base.getDefenses().Any())
+                            {
+                                popup(new BaseDefenseState(@base, i, this));
+                            }
+                            else
+                            {
+                                handleBaseDefense(@base, i);
+                                return;
+                            }
+                        }
+                    }
+                    break;
+                case UfoStatus.LANDED:
+                    i.think();
+                    if (i.getSecondsRemaining() == 0)
+                    {
+                        AlienMission mission = i.getMission();
+                        bool detected = i.getDetected();
+                        mission.ufoLifting(i, _game.getSavedGame());
+                        if (detected != i.getDetected() && i.getFollowers().Any())
+                        {
+                            popup(new UfoLostState(i.getName(_game.getLanguage())));
+                        }
+                    }
+                    break;
+                case UfoStatus.CRASHED:
+                    i.think();
+                    if (i.getSecondsRemaining() == 0)
+                    {
+                        i.setDetected(false);
+                        i.setStatus(UfoStatus.DESTROYED);
+                    }
+                    break;
+                case UfoStatus.DESTROYED:
+                    // Nothing to do
+                    break;
+            }
+        }
+
+        // Handle craft logic
+        foreach (var i in _game.getSavedGame().getBases())
+        {
+            var crafts = i.getCrafts();
+            for (var j = 0; j < crafts.Count;)
+            {
+                if (crafts[j].isDestroyed())
+                {
+                    foreach (var country in _game.getSavedGame().getCountries())
+                    {
+                        if (country.getRules().insideCountry(crafts[j].getLongitude(), crafts[j].getLatitude()))
+                        {
+                            country.addActivityXcom(-crafts[j].getRules().getScore());
+                            break;
+                        }
+                    }
+                    foreach (var region in _game.getSavedGame().getRegions())
+                    {
+                        if (region.getRules().insideRegion(crafts[j].getLongitude(), crafts[j].getLatitude()))
+                        {
+                            region.addActivityXcom(-crafts[j].getRules().getScore());
+                            break;
+                        }
+                    }
+                    // if a transport craft has been shot down, kill all the soldiers on board.
+                    if (crafts[j].getRules().getSoldiers() > 0)
+                    {
+                        var soldiers = i.getSoldiers();
+                        for (var k = 0; k < soldiers.Count;)
+                        {
+                            if (soldiers[k].getCraft() == crafts[j])
+                            {
+                                _game.getSavedGame().killSoldier(soldiers[k]);
+                            }
+                            else
+                            {
+                                ++k;
+                            }
+                        }
+                    }
+                    Craft craft = crafts[j];
+                    crafts[j] = i.removeCraft(craft, false);
+                    craft = null;
+                    continue;
+                }
+                if (crafts[j].getDestination() != null)
+                {
+                    Ufo u = (Ufo)crafts[j].getDestination();
+                    if (u != null)
+                    {
+                        if (!u.getDetected())
+                        {
+                            if (u.getTrajectory().getID() == UfoTrajectory.RETALIATION_ASSAULT_RUN && (u.getStatus() == UfoStatus.LANDED || u.getStatus() == UfoStatus.DESTROYED))
+                            {
+                                crafts[j].returnToBase();
+                            }
+                            else
+                            {
+                                Waypoint w = new Waypoint();
+                                w.setLongitude(u.getLongitude());
+                                w.setLatitude(u.getLatitude());
+                                w.setId(u.getId());
+                                crafts[j].setDestination(null);
+                                popup(new GeoscapeCraftState(crafts[j], _globe, w));
+                            }
+                        }
+                        if (u.getStatus() == UfoStatus.LANDED && crafts[j].isInDogfight())
+                        {
+                            crafts[j].setInDogfight(false);
+                        }
+                        else if (u.getStatus() == UfoStatus.DESTROYED)
+                        {
+                            crafts[j].returnToBase();
+                        }
+                    }
+                    else
+                    {
+                        if (crafts[j].isInDogfight())
+                        {
+                            crafts[j].setInDogfight(false);
+                        }
+                    }
+                }
+
+                crafts[j].think();
+
+                if (crafts[j].reachedDestination())
+                {
+                    Ufo u = (Ufo)crafts[j].getDestination();
+                    Waypoint w = (Waypoint)crafts[j].getDestination();
+                    MissionSite m = (MissionSite)crafts[j].getDestination();
+                    AlienBase b = (AlienBase)crafts[j].getDestination();
+                    if (u != null)
+                    {
+                        switch (u.getStatus())
+                        {
+                            case UfoStatus.FLYING:
+                                // Not more than 4 interceptions at a time.
+                                if (_dogfights.Count + _dogfightsToBeStarted.Count >= 4)
+                                {
+                                    ++j;
+                                    continue;
+                                }
+                                // Can we actually fight it
+                                if (!crafts[j].isInDogfight() && u.getSpeed() <= crafts[j].getRules().getMaxSpeed())
+                                {
+                                    var dogfight = new DogfightState(this, crafts[j], u);
+                                    _dogfightsToBeStarted.Add(dogfight);
+                                    if (crafts[j].getRules().isWaterOnly() && u.getAltitudeInt() > crafts[j].getRules().getMaxAltitude())
+                                    {
+                                        popup(new DogfightErrorState(crafts[j], tr("STR_UNABLE_TO_ENGAGE_DEPTH")));
+                                        dogfight.setMinimized(true);
+                                        dogfight.setWaitForAltitude(true);
+                                    }
+                                    else if (crafts[j].getRules().isWaterOnly() && !_globe.insideLand(crafts[j].getLongitude(), crafts[j].getLatitude()))
+                                    {
+                                        popup(new DogfightErrorState(crafts[j], tr("STR_UNABLE_TO_ENGAGE_AIRBORNE")));
+                                        dogfight.setMinimized(true);
+                                        dogfight.setWaitForPoly(true);
+                                    }
+                                    if (!_dogfightStartTimer.isRunning())
+                                    {
+                                        _pause = true;
+                                        timerReset();
+                                        _globe.center(crafts[j].getLongitude(), crafts[j].getLatitude());
+                                        startDogfight();
+                                        _dogfightStartTimer.start();
+                                    }
+                                    _game.getMod().playMusic("GMINTER");
+                                }
+                                break;
+                            case UfoStatus.LANDED:
+                            case UfoStatus.CRASHED:
+                            case UfoStatus.DESTROYED: // Just before expiration
+                                if (crafts[j].getNumSoldiers() > 0 || crafts[j].getNumVehicles() > 0)
+                                {
+                                    if (!crafts[j].isInDogfight())
+                                    {
+                                        // look up polygons texture
+                                        int texture, shade;
+                                        _globe.getPolygonTextureAndShade(u.getLongitude(), u.getLatitude(), out texture, out shade);
+                                        timerReset();
+                                        popup(new ConfirmLandingState(crafts[j], _game.getMod().getGlobe().getTexture(texture), shade));
+                                    }
+                                }
+                                else if (u.getStatus() != UfoStatus.LANDED)
+                                {
+                                    crafts[j].returnToBase();
+                                }
+                                break;
+                        }
+                    }
+                    else if (w != null)
+                    {
+                        popup(new CraftPatrolState(crafts[j], _globe));
+                        crafts[j].setDestination(null);
+                    }
+                    else if (m != null)
+                    {
+                        if (crafts[j].getNumSoldiers() > 0 || crafts[j].getNumVehicles() > 0)
+                        {
+                            // look up polygons texture
+                            int texture, shade;
+                            _globe.getPolygonTextureAndShade(m.getLongitude(), m.getLatitude(), out texture, out shade);
+                            if (_game.getMod().getGlobe().getTexture(m.getTexture()) != null)
+                            {
+                                texture = m.getTexture();
+                            }
+                            timerReset();
+                            popup(new ConfirmLandingState(crafts[j], _game.getMod().getGlobe().getTexture(texture), shade));
+                        }
+                        else
+                        {
+                            crafts[j].returnToBase();
+                        }
+                    }
+                    else if (b != null)
+                    {
+                        if (b.isDiscovered())
+                        {
+                            if (crafts[j].getNumSoldiers() > 0 || crafts[j].getNumVehicles() > 0)
+                            {
+                                int texture, shade;
+                                _globe.getPolygonTextureAndShade(b.getLongitude(), b.getLatitude(), out texture, out shade);
+                                timerReset();
+                                popup(new ConfirmLandingState(crafts[j], _game.getMod().getGlobe().getTexture(texture), shade));
+                            }
+                            else
+                            {
+                                crafts[j].returnToBase();
+                            }
+                        }
+                    }
+                }
+                ++j;
+            }
+        }
+
+        // Clean up dead UFOs and end dogfights which were minimized.
+        var ufos = _game.getSavedGame().getUfos();
+        for (var i = 0; i < ufos.Count;)
+        {
+            if (ufos[i].getStatus() == UfoStatus.DESTROYED)
+            {
+                if (ufos[i].getFollowers().Any())
+                {
+                    // Remove all dogfights with this UFO.
+                    for (var d = 0; d < _dogfights.Count;)
+                    {
+                        if (_dogfights[d].getUfo() == ufos[i])
+                        {
+                            _dogfights.RemoveAt(d);
+                        }
+                        else
+                        {
+                            ++d;
+                        }
+                    }
+                }
+                ufos.RemoveAt(i);
+            }
+            else
+            {
+                ++i;
+            }
+        }
+
+        // Check any dogfights waiting to open
+        foreach (var d in _dogfights)
+        {
+            if (d.isMinimized())
+            {
+                if ((d.getWaitForPoly() && _globe.insideLand(d.getUfo().getLongitude(), d.getUfo().getLatitude())) ||
+                    (d.getWaitForAltitude() && d.getUfo().getAltitudeInt() <= d.getCraft().getRules().getMaxAltitude()))
+                {
+                    _pause = true; // the USO reached the sea during this interval period, stop the timer and let handleDogfights() take it from there.
+                }
+            }
+        }
+
+        // Clean up unused waypoints
+        var waypoints = _game.getSavedGame().getWaypoints();
+        for (var i = 0; i < waypoints.Count;)
+        {
+            if (!waypoints[i].getFollowers().Any())
+            {
+                waypoints.RemoveAt(i);
+            }
+            else
+            {
+                ++i;
+            }
+        }
+    }
+
+    /**
+     * Handle base defense
+     * @param base Base to defend.
+     * @param ufo Ufo attacking base.
+     */
+    void handleBaseDefense(Base @base, Ufo ufo)
+    {
+        // Whatever happens in the base defense, the UFO has finished its duty
+        ufo.setStatus(UfoStatus.DESTROYED);
+
+        if (@base.getAvailableSoldiers(true) > 0 || @base.getVehicles().Any())
+        {
+            SavedBattleGame bgame = new SavedBattleGame();
+            _game.getSavedGame().setBattleGame(bgame);
+            bgame.setMissionType("STR_BASE_DEFENSE");
+            var bgen = new BattlescapeGenerator(_game);
+            bgen.setBase(@base);
+            bgen.setAlienRace(ufo.getAlienRace());
+            bgen.run();
+            _pause = true;
+            _game.pushState(new BriefingState(0, @base));
+        }
+        else
+        {
+            // Please garrison your bases in future
+            popup(new BaseDestroyedState(@base));
+        }
+    }
+
+    /**
+     * Proccesses a directive to start up a mission, if possible.
+     * @param command the directive from which to read information.
+     * @return whether the command successfully produced a new mission.
+     */
+    bool processCommand(RuleMissionScript command)
+    {
+        SavedGame save = _game.getSavedGame();
+        AlienStrategy strategy = save.getAlienStrategy();
+        Mod.Mod mod = _game.getMod();
+        int month = _game.getSavedGame().getMonthsPassed();
+        string targetRegion = null;
+        RuleAlienMission missionRules;
+        string missionType = null;
+        string missionRace;
+        int targetZone = -1;
+
+        // terror mission type deal? this will require special handling.
+        if (command.getSiteType())
+        {
+            // we know for a fact that this command has mission weights defined, otherwise this flag could not be set.
+            missionType = command.generate((uint)month, GenerationType.GEN_MISSION);
+            List<string> missions = command.getMissionTypes(month);
+            int maxMissions = missions.Count;
+            bool targetBase = RNG.percent(command.getTargetBaseOdds());
+            int currPos = 0;
+            for (; currPos != maxMissions; ++currPos)
+            {
+                if (missions[currPos] == missionType)
+                {
+                    break;
+                }
+            }
+
+            // let's build a list of regions with spawn zones to pick from
+            var validAreas = new List<KeyValuePair<string, int>>();
+
+            // this is actually a bit of a cheat, we ARE using the mission weights as defined, but we'll try them all if the one we pick first isn't valid.
+            for (int h = 0; h != maxMissions; ++h)
+            {
+                // we'll use the regions listed in the command, if any, otherwise check all the regions in the ruleset looking for matches
+                List<string> regions = (command.hasRegionWeights()) ? command.getRegions(month) : mod.getRegionsList();
+                missionRules = mod.getAlienMission(missionType, true);
+                targetZone = missionRules.getSpawnZone();
+
+                if (targetBase)
+                {
+                    var regionsToKeep = new List<string>();
+                    //if we're targetting a base, we ignore regions that don't contain bases, simple.
+                    foreach (var i in save.getBases())
+                    {
+                        regionsToKeep.Add(save.locateRegion(i.getLongitude(), i.getLatitude()).getRules().getType());
+                    }
+                    for (var i = 0; i < regions.Count;)
+                    {
+                        if (!regionsToKeep.Contains(regions[i]))
+                        {
+                            regions.RemoveAt(i);
+                        }
+                        else
+                        {
+                            ++i;
+                        }
+                    }
+                }
+
+                for (var i = 0; i < regions.Count;)
+                {
+                    // we don't want the same mission running in any given region twice simultaneously, so prune the list as needed.
+                    bool processThisRegion = true;
+                    foreach (var j in save.getAlienMissions())
+                    {
+                        if (j.getRules().getType() == missionRules.getType() && j.getRegion() == regions[i])
+                        {
+                            processThisRegion = false;
+                            break;
+                        }
+                    }
+                    if (!processThisRegion)
+                    {
+                        regions.RemoveAt(i);
+                        continue;
+                    }
+                    // ok, we found a region that doesn't have our mission in it, let's see if it has an appropriate landing zone.
+                    // if it does, let's add it to our list of valid areas, taking note of which mission area(s) matched.
+                    RuleRegion region = mod.getRegion(regions[i], true);
+                    if ((int)(region.getMissionZones().Count) > targetZone)
+                    {
+                        List<MissionArea> areas = region.getMissionZones()[targetZone].areas;
+                        int counter = 0;
+                        foreach (var j in areas)
+                        {
+                            // validMissionLocation checks to make sure this city/whatever hasn't been used by the last n missions using this varName
+                            // this prevents the same location getting hit more than once every n missions.
+                            if (j.isPoint() && strategy.validMissionLocation(command.getVarName(), region.getType(), counter))
+                            {
+                                validAreas.Add(KeyValuePair.Create(region.getType(), counter));
+                            }
+                            counter++;
+                        }
+                    }
+                    ++i;
+                }
+
+                // oh bother, we couldn't find anything valid, this mission won't run this month.
+                if (!validAreas.Any())
+                {
+                    if (maxMissions > 1 && ++currPos == maxMissions)
+                    {
+                        currPos = 0;
+                    }
+                    missionType = missions[currPos];
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (!validAreas.Any())
+            {
+                // now we're in real trouble, we've managed to make it out of the loop and we still don't have any valid choices
+                // this command cannot run this month, we have failed, forgive us senpai.
+                return false;
+            }
+            // reset this, we may have used it earlier, it longer represents the target zone type, but the target zone number within that type
+            targetZone = -1;
+            // everything went according to plan: we can now pick a city/whatever to attack.
+            while (targetZone == -1)
+            {
+                if (command.hasRegionWeights())
+                {
+                    // if we have a weighted region list, we know we have at least one valid choice for this mission
+                    targetRegion = command.generate((uint)month, GenerationType.GEN_REGION);
+                }
+                else
+                {
+                    // if we don't have a weighted list, we'll select a region at random from the ruleset,
+                    // validate that it's in our list, and pick one of its cities at random
+                    // this will give us an even distribution between regions regardless of the number of cities.
+                    targetRegion = mod.getRegionsList()[RNG.generate(0, mod.getRegionsList().Count - 1)];
+                }
+
+                // we need to know the range of the region within our vector, in order to randomly select a city from it
+                int min = -1;
+                int max = -1;
+                int curr = 0;
+                foreach (var i in validAreas)
+                {
+                    if (i.Key == targetRegion)
+                    {
+                        if (min == -1)
+                        {
+                            min = curr;
+                        }
+                        max = curr;
+                    }
+                    else if (min > -1)
+                    {
+                        // if we've stopped detecting matches, we're done looking.
+                        break;
+                    }
+                    ++curr;
+                }
+                if (min != -1)
+                {
+                    // we have our random range, we can make a selection, and we're done.
+                    targetZone = validAreas[RNG.generate(min, max)].Value;
+                }
+            }
+            // now add that city to the list of sites we've hit, store the array, etc.
+            strategy.addMissionLocation(command.getVarName(), targetRegion, targetZone, command.getRepeatAvoidance());
+        }
+        else if (RNG.percent(command.getTargetBaseOdds()))
+        {
+            // build a list of the mission types we're dealing with, if any
+            List<string> types = command.getMissionTypes(month);
+            // now build a list of regions with bases in.
+            var regionsMaster = new List<string>();
+            foreach (var i in save.getBases())
+            {
+                regionsMaster.Add(save.locateRegion(i).getRules().getType());
+            }
+            // no defined mission types? then we'll prune the region list to ensure we only have a region that can generate a mission.
+            if (!types.Any())
+            {
+                for (var i = 0; i < regionsMaster.Count;)
+                {
+                    if (!strategy.validMissionRegion(regionsMaster[i]))
+                    {
+                        regionsMaster.RemoveAt(i);
+                        continue;
+                    }
+                    ++i;
+                }
+                // no valid missions in any base regions? oh dear, i guess we failed.
+                if (!regionsMaster.Any())
+                {
+                    return false;
+                }
+                // pick a random region from our list
+                targetRegion = regionsMaster[RNG.generate(0, regionsMaster.Count - 1)];
+            }
+            else
+            {
+                // we don't care about regional mission distributions, we're targetting a base with whatever mission we pick, so let's pick now
+                // we'll iterate the mission list, starting at a random point, and wrapping around to the beginning
+                int max = types.Count;
+                int entry = RNG.generate(0, max - 1);
+                List<string> regions;
+
+                for (int i = 0; i != max; ++i)
+                {
+                    regions = regionsMaster;
+                    foreach (var j in save.getAlienMissions())
+                    {
+                        // if the mission types match
+                        if (types[entry] == j.getRules().getType())
+                        {
+                            for (var k = 0; k < regions.Count;)
+                            {
+                                // and the regions match
+                                if (regions[k] == j.getRegion())
+                                {
+                                    // prune the entry from the list
+                                    regions.RemoveAt(k);
+                                    continue;
+                                }
+                                ++k;
+                            }
+                        }
+                    }
+
+                    // we have a valid list of regions containing bases, pick one.
+                    if (regions.Any())
+                    {
+                        missionType = types[entry];
+                        targetRegion = regions[RNG.generate(0, regions.Count - 1)];
+                        break;
+                    }
+                    // otherwise, try the next mission in the list.
+                    if (max > 1 && ++entry == max)
+                    {
+                        entry = 0;
+                    }
+                }
+            }
+        }
+        // now the easy stuff
+        else if (!command.hasRegionWeights())
+        {
+            // no regionWeights means we pick from the table
+            targetRegion = strategy.chooseRandomRegion(mod);
+        }
+        else
+        {
+            // otherwise, let the command dictate the region.
+            targetRegion = command.generate((uint)month, GenerationType.GEN_REGION);
+        }
+
+        if (string.IsNullOrEmpty(targetRegion))
+        {
+            // something went horribly wrong, we should have had at LEAST a region by now.
+            return false;
+        }
+
+        // we're bound to end up with typos, so let's throw an exception instead of simply returning false
+        // that way, the modder can fix their mistake
+        if (mod.getRegion(targetRegion) == null)
+        {
+            throw new Exception("Error proccessing mission script named: " + command.getType() + ", region named: " + targetRegion + " is not defined");
+        }
+
+        if (string.IsNullOrEmpty(missionType)) // ie: not a terror mission, not targetting a base, or otherwise not already chosen
+        {
+            if (!command.hasMissionWeights())
+            {
+                // no weights means let the strategy pick
+                missionType = strategy.chooseRandomMission(targetRegion);
+            }
+            else
+            {
+                // otherwise the command gives us the weights.
+                missionType = command.generate((uint)month, GenerationType.GEN_MISSION);
+            }
+        }
+
+        if (string.IsNullOrEmpty(missionType))
+        {
+            // something went horribly wrong, we didn't manage to choose a mission type
+            return false;
+        }
+
+        missionRules = mod.getAlienMission(missionType);
+
+        // we're bound to end up with typos, so let's throw an exception instead of simply returning false
+        // that way, the modder can fix their mistake
+        if (missionRules == null)
+        {
+            throw new Exception("Error proccessing mission script named: " + command.getType() + ", mission type: " + missionType + " is not defined");
+        }
+
+        // do i really need to comment this? shouldn't it be obvious what's happening here?
+        if (!command.hasRaceWeights())
+        {
+            missionRace = missionRules.generateRace((uint)month);
+        }
+        else
+        {
+            missionRace = command.generate((uint)month, GenerationType.GEN_RACE);
+        }
+
+        if (string.IsNullOrEmpty(missionRace))
+        {
+            throw new Exception("Error proccessing mission script named: " + command.getType() + ", mission type: " + missionType + " has no available races");
+        }
+
+        // we're bound to end up with typos, so let's throw an exception instead of simply returning false
+        // that way, the modder can fix their mistake
+        if (mod.getAlienRace(missionRace) == null)
+        {
+            throw new Exception("Error proccessing mission script named: " + command.getType() + ", race: " + missionRace + " is not defined");
+        }
+
+        // ok, we've derived all the variables we need to start up our mission, let's do magic to turn those values into a mission
+        AlienMission mission = new AlienMission(missionRules);
+        mission.setRace(missionRace);
+        mission.setId(_game.getSavedGame().getId("ALIEN_MISSIONS"));
+        mission.setRegion(targetRegion, _game.getMod());
+        mission.setMissionSiteZone(targetZone);
+        strategy.addMissionRun(command.getVarName());
+        mission.start((uint)command.getDelay());
+        _game.getSavedGame().getAlienMissions().Add(mission);
+        // if this flag is set, we want to delete it from the table so it won't show up again until the schedule resets.
+        if (command.getUseTable())
+        {
+            strategy.removeMission(targetRegion, missionType);
+        }
+
+        // we did it, we can go home now.
+        return true;
+    }
+
+    /**
+     * Check and create supply mission for the given base.
+     * There is a 6/101 chance of the mission spawning.
+     * @param base A pointer to the alien base.
+     */
+    void GenerateSupplyMission(AlienBase @base, Mod.Mod mod, SavedGame save)
+    {
+	    string missionName = @base.getDeployment().chooseGenMissionType();
+	    if (mod.getAlienMission(missionName) != null)
+	    {
+		    if (RNG.percent(@base.getDeployment().getGenMissionFrequency()))
+		    {
+			    //Spawn supply mission for this base.
+			    RuleAlienMission rule = mod.getAlienMission(missionName);
+			    AlienMission mission = new AlienMission(rule);
+			    mission.setRegion(save.locateRegion(@base).getRules().getType(), mod);
+			    mission.setId(save.getId("ALIEN_MISSIONS"));
+			    mission.setRace(@base.getAlienRace());
+			    mission.setAlienBase(@base);
+			    mission.start();
+			    save.getAlienMissions().Add(mission);
+		    }
+	    }
+	    else if (!string.IsNullOrEmpty(missionName))
+	    {
+		    throw new Exception("Alien Base tried to generate undefined mission: " + missionName);
+	    }
     }
 }

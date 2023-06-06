@@ -26,8 +26,6 @@ global using static SharpXcom.Engine.Logger;
 global using static SharpXcom.Engine.OpenGL;
 global using static SharpXcom.Engine.Shader;
 global using static SharpXcom.FMath;
-global using static SharpXcom.Mod.Mod;
 global using static SharpXcom.NativeImports;
 global using static SharpXcom.Savegame.SerializationHelper;
-global using static SharpXcom.Ufopaedia.Ufopaedia;
 global using static SharpXcom.Version;

@@ -145,4 +145,42 @@ internal class RuleUfo : IRule
      */
     internal int getMaxDamage() =>
 	    _damageMax;
+
+    /**
+     * Gets the amount of points awarded every 30 minutes
+     * while the UFO is on a mission (doubled when landed).
+     * @return Score.
+     */
+    internal int getMissionScore() =>
+	    _missionScore;
+
+    /**
+     * Gets the size of this type of UFO.
+     * @return The Ufo's size.
+     */
+    internal string getSize() =>
+	    _size;
+
+    /**
+     * Gets the UFO's radar range
+     * for detecting bases.
+     * @return The range in nautical miles.
+     */
+    internal int getSightRange() =>
+	    _sightRange;
+
+    /**
+     * Gets the maximum speed of the UFO flying
+     * around the Geoscape.
+     * @return The maximum speed.
+     */
+    internal int getMaxSpeed() =>
+	    _speedMax;
+
+    /**
+     * Gets the terrain data needed to draw the UFO in the battlescape.
+     * @return The RuleTerrain.
+     */
+    internal RuleTerrain getBattlescapeTerrainData() =>
+	    _battlescapeTerrainData;
 }

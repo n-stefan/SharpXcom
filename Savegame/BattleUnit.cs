@@ -34,6 +34,7 @@ enum UnitBodyPart { BODYPART_HEAD, BODYPART_TORSO, BODYPART_RIGHTARM, BODYPART_L
 internal class BattleUnit
 {
     const int SPEC_WEAPON_MAX = 3;
+    internal const int MAX_SOLDIER_ID = 1000000;
 
     int[] _currentArmor = new int[5], _maxArmor = new int[5];
     Position _pos;
@@ -73,6 +74,10 @@ internal class BattleUnit
     int _moraleRestored;
     int _motionPoints;
     int[] _fatalWounds = new int[6];
+    bool _hitByFire, _hitByAnything;
+    BattleUnit _charging;
+    int _faceDirection; // used only during strafeing moves
+    Position lastCover;
 
     // static data
     string _type;
@@ -99,7 +104,348 @@ internal class BattleUnit
     List<KeyValuePair<byte, byte>> _recolor;
     bool _capturable;
 
-    //TODO: ctor, dtor
+    /**
+     * Initializes a BattleUnit from a Soldier
+     * @param soldier Pointer to the Soldier.
+     * @param depth the depth of the battlefield (used to determine movement type in case of MT_FLOAT).
+     */
+    internal BattleUnit(Soldier soldier, int depth)
+    {
+        _faction = UnitFaction.FACTION_PLAYER;
+        _originalFaction = UnitFaction.FACTION_PLAYER;
+        _killedBy = UnitFaction.FACTION_PLAYER;
+        _id = 0;
+        _tile = null;
+        _lastPos = new Position();
+        _direction = 0;
+        _toDirection = 0;
+        _directionTurret = 0;
+        _toDirectionTurret = 0;
+        _verticalDirection = 0;
+        _status = UnitStatus.STATUS_STANDING;
+        _walkPhase = 0;
+        _fallPhase = 0;
+        _kneeled = false;
+        _floating = false;
+        _dontReselect = false;
+        _fire = 0;
+        _currentAIState = null;
+        _visible = false;
+        _cacheInvalid = true;
+        _expBravery = 0;
+        _expReactions = 0;
+        _expFiring = 0;
+        _expThrowing = 0;
+        _expPsiSkill = 0;
+        _expPsiStrength = 0;
+        _expMelee = 0;
+        _motionPoints = 0;
+        _kills = 0;
+        _hitByFire = false;
+        _hitByAnything = false;
+        _moraleRestored = 0;
+        _charging = null;
+        _turnsSinceSpotted = 255;
+        _statistics = new BattleUnitStatistics();
+        _murdererId = 0;
+        _mindControllerID = 0;
+        _fatalShotSide = UnitSide.SIDE_FRONT;
+        _fatalShotBodyPart = UnitBodyPart.BODYPART_HEAD;
+        _geoscapeSoldier = soldier;
+        _unitRules = null;
+        _rankInt = 0;
+        _turretType = -1;
+        _hidingForTurn = false;
+        _respawn = false;
+        _capturable = true;
+
+        _name = soldier.getName(true);
+        _id = soldier.getId();
+        _type = "SOLDIER";
+        _rank = soldier.getRankString();
+        _stats = soldier.getCurrentStats();
+        _standHeight = soldier.getRules().getStandHeight();
+        _kneelHeight = soldier.getRules().getKneelHeight();
+        _floatHeight = soldier.getRules().getFloatHeight();
+        _deathSound = new List<int>(); // this one is hardcoded
+        _aggroSound = -1;
+        _moveSound = -1;  // this one is hardcoded
+        _intelligence = 2;
+        _aggression = 1;
+        _specab = SpecialAbility.SPECAB_NONE;
+        _armor = soldier.getArmor();
+        _movementType = _armor.getMovementType();
+        if (_movementType == MovementType.MT_FLOAT)
+        {
+            if (depth > 0)
+            {
+                _movementType = MovementType.MT_FLY;
+            }
+            else
+            {
+                _movementType = MovementType.MT_WALK;
+            }
+        }
+        else if (_movementType == MovementType.MT_SINK)
+        {
+            if (depth == 0)
+            {
+                _movementType = MovementType.MT_FLY;
+            }
+            else
+            {
+                _movementType = MovementType.MT_WALK;
+            }
+        }
+        _stats += _armor.getStats();  // armors may modify effective stats
+        _loftempsSet = _armor.getLoftempsSet();
+        _gender = soldier.getGender();
+        _faceDirection = -1;
+        _breathFrame = -1;
+        if (_armor.drawBubbles())
+        {
+            _breathFrame = 0;
+        }
+        _floorAbove = false;
+        _breathing = false;
+
+        int rankbonus = 0;
+
+        switch (soldier.getRank())
+        {
+            case SoldierRank.RANK_SERGEANT: rankbonus = 1; break;
+            case SoldierRank.RANK_CAPTAIN: rankbonus = 3; break;
+            case SoldierRank.RANK_COLONEL: rankbonus = 6; break;
+            case SoldierRank.RANK_COMMANDER: rankbonus = 10; break;
+            default: rankbonus = 0; break;
+        }
+
+        _value = soldier.getRules().getValue() + soldier.getMissions() + rankbonus;
+
+        _tu = _stats.tu;
+        _energy = _stats.stamina;
+        _health = _stats.health;
+        _morale = 100;
+        _stunlevel = 0;
+        _maxArmor[(int)UnitSide.SIDE_FRONT] = _armor.getFrontArmor();
+        _maxArmor[(int)UnitSide.SIDE_LEFT] = _armor.getSideArmor();
+        _maxArmor[(int)UnitSide.SIDE_RIGHT] = _armor.getSideArmor();
+        _maxArmor[(int)UnitSide.SIDE_REAR] = _armor.getRearArmor();
+        _maxArmor[(int)UnitSide.SIDE_UNDER] = _armor.getUnderArmor();
+        _currentArmor[(int)UnitSide.SIDE_FRONT] = _maxArmor[(int)UnitSide.SIDE_FRONT];
+        _currentArmor[(int)UnitSide.SIDE_LEFT] = _maxArmor[(int)UnitSide.SIDE_LEFT];
+        _currentArmor[(int)UnitSide.SIDE_RIGHT] = _maxArmor[(int)UnitSide.SIDE_RIGHT];
+        _currentArmor[(int)UnitSide.SIDE_REAR] = _maxArmor[(int)UnitSide.SIDE_REAR];
+        _currentArmor[(int)UnitSide.SIDE_UNDER] = _maxArmor[(int)UnitSide.SIDE_UNDER];
+        for (int i = 0; i < 6; ++i)
+            _fatalWounds[i] = 0;
+        for (int i = 0; i < 5; ++i)
+            _cache[i] = null;
+        for (int i = 0; i < SPEC_WEAPON_MAX; ++i)
+            _specWeapon[i] = null;
+
+        _activeHand = "STR_RIGHT_HAND";
+
+        lastCover = new Position(-1, -1, -1);
+
+        _statistics = new BattleUnitStatistics();
+
+        deriveRank();
+
+        int look = (int)soldier.getGender() + 2 * (int)soldier.getLook();
+        setRecolor(look, look, _rankInt);
+    }
+
+    /**
+     * Initializes a BattleUnit from a Unit (non-player) object.
+     * @param unit Pointer to Unit object.
+     * @param faction Which faction the units belongs to.
+     * @param id Unique unit ID.
+     * @param armor Pointer to unit Armor.
+     * @param diff difficulty level (for stat adjustment).
+     * @param depth the depth of the battlefield (used to determine movement type in case of MT_FLOAT).
+     */
+    internal BattleUnit(Unit unit, UnitFaction faction, int id, Armor armor, StatAdjustment adjustment, int depth)
+    {
+        _faction = faction;
+        _originalFaction = faction;
+        _killedBy = faction;
+        _id = id;
+        _tile = null;
+        _lastPos = new Position();
+        _direction = 0;
+        _toDirection = 0;
+        _directionTurret = 0;
+        _toDirectionTurret = 0;
+        _verticalDirection = 0;
+        _status = UnitStatus.STATUS_STANDING;
+        _walkPhase = 0;
+        _fallPhase = 0;
+        _kneeled = false;
+        _floating = false;
+        _dontReselect = false;
+        _fire = 0;
+        _currentAIState = null;
+        _visible = false;
+        _cacheInvalid = true;
+        _expBravery = 0;
+        _expReactions = 0;
+        _expFiring = 0;
+        _expThrowing = 0;
+        _expPsiSkill = 0;
+        _expPsiStrength = 0;
+        _expMelee = 0;
+        _motionPoints = 0;
+        _kills = 0;
+        _hitByFire = false;
+        _hitByAnything = false;
+        _moraleRestored = 0;
+        _charging = null;
+        _turnsSinceSpotted = 255;
+        _statistics = new BattleUnitStatistics();
+        _murdererId = 0;
+        _mindControllerID = 0;
+        _fatalShotSide = UnitSide.SIDE_FRONT;
+        _fatalShotBodyPart = UnitBodyPart.BODYPART_HEAD;
+        _armor = armor;
+        _geoscapeSoldier = null;
+        _unitRules = unit;
+        _rankInt = 0;
+        _turretType = -1;
+        _hidingForTurn = false;
+        _respawn = false;
+
+        _type = unit.getType();
+        _rank = unit.getRank();
+        _race = unit.getRace();
+        _stats = unit.getStats();
+        _standHeight = unit.getStandHeight();
+        _kneelHeight = unit.getKneelHeight();
+        _floatHeight = unit.getFloatHeight();
+        _loftempsSet = _armor.getLoftempsSet();
+        _deathSound = unit.getDeathSounds();
+        _aggroSound = unit.getAggroSound();
+        _moveSound = unit.getMoveSound();
+        _intelligence = unit.getIntelligence();
+        _aggression = unit.getAggression();
+        _specab = (SpecialAbility)unit.getSpecialAbility();
+        _spawnUnit = unit.getSpawnUnit();
+        _value = unit.getValue();
+        _faceDirection = -1;
+        _capturable = unit.getCapturable();
+
+        _movementType = _armor.getMovementType();
+        if (_movementType == MovementType.MT_FLOAT)
+        {
+            if (depth > 0)
+            {
+                _movementType = MovementType.MT_FLY;
+            }
+            else
+            {
+                _movementType = MovementType.MT_WALK;
+            }
+        }
+        else if (_movementType == MovementType.MT_SINK)
+        {
+            if (depth == 0)
+            {
+                _movementType = MovementType.MT_FLY;
+            }
+            else
+            {
+                _movementType = MovementType.MT_WALK;
+            }
+        }
+
+        _stats += _armor.getStats();  // armors may modify effective stats
+
+        _breathFrame = -1; // most aliens don't breathe per-se, that's exclusive to humanoids
+        if (armor.drawBubbles())
+        {
+            _breathFrame = 0;
+        }
+        _floorAbove = false;
+        _breathing = false;
+
+        _maxArmor[(int)UnitSide.SIDE_FRONT] = _armor.getFrontArmor();
+        _maxArmor[(int)UnitSide.SIDE_LEFT] = _armor.getSideArmor();
+        _maxArmor[(int)UnitSide.SIDE_RIGHT] = _armor.getSideArmor();
+        _maxArmor[(int)UnitSide.SIDE_REAR] = _armor.getRearArmor();
+        _maxArmor[(int)UnitSide.SIDE_UNDER] = _armor.getUnderArmor();
+
+        if (faction == UnitFaction.FACTION_HOSTILE)
+        {
+            adjustStats(adjustment);
+        }
+
+        _tu = _stats.tu;
+        _energy = _stats.stamina;
+        _health = _stats.health;
+        _morale = 100;
+        _stunlevel = 0;
+        _currentArmor[(int)UnitSide.SIDE_FRONT] = _maxArmor[(int)UnitSide.SIDE_FRONT];
+        _currentArmor[(int)UnitSide.SIDE_LEFT] = _maxArmor[(int)UnitSide.SIDE_LEFT];
+        _currentArmor[(int)UnitSide.SIDE_RIGHT] = _maxArmor[(int)UnitSide.SIDE_RIGHT];
+        _currentArmor[(int)UnitSide.SIDE_REAR] = _maxArmor[(int)UnitSide.SIDE_REAR];
+        _currentArmor[(int)UnitSide.SIDE_UNDER] = _maxArmor[(int)UnitSide.SIDE_UNDER];
+        for (int i = 0; i < 6; ++i)
+            _fatalWounds[i] = 0;
+        for (int i = 0; i < 5; ++i)
+            _cache[i] = null;
+        for (int i = 0; i < SPEC_WEAPON_MAX; ++i)
+            _specWeapon[i] = null;
+
+        _activeHand = "STR_RIGHT_HAND";
+        _gender = SoldierGender.GENDER_MALE;
+
+        lastCover = new Position(-1, -1, -1);
+
+        _statistics = new BattleUnitStatistics();
+
+        var rand = new Random();
+        int generalRank = 0;
+        if (faction == UnitFaction.FACTION_HOSTILE)
+        {
+            const int max = 7;
+            string[] rankList =
+            {
+                "STR_LIVE_SOLDIER",
+                "STR_LIVE_ENGINEER",
+                "STR_LIVE_MEDIC",
+                "STR_LIVE_NAVIGATOR",
+                "STR_LIVE_LEADER",
+                "STR_LIVE_COMMANDER",
+                "STR_LIVE_TERRORIST",
+            };
+            for (int i = 0; i < max; ++i)
+            {
+                if (_rank == rankList[i])
+                {
+                    generalRank = i;
+                    break;
+                }
+            }
+        }
+        else if (faction == UnitFaction.FACTION_NEUTRAL)
+        {
+            generalRank = rand.Next() % 8;
+        }
+
+        setRecolor(rand.Next() % 8, rand.Next() % 8, generalRank);
+    }
+
+    /**
+     *
+     */
+    ~BattleUnit()
+    {
+        for (int i = 0; i < 5; ++i)
+            if (_cache[i] != null) _cache[i] = null;
+        _statistics.kills.Clear();
+        _statistics = default;
+        _currentAIState = null;
+    }
 
     /**
      * Get the armor value of a certain armor side.
@@ -599,7 +945,7 @@ internal class BattleUnit
     /**
      * Get special weapon.
      */
-    internal BattleItem getSpecialWeapon(Mod.BattleType type)
+    internal BattleItem getSpecialWeapon(BattleType type)
     {
 	    for (int i = 0; i < SPEC_WEAPON_MAX; ++i)
 	    {
@@ -975,4 +1321,653 @@ internal class BattleUnit
      */
     internal int getFire() =>
 	    _fire;
+
+    /**
+      * Set the turret type. -1 is no turret.
+      * @param turretType
+      */
+    internal void setTurretType(int turretType) =>
+        _turretType = turretType;
+
+    /**
+     * Changes the current AI state.
+     * @param aiState Pointer to AI state.
+     */
+    internal void setAIModule(AIModule ai)
+    {
+        if (_currentAIState != null)
+        {
+            _currentAIState = null;
+        }
+        _currentAIState = ai;
+    }
+
+    /**
+     * common function to adjust a unit's stats according to difficulty setting.
+     * @param statAdjustment the stat adjustment variables coefficient value.
+     */
+    void adjustStats(StatAdjustment adjustment)
+    {
+	    _stats.tu += adjustment.statGrowth.tu * adjustment.growthMultiplier * _stats.tu / 100;
+	    _stats.stamina += adjustment.statGrowth.stamina * adjustment.growthMultiplier * _stats.stamina / 100;
+	    _stats.health += adjustment.statGrowth.health * adjustment.growthMultiplier * _stats.health / 100;
+	    _stats.bravery += adjustment.statGrowth.bravery * adjustment.growthMultiplier * _stats.bravery / 100;
+	    _stats.reactions += adjustment.statGrowth.reactions * adjustment.growthMultiplier * _stats.reactions / 100;
+	    _stats.firing += adjustment.statGrowth.firing * adjustment.growthMultiplier * _stats.firing / 100;
+	    _stats.throwing += adjustment.statGrowth.throwing * adjustment.growthMultiplier * _stats.throwing / 100;
+	    _stats.strength += adjustment.statGrowth.strength * adjustment.growthMultiplier * _stats.strength / 100;
+	    _stats.psiStrength += adjustment.statGrowth.psiStrength * adjustment.growthMultiplier * _stats.psiStrength / 100;
+	    _stats.psiSkill += adjustment.statGrowth.psiSkill * adjustment.growthMultiplier * _stats.psiSkill / 100;
+	    _stats.melee += adjustment.statGrowth.melee * adjustment.growthMultiplier * _stats.melee / 100;
+
+	    _stats.firing *= (int)adjustment.aimAndArmorMultiplier;
+	    _maxArmor[0] *= (int)adjustment.aimAndArmorMultiplier;
+	    _maxArmor[1] *= (int)adjustment.aimAndArmorMultiplier;
+	    _maxArmor[2] *= (int)adjustment.aimAndArmorMultiplier;
+	    _maxArmor[3] *= (int)adjustment.aimAndArmorMultiplier;
+	    _maxArmor[4] *= (int)adjustment.aimAndArmorMultiplier;
+    }
+
+    /**
+     * Prepare vector values for recolor.
+     * @param basicLook select index for hair and face color.
+     * @param utileLook select index for utile color.
+     * @param rankLook select index for rank color.
+     */
+    void setRecolor(int basicLook, int utileLook, int rankLook)
+    {
+	    const int colorsMax = 4;
+	    KeyValuePair<int, int>[] colors =
+	    {
+		    KeyValuePair.Create(_armor.getFaceColorGroup(), _armor.getFaceColor(basicLook)),
+		    KeyValuePair.Create(_armor.getHairColorGroup(), _armor.getHairColor(basicLook)),
+		    KeyValuePair.Create(_armor.getUtileColorGroup(), _armor.getUtileColor(utileLook)),
+		    KeyValuePair.Create(_armor.getRankColorGroup(), _armor.getRankColor(rankLook)),
+	    };
+
+	    for (int i = 0; i < colorsMax; ++i)
+	    {
+		    if (colors[i].Key > 0 && colors[i].Value > 0)
+		    {
+			    _recolor.Add(KeyValuePair.Create((byte)(colors[i].Key << 4), (byte)colors[i].Value));
+		    }
+	    }
+    }
+
+    /**
+     * Get total amount of fatal wounds this unit has.
+     * @return Number of fatal wounds.
+     */
+    internal int getFatalWounds()
+    {
+	    int sum = 0;
+	    for (int i = 0; i < 6; ++i)
+		    sum += _fatalWounds[i];
+	    return sum;
+    }
+
+    /**
+     * Do an amount of damage.
+     * @param relative The relative position of which part of armor and/or bodypart is hit.
+     * @param power The amount of damage to inflict.
+     * @param type The type of damage being inflicted.
+     * @param ignoreArmor Should the damage ignore armor resistance?
+     * @return damage done after adjustment
+     */
+    internal int damage(Position relative, int power, ItemDamageType type, bool ignoreArmor = false)
+    {
+        UnitSide side = UnitSide.SIDE_FRONT;
+        UnitBodyPart bodypart = UnitBodyPart.BODYPART_TORSO;
+        _hitByAnything = true;
+        if (power <= 0)
+        {
+            return 0;
+        }
+
+        power = (int)Math.Floor(power * _armor.getDamageModifier(type));
+
+        if (type == ItemDamageType.DT_SMOKE) type = ItemDamageType.DT_STUN; // smoke doesn't do real damage, but stun damage
+
+        if (!ignoreArmor)
+        {
+            if (relative == new Position(0, 0, 0))
+            {
+                side = UnitSide.SIDE_UNDER;
+            }
+            else
+            {
+                int relativeDirection;
+                int abs_x = Math.Abs(relative.x);
+                int abs_y = Math.Abs(relative.y);
+                if (abs_y > abs_x * 2)
+                    relativeDirection = 8 + 4 * ((relative.y > 0) ? 1 : 0);
+                else if (abs_x > abs_y * 2)
+                    relativeDirection = 10 + 4 * ((relative.x < 0) ? 1 : 0);
+                else
+                {
+                    if (relative.x < 0)
+                    {
+                        if (relative.y > 0)
+                            relativeDirection = 13;
+                        else
+                            relativeDirection = 15;
+                    }
+                    else
+                    {
+                        if (relative.y > 0)
+                            relativeDirection = 11;
+                        else
+                            relativeDirection = 9;
+                    }
+                }
+
+                switch ((relativeDirection - _direction) % 8)
+                {
+                    case 0: side = UnitSide.SIDE_FRONT; break;
+                    case 1: side = RNG.generate(0, 2) < 2 ? UnitSide.SIDE_FRONT : UnitSide.SIDE_RIGHT; break;
+                    case 2: side = UnitSide.SIDE_RIGHT; break;
+                    case 3: side = RNG.generate(0, 2) < 2 ? UnitSide.SIDE_REAR : UnitSide.SIDE_RIGHT; break;
+                    case 4: side = UnitSide.SIDE_REAR; break;
+                    case 5: side = RNG.generate(0, 2) < 2 ? UnitSide.SIDE_REAR : UnitSide.SIDE_LEFT; break;
+                    case 6: side = UnitSide.SIDE_LEFT; break;
+                    case 7: side = RNG.generate(0, 2) < 2 ? UnitSide.SIDE_FRONT : UnitSide.SIDE_LEFT; break;
+                }
+                if (relative.z >= getHeight())
+                {
+                    bodypart = UnitBodyPart.BODYPART_HEAD;
+                }
+                else if (relative.z > 4)
+                {
+                    switch (side)
+                    {
+                        case UnitSide.SIDE_LEFT: bodypart = UnitBodyPart.BODYPART_LEFTARM; break;
+                        case UnitSide.SIDE_RIGHT: bodypart = UnitBodyPart.BODYPART_RIGHTARM; break;
+                        default: bodypart = UnitBodyPart.BODYPART_TORSO; break;
+                    }
+                }
+                else
+                {
+                    switch (side)
+                    {
+                        case UnitSide.SIDE_LEFT: bodypart = UnitBodyPart.BODYPART_LEFTLEG; break;
+                        case UnitSide.SIDE_RIGHT: bodypart = UnitBodyPart.BODYPART_RIGHTLEG; break;
+                        default:
+                            bodypart = (UnitBodyPart)RNG.generate((int)UnitBodyPart.BODYPART_RIGHTLEG, (int)UnitBodyPart.BODYPART_LEFTLEG); break;
+                    }
+                }
+            }
+            power -= getArmor(side);
+        }
+
+        if (power > 0)
+        {
+            if (type == ItemDamageType.DT_STUN)
+            {
+                _stunlevel += power;
+            }
+            else
+            {
+                // health damage
+                _health -= power;
+                if (_health < 0)
+                {
+                    _health = 0;
+                }
+
+                if (type != ItemDamageType.DT_IN)
+                {
+                    if (_armor.getDamageModifier(ItemDamageType.DT_STUN) > 0.0)
+                    {
+                        // conventional weapons can cause additional stun damage
+                        _stunlevel += RNG.generate(0, power / 4);
+                    }
+                    // fatal wounds
+                    if (isWoundable())
+                    {
+                        if (RNG.generate(0, 10) < power)
+                            _fatalWounds[(int)bodypart] += RNG.generate(1, 3);
+
+                        if (_fatalWounds[(int)bodypart] != 0)
+                            moraleChange(-_fatalWounds[(int)bodypart]);
+                    }
+                    // armor damage
+                    setArmor(getArmor(side) - (power / 10) - 1, side);
+                }
+            }
+        }
+
+        setFatalShotInfo(side, bodypart);
+
+        return power < 0 ? 0 : power;
+    }
+
+    /**
+     * Get whether the unit is affected by fatal wounds.
+     * Normally only soldiers are affected by fatal wounds.
+     * @return Is the unit affected by wounds?
+     */
+    bool isWoundable() =>
+	    (_type=="SOLDIER" || (Options.alienBleeding && _originalFaction != UnitFaction.FACTION_PLAYER && _armor.getSize() == 1));
+
+    /**
+     * Set the armor value of a certain armor side.
+     * @param armor Amount of armor.
+     * @param side The side of the armor.
+     */
+    void setArmor(int armor, UnitSide side)
+    {
+        if (armor < 0)
+        {
+            armor = 0;
+        }
+        _currentArmor[(int)side] = armor;
+    }
+
+    /**
+     * Set information on the unit's fatal blow.
+     * @param UnitSide unit's side that was shot.
+     * @param UnitBodyPart unit's body part that was shot.
+     */
+    void setFatalShotInfo(UnitSide side, UnitBodyPart bodypart)
+    {
+        _fatalShotSide = side;
+        _fatalShotBodyPart = bodypart;
+    }
+
+    /**
+     * Set the amount of turns this unit is on fire. 0 = no fire.
+     * @param fire : amount of turns this tile is on fire.
+     */
+    internal void setFire(int fire)
+    {
+        if (_specab != SpecialAbility.SPECAB_BURNFLOOR && _specab != SpecialAbility.SPECAB_BURN_AND_EXPLODE)
+            _fire = fire;
+    }
+
+    /**
+     * Adds one to the firing exp counter.
+     */
+    internal void addFiringExp() =>
+        _expFiring++;
+
+    /**
+    * Set health to 0 - used when getting killed unconscious.
+    */
+    internal void kill() =>
+	    _health = 0;
+
+    /**
+     * Gets whether this unit can be captured alive (applies to aliens).
+     */
+    internal bool getCapturable() =>
+	    _capturable;
+
+    /**
+     * Check if this unit is in the exit area.
+     * @param stt Type of exit tile to check for.
+     * @return Is in the exit area?
+     */
+    internal bool isInExitArea(SpecialTileType stt) =>
+	    _tile != null && _tile.getMapData(TilePart.O_FLOOR) != null && (_tile.getMapData(TilePart.O_FLOOR).getSpecialType() == stt);
+
+    /**
+     * Get unit's name.
+     * An aliens name is the translation of it's race and rank.
+     * hence the language pointer needed.
+     * @param lang Pointer to language.
+     * @param debugAppendId Append unit ID to name for debug purposes.
+     * @return name Widecharstring of the unit's name.
+     */
+    internal string getName(Language lang, bool debugAppendId)
+    {
+	    if (_type != "SOLDIER" && lang != null)
+	    {
+		    string ret;
+
+		    if (_type.Contains("STR_"))
+			    ret = lang.getString(_type);
+		    else
+			    ret = lang.getString(_race);
+
+		    if (debugAppendId)
+		    {
+			    ret = $"{ret} {_id}";
+		    }
+		    return ret;
+	    }
+
+	    return _name;
+    }
+
+    /**
+     * Returns the soldier's amount of morale.
+     * @return Morale.
+     */
+    internal int getMorale() =>
+	    _morale;
+
+    /**
+     * Get the units carried weight in strength units.
+     * @param draggingItem item to ignore
+     * @return weight
+     */
+    internal int getCarriedWeight(BattleItem draggingItem = null)
+    {
+	    int weight = _armor.getWeight();
+	    foreach (var i in _inventory)
+	    {
+		    if (i == draggingItem) continue;
+		    weight += i.getRules().getWeight();
+		    if (i.getAmmoItem() != i && i.getAmmoItem() != null) weight += i.getAmmoItem().getRules().getWeight();
+	    }
+	    return Math.Max(0,weight);
+    }
+
+    /**
+     * Set special weapon that is handled outside inventory.
+     * @param save
+     */
+    internal void setSpecialWeapon(SavedBattleGame save, Mod.Mod mod)
+    {
+	    RuleItem item = null;
+	    int i = 0;
+
+	    if (getUnitRules() != null)
+	    {
+		    item = mod.getItem(getUnitRules().getMeleeWeapon());
+		    if (item != null)
+		    {
+			    _specWeapon[i++] = createItem(save, this, item);
+		    }
+	    }
+	    item = mod.getItem(getArmor().getSpecialWeapon());
+	    if (item != null)
+	    {
+		    _specWeapon[i++] = createItem(save, this, item);
+	    }
+	    if (getBaseStats().psiSkill > 0 && getOriginalFaction() == UnitFaction.FACTION_HOSTILE)
+	    {
+		    item = mod.getItem(getUnitRules().getPsiWeapon());
+		    if (item != null)
+		    {
+			    _specWeapon[i++] = createItem(save, this, item);
+		    }
+	    }
+    }
+
+    /**
+     * Helper function used by `BattleUnit::setSpecialWeapon`
+     */
+    static BattleItem createItem(SavedBattleGame save, BattleUnit unit, RuleItem rule)
+    {
+        BattleItem item = new BattleItem(rule, ref save.getCurrentItemId());
+        item.setOwner(unit);
+        save.removeItem(item); //item outside inventory, deleted when game is shutdown.
+        return item;
+    }
+
+    /**
+     * Derive the numeric unit rank from the string rank
+     * (for soldier units).
+     */
+    void deriveRank()
+    {
+        if (_geoscapeSoldier != null)
+        {
+            switch (_geoscapeSoldier.getRank())
+            {
+                case SoldierRank.RANK_ROOKIE: _rankInt = 0; break;
+                case SoldierRank.RANK_SQUADDIE: _rankInt = 1; break;
+                case SoldierRank.RANK_SERGEANT: _rankInt = 2; break;
+                case SoldierRank.RANK_CAPTAIN: _rankInt = 3; break;
+                case SoldierRank.RANK_COLONEL: _rankInt = 4; break;
+                case SoldierRank.RANK_COMMANDER: _rankInt = 5; break;
+                default: _rankInt = 0; break;
+            }
+        }
+    }
+
+    /**
+     * Change the numeric version of the unit's rank.
+     * @param rank unit rank, 0 = lowest
+     */
+    internal void setRankInt(int rank) =>
+        _rankInt = rank;
+
+    /**
+     * Returns the direction from this unit to a given point.
+     * 0 <-> y = -1, x = 0
+     * 1 <-> y = -1, x = 1
+     * 3 <-> y = 1, x = 1
+     * 5 <-> y = 1, x = -1
+     * 7 <-> y = -1, x = -1
+     * @param point given position.
+     * @return direction.
+     */
+    internal int directionTo(Position point)
+    {
+	    double ox = point.x - _pos.x;
+	    double oy = point.y - _pos.y;
+	    double angle = Math.Atan2(ox, -oy);
+	    // divide the pie in 4 angles each at 1/8th before each quarter
+	    double[] pie = {(M_PI_4 * 4.0) - M_PI_4 / 2.0, (M_PI_4 * 3.0) - M_PI_4 / 2.0, (M_PI_4 * 2.0) - M_PI_4 / 2.0, (M_PI_4 * 1.0) - M_PI_4 / 2.0};
+	    int dir = 0;
+
+	    if (angle > pie[0] || angle < -pie[0])
+	    {
+		    dir = 4;
+	    }
+	    else if (angle > pie[1])
+	    {
+		    dir = 3;
+	    }
+	    else if (angle > pie[2])
+	    {
+		    dir = 2;
+	    }
+	    else if (angle > pie[3])
+	    {
+		    dir = 1;
+	    }
+	    else if (angle < -pie[1])
+	    {
+		    dir = 5;
+	    }
+	    else if (angle < -pie[2])
+	    {
+		    dir = 6;
+	    }
+	    else if (angle < -pie[3])
+	    {
+		    dir = 7;
+	    }
+	    else if (angle < pie[0])
+	    {
+		    dir = 0;
+	    }
+	    return dir;
+    }
+
+    /**
+     * Check if this unit lies (e.g. unconscious) in the exit area.
+     * @param tile Unit's location.
+     * @param stt Type of exit tile to check for.
+     * @return Is in the exit area?
+     */
+    internal bool liesInExitArea(Tile tile, SpecialTileType stt) =>
+	    tile != null && tile.getMapData(TilePart.O_FLOOR) != null && (tile.getMapData(TilePart.O_FLOOR).getSpecialType() == stt);
+
+    /**
+     * Elevates the unit to grand galactic inquisitor status,
+     * meaning they will NOT take part in the current battle.
+     */
+    internal void goToTimeOut() =>
+        _status = UnitStatus.STATUS_IGNORE_ME;
+
+    /**
+     * Get the pointer to the vector of visible tiles.
+     * @return pointer to vector.
+     */
+    internal List<Tile> getVisibleTiles() =>
+        _visibleTiles;
+
+    /**
+     * Mark this unit as not reselectable.
+     */
+    internal void dontReselect() =>
+        _dontReselect = true;
+
+    /**
+     * Check whether reselecting this unit is allowed.
+     * @return bool
+     */
+    internal bool reselectAllowed() =>
+	    !_dontReselect;
+
+    /**
+     * Checks if this unit can be selected. Only alive units
+     * belonging to the faction can be selected.
+     * @param faction The faction to compare with.
+     * @param checkReselect Check if the unit is reselectable.
+     * @param checkInventory Check if the unit has an inventory.
+     * @return True if the unit can be selected, false otherwise.
+     */
+    internal bool isSelectable(UnitFaction faction, bool checkReselect, bool checkInventory) =>
+	    (_faction == faction && !isOut() && (!checkReselect || reselectAllowed()) && (!checkInventory || hasInventory()));
+
+    /**
+     * Prepare for a new turn.
+     */
+    internal void prepareNewTurn(bool fullProcess)
+    {
+        if (_status == UnitStatus.STATUS_IGNORE_ME)
+        {
+            return;
+        }
+
+        _unitsSpottedThisTurn.Clear();
+
+        // revert to original faction
+        // don't give it back its TUs or anything this round
+        // because it's no longer a unit of the team getting TUs back
+        if (_faction != _originalFaction)
+        {
+            _faction = _originalFaction;
+            if (_faction == UnitFaction.FACTION_PLAYER && _currentAIState != null)
+            {
+                _currentAIState = null;
+            }
+        }
+        else
+        {
+            recoverTimeUnits();
+        }
+        _dontReselect = false;
+
+        _motionPoints = 0;
+
+        // transition between stages, don't do damage or panic
+        if (!fullProcess)
+        {
+            if (_kneeled)
+            {
+                // stand up if kneeling
+                _kneeled = false;
+            }
+            return;
+        }
+
+        // suffer from fatal wounds
+        _health -= getFatalWounds();
+
+        // suffer from fire
+        if (!_hitByFire && _fire > 0)
+        {
+            _health -= (int)(_armor.getDamageModifier(ItemDamageType.DT_IN) * RNG.generate(Mod.Mod.FIRE_DAMAGE_RANGE[0], Mod.Mod.FIRE_DAMAGE_RANGE[1]));
+            _fire--;
+        }
+
+        if (_health < 0)
+            _health = 0;
+
+        // if unit is dead, AI state should be gone
+        if (_health == 0 && _currentAIState != null)
+        {
+            _currentAIState = null;
+        }
+
+        // recover stun 1pt/turn
+        if (_stunlevel > 0 &&
+            (_armor.getSize() == 1 || !isOut()))
+            healStun(1);
+
+        if (!isOut())
+        {
+            int chance = 100 - (2 * getMorale());
+            if (RNG.generate(1, 100) <= chance)
+            {
+                int type = RNG.generate(0, 100);
+                _status = (type <= 33 ? UnitStatus.STATUS_BERSERK : UnitStatus.STATUS_PANICKING); // 33% chance of berserk, panic can mean freeze or flee, but that is determined later
+            }
+            else
+            {
+                // successfully avoided panic
+                // increase bravery experience counter
+                if (chance > 1)
+                    _expBravery++;
+            }
+        }
+        _hitByFire = false;
+    }
+
+    /**
+     * Recovers a unit's TUs and energy, taking a number of factors into consideration.
+     */
+    void recoverTimeUnits()
+    {
+        // recover TUs
+        int TURecovery = getBaseStats().tu;
+        float encumbrance = (float)getBaseStats().strength / (float)getCarriedWeight();
+        if (encumbrance < 1)
+        {
+            TURecovery = (int)(encumbrance * TURecovery);
+        }
+        // Each fatal wound to the left or right leg reduces the soldier's TUs by 10%.
+        TURecovery -= (TURecovery * ((_fatalWounds[(int)UnitBodyPart.BODYPART_LEFTLEG] + _fatalWounds[(int)UnitBodyPart.BODYPART_RIGHTLEG]) * 10)) / 100;
+        setTimeUnits(TURecovery);
+
+        // recover energy
+        if (!isOut())
+        {
+            int ENRecovery;
+            if (_geoscapeSoldier != null)
+            {
+                ENRecovery = _geoscapeSoldier.getInitStats().tu / 3;
+            }
+            else
+            {
+                ENRecovery = _unitRules.getEnergyRecovery();
+            }
+            // Each fatal wound to the body reduces the soldier's energy recovery by 10%.
+            ENRecovery -= (_energy * (_fatalWounds[(int)UnitBodyPart.BODYPART_TORSO] * 10)) / 100;
+            _energy = Math.Max(0, Math.Min(getBaseStats().stamina, _energy + ENRecovery));
+        }
+    }
+
+    /**
+     * Set a specific number of timeunits.
+     * @param tu
+     */
+    void setTimeUnits(int tu) =>
+        _tu = Math.Max(0, tu);
+
+    /**
+     * Do an amount of stun recovery.
+     * @param power
+     */
+    void healStun(int power)
+    {
+        _stunlevel -= power;
+        if (_stunlevel < 0) _stunlevel = 0;
+    }
 }

@@ -23,7 +23,7 @@ enum InventoryType { INV_SLOT, INV_HAND, INV_GROUND };
 
 struct RuleSlot
 {
-    int x, y;
+    internal int x, y;
 
     /**
 	 * Loads the RuleSlot from a YAML file.
@@ -43,6 +43,11 @@ struct RuleSlot
  */
 internal class RuleInventory : IListOrder, IRule
 {
+    internal const int SLOT_W = 16;
+    internal const int SLOT_H = 16;
+    internal const int HAND_W = 2;
+    internal const int HAND_H = 3;
+
     string _id;
     int _x, _y;
     InventoryType _type;
@@ -107,5 +112,59 @@ internal class RuleInventory : IListOrder, IRule
         }).ToList();
         _costs = ((YamlSequenceNode)node["costs"]).Children.ToDictionary(x => x[0].ToString(), x => int.Parse(x[1].ToString()));
 	    _listOrder = int.Parse(node["listOrder"].ToString());
+    }
+
+    /**
+     * Gets all the slots in the inventory section.
+     * @return The list of slots.
+     */
+    internal List<RuleSlot> getSlots() =>
+	    _slots;
+
+    /**
+     * Checks if an item completely fits when
+     * placed in a certain slot.
+     * @param item Pointer to item ruleset.
+     * @param x Slot X position.
+     * @param y Slot Y position.
+     * @return True if there's a slot there.
+     */
+    internal bool fitItemInSlot(RuleItem item, int x, int y)
+    {
+	    if (_type == InventoryType.INV_HAND)
+	    {
+		    return true;
+	    }
+	    else if (_type == InventoryType.INV_GROUND)
+	    {
+		    int width = (320 - _x) / SLOT_W;
+		    int height = (200 - _y) / SLOT_H;
+		    int xOffset = 0;
+		    while (x >= xOffset + width)
+			    xOffset += width;
+		    for (int xx = x; xx < x + item.getInventoryWidth(); ++xx)
+		    {
+			    for (int yy = y; yy < y + item.getInventoryHeight(); ++yy)
+			    {
+				    if (!(xx >= xOffset && xx < xOffset + width && yy >= 0 && yy < height))
+					    return false;
+			    }
+		    }
+		    return true;
+	    }
+	    else
+	    {
+		    int totalSlots = item.getInventoryWidth() * item.getInventoryHeight();
+		    int foundSlots = 0;
+		    for (var i = 0; i < _slots.Count && foundSlots < totalSlots; ++i)
+		    {
+			    if (_slots[i].x >= x && _slots[i].x < x + item.getInventoryWidth() &&
+                    _slots[i].y >= y && _slots[i].y < y + item.getInventoryHeight())
+			    {
+				    foundSlots++;
+			    }
+		    }
+		    return (foundSlots == totalSlots);
+	    }
     }
 }

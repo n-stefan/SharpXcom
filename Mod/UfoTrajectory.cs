@@ -25,11 +25,11 @@ namespace SharpXcom.Mod;
 struct TrajectoryWaypoint
 {
     /// The mission zone.
-    uint zone;
+    internal uint zone;
     /// The altitude to reach.
-    uint altitude;
+    internal uint altitude;
     /// The speed percentage ([0..100])
-    uint speed;
+    internal uint speed;
 
     /**
 	 * Loads the TrajectoryWaypoint from a YAML file.
@@ -87,4 +87,42 @@ internal class UfoTrajectory : IRule
             var waypoint = new TrajectoryWaypoint(); waypoint.load(x); return waypoint;
         }).ToList();
     }
+
+    /**
+	 * Gets the zone index at a waypoint.
+	 * @param wp The waypoint.
+	 * @return The zone index.
+	 */
+    internal uint getZone(uint wp) =>
+        _waypoints[(int)wp].zone;
+
+    /**
+	 * Gets the number of waypoints in this trajectory.
+	 * @return The number of waypoints.
+	 */
+    internal uint getWaypointCount() =>
+        (uint)_waypoints.Count;
+
+    /**
+     * Gets the altitude at a waypoint.
+     * @param wp The waypoint.
+     * @return The altitude.
+     */
+    internal string getAltitude(uint wp) =>
+	    Ufo.ALTITUDE_STRING[_waypoints[(int)wp].altitude];
+
+    /**
+	 * Gets the speed percentage at a waypoint.
+	 * @param wp The waypoint.
+	 * @return The speed as a percentage.
+	 */
+    internal float getSpeedPercentage(uint wp) =>
+        _waypoints[(int)wp].speed / 100.0f;
+
+    /**
+	 * Gets the number of seconds UFOs should spend on the ground.
+	 * @return The number of seconds.
+	 */
+    internal uint groundTimer() =>
+        _groundTimer;
 }

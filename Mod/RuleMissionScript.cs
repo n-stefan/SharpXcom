@@ -19,6 +19,8 @@
 
 namespace SharpXcom.Mod;
 
+enum GenerationType { GEN_REGION, GEN_MISSION, GEN_RACE };
+
 internal class RuleMissionScript : IRule
 {
     string _type, _varName;
@@ -196,4 +198,121 @@ internal class RuleMissionScript : IRule
 	 */
 	internal int getExecutionOdds() =>
 		_executionOdds;
+
+	/**
+	 * @return if this is a mission site type command or not.
+	 */
+	internal bool getSiteType() =>
+		_siteType;
+
+	/**
+	 * Chooses one of the available races, regions, or missions for this command.
+	 * @param monthsPassed The number of months that have passed in the game world.
+	 * @param type the type of thing we want to generate, region, mission or race.
+	 * @return The string id of the thing.
+	 */
+	internal string generate(uint monthsPassed, GenerationType type)
+	{
+		List<KeyValuePair<uint, WeightedOptions>> rw;
+		if (type == GenerationType.GEN_RACE)
+			rw = _raceWeights;
+		else if (type == GenerationType.GEN_REGION)
+			rw = _regionWeights;
+		else
+			rw = _missionWeights;
+		int i = rw.Count - 1;
+		while (monthsPassed < rw[i].Key)
+			--i;
+		return rw[i].Value.choose();
+    }
+
+	/**
+	 * @param month the month for which we want info.
+	 * @return a list of the possible missions for the given month.
+	 */
+	internal List<string> getMissionTypes(int month)
+	{
+		var missions = new List<string>();
+		int rw = _missionWeights.Count - 1;
+		while (month < (int)(_missionWeights[rw].Key))
+		{
+			--rw;
+			if (rw < 0)
+			{
+				++rw;
+				break;
+			}
+		}
+		foreach (var i in _missionWeights[rw].Value.getNames())
+		{
+			missions.Add(i);
+		}
+		return missions;
+	}
+
+	/**
+	 * @param month the month for which we want info.
+	 * @return the list of regions we have to pick from this month.
+	 */
+	internal List<string> getRegions(int month)
+	{
+		var regions = new List<string>();
+		int rw = _regionWeights.Count - 1;
+		while (month < (int)(_regionWeights[rw].Key))
+		{
+			--rw;
+			if (rw < 0)
+			{
+				++rw;
+				break;
+			}
+		}
+		foreach (var i in _regionWeights[rw].Value.getNames())
+		{
+			regions.Add(i);
+		}
+		return regions;
+	}
+
+	/**
+	 * @return the odds of this command targetting a base.
+	 */
+	internal int getTargetBaseOdds() =>
+		_targetBaseOdds;
+
+	/**
+	 * @return if this command uses a weighted distribution to pick a region.
+	 */
+	internal bool hasRegionWeights() =>
+		_regionWeights.Any();
+
+	/**
+	 * @return the number of sites to avoid repeating missions against.
+	 */
+	internal int getRepeatAvoidance() =>
+		_avoidRepeats;
+
+	/**
+	 * @return if this command uses a weighted distribution to pick a mission.
+	 */
+	internal bool hasMissionWeights() =>
+		_missionWeights.Any();
+
+	/**
+	 * @return if this command uses a weighted distribution to pick a race.
+	 */
+	internal bool hasRaceWeights() =>
+		_raceWeights.Any();
+
+	/**
+	 * @return the fixed delay on spawning the first wave (if any) to override whatever's written in the mission definition.
+	 */
+	internal int getDelay() =>
+		_delay;
+
+	/**
+	 * @return if this command should remove the mission it generates from the strategy table.
+	 */
+	internal bool getUseTable() =>
+		_useTable;
 }

@@ -36,7 +36,7 @@ internal class WarningMessage : Surface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    WarningMessage(int width, int height, int x, int y) : base(width, height, x, y)
+    internal WarningMessage(int width, int height, int x, int y) : base(width, height, x, y)
     {
         _color = 0;
         _fade = 0;
@@ -88,4 +88,30 @@ internal class WarningMessage : Surface
 	    setVisible(true);
 	    _timer.start();
     }
+
+    /**
+     * Changes the various resources needed for text rendering.
+     * The different fonts need to be passed in advance since the
+     * text size can change mid-text, and the language affects
+     * how the text is rendered.
+     * @param big Pointer to large-size font.
+     * @param small Pointer to small-size font.
+     * @param lang Pointer to current language.
+     */
+    internal void initText(Font big, Font small, Language lang) =>
+        _text.initText(big, small, lang);
+
+    /**
+     * Changes the color for the message background.
+     * @param color Color value.
+     */
+    internal void setColor(byte color) =>
+        _color = color;
+
+    /**
+     * Changes the color for the message text.
+     * @param color Color value.
+     */
+    internal void setTextColor(byte color) =>
+        _text.setColor(color);
 }

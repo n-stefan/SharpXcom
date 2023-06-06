@@ -128,4 +128,18 @@ internal class RuleCountry : IRule
 	    }
 	    return false;
     }
+
+    /**
+     * Gets the longitude of the country's label on the globe.
+     * @return The longitude in radians.
+     */
+    internal double getLabelLongitude() =>
+	    _labelLon;
+
+    /**
+     * Gets the latitude of the country's label on the globe.
+     * @return The latitude in radians.
+     */
+    internal double getLabelLatitude() =>
+	    _labelLat;
 }

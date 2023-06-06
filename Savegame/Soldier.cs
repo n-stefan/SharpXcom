@@ -418,4 +418,66 @@ internal class Soldier
 	 */
 	internal Craft getCraft() =>
 		_craft;
+
+	/**
+	 * Returns the soldier's military rank.
+	 * @return Rank enum.
+	 */
+	internal SoldierRank getRank() =>
+		_rank;
+
+    /**
+     * Returns the list of EquipmentLayoutItems of a soldier.
+     * @return Pointer to the EquipmentLayoutItem list.
+     */
+    internal List<EquipmentLayoutItem> getEquipmentLayout() =>
+        _equipmentLayout;
+
+	/**
+	 * Returns the soldier's gender.
+	 * @return Gender.
+	 */
+	internal SoldierGender getGender() =>
+		_gender;
+
+	/**
+	 * Returns the soldier's look.
+	 * @return Look.
+	 */
+	internal SoldierLook getLook() =>
+		_look;
+
+	/**
+	 * Returns the soldier's amount of missions.
+	 * @return Missions.
+	 */
+	internal int getMissions() =>
+		_missions;
+
+	/**
+	 * Returns the unit's current armor.
+	 * @return Pointer to armor data.
+	 */
+	internal Armor getArmor() =>
+		_armor;
+
+    /**
+     * Get pointer to current stats.
+     */
+    internal UnitStats getCurrentStats() =>
+        _currentStats;
+
+	/**
+	 * Returns the soldier's unique ID. Each soldier
+	 * can be identified by its ID. (not it's name)
+	 * @return Unique ID.
+	 */
+	internal int getId() =>
+		_id;
+
+    /**
+     * Get pointer to initial stats.
+     */
+    internal UnitStats getInitStats() =>
+        _initialStats;
 }

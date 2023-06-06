@@ -21,9 +21,9 @@ namespace SharpXcom.Mod;
 
 struct TerrainCriteria
 {
-    string name;
-    int weight;
-    double lonMin, lonMax, latMin, latMax;
+    internal string name;
+    internal int weight;
+    internal double lonMin, lonMax, latMin, latMax;
     
     public TerrainCriteria()
     {
@@ -83,5 +83,97 @@ internal class Texture
         {
             var terrain = new TerrainCriteria(); terrain.load(x); return terrain;
         }).ToList();
+    }
+
+    /**
+     * Calculates a random deployment for a mission target based
+     * on the texture's available deployments.
+     * @return the name of the picked deployment.
+     */
+    internal string getRandomDeployment()
+    {
+	    if (!_deployments.Any())
+	    {
+		    return string.Empty;
+	    }
+
+        if (_deployments.Count == 1)
+        {
+            return _deployments.First().Key;
+        }
+	    int totalWeight = 0;
+
+	    foreach (var i in _deployments)
+	    {
+		    totalWeight += i.Value;
+	    }
+
+	    if (totalWeight >= 1)
+	    {
+		    int pick = RNG.generate(1, totalWeight);
+		    foreach (var i in _deployments)
+		    {
+			    if (pick <= i.Value)
+			    {
+				    return i.Key;
+			    }
+			    else
+			    {
+				    pick -= i.Value;
+			    }
+		    }
+	    }
+
+	    return string.Empty;
+    }
+
+    /**
+     * Returns the list of deployments associated
+     * with this texture.
+     * @return List of deployments.
+     */
+    internal Dictionary<string, int> getDeployments() =>
+	    _deployments;
+
+    /**
+     * Returns the list of terrain criteria associated
+     * with this texture.
+     * @return List of terrain.
+     */
+    internal List<TerrainCriteria> getTerrain() =>
+        _terrain;
+
+    /**
+     * Calculates a random terrain for a mission target based
+     * on the texture's available terrain criteria.
+     * @param target Pointer to the mission target.
+     * @return the name of the picked terrain.
+     */
+    internal string getRandomTerrain(Target target)
+    {
+	    int totalWeight = 0;
+	    var possibilities = new Dictionary<int, string>();
+	    foreach (var i in _terrain)
+	    {
+		    if (i.weight > 0 &&
+			    target.getLongitude() >= i.lonMin && target.getLongitude() < i.lonMax &&
+			    target.getLatitude() >= i.latMin && target.getLatitude() < i.latMax)
+		    {
+			    totalWeight += i.weight;
+			    possibilities[totalWeight] = i.name;
+		    }
+	    }
+	    if (totalWeight > 0)
+	    {
+		    int pick = RNG.generate(1, totalWeight);
+		    foreach (var i in possibilities)
+		    {
+			    if (pick <= i.Key)
+			    {
+				    return i.Value;
+			    }
+		    }
+	    }
+	    return string.Empty;
     }
 }

@@ -47,6 +47,6 @@ internal class City : Target
      * Returns the globe marker for the UFO.
      * @return Marker sprite, -1 if none.
      */
-    internal override int getMarker() =>
+    protected override int getMarker() =>
 	    8;
 }

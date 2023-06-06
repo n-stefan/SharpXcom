@@ -65,7 +65,7 @@ internal class AlienBase : Target
      * Returns the globe marker for the alien base.
      * @return Marker sprite, -1 if none.
      */
-    internal override int getMarker()
+    protected override int getMarker()
     {
 	    if (!_discovered)
 		    return -1;
@@ -95,4 +95,18 @@ internal class AlienBase : Target
      */
     internal bool isDiscovered() =>
 	    _discovered;
+
+    /**
+     * Returns the alien race currently residing in the alien base.
+     * @return Alien race.
+     */
+    internal string getAlienRace() =>
+	    _race;
+
+    /**
+     * Gets the alien base's battlescape status.
+     * @return Is the base on the battlescape?
+     */
+    internal bool isInBattlescape() =>
+	    _inBattlescape;
 }

@@ -69,7 +69,7 @@ internal class BattleItem
         if (_rules != null)
         {
             setAmmoQuantity(_rules.getClipSize());
-            if (_rules.getBattleType() == Mod.BattleType.BT_MEDIKIT)
+            if (_rules.getBattleType() == BattleType.BT_MEDIKIT)
             {
                 setHealQuantity(_rules.getHealQuantity());
                 setPainKillerQuantity(_rules.getPainKillerQuantity());
@@ -77,7 +77,7 @@ internal class BattleItem
             }
 
             // weapon does not need ammo, ammo item points to weapon
-            else if ((_rules.getBattleType() == Mod.BattleType.BT_FIREARM || _rules.getBattleType() == Mod.BattleType.BT_MELEE) && !_rules.getCompatibleAmmo().Any())
+            else if ((_rules.getBattleType() == BattleType.BT_FIREARM || _rules.getBattleType() == BattleType.BT_MELEE) && !_rules.getCompatibleAmmo().Any())
             {
                 _ammoItem = this;
             }
@@ -93,7 +93,7 @@ internal class BattleItem
      * Changes the quantity of ammo in this item.
      * @param qty Ammo quantity.
      */
-    void setAmmoQuantity(int qty) =>
+    internal void setAmmoQuantity(int qty) =>
         _ammoQuantity = qty;
 
     /**
@@ -255,7 +255,7 @@ internal class BattleItem
      */
     internal void convertToCorpse(RuleItem rules)
     {
-        if (_unit != null && _rules.getBattleType() == Mod.BattleType.BT_CORPSE && rules.getBattleType() == Mod.BattleType.BT_CORPSE)
+        if (_unit != null && _rules.getBattleType() == BattleType.BT_CORPSE && rules.getBattleType() == BattleType.BT_CORPSE)
         {
             _rules = rules;
         }
@@ -305,7 +305,7 @@ internal class BattleItem
 	    if (_ammoItem != null)
 		    node.Add("ammoItem", _ammoItem.getId().ToString());
 
-	    if (_rules != null && _rules.getBattleType() == Mod.BattleType.BT_MEDIKIT)
+	    if (_rules != null && _rules.getBattleType() == BattleType.BT_MEDIKIT)
 	    {
 		    node.Add("painKiller", _painKiller.ToString());
 		    node.Add("heal", _heal.ToString());
@@ -326,4 +326,102 @@ internal class BattleItem
      */
     int getId() =>
 	    _id;
+
+    /**
+     * Gets the turns until detonation. -1 = unprimed grenade
+     * @return turns until detonation.
+     */
+    internal int getFuseTimer() =>
+	    _fuseTimer;
+
+    /**
+     * Gets the item's previous owner.
+     * @return Pointer to Battleunit.
+     */
+    internal BattleUnit getPreviousOwner() =>
+	    _previousOwner;
+
+    /**
+     * Sets the turn to explode on.
+     * @param turns Turns until detonation (player/alien turns, not game turns).
+     */
+    internal void setFuseTimer(int turns) =>
+        _fuseTimer = turns;
+
+    /**
+     * Determines if the item uses ammo.
+     * @return True if ammo is used.
+     */
+    internal bool needsAmmo() =>
+	    !(_ammoItem == this); // no ammo for this weapon is needed
+
+    /**
+     * Sets the XCom property flag. This is to determine at debriefing what goes into the base/craft.
+     * @param flag True if it's XCom property.
+     */
+    internal void setXCOMProperty(bool flag) =>
+        _XCOMProperty = flag;
+
+    /**
+     * Sets the item's ammo item.
+     * @param item The ammo item.
+     * @return -2 when ammo doesn't fit, or -1 when weapon already contains ammo.
+     */
+    internal int setAmmoItem(BattleItem item)
+    {
+        if (!needsAmmo()) return -2;
+
+        if (item == null)
+        {
+            if (_ammoItem != null)
+            {
+                _ammoItem.setIsAmmo(false);
+            }
+            _ammoItem = null;
+            return 0;
+        }
+
+        if (_ammoItem != null)
+            return -1;
+
+        foreach (var i in _rules.getCompatibleAmmo())
+        {
+            if (i == item.getRules().getType())
+            {
+                _ammoItem = item;
+                item.setIsAmmo(true);
+                return 0;
+            }
+        }
+
+        return -2;
+    }
+
+    /**
+     * Sets the flag on this item indicating whether or not it is a clip used in a weapon.
+     * @param ammo set the ammo flag to this.
+     */
+    void setIsAmmo(bool ammo) =>
+        _isAmmo = ammo;
+
+    /**
+     * Sets the item's inventory X position.
+     * @param x X position.
+     */
+    internal void setSlotX(int x) =>
+        _inventoryX = x;
+
+    /**
+     * Sets the item's inventory Y position.
+     * @param y Y position.
+     */
+    internal void setSlotY(int y) =>
+        _inventoryY = y;
+
+    /**
+     * Checks if this item is loaded into a weapon.
+     * @return if this is loaded into a weapon or not.
+     */
+    internal bool isAmmo() =>
+	    _isAmmo;
 }

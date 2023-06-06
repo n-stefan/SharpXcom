@@ -149,4 +149,36 @@ internal class Camera
 	    mapX = Math.Clamp(mapX, -1, _mapsize_x);
 	    mapY = Math.Clamp(mapY, -1, _mapsize_y);
     }
+
+    /**
+     * Centers map on a certain position.
+     * @param mapPos Position to center on.
+     * @param redraw Redraw map or not.
+     */
+    internal void centerOnPosition(Position mapPos, bool redraw = true)
+    {
+        _center = mapPos;
+        _center.x = Math.Clamp(_center.x, -1, _mapsize_x);
+        _center.y = Math.Clamp(_center.y, -1, _mapsize_y);
+        convertMapToScreen(_center, out Position screenPos);
+
+        _mapOffset.x = -(screenPos.x - (_screenWidth / 2));
+        _mapOffset.y = -(screenPos.y - (_visibleMapHeight / 2));
+
+        _mapOffset.z = _center.z;
+        if (redraw) _map.draw();
+    }
+
+    /**
+     * Converts map coordinates X,Y,Z to screen positions X, Y.
+     * @param mapPos X,Y,Z coordinates on the map.
+     * @param screenPos Screen position.
+     */
+    void convertMapToScreen(Position mapPos, out Position screenPos) =>
+        screenPos = new Position
+        {
+            z = 0, // not used
+            x = mapPos.x * (_spriteWidth / 2) - mapPos.y * (_spriteWidth / 2),
+            y = mapPos.x * (_spriteWidth / 4) + mapPos.y * (_spriteWidth / 4) - mapPos.z * ((_spriteHeight + _spriteWidth / 4) / 2)
+        };
 }

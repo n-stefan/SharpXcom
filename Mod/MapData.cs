@@ -476,4 +476,53 @@ internal class MapData
         _stopLOS = stopLOS;
         _block[1] = stopLOS ? 255 : 0;
     }
+
+    /**
+     * Gets info about special tile types.
+     * @return The special tile type.
+     */
+    internal SpecialTileType getSpecialType() =>
+	    _specialType;
+
+    /**
+     * Gets the amount of fuel.
+     * @return The amount of fuel.
+     */
+    internal int getFuel() =>
+	    _fuel;
+
+    /**
+     * Gets the amount of flammable (how flammable this object is).
+     * @return The amount of flammable.
+     */
+    internal int getFlammable() =>
+	    _flammable;
+
+    /**
+     * check if this is an xcom base object.
+     * @return if it is a base object.
+     */
+    internal bool isBaseModule() =>
+	    _baseModule;
+
+    /**
+     * Gets the dataset this object belongs to.
+     * @return Pointer to MapDataSet.
+     */
+    internal MapDataSet getDataset() =>
+	    _dataset;
+
+    /**
+     * Gets the amount of explosive.
+     * @return The amount of explosive.
+     */
+    internal int getExplosive() =>
+	    _explosive;
+
+    /**
+     * Gets the type of explosive.
+     * @return The amount of explosive.
+     */
+    internal int getExplosiveType() =>
+	    _explosiveType;
 }

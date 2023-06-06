@@ -87,4 +87,11 @@ internal class Region
      */
     internal void addActivityAlien(int activity) =>
         _activityAlien[^1] += activity;
+
+    /**
+     * Adds to the region's xcom activity level.
+     * @param activity Amount to add.
+     */
+    internal void addActivityXcom(int activity) =>
+        _activityXcom[^1] += activity;
 }

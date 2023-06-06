@@ -241,4 +241,20 @@ internal class GameTime
      */
     internal int getDay() =>
 	    _day;
+
+    /**
+     * Returns the current position of the daylight emitted on the globe
+     * according to the current ingame time, so the value is 0 when the light
+     * starts at 0 longitude (6h) and 1 when the light ends at 0 longitude (18h).
+     * @return Daylight position (0-1).
+     */
+    internal double getDaylight() =>
+	    (double)((((((_hour + 18) % 24) * 60) + _minute) * 60) + _second) / (60 * 60 * 24);
+
+    /**
+     * Returns the current ingame month.
+     * @return Month (1-12).
+     */
+    internal int getMonth() =>
+	    _month;
 }

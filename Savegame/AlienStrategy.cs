@@ -76,12 +76,12 @@ internal class AlienStrategy
 		return node;
 	}
 
-	/**
+    /**
 	 * Increments the number of missions run labelled as "varName".
 	 * @param varName the variable name that we want to use to keep track of this.
 	 * @param increment the value to increment by.
 	 */
-	internal void addMissionRun(string varName, int increment)
+    internal void addMissionRun(string varName, int increment = 1)
 	{
 		if (string.IsNullOrEmpty(varName))
 			return;
@@ -123,4 +123,118 @@ internal class AlienStrategy
 	 */
 	internal int getMissionsRun(string varName) =>
 		_missionRuns.TryGetValue(varName, out int missionRun) ? missionRun : 0;
+
+	/**
+	 * Checks that a given mission location (city or whatever) isn't stored in our list of previously attacked locations.
+	 * @param varName the name of the variable that is storing our data.
+	 * @param regionName the name of the region we're looking for.
+	 * @param zoneNumber the number in the region that we want to check.
+	 * @return if the region is valid (meaning it is not in our table).
+	 */
+	internal bool validMissionLocation(string varName, string regionName, int zoneNumber)
+	{
+		if (_missionLocations.ContainsKey(varName))
+		{
+			foreach (var i in _missionLocations[varName])
+			{
+				if (i.Key == regionName && i.Value == zoneNumber)
+					return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Adds a mission location to our storage array.
+	 * @param varName the name on the variable under which to store this info.
+	 * @param regionName the name of the region we're using.
+	 * @param zoneNumber the number of the zone within that region we're using.
+	 * @param maximum the maximum size of the list we want to maintain.
+	 */
+	internal void addMissionLocation(string varName, string regionName, int zoneNumber, int maximum)
+	{
+		if (maximum <= 0) return;
+		_missionLocations[varName].Add(KeyValuePair.Create(regionName, zoneNumber));
+		if (_missionLocations[varName].Count > (uint)(maximum))
+		{
+			_missionLocations.Remove(_missionLocations.First().Key);
+		}
+	}
+
+	/**
+	 * Checks that a given region appears in our strategy table.
+	 * @param region the region we want to check for validity.
+	 * @return if the region appears in the table or not.
+	 */
+	internal bool validMissionRegion(string region) =>
+		_regionMissions.ContainsKey(region);
+
+	/**
+	 * Remove @a mission from the list of possible missions for @a region.
+	 * @param region The region id.
+	 * @param mission The mission id.
+	 * @return If there are no more regions with missions available.
+	 */
+	internal bool removeMission(string region, string mission)
+	{
+		if (_regionMissions.TryGetValue(region, out WeightedOptions found))
+		{
+			found.set(mission, 0);
+			if (found.empty())
+			{
+				_regionMissions.Remove(region);
+				_regionChances.set(region, 0);
+			}
+		}
+		return !_regionMissions.Any();
+    }
+
+	/**
+	 * Choose one of the regions for a mission.
+	 * @param mod Pointer to the mod.
+	 * @return The region id.
+	 */
+	internal string chooseRandomRegion(Mod.Mod mod)
+	{
+		string chosen = _regionChances.choose();
+		if (string.IsNullOrEmpty(chosen))
+		{
+			// no more missions to choose from: refresh.
+			// First, free allocated memory.
+			_regionMissions.Clear();
+			// re-initialize the list
+			init(mod);
+			// now let's try that again.
+			chosen = _regionChances.choose();
+		}
+		Debug.Assert(string.Empty != chosen);
+		return chosen;
+	}
+
+	/**
+	 * Choose one missions available for @a region.
+	 * @param region The region id.
+	 * @return The mission id.
+	 */
+	internal string chooseRandomMission(string region)
+	{
+        _regionMissions.TryGetValue(region, out WeightedOptions found);
+		Debug.Assert(found != null);
+		return found.choose();
+	}
+
+	/**
+	 * Get starting values from the rules.
+	 * @param mod Pointer to the game mod.
+	 */
+	void init(Mod.Mod mod)
+	{
+		foreach (var rr in mod.getRegionsList())
+		{
+			RuleRegion region = mod.getRegion(rr, true);
+			_regionChances.set(rr, region.getWeight());
+			WeightedOptions missions = region.getAvailableMissions();
+			_regionMissions.Add(rr, missions);
+		}
+	}
 }

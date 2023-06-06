@@ -343,4 +343,18 @@ internal class MapDataSet
 		_surfaceSet = new SurfaceSet(32, 40);
 		_surfaceSet.loadPck(FileMap.getFilePath("TERRAIN/" + _name + ".PCK"), FileMap.getFilePath("TERRAIN/" + _name + ".TAB"));
 	}
+
+    /**
+     * Gets a scorched earth tile.
+     * @return Pointer to a scorched earth tile.
+     */
+    internal static MapData getScorchedEarthTile() =>
+        _scorchedTile;
+
+    /**
+     * Gets the MapDataSet size.
+     * @return The size in number of records.
+     */
+    internal uint getSize() =>
+        (uint)_objects.Count;
 }

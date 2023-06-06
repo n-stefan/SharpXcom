@@ -61,10 +61,10 @@ internal class Pathfinding
         _size = _save.getMapSizeXYZ();
         // Initialize one node per tile
         _nodes = new List<PathfindingNode>(_size);
-        var p = new Position();
         for (int i = 0; i < _size; ++i)
         {
-            _save.getTileCoords(i, ref p.x, ref p.y, ref p.z);
+            var p = new Position();
+            _save.getTileCoords(i, out p.x, out p.y, out p.z);
             _nodes.Add(new PathfindingNode(p));
         }
     }
@@ -465,9 +465,8 @@ internal class Pathfinding
 	 * @param missileTarget Target for a missile.
 	 * @return True if the movement is blocked.
 	 */
-    bool isBlocked(Tile startTile, Tile _ /*endTile*/, int direction, BattleUnit missileTarget)
+    internal bool isBlocked(Tile startTile, Tile _ /*endTile*/, int direction, BattleUnit missileTarget)
     {
-
         // check if the difference in height between start and destination is not too high
         // so we can not jump to the highest part of the stairs from the floor
         // stairs terrainlevel goes typically -8 -16 (2 steps) or -4 -12 -20 (3 steps)
@@ -741,7 +740,7 @@ internal class Pathfinding
      * @param vector Pointer to a position (which acts as a vector).
      * @param dir Resulting direction.
      */
-    internal static void vectorToDirection(Position vector, ref int dir)
+    internal static void vectorToDirection(Position vector, out int dir)
     {
         dir = -1;
         int[] x = { 0, 1, 1, 1, 0, -1, -1, -1 };
@@ -753,6 +752,23 @@ internal class Pathfinding
                 dir = i;
                 return;
             }
+        }
+    }
+
+    /**
+     * Sets _unit in order to abuse low-level pathfinding functions from outside the class.
+     * @param unit Unit taking the path.
+     */
+    internal void setUnit(BattleUnit unit)
+    {
+        _unit = unit;
+        if (unit != null)
+        {
+            _movementType = unit.getMovementType();
+        }
+        else
+        {
+            _movementType = MovementType.MT_WALK;
         }
     }
 }

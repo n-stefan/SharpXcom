@@ -72,7 +72,7 @@ internal class MissionSite : Target
      * Returns the globe marker for the mission site.
      * @return Marker sprite, -1 if none.
      */
-    internal override int getMarker()
+    protected override int getMarker()
     {
 	    if (!_detected)
 		    return -1;
@@ -116,4 +116,46 @@ internal class MissionSite : Target
      */
     internal bool getDetected() =>
 	    _detected;
+
+    /**
+     * Returns the number of seconds remaining before the mission site expires.
+     * @return Amount of seconds.
+     */
+    internal uint getSecondsRemaining() =>
+	    _secondsRemaining;
+
+    /**
+     * Gets the mission site's associated texture.
+     * @return Texture ID.
+     */
+    internal int getTexture() =>
+	    _texture;
+
+    /**
+     * Sets the mission site's associated texture.
+     * @param texture Texture ID.
+     */
+    internal void setTexture(int texture) =>
+        _texture = texture;
+
+    /**
+     * Sets the mission site's associated city, if any.
+     * @param city String ID for the city, "" if none.
+     */
+    internal void setCity(string city) =>
+	    _city = city;
+
+    /**
+     * Gets the mission site's battlescape status.
+     * @return Is the mission currently in battle?
+     */
+    internal bool isInBattlescape() =>
+	    _inBattlescape;
+
+    /**
+     * Returns the alien race currently residing in the mission site.
+     * @return Alien race.
+     */
+    internal string getAlienRace() =>
+	    _race;
 }

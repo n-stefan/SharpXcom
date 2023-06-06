@@ -217,4 +217,85 @@ internal class RuleCraft : IListOrder, IRule
      */
     internal string getType() =>
 	    _type;
+
+    /**
+     * Gets the craft's radar range
+     * for detecting UFOs.
+     * @return The range in nautical miles.
+     */
+    internal int getRadarRange() =>
+	    _radarRange;
+
+    /// Gets the craft's radar chance.
+    internal int getRadarChance() =>
+        _radarChance;
+
+    /**
+     * Gets how much fuel is added to the
+     * craft while refuelling.
+     * @return The amount of fuel.
+     */
+    internal int getRefuelRate() =>
+	    _refuelRate;
+
+    /**
+     * Gets the craft's sight range
+     * for detecting bases.
+     * @return The range in nautical miles.
+     */
+    internal int getSightRange() =>
+	    _sightRange;
+
+    /**
+     * Gets the maximum number of soldiers that
+     * the craft can carry.
+     * @return The soldier capacity.
+     */
+    internal int getSoldiers() =>
+	    _soldiers;
+
+    /**
+     * Gets the number of points you lose
+     * when this craft is destroyed.
+     * @return The score in points.
+     */
+    internal int getScore() =>
+	    _score;
+
+    /**
+     * If the craft is underwater, it can only dogfight over polygons.
+     * TODO: Replace this with its own flag.
+     * @return underwater or not
+     */
+    internal bool isWaterOnly() =>
+	    _maxAltitude > -1;
+
+    /**
+     * Gets the maximum damage (damage the craft can take)
+     * of the craft.
+     * @return The maximum damage.
+     */
+    internal int getMaxDamage() =>
+	    _damageMax;
+
+    /**
+     * Gets the maximum altitude this craft can dogfight to.
+     * @return max altitude (0-4).
+     */
+    internal int getMaxAltitude() =>
+	    _maxAltitude;
+
+    /**
+     * Gets the deployment layout for this craft.
+     * @return The deployment layout.
+     */
+    internal List<List<int>> getDeployment() =>
+	    _deployment;
+
+    /**
+     * Gets the terrain data needed to draw the Craft in the battlescape.
+     * @return The terrain data.
+     */
+    internal RuleTerrain getBattlescapeTerrainData() =>
+        _battlescapeTerrainData;
 }

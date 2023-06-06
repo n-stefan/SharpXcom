@@ -112,4 +112,23 @@ internal class BattlescapeButton : InteractiveSurface
         // Unlock the surface
         _altSurface.unlock();
     }
+
+    /**
+     * checks TFTD mode.
+     * @return TFTD mode.
+     */
+    internal bool isTFTDMode() =>
+	    _tftdMode;
+
+    /**
+     * Invert a button explicitly either ON or OFF and keep track of the state using our internal variables.
+     * @param press Set this button as pressed.
+     */
+    internal void toggle(bool press)
+    {
+        if (_tftdMode || _toggleMode == InversionType.INVERT_TOGGLE || _inverted)
+        {
+            _inverted = press;
+        }
+    }
 }

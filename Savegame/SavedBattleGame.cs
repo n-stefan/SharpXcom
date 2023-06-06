@@ -61,7 +61,7 @@ internal class SavedBattleGame
     /**
      * Initializes a brand new battlescape saved game.
      */
-    SavedBattleGame()
+    internal SavedBattleGame()
     {
         _battleState = null;
         _mapsize_x = 0;
@@ -139,7 +139,7 @@ internal class SavedBattleGame
      * @param y Pointer to the Y coordinate.
      * @param z Pointer to the Z coordinate.
      */
-    internal void getTileCoords(int index, ref int x, ref int y, ref int z)
+    internal void getTileCoords(int index, out int x, out int y, out int z)
     {
 	    z = index / (_mapsize_y * _mapsize_x);
 	    y = (index % (_mapsize_y * _mapsize_x)) / _mapsize_x;
@@ -284,16 +284,16 @@ internal class SavedBattleGame
                 {
                     case 5:
                         result += 25;
-                        break;
+                        goto case 4;
                     case 4:
                         result += 10;
-                        break;
+                        goto case 3;
                     case 3:
                         result += 5;
-                        break;
+                        goto case 2;
                     case 2:
                         result += 10;
-                        break;
+                        goto default;
                     default:
                         break;
                 }
@@ -305,16 +305,16 @@ internal class SavedBattleGame
             {
                 case 5:
                     result += 25;
-                    break;
+                    goto case 4;
                 case 4:
                     result += 20;
-                    break;
+                    goto case 3;
                 case 3:
                     result += 10;
-                    break;
+                    goto case 2;
                 case 2:
                     result += 20;
-                    break;
+                    goto default;
                 default:
                     break;
             }
@@ -414,7 +414,7 @@ internal class SavedBattleGame
      * Removes an item from the game. Eg. when ammo item is depleted.
      * @param item The Item to remove.
      */
-    void removeItem(BattleItem item)
+    internal void removeItem(BattleItem item)
     {
         // only delete once
         foreach (var it in _deleted)
@@ -632,7 +632,7 @@ internal class SavedBattleGame
 
         for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
         {
-            for (int part = (int)TilePart.O_FLOOR; part <= (int)TilePart.O_OBJECT; part++)
+            for (var part = TilePart.O_FLOOR; part <= TilePart.O_OBJECT; part++)
             {
                 TilePart tp = (TilePart)part;
                 _tiles[i].getMapData(out mdID, out mdsID, tp);
@@ -654,7 +654,7 @@ internal class SavedBattleGame
      * Initializes the map utilities.
      * @param mod Pointer to mod.
      */
-    void initUtilities(Mod.Mod mod)
+    internal void initUtilities(Mod.Mod mod)
     {
         _pathfinding = new Pathfinding(this);
         _tileEngine = new TileEngine(this, mod.getVoxelData());
@@ -666,4 +666,507 @@ internal class SavedBattleGame
      */
     internal int getGlobalShade() =>
 	    _globalShade;
+
+    /**
+     * Sets the mission type.
+     * @param missionType The mission type.
+     */
+    internal void setMissionType(string missionType) =>
+	    _missionType = missionType;
+
+    /**
+     * Sets the turn limit for this mission.
+     * @param limit the turn limit.
+     */
+    internal void setTurnLimit(int limit) =>
+        _turnLimit = limit;
+
+    /**
+     * Sets the action type to occur when the timer runs out.
+     * @param trigger the action type to perform.
+     */
+    internal void setChronoTrigger(ChronoTrigger trigger) =>
+        _chronoTrigger = trigger;
+
+    /**
+     * Sets the turn at which the players become exposed to the AI.
+     * @param turn the turn to start cheating.
+     */
+    internal void setCheatTurn(int turn) =>
+        _cheatTurn = turn;
+
+    /**
+     * Sets the global shade.
+     * @param shade The global shade.
+     */
+    internal void setGlobalShade(int shade) =>
+        _globalShade = shade;
+
+    /**
+     * set the depth of the battlescape game.
+     * @param depth the intended depth 0-3.
+     */
+    internal void setDepth(int depth) =>
+        _depth = depth;
+
+    /**
+     * Set the music track for this battle.
+     * @param track the track name.
+     */
+    internal void setMusic(string track) =>
+	    _music = track;
+
+    /**
+     * Finds a fitting node where a unit can spawn.
+     * @param nodeRank Rank of the node (this is not the rank of the alien!).
+     * @param unit Pointer to the unit (to get its position).
+     * @return Pointer to the chosen node.
+     */
+    internal Node getSpawnNode(int nodeRank, BattleUnit unit)
+    {
+        int highestPriority = -1;
+        var compliantNodes = new List<Node>();
+
+        foreach (var i in getNodes())
+        {
+            if (i.isDummy())
+            {
+                continue;
+            }
+            if (i.getRank() == (NodeRank)nodeRank                     // ranks must match
+                && (!((i.getType() & Node.TYPE_SMALL) == Node.TYPE_SMALL)
+                    || unit.getArmor().getSize() == 1)                // the small unit bit is not set or the unit is small
+                && (!((i.getType() & Node.TYPE_FLYING) == Node.TYPE_FLYING)
+                    || unit.getMovementType() == MovementType.MT_FLY) // the flying unit bit is not set or the unit can fly
+                && i.getPriority() > 0                                // priority 0 is no spawnplace
+                && setUnitPosition(unit, i.getPosition(), true))      // check if not already occupied
+            {
+                if (i.getPriority() > highestPriority)
+                {
+                    highestPriority = i.getPriority();
+                    compliantNodes.Clear(); // drop the last nodes, as we found a higher priority now
+                }
+                if (i.getPriority() == highestPriority)
+                {
+                    compliantNodes.Add(i);
+                }
+            }
+        }
+
+        if (!compliantNodes.Any()) return null;
+
+        int n = RNG.generate(0, compliantNodes.Count - 1);
+
+        return compliantNodes[n];
+    }
+
+    /**
+     * Places a unit on or near a position.
+     * @param unit The unit to place.
+     * @param entryPoint The position around which to attempt to place the unit.
+     * @return True if the unit was successfully placed.
+     */
+    internal bool placeUnitNearPosition(BattleUnit unit, Position entryPoint, bool largeFriend)
+    {
+	    if (setUnitPosition(unit, entryPoint))
+	    {
+		    return true;
+	    }
+
+	    int me = 0 - unit.getArmor().getSize();
+	    int you = largeFriend ? 2 : 1;
+	    int[] xArray = {0, you, you, you, 0, me, me, me};
+	    int[] yArray = {me, me, 0, you, you, you, 0, me};
+	    for (int dir = 0; dir <= 7; ++dir)
+	    {
+		    Position offset = new Position(xArray[dir], yArray[dir], 0);
+		    Tile t = getTile(entryPoint + offset);
+		    if (t != null && !getPathfinding().isBlocked(getTile(entryPoint + (offset / 2)), t, dir, null)
+			    && setUnitPosition(unit, entryPoint + offset))
+		    {
+			    return true;
+		    }
+	    }
+
+	    if (unit.getMovementType() == MovementType.MT_FLY)
+	    {
+		    Tile t = getTile(entryPoint + new Position(0, 0, 1));
+		    if (t != null && t.hasNoFloor(getTile(entryPoint)) && setUnitPosition(unit, entryPoint + new Position(0, 0, 1)))
+		    {
+			    return true;
+		    }
+	    }
+	    return false;
+    }
+
+    /**
+     * Places units on the map. Handles large units that are placed on multiple tiles.
+     * @param bu The unit to be placed.
+     * @param position The position to place the unit.
+     * @param testOnly If true then just checks if the unit can be placed at the position.
+     * @return True if the unit could be successfully placed.
+     */
+    internal bool setUnitPosition(BattleUnit bu, Position position, bool testOnly = false)
+    {
+        int size = bu.getArmor().getSize() - 1;
+        var zOffset = new Position(0,0,0);
+        // first check if the tiles are occupied
+        for (int x = size; x >= 0; x--)
+        {
+            for (int y = size; y >= 0; y--)
+            {
+                Tile t = getTile(position + new Position(x, y, 0) + zOffset);
+                Tile tb = getTile(position + new Position(x, y, -1) + zOffset);
+                if (t == null ||
+                    (t.getUnit() != null && t.getUnit() != bu) ||
+                    t.getTUCost((int)TilePart.O_OBJECT, bu.getMovementType()) == 255 ||
+                    (t.hasNoFloor(tb) && bu.getMovementType() != MovementType.MT_FLY) ||
+                    (t.getMapData(TilePart.O_OBJECT) != null && t.getMapData(TilePart.O_OBJECT).getBigWall() != 0 && t.getMapData(TilePart.O_OBJECT).getBigWall() <= 3))
+                {
+                    return false;
+                }
+                // move the unit up to the next level (desert and seabed terrains)
+                if (t != null && t.getTerrainLevel() == -24)
+                {
+                    zOffset.z += 1;
+                    x = size;
+                    y = size + 1;
+                }
+            }
+        }
+
+        if (size > 0)
+        {
+            getPathfinding().setUnit(bu);
+            for (int dir = 2; dir <= 4; ++dir)
+            {
+                if (getPathfinding().isBlocked(getTile(position + zOffset), null, dir, null))
+                    return false;
+            }
+        }
+
+        if (testOnly) return true;
+
+        for (int x = size; x >= 0; x--)
+        {
+            for (int y = size; y >= 0; y--)
+            {
+                if (x == 0 && y == 0)
+                {
+                    bu.setPosition(position + zOffset);
+                }
+                getTile(position + new Position(x, y, 0) + zOffset).setUnit(bu, getTile(position + new Position(x, y, -1) + zOffset));
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Set the objective type for the current battle.
+     * @param the objective type.
+     */
+    internal void setObjectiveType(int type) =>
+        _objectiveType = type;
+
+    /**
+     * increments the number of objectives to be destroyed.
+     */
+    internal void setObjectiveCount(int counter)
+    {
+        _objectivesNeeded = counter;
+        _objectivesDestroyed = 0;
+    }
+
+    /**
+     * Sets whether the objective is destroyed.
+     */
+    internal void addDestroyedObjective()
+    {
+        if (!allObjectivesDestroyed())
+        {
+            _objectivesDestroyed++;
+            if (allObjectivesDestroyed())
+            {
+                if (getObjectiveType() == SpecialTileType.MUST_DESTROY)
+                {
+                    _battleState.getBattleGame().autoEndBattle();
+                }
+                else
+                {
+                    _battleState.getBattleGame().missionComplete();
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns whether the objectives are destroyed.
+     * @return True if the objectives are destroyed.
+     */
+    internal bool allObjectivesDestroyed() =>
+	    (_objectivesNeeded > 0 && _objectivesDestroyed == _objectivesNeeded);
+
+    /**
+     * Get the objective type for the current battle.
+     * @return the objective type.
+     */
+    internal SpecialTileType getObjectiveType() =>
+	    (SpecialTileType)(_objectiveType);
+
+    /**
+     * Sets the currently selected unit.
+     * @param unit Pointer to BattleUnit.
+     */
+    internal void setSelectedUnit(BattleUnit unit) =>
+        _selectedUnit = unit;
+
+    /**
+     * Return a reference to the base module destruction map
+     * this map contains information on how many destructible base modules
+     * remain at any given grid reference in the basescape, using [x][y] format.
+     * -1 for "no items" 0 for "destroyed" and any actual number represents how many left.
+     * @return the base module damage map.
+     */
+    internal List<List<KeyValuePair<int, int>>> getModuleMap() =>
+	    _baseModules;
+
+    /**
+     * Gets the maximum number of turns we have before this mission ends.
+     * @return the turn limit.
+     */
+    internal int getTurnLimit() =>
+	    _turnLimit;
+
+    /**
+     * Gets the action type to perform when the timer expires.
+     * @return the action type to perform.
+     */
+    internal ChronoTrigger getChronoTrigger() =>
+	    _chronoTrigger;
+
+    /**
+     * Sets whether the mission was aborted or successful.
+     * @param flag True, if the mission was aborted, or false, if the mission was successful.
+     */
+    internal void setAborted(bool flag) =>
+        _aborted = flag;
+
+    /**
+     * get the ambient battlescape sound effect.
+     * @return the intended sound.
+     */
+    internal int getAmbientSound() =>
+	    _ambience;
+
+    /**
+     * Gets the current debug mode.
+     * @return Debug mode.
+     */
+    internal bool getDebugMode() =>
+	    _debugMode;
+
+    /**
+     * set the ambient battlescape sound effect.
+     * @param sound the intended sound.
+     */
+    internal void setAmbientSound(int sound) =>
+        _ambience = sound;
+
+    /**
+     * Sets the ambient sound effect volume.
+     * @param volume the ambient volume.
+     */
+    internal void setAmbientVolume(double volume) =>
+        _ambientVolume = volume;
+
+    /**
+     * Gets the array of mapblocks.
+     * @return Pointer to the array of mapblocks.
+     */
+    internal List<MapDataSet> getMapDataSets() =>
+        _mapDataSets;
+
+    /**
+     * Initializes the array of tiles and creates a pathfinding object.
+     * @param mapsize_x
+     * @param mapsize_y
+     * @param mapsize_z
+     */
+    internal void initMap(int mapsize_x, int mapsize_y, int mapsize_z, bool resetTerrain)
+    {
+        // Clear old map data
+        if (_mapsize_z * _mapsize_y * _mapsize_x > 0)
+        {
+            Array.Clear(_tiles);
+        }
+
+        _nodes.Clear();
+
+        if (resetTerrain)
+        {
+            _mapDataSets.Clear();
+        }
+
+        // Create tile objects
+        _mapsize_x = mapsize_x;
+        _mapsize_y = mapsize_y;
+        _mapsize_z = mapsize_z;
+        _tiles = new Tile[_mapsize_z * _mapsize_y * _mapsize_x];
+        for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
+        {
+            var pos = new Position();
+            getTileCoords(i, out pos.x, out pos.y, out pos.z);
+            _tiles[i] = new Tile(pos);
+        }
+    }
+
+    /**
+     * Gives access to the "storage space" vector, for distribution of items in base defense missions.
+     * @return Vector of storage positions.
+     */
+    internal List<Position> getStorageSpace() =>
+	    _storageSpace;
+
+    /**
+     * calculate the number of map modules remaining by counting the map objects
+     * on the top floor who have the baseModule flag set. we store this data in the grid
+     * as outlined in the comments above, in pairs representing initial and current values.
+     */
+    internal void calculateModuleMap()
+    {
+        for (var i = 0; i < _mapsize_x / 10; i++)
+        {
+            var t1 = new List<KeyValuePair<int, int>>();
+            for (var j = 0; j < _mapsize_y / 10; j++) t1.Add(KeyValuePair.Create(-1, -1));
+            _baseModules.Add(t1);
+        }
+
+        for (int x = 0; x != _mapsize_x; ++x)
+        {
+            for (int y = 0; y != _mapsize_y; ++y)
+            {
+                for (int z = 0; z != _mapsize_z; ++z)
+                {
+                    Tile tile = getTile(new Position(x, y, z));
+                    if (tile != null && tile.getMapData(TilePart.O_OBJECT) != null && tile.getMapData(TilePart.O_OBJECT).isBaseModule())
+                    {
+                        var key = _baseModules[x / 10][y / 10].Key;
+                        _baseModules[x / 10][y / 10] = KeyValuePair.Create(key + key > 0 ? 1 : 2, key);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns whether the mission was aborted or successful.
+     * @return True, if the mission was aborted, or false, if the mission was successful.
+     */
+    internal bool isAborted() =>
+	    _aborted;
+
+    /**
+     * get the list of items we're guaranteed to take with us (ie: items that were in the skyranger)
+     * @return the list of items we're guaranteed.
+     */
+    internal List<BattleItem> getGuaranteedRecoveredItems() =>
+        _recoverGuaranteed;
+
+    /**
+     * get the list of items we're not guaranteed to take with us (ie: items that were NOT in the skyranger)
+     * @return the list of items we might get.
+     */
+    internal List<BattleItem> getConditionalRecoveredItems() =>
+        _recoverConditional;
+
+    /**
+     * Resets the turn counter.
+     */
+    internal void resetTurnCounter()
+    {
+        _turn = 1;
+        _cheating = false;
+        _side = UnitFaction.FACTION_PLAYER;
+        _beforeGame = true;
+    }
+
+    /**
+     * Selects the next player unit.
+     * @param checkReselect Whether to check if we should reselect a unit.
+     * @param setReselect Don't reselect a unit.
+     * @param checkInventory Whether to check if the unit has an inventory.
+     * @return Pointer to new selected BattleUnit, NULL if none can be selected.
+     * @sa selectPlayerUnit
+     */
+    internal BattleUnit selectNextPlayerUnit(bool checkReselect = false, bool setReselect = false, bool checkInventory = false) =>
+        selectPlayerUnit(+1, checkReselect, setReselect, checkInventory);
+
+    /**
+     * Selects the next player unit in a certain direction.
+     * @param dir Direction to select, eg. -1 for previous and 1 for next.
+     * @param checkReselect Whether to check if we should reselect a unit.
+     * @param setReselect Don't reselect a unit.
+     * @param checkInventory Whether to check if the unit has an inventory.
+     * @return Pointer to new selected BattleUnit, NULL if none can be selected.
+     */
+    BattleUnit selectPlayerUnit(int dir, bool checkReselect, bool setReselect, bool checkInventory)
+    {
+        if (_selectedUnit != null && setReselect)
+        {
+            _selectedUnit.dontReselect();
+        }
+        if (!_units.Any())
+        {
+            return null;
+        }
+
+        var begin = 0;
+        var end = 0;
+        if (dir > 0)
+        {
+            begin = 0;
+            end = _units.Count - 1;
+        }
+        else if (dir < 0)
+        {
+            begin = _units.Count - 1;
+            end = 0;
+        }
+
+        int i = _units.IndexOf(_selectedUnit);
+        do
+        {
+            // no unit selected
+            if (i == -1)
+            {
+                i = begin;
+                continue;
+            }
+            if (i != end)
+            {
+                i += dir;
+            }
+            // reached the end, wrap-around
+            else
+            {
+                i = begin;
+            }
+            // back to where we started... no more units found
+            if (_units[i] == _selectedUnit)
+            {
+                if (checkReselect && !_selectedUnit.reselectAllowed())
+                    _selectedUnit = null;
+                return _selectedUnit;
+            }
+            else if (_selectedUnit == null && i == begin)
+            {
+                return _selectedUnit;
+            }
+        }
+        while (!_units[i].isSelectable(_side, checkReselect, checkInventory));
+
+        _selectedUnit = _units[i];
+        return _selectedUnit;
+    }
 }

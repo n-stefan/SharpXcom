@@ -105,4 +105,139 @@ internal class RuleTerrain : IRule
 		_ambientVolume = double.Parse(node["ambientVolume"].ToString());
 		_script = node["script"].ToString();
 	}
+
+	/**
+	 * Gets The generation script name.
+	 * @return The name of the script to use.
+	 */
+	internal string getScript() =>
+		_script;
+
+	/**
+	 * Gets the max depth.
+	 * @return max depth.
+	 */
+	internal int getMaxDepth() =>
+		_maxDepth;
+
+	/**
+	 * Gets the min depth.
+	 * @return The min depth.
+	 */
+	internal int getMinDepth() =>
+		_minDepth;
+
+	/**
+	 * Gets The list of musics this terrain has to choose from.
+	 * @return The list of track names.
+	 */
+	internal List<string> getMusic() =>
+		_music;
+
+	/**
+	 * Gets the list of civilian types to use on this terrain (default MALE_CIVILIAN and FEMALE_CIVILIAN)
+	 * @return list of civilian types to use.
+	 */
+	internal List<string> getCivilianTypes() =>
+		_civilianTypes;
+
+	/**
+	 * Gets The ambient sound effect.
+	 * @return The ambient sound effect.
+	 */
+	internal int getAmbience() =>
+		_ambience;
+
+	internal double getAmbientVolume() =>
+		_ambientVolume;
+
+    /**
+     * Gets the array of mapdatafiles.
+     * @return Pointer to the array of mapdatafiles.
+     */
+    internal List<MapDataSet> getMapDataSets() =>
+        _mapDataSets;
+
+    /**
+     * Gets a random mapblock within the given constraints.
+     * @param maxsize The maximum size of the mapblock (10 or 20 or 999 - don't care).
+     * @param type Whether this must be a block of a certain type.
+     * @param force Whether to enforce the max size.
+     * @return Pointer to the mapblock.
+     */
+    internal MapBlock getRandomMapBlock(int maxSizeX, int maxSizeY, int group, bool force = true)
+    {
+        var compliantMapBlocks = new List<MapBlock>();
+
+        foreach (var i in _mapBlocks)
+        {
+            if ((i.getSizeX() == maxSizeX ||
+                (!force && i.getSizeX() < maxSizeX)) &&
+                (i.getSizeY() == maxSizeY ||
+                (!force && i.getSizeY() < maxSizeY)) &&
+                i.isInGroup(group))
+            {
+                compliantMapBlocks.Add(i);
+            }
+        }
+
+        if (!compliantMapBlocks.Any()) return null;
+
+        int n = RNG.generate(0, compliantMapBlocks.Count - 1);
+
+        return compliantMapBlocks[n];
+    }
+
+    /**
+     * Gets the array of mapblocks.
+     * @return Pointer to the array of mapblocks.
+     */
+    internal List<MapBlock> getMapBlocks() =>
+        _mapBlocks;
+
+	/**
+	 * Gets a mapdata object.
+	 * @param id The id in the terrain.
+	 * @param mapDataSetID The id of the map data set.
+	 * @return Pointer to MapData object.
+	 */
+	internal MapData getMapData(ref uint id, ref int mapDataSetID)
+	{
+		MapDataSet mdf = null;
+		int i;
+		for (i = 0; i < _mapDataSets.Count; ++i)
+		{
+			mdf = _mapDataSets[i];
+			if (id < mdf.getSize())
+			{
+				break;
+			}
+			id -= mdf.getSize();
+			(mapDataSetID)++;
+		}
+		if (i >= _mapDataSets.Count)
+		{
+			// oops! someone at microprose made an error in the map!
+			// set this broken tile reference to BLANKS 0.
+			mdf = _mapDataSets.First();
+			id = 0;
+			mapDataSetID = 0;
+		}
+		return mdf.getObject(id);
+	}
+
+	/**
+	 * Gets a mapblock with a given name.
+	 * @param name The name of the mapblock.
+	 * @return Pointer to mapblock.
+	 */
+	internal MapBlock getMapBlock(string name)
+	{
+		foreach (var i in _mapBlocks)
+		{
+			if (i.getName() == name)
+				return i;
+		}
+		return null;
+	}
 }

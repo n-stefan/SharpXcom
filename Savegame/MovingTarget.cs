@@ -26,10 +26,10 @@ namespace SharpXcom.Savegame;
 internal class MovingTarget : Target
 {
     protected Target _dest;
-    double _speedLon, _speedLat, _speedRadian;
-    double _meetPointLon, _meetPointLat;
-    int _speed;
-    bool _meetCalculated;
+    protected double _speedLon, _speedLat, _speedRadian;
+    protected double _meetPointLon, _meetPointLat;
+    protected int _speed;
+    protected bool _meetCalculated;
 
     /**
      * Initializes a moving target with blank coordinates.
@@ -141,14 +141,14 @@ internal class MovingTarget : Target
      * Forces the meeting point to be recalculated in the event
      * that the target has changed direction.
      */
-    void resetMeetPoint() =>
+    protected void resetMeetPoint() =>
         _meetCalculated = false;
 
     /**
      * Returns the destination the moving target is heading to.
      * @return Pointer to destination.
      */
-    Target getDestination() =>
+    internal Target getDestination() =>
 	    _dest;
 
     /**
@@ -162,7 +162,7 @@ internal class MovingTarget : Target
      * Checks if the moving target has reached its destination.
      * @return True if it has, False otherwise.
      */
-    bool reachedDestination()
+    internal bool reachedDestination()
     {
 	    if (_dest == null)
 	    {
@@ -271,5 +271,35 @@ internal class MovingTarget : Target
 	    _speedLat = double.Parse(node["speedLat"].ToString());
 	    _speedRadian = double.Parse(node["speedRadian"].ToString());
 	    _speed = int.Parse(node["speed"].ToString());
+    }
+
+    /**
+     * Executes a movement cycle for the moving target.
+     */
+    protected void move()
+    {
+        calculateSpeed();
+        if (_dest != null)
+        {
+            if (getDistance(_meetPointLon, _meetPointLat) > _speedRadian)
+            {
+                setLongitude(_lon + _speedLon);
+                setLatitude(_lat + _speedLat);
+            }
+            else
+            {
+                if (getDistance(_dest) > _speedRadian)
+                {
+                    setLongitude(_meetPointLon);
+                    setLatitude(_meetPointLat);
+                }
+                else
+                {
+                    setLongitude(_dest.getLongitude());
+                    setLatitude(_dest.getLatitude());
+                }
+                resetMeetPoint();
+            }
+        }
     }
 }

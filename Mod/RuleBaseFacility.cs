@@ -171,4 +171,59 @@ internal class RuleBaseFacility : IListOrder, IRule
      */
     internal int getStorage() =>
 	    _storage;
+
+    /**
+     * Checks if this facility has hyperwave detection
+     * capabilities. This allows it to get extra details about UFOs.
+     * @return True if it has hyperwave detection.
+     */
+    internal bool isHyperwave() =>
+	    _hyper;
+
+    /**
+     * Gets the radar range this facility provides for the
+     * detection of UFOs.
+     * @return The range in nautical miles.
+     */
+    internal int getRadarRange() =>
+	    _radarRange;
+
+    /**
+     * Gets the chance of UFOs that come within the facility's
+     * radar range being detected.
+     * @return The chance as a percentage.
+     */
+    internal int getRadarChance() =>
+	    _radarChance;
+
+    /**
+     * Gets the size of the facility on the base grid.
+     * @return The length in grid squares.
+     */
+    internal int getSize() =>
+	    _size;
+
+    /**
+     * Checks if this facility has a mind shield,
+     * which covers your base from alien detection.
+     * @return True if it has a mind shield.
+     */
+    internal bool isMindShield() =>
+	    _mind;
+
+    /**
+     * Gets the defense value of this facility's weaponry
+     * against UFO invasions on the base.
+     * @return The defense value.
+     */
+    internal int getDefenseValue() =>
+	    _defense;
+
+    /**
+     * Gets the battlescape map block name for this facility
+     * to construct the base defense mission map.
+     * @return The map name.
+     */
+    internal string getMapName() =>
+	    _mapName;
 }

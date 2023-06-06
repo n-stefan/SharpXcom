@@ -224,4 +224,137 @@ internal class Unit : IRule
      */
     internal string getArmor() =>
 	    _armor;
+
+    /**
+     * What weapons does this unit have built in?
+     * this is a vector of strings representing any
+     * weapons that may be inherent to this creature.
+     * note: unlike "livingWeapon" this is used in ADDITION to
+     * any loadout or living weapon item that may be defined.
+     * @return list of weapons that are integral to this unit.
+     */
+    internal List<List<string>> getBuiltInWeapons() =>
+	    _builtInWeapons;
+
+    /**
+     * Returns the language string that names
+     * this unit. Each unit type has a unique name.
+     * @return The unit's name.
+     */
+    internal string getType() =>
+	    _type;
+
+    /**
+     * Returns the unit's stats data object.
+     * @return The unit's stats.
+     */
+    internal UnitStats getStats() =>
+        _stats;
+
+    /**
+     * Returns the unit's height at standing.
+     * @return The unit's height.
+     */
+    internal int getStandHeight() =>
+	    _standHeight;
+
+    /**
+     * Returns the unit's height at kneeling.
+     * @return The unit's kneeling height.
+     */
+    internal int getKneelHeight() =>
+	    _kneelHeight;
+
+    /**
+     * Returns the unit's floating elevation.
+     * @return The unit's floating height.
+     */
+    internal int getFloatHeight() =>
+	    _floatHeight;
+
+    /**
+    * Get the unit's death sounds.
+    * @return List of sound IDs.
+    */
+    internal List<int> getDeathSounds() =>
+	    _deathSound;
+
+    /**
+     * Gets the unit's war cry.
+     * @return The id of the unit's aggro sound.
+     */
+    internal int getAggroSound() =>
+	    _aggroSound;
+
+    /**
+     * Gets the unit's move sound.
+     * @return The id of the unit's move sound.
+     */
+    internal int getMoveSound() =>
+	    _moveSound;
+
+    /**
+     * Gets the intelligence. This is the number of turns the AI remembers your troop positions.
+     * @return The unit's intelligence.
+     */
+    internal int getIntelligence() =>
+	    _intelligence;
+
+    /**
+     * Gets the aggression. Determines the chance of revenge and taking cover.
+     * @return The unit's aggression.
+     */
+    internal int getAggression() =>
+	    _aggression;
+
+    /**
+     * Gets the unit that is spawned when this one dies.
+     * @return The unit's spawn unit.
+     */
+    internal string getSpawnUnit() =>
+	    _spawnUnit;
+
+    /**
+     * Gets the unit's value - for scoring.
+     * @return The unit's value.
+     */
+    internal int getValue() =>
+	    _value;
+
+    /**
+    * Gets whether the alien can be captured alive.
+    * @return a value determining whether the alien can be captured alive.
+    */
+    internal bool getCapturable() =>
+	    _capturable;
+
+    /**
+     * What is this unit's built in melee weapon (if any).
+     * @return the name of the weapon.
+     */
+    internal string getMeleeWeapon() =>
+	    _meleeWeapon;
+
+    /**
+    * What is this unit's built in psi weapon (if any).
+    * @return the name of the weapon.
+    */
+    internal string getPsiWeapon() =>
+	    _psiWeapon;
+
+    /**
+     * Checks if this unit is a living weapon.
+     * a living weapon ignores any loadout that may be available to
+     * its rank and uses the one associated with its race.
+     * @return True if this unit is a living weapon.
+     */
+    internal bool isLivingWeapon() =>
+	    _livingWeapon;
+
+    /**
+     * How much energy does this unit recover per turn?
+     * @return energy recovery amount.
+     */
+    internal int getEnergyRecovery() =>
+	    _energyRecovery;
 }

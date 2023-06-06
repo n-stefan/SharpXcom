@@ -1,6 +1,6 @@
 ﻿
 //TODO:
-// virtual/override methods
+// protected virtual/override methods
 // yaml load defaults
 
 /*

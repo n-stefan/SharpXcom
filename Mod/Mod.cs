@@ -132,9 +132,9 @@ struct HairXCOM1 : IColorFunc<byte, byte, int, int, int>
 
 	public void func(ref byte src, byte cutoff, int _1, int _2, int _3)
     {
-        if (src > cutoff && src <= Face + ShadeMax)
+        if (src > cutoff && src <= Face + Mod.ShadeMax)
 		{
-			src = (byte)(Hair + (src & ShadeMax) - 6); //make hair color like male in xcom_0.pck
+			src = (byte)(Hair + (src & Mod.ShadeMax) - 6); //make hair color like male in xcom_0.pck
 		}
 	}
 };
@@ -149,9 +149,9 @@ struct HairXCOM2 : IColorFunc<byte, int, int, int, int>
 
     public void func(ref byte src, int _1, int _2, int _3, int _4)
     {
-        if (src >= WomanHairColor && src <= WomanHairColor + ShadeMax)
+        if (src >= WomanHairColor && src <= WomanHairColor + Mod.ShadeMax)
         {
-            src = (byte)(ManHairColor + (src & ShadeMax));
+            src = (byte)(ManHairColor + (src & Mod.ShadeMax));
         }
     }
 };
@@ -166,9 +166,9 @@ struct FaceXCOM2 : IColorFunc<byte, int, int, int, int>
 
     public void func(ref byte src, int _1, int _2, int _3, int _4)
     {
-        if (src >= FaceColor && src <= FaceColor + ShadeMax)
+        if (src >= FaceColor && src <= FaceColor + Mod.ShadeMax)
         {
-            src = (byte)(PinkColor + (src & ShadeMax));
+            src = (byte)(PinkColor + (src & Mod.ShadeMax));
         }
     }
 };
@@ -198,9 +198,9 @@ struct BodyXCOM2 : IColorFunc<byte, int, int, int, int>
         {
             src = IonArmorColor + 2;
         }
-        else if (src >= HairXCOM2.WomanHairColor && src <= HairXCOM2.WomanHairColor + ShadeMax)
+        else if (src >= HairXCOM2.WomanHairColor && src <= HairXCOM2.WomanHairColor + Mod.ShadeMax)
         {
-            src = (byte)(IonArmorColor + (src & ShadeMax));
+            src = (byte)(IonArmorColor + (src & Mod.ShadeMax));
         }
     }
 };
@@ -216,11 +216,11 @@ struct FallXCOM2 : IColorFunc<byte, int, int, int, int>
     {
         if (src == RoguePixel)
         {
-            src = (byte)(FaceXCOM2.PinkColor + (src & ShadeMax) + 2);
+            src = (byte)(FaceXCOM2.PinkColor + (src & Mod.ShadeMax) + 2);
         }
-        else if (src >= BodyXCOM2.IonArmorColor && src <= BodyXCOM2.IonArmorColor + ShadeMax)
+        else if (src >= BodyXCOM2.IonArmorColor && src <= BodyXCOM2.IonArmorColor + Mod.ShadeMax)
         {
-            src = (byte)(FaceXCOM2.PinkColor + (src & ShadeMax));
+            src = (byte)(FaceXCOM2.PinkColor + (src & Mod.ShadeMax));
         }
     }
 };
@@ -261,7 +261,7 @@ internal class Mod
     internal static int BATTLESCAPE_CURSOR;
     static int DOOR_OPEN;
     static int SLIDING_DOOR_OPEN;
-    static int SLIDING_DOOR_CLOSE;
+    internal static int SLIDING_DOOR_CLOSE;
     static int SMALL_EXPLOSION;
     static int LARGE_EXPLOSION;
     static int EXPLOSION_OFFSET;
@@ -279,10 +279,10 @@ internal class Mod
     static int UFO_EXPLODE;
     static int INTERCEPTOR_HIT;
     static int INTERCEPTOR_EXPLODE;
-    static int DAMAGE_RANGE;
-    static int EXPLOSIVE_DAMAGE_RANGE;
+    internal static int DAMAGE_RANGE;
+    internal static int EXPLOSIVE_DAMAGE_RANGE;
     static int[] WINDOW_POPUP = new int[3];
-    static int[] FIRE_DAMAGE_RANGE = new int[2];
+    internal static int[] FIRE_DAMAGE_RANGE = new int[2];
     internal static int[] DIFFICULTY_COEFFICIENT = new int[5];
     static string DEBRIEF_MUSIC_GOOD;
     static string DEBRIEF_MUSIC_BAD;
@@ -898,7 +898,7 @@ internal class Mod
         // special cases
         _craftWeaponsIndex.Sort(new compareRuleCraftWeapon(this));
         _armorsIndex.Sort(new compareRuleArmor(this));
-        _ufopaediaSections[UFOPAEDIA_NOT_AVAILABLE] = 0;
+        _ufopaediaSections[Ufopaedia.UFOPAEDIA_NOT_AVAILABLE] = 0;
         _ufopaediaIndex.Sort(new compareRuleArticleDefinition(this));
         _ufopaediaCatIndex.Sort(new compareSection(this));
     }
@@ -2254,7 +2254,7 @@ internal class Mod
 			    }
 			    _ufopaediaListOrder += 100;
 			    rule.load(ufopaedia, _ufopaediaListOrder);
-			    if (rule.section != UFOPAEDIA_NOT_AVAILABLE)
+			    if (rule.section != Ufopaedia.UFOPAEDIA_NOT_AVAILABLE)
 			    {
 				    if (!_ufopaediaSections.ContainsKey(rule.section))
 				    {
@@ -2789,7 +2789,7 @@ internal class Mod
      * @param id Region type.
      * @return Rules for the region.
      */
-    internal RuleRegion getRegion(string id, bool error) =>
+    internal RuleRegion getRegion(string id, bool error = false) =>
 	    getRule(id, "Region", _regions, error);
 
     /**
@@ -2804,7 +2804,7 @@ internal class Mod
      * @param name Deployment name.
      * @return Rules for the deployment.
      */
-    internal AlienDeployment getDeployment(string name, bool error) =>
+    internal AlienDeployment getDeployment(string name, bool error = false) =>
 	    getRule(name, "Alien Deployment", _alienDeployments, error);
 
     /**
@@ -2812,7 +2812,7 @@ internal class Mod
      * @param id UFO type.
      * @return Rules for the UFO.
      */
-    internal RuleUfo getUfo(string id, bool error) =>
+    internal RuleUfo getUfo(string id, bool error = false) =>
 	    getRule(id, "UFO", _ufos, error);
 
     /**
@@ -2903,4 +2903,91 @@ internal class Mod
      */
     internal List<string> getManufactureList() =>
 	    _manufactureIndex;
+
+    /**
+     * Returns the list of all regions
+     * provided by the mod.
+     * @return List of regions.
+     */
+    internal List<string> getRegionsList() =>
+	    _regionsIndex;
+
+    /**
+     * Returns the info about a specific alien race.
+     * @param name Race name.
+     * @return Rules for the race.
+     */
+    internal AlienRace getAlienRace(string name, bool error = false) =>
+	    getRule(name, "Alien Race", _alienRaces, error);
+
+    /**
+     * Returns the rules for the specified terrain.
+     * @param name Terrain name.
+     * @return Rules for the terrain.
+     */
+    internal RuleTerrain getTerrain(string name, bool error) =>
+	    getRule(name, "Terrain", _terrains, error);
+
+    /**
+     * Returns the list of all terrains
+     * provided by the mod.
+     * @return List of terrains.
+     */
+    internal List<string> getTerrainList() =>
+	    _terrainIndex;
+
+    internal List<MapScript> getMapScript(string id) =>
+	    _mapScripts.TryGetValue(id, out List<MapScript> mapScript) ? mapScript : null;
+
+    /**
+     * Gets the name of the item to be used as alien fuel.
+     * @return the name of the fuel.
+     */
+    internal string getAlienFuelName() =>
+	    _alienFuel.Key;
+
+    /**
+     * Gets the alien item level table.
+     * @return A deep array containing the alien item levels.
+     */
+    internal List<List<int>> getAlienItemLevels() =>
+	    _alienItemLevels;
+
+    /**
+     * Returns a specific sound from either the land or underwater sound set.
+     * @param depth the depth of the battlescape.
+     * @param sound ID of the sound.
+     * @return Pointer to the sound.
+     */
+    internal Sound getSoundByDepth(uint depth, uint sound, bool error = true)
+    {
+	    if (depth == 0)
+		    return getSound("BATTLE.CAT", sound, error);
+	    else
+		    return getSound("BATTLE2.CAT", sound, error);
+    }
+
+    /**
+     * Returns the list of inventories.
+     * @return The list of inventories.
+     */
+    internal List<string> getInvsList() =>
+	    _invsIndex;
+
+    internal StatAdjustment getStatAdjustment(int difficulty)
+    {
+        if (difficulty >= 4)
+        {
+            return _statAdjustment[4];
+        }
+        return _statAdjustment[difficulty];
+    }
+
+    /**
+     * Enables non-vanilla difficulty features.
+     * Dehumanize yourself and face the Warboy.
+     * @return Is the player screwed?
+    */
+    internal bool isDemigod() =>
+	    _difficultyDemigod;
 }

@@ -77,4 +77,16 @@ internal class RNG
      */
     internal static ulong getSeed() =>
         x;
+
+    /**
+     * Generates a random decimal number within a certain range.
+     * @param min Minimum number.
+     * @param max Maximum number.
+     * @return Generated number.
+     */
+    internal static double generate(double min, double max)
+    {
+        double num = next();
+        return (num / ((double)ulong.MaxValue / (max - min)) + min);
+    }
 }

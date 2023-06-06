@@ -49,4 +49,12 @@ internal class AlienRace : IRule
 	    _id = node["id"].ToString();
         _members = ((YamlSequenceNode)node["members"]).Children.Select(x => x.ToString()).ToList();
     }
+
+    /**
+     * Gets a certain member of this alien race family.
+     * @param id The member's id.
+     * @return The member's name.
+     */
+    internal string getMember(int id) =>
+	    _members[id];
 }

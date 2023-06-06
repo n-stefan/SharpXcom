@@ -104,4 +104,15 @@ internal class Sound
 		    throw new Exception(err);
 	    }
     }
+
+    /**
+     * Stops the contained sound from looping.
+     */
+    internal void stopLoop()
+    {
+        if (!Options.mute)
+        {
+            Mix_HaltChannel(3);
+        }
+    }
 }

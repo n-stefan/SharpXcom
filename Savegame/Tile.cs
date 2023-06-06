@@ -66,7 +66,7 @@ internal class Tile
      * constructor
      * @param pos Position.
      */
-    Tile(Position pos)
+    internal Tile(Position pos)
     {
         _smoke = 0;
         _fire = 0;
@@ -414,5 +414,148 @@ internal class Tile
 	    boolFields |= (byte)(isUfoDoorOpen(TilePart.O_WESTWALL) ? 8 : 0); // west
 	    boolFields |= (byte)(isUfoDoorOpen(TilePart.O_NORTHWALL) ? 0x10 : 0); // north?
         serializeInt(ref buffer, serializationKey.boolFields, boolFields);
+    }
+
+    /**
+     * Get explosive on this tile.
+     * @return explosive
+     */
+    internal int getExplosive() =>
+	    _explosive;
+
+    /**
+     * Set a "virtual" explosive on this tile. We mark a tile this way to detonate it later.
+     * We do it this way, because the same tile can be visited multiple times by an "explosion ray".
+     * The explosive power on the tile is some kind of moving MAXIMUM of the explosive rays that passes it.
+     * @param power Power of the damage.
+     * @param damageType the damage type of the explosion (not the same as item damage types)
+     * @param force Force damage.
+     */
+    internal void setExplosive(int power, int damageType, bool force = false)
+    {
+        if (force || _explosive < power)
+        {
+            _explosive = power;
+            _explosiveType = damageType;
+        }
+    }
+
+    /**
+     * Set the amount of turns this tile is on fire. 0 = no fire.
+     * @param fire : amount of turns this tile is on fire.
+     */
+    internal void setFire(int fire)
+    {
+        _fire = fire;
+        _animationOffset = RNG.generate(0, 3);
+    }
+
+    /**
+     * Set the amount of turns this tile is smoking. 0 = no smoke.
+     * @param smoke : amount of turns this tile is smoking.
+     */
+    internal void setSmoke(int smoke)
+    {
+        _smoke = smoke;
+        _animationOffset = RNG.generate(0, 3);
+    }
+
+    /*
+     * Fuel of a tile is the highest fuel of it's objects.
+     * @return how long to burn.
+     */
+    internal int getFuel()
+    {
+	    int fuel = 0;
+
+	    for (int i=0; i<4; ++i)
+		    if (_objects[i] != null && (_objects[i].getFuel() > fuel))
+			    fuel = _objects[i].getFuel();
+
+	    return fuel;
+    }
+
+    /*
+     * Flammability of a tile is the lowest flammability of it's objects.
+     * @return Flammability : the lower the value, the higher the chance the tile/object catches fire.
+     */
+    internal int getFlammability()
+    {
+	    int flam = 255;
+
+	    for (int i=0; i<4; ++i)
+		    if (_objects[i] != null && (_objects[i].getFlammable() < flam))
+			    flam = _objects[i].getFlammable();
+
+	    return flam;
+    }
+
+    /*
+     * Flammability of the particular part of the tile
+     * @return Flammability : the lower the value, the higher the chance the tile/object catches fire.
+     */
+    internal int getFlammability(TilePart part) =>
+	    _objects[(int)part].getFlammable();
+
+    /*
+     * Fuel of particular part of the tile
+     * @return how long to burn.
+     */
+    internal int getFuel(TilePart part) =>
+	    _objects[(int)part].getFuel();
+
+    /**
+     * Destroy a part on this tile. We first remove the old object, then replace it with the destroyed one.
+     * This is because the object type of the old and new one are not necessarily the same.
+     * If the destroyed part is an explosive, set the tile's explosive value, which will trigger a chained explosion.
+     * @param part the part to destroy.
+     * @param type the objective type for this mission we are checking against.
+     * @return bool Return true objective was destroyed.
+     */
+    internal bool destroy(TilePart part, SpecialTileType type)
+    {
+        bool _objective = false;
+        var index = (int)part;
+        if (_objects[index] != null)
+        {
+            if (_objects[index].isGravLift())
+                return false;
+            _objective = _objects[index].getSpecialType() == type;
+            MapData originalPart = _objects[index];
+            int originalMapDataSetID = _mapDataSetID[index];
+            setMapData(null, -1, -1, part);
+            if (originalPart.getDieMCD() != 0)
+            {
+                MapData dead = originalPart.getDataset().getObject((uint)originalPart.getDieMCD());
+                setMapData(dead, originalPart.getDieMCD(), originalMapDataSetID, dead.getObjectType());
+            }
+            if (originalPart.getExplosive() != 0)
+            {
+                setExplosive(originalPart.getExplosive(), originalPart.getExplosiveType());
+            }
+        }
+        /* check if the floor on the lowest level is gone */
+        if (part == TilePart.O_FLOOR && getPosition().z == 0 && _objects[(int)TilePart.O_FLOOR] == null)
+        {
+            /* replace with scorched earth */
+            setMapData(MapDataSet.getScorchedEarthTile(), 1, 0, TilePart.O_FLOOR);
+        }
+        return _objective;
+    }
+
+    internal int closeUfoDoor()
+    {
+        int retval = 0;
+
+        for (var part = TilePart.O_FLOOR; part <= TilePart.O_NORTHWALL; ++part)
+        {
+            if (isUfoDoorOpen((TilePart)part))
+            {
+                _currentFrame[(int)part] = 0;
+                retval = 1;
+            }
+        }
+
+        return retval;
     }
 }

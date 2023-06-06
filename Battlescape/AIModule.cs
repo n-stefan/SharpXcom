@@ -46,7 +46,7 @@ internal class AIModule
      * @param unit Pointer to the unit.
      * @param node Pointer to the node the unit originates from.
      */
-    AIModule(SavedBattleGame save, BattleUnit unit, Node node)
+    internal AIModule(SavedBattleGame save, BattleUnit unit, Node node)
     {
         _save = save;
         _unit = unit;

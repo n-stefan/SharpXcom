@@ -55,6 +55,10 @@ struct SaveInfo
  */
 internal class SavedGame
 {
+    internal const string AUTOSAVE_GEOSCAPE = "_autogeo_.asav";
+    internal const string AUTOSAVE_BATTLESCAPE = "_autobattle_.asav";
+    internal const string QUICKSAVE = "_quick_.asav";
+
     GameDifficulty _difficulty;
     GameEnding _end;
     bool _ironman;
@@ -154,7 +158,7 @@ internal class SavedGame
      * @param soldier Pointer to dead soldier.
      * @param cause Pointer to cause of death, NULL if missing in action.
      */
-    internal bool killSoldier(Soldier soldier, BattleUnitKills cause)
+    internal Soldier killSoldier(Soldier soldier, BattleUnitKills cause = default)
     {
         foreach (var i in _bases)
         {
@@ -164,11 +168,12 @@ internal class SavedGame
                 {
                     soldier.die(new SoldierDeath(_time, cause));
                     _deadSoldiers.Add(soldier);
-                    return i.getSoldiers().Remove(j);
+                    i.getSoldiers().Remove(j);
+                    return j;
                 }
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -946,4 +951,50 @@ internal class SavedGame
         }
         _funds[^1] = funds;
     }
+
+    /**
+     * Find the region containing this target.
+     * @param target The target to locate.
+     * @return Pointer to the region, or 0.
+     */
+    internal Region locateRegion(Target target) =>
+	    locateRegion(target.getLongitude(), target.getLatitude());
+
+    /**
+     * Find the region containing this location.
+     * @param lon The longtitude.
+     * @param lat The latitude.
+     * @return Pointer to the region, or 0.
+     */
+    internal Region locateRegion(double lon, double lat) =>
+	    _regions.Find(x => x.getRules().insideRegion(lon, lat));
+
+    /**
+     * Returns the game's current ending.
+     * @return Ending state.
+     */
+    internal GameEnding getEnding() =>
+	    _end;
+
+    /**
+     * Changes the game's current ending.
+     * @param end New ending.
+     */
+    internal void setEnding(GameEnding end) =>
+	    _end = end;
+
+    /**
+     * Set battleGame object.
+     * @param battleGame Pointer to the battleGame object.
+     */
+    internal void setBattleGame(SavedBattleGame battleGame) =>
+        _battleGame = battleGame;
+
+    /**
+     * Returns the game's difficulty coefficient based
+     * on the current level.
+     * @return Difficulty coefficient.
+     */
+    internal int getDifficultyCoefficient() =>
+	    Mod.Mod.DIFFICULTY_COEFFICIENT[Math.Min((int)_difficulty, 4)];
 }

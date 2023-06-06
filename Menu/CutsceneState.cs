@@ -25,12 +25,13 @@ namespace SharpXcom.Menu;
  */
 internal class CutsceneState : State
 {
+    internal const string WIN_GAME = "winGame";
+    internal const string LOSE_GAME = "loseGame";
+
     string _cutsceneId;
 
-    internal CutsceneState(string cutsceneId)
-    {
+    internal CutsceneState(string cutsceneId) =>
         _cutsceneId = cutsceneId;
-    }
 
     ~CutsceneState() { }
 }

@@ -23,7 +23,7 @@ enum MapDirection { MD_NONE, MD_VERTICAL, MD_HORIZONTAL, MD_BOTH };
 
 enum MapScriptCommand { MSC_UNDEFINED = -1, MSC_ADDBLOCK, MSC_ADDLINE, MSC_ADDCRAFT, MSC_ADDUFO, MSC_DIGTUNNEL, MSC_FILLAREA, MSC_CHECKBLOCK, MSC_REMOVE, MSC_RESIZE };
 
-struct MCDReplacement
+record struct MCDReplacement
 {
 	internal int set, entry;
 };
@@ -33,7 +33,7 @@ struct TunnelData
     internal Dictionary<string, MCDReplacement> replacements;
     internal int level;
 
-    MCDReplacement getMCDReplacement(string type)
+    internal MCDReplacement getMCDReplacement(string type)
 	{
 		if (!replacements.ContainsKey(type))
 		{
@@ -53,6 +53,7 @@ internal class MapScript
     TunnelData _tunnelData;
     List<int> _groups, _blocks, _frequencies, _maxUses, _conditionals;
     string _ufoName;
+    List<int> _groupsTemp, _blocksTemp, _frequenciesTemp, _maxUsesTemp;
 
     internal MapScript()
     {
@@ -294,4 +295,176 @@ internal class MapScript
 		// take no chances, don't accept negative values here.
 		_label = Math.Abs(int.Parse(node["label"].ToString()));
 	}
+
+    /// Gets the label for this command.
+    internal int getLabel() =>
+		_label;
+
+    /// Gets what conditions apply to this command.
+    internal List<int> getConditionals() =>
+		_conditionals;
+
+    /// Get the chances of this command executing.
+    internal int getChancesOfExecution() =>
+		_executionChances;
+
+    /// Gets how many times this command repeats (1 repeat means 2 executions)
+    internal int getExecutions() =>
+		_executions;
+
+    /// Gets what type of command this is.
+    internal MapScriptCommand getType() =>
+		_type;
+
+    /**
+     * Gets a random map block from a given terrain, using either the groups or the blocks defined.
+     * @param terrain the terrain to pick a block from.
+     * @return Pointer to a randomly chosen map block, given the options available.
+     */
+    internal MapBlock getNextBlock(RuleTerrain terrain)
+    {
+        if (!_blocks.Any())
+        {
+            return terrain.getRandomMapBlock(_sizeX * 10, _sizeY * 10, getGroupNumber());
+        }
+        int result = getBlockNumber();
+        if (result < terrain.getMapBlocks().Count && result != (int)MapBlockType.MT_UNDEFINED)
+        {
+            return terrain.getMapBlocks()[result];
+        }
+        return null;
+    }
+
+    /**
+     * Gets a random block number from the array, accounting for frequencies and max uses.
+     * If no blocks are defined, it will use a group instead.
+     * @return Block number.
+     */
+    int getBlockNumber()
+    {
+        if (_cumulativeFrequency > 0)
+        {
+            int pick = RNG.generate(0, _cumulativeFrequency - 1);
+            for (int i = 0; i != _blocksTemp.Count; ++i)
+            {
+                if (pick < _frequenciesTemp[i])
+                {
+                    int retVal = _blocksTemp[i];
+
+                    if (_maxUsesTemp[i] > 0)
+                    {
+                        if (--_maxUsesTemp[i] == 0)
+                        {
+                            _blocksTemp.RemoveAt(i);
+                            _cumulativeFrequency -= _frequenciesTemp[i];
+                            _frequenciesTemp.RemoveAt(i);
+                            _maxUsesTemp.RemoveAt(i);
+                        }
+                    }
+                    return retVal;
+                }
+                pick -= _frequenciesTemp[i];
+            }
+        }
+        return (int)MapBlockType.MT_UNDEFINED;
+    }
+
+    /**
+     * Gets a random group number from the array, accounting for frequencies and max uses.
+     * If no groups or blocks are defined, this command will return the default" group,
+     * If all the max uses are used up, it will return "undefined".
+     * @return Group number.
+     */
+    int getGroupNumber()
+    {
+        if (_groups.Count == 0)
+        {
+            return (int)MapBlockType.MT_DEFAULT;
+        }
+        if (_cumulativeFrequency > 0)
+        {
+            int pick = RNG.generate(0, _cumulativeFrequency - 1);
+            for (int i = 0; i != _groupsTemp.Count; ++i)
+            {
+                if (pick < _frequenciesTemp[i])
+                {
+                    int retVal = _groupsTemp[i];
+
+                    if (_maxUsesTemp[i] > 0)
+                    {
+                        if (--_maxUsesTemp[i] == 0)
+                        {
+                            _groupsTemp.RemoveAt(i);
+                            _cumulativeFrequency -= _frequenciesTemp[i];
+                            _frequenciesTemp.RemoveAt(i);
+                            _maxUsesTemp.RemoveAt(i);
+                        }
+                    }
+                    return retVal;
+                }
+                pick -= _frequenciesTemp[i];
+            }
+        }
+        return (int)MapBlockType.MT_UNDEFINED;
+    }
+
+    /// Gets the rects, describing the areas this command applies to.
+    internal List<SDL_Rect> getRects() =>
+		_rects;
+
+    /// Gets the direction this command goes (for lines and tunnels).
+    internal MapDirection getDirection() =>
+		_direction;
+
+	/**
+	 * Gets the name of the UFO in the case of "setUFO"
+	 * @return the UFO name.
+	 */
+	internal string getUFOName() =>
+		_ufoName;
+
+    /// Gets the mcd replacement data for tunnel replacements.
+    internal TunnelData getTunnelData() =>
+		_tunnelData;
+
+    /// Gets the groups vector for iteration.
+    internal List<int> getGroups() =>
+		_groups;
+
+    /// Gets the blocks vector for iteration.
+    internal List<int> getBlocks() =>
+		_blocks;
+
+    /// Gets the X size for this command.
+    internal int getSizeX() =>
+		_sizeX;
+
+	/// Gets the Y size for this command.
+	internal int getSizeY() =>
+		_sizeY;
+
+	/// Gets the Z size for this command.
+	internal int getSizeZ() =>
+		_sizeZ;
+
+    /**
+     * Initializes all the various scratch values and such for the command.
+     */
+    internal void init()
+    {
+        _cumulativeFrequency = 0;
+        _blocksTemp.Clear();
+        _groupsTemp.Clear();
+        _frequenciesTemp.Clear();
+        _maxUsesTemp.Clear();
+
+        foreach (var i in _frequencies)
+        {
+            _cumulativeFrequency += i;
+        }
+        _blocksTemp = _blocks;
+        _groupsTemp = _groups;
+        _frequenciesTemp = _frequencies;
+        _maxUsesTemp = _maxUses;
+    }
 }

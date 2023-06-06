@@ -29,6 +29,14 @@ enum UfoStatus { FLYING, LANDED, CRASHED, DESTROYED };
  */
 internal class Ufo : MovingTarget
 {
+    internal static string[] ALTITUDE_STRING = {
+        "STR_GROUND",
+        "STR_VERY_LOW",
+        "STR_LOW_UC",
+        "STR_HIGH_UC",
+        "STR_VERY_HIGH"
+    };
+
     RuleUfo _rules;
     int _crashId, _landId, _damage;
     string _direction, _altitude;
@@ -128,18 +136,18 @@ internal class Ufo : MovingTarget
      * Returns the globe marker for the UFO.
      * @return Marker sprite, -1 if none.
      */
-    internal override int getMarker()
+    protected override int getMarker()
     {
         if (!_detected)
             return -1;
 	    switch (_status)
 	    {
-	    case UfoStatus.LANDED:
-		    return _rules.getLandMarker() == -1 ? 3 : _rules.getLandMarker();
-	    case UfoStatus.CRASHED:
-		    return _rules.getCrashMarker() == -1 ? 4 : _rules.getCrashMarker();
-	    default:
-		    return _rules.getMarker() == -1 ? 2 : _rules.getMarker();
+	        case UfoStatus.LANDED:
+		        return _rules.getLandMarker() == -1 ? 3 : _rules.getLandMarker();
+	        case UfoStatus.CRASHED:
+		        return _rules.getCrashMarker() == -1 ? 4 : _rules.getCrashMarker();
+	        default:
+		        return _rules.getMarker() == -1 ? 2 : _rules.getMarker();
 	    }
     }
 
@@ -286,6 +294,201 @@ internal class Ufo : MovingTarget
      * to cause it to crash.
      * @return Crashed status.
      */
-    bool isCrashed() =>
+    internal bool isCrashed() =>
 	    (_damage > _rules.getMaxDamage() / 2);
+
+    /**
+     * Returns whether this UFO has been detected by hyper-wave.
+     * @return Detection status.
+     */
+    internal bool getHyperDetected() =>
+	    _hyperDetected;
+
+    /**
+     * Changes whether this UFO has been detected by hyper-wave.
+     * @param hyperdetected Detection status.
+     */
+    internal void setHyperDetected(bool hyperdetected) =>
+        _hyperDetected = hyperdetected;
+
+    /**
+     * Returns the ruleset for the UFO's type.
+     * @return Pointer to ruleset.
+     */
+    internal RuleUfo getRules() =>
+	    _rules;
+
+    /**
+     * Returns whether this UFO has been detected by radars.
+     * @return Detection status.
+     */
+    internal bool getDetected() =>
+	    _detected;
+
+    /**
+     * Returns a UFO's visibility to radar detection.
+     * The UFO's size and altitude affect the chances
+     * of it being detected by radars.
+     * @return Visibility modifier.
+     */
+    internal int getVisibility()
+    {
+	    int size = 0;
+	    // size = 15*(3-ufosize);
+	    if (_rules.getSize() == "STR_VERY_SMALL")
+		    size = -30;
+	    else if (_rules.getSize() == "STR_SMALL")
+		    size = -15;
+	    else if (_rules.getSize() == "STR_MEDIUM_UC")
+		    size = 0;
+	    else if (_rules.getSize() == "STR_LARGE")
+		    size = 15;
+	    else if (_rules.getSize() == "STR_VERY_LARGE")
+		    size = 30;
+
+	    int visibility = 0;
+	    if (_altitude == "STR_GROUND")
+		    visibility = -30;
+	    else if (_altitude == "STR_VERY_LOW")
+		    visibility = size - 20;
+	    else if (_altitude == "STR_LOW_UC")
+		    visibility = size - 10;
+	    else if (_altitude == "STR_HIGH_UC")
+		    visibility = size;
+	    else if (_altitude == "STR_VERY_HIGH")
+		    visibility = size - 10;
+
+	    return visibility;
+    }
+
+    /// Set the UFO's status.
+    internal void setStatus(UfoStatus status) =>
+        _status = status;
+
+    /// Gets the UFO's progress on the trajectory track.
+    internal uint getTrajectoryPoint() =>
+        _trajectoryPoint;
+
+    /// Gets the UFO's trajectory.
+    internal UfoTrajectory getTrajectory() =>
+        _trajectory;
+
+    /// Gets the UFO's mission object.
+    internal AlienMission getMission() =>
+        _mission;
+
+    /**
+     * Returns the current altitude of the UFO.
+     * @return Altitude as integer (0-4).
+     */
+    internal int getAltitudeInt()
+    {
+	    for (int i = 0; i < 5; ++i)
+	    {
+		    if (ALTITUDE_STRING[i] == _altitude)
+		    {
+			    return i;
+		    }
+	    }
+	    return -1;
+    }
+
+    /**
+     * Changes the current altitude of the UFO.
+     * @param altitude Altitude.
+     */
+    internal void setAltitude(string altitude)
+    {
+	    _altitude = altitude;
+	    if (_altitude != "STR_GROUND")
+	    {
+		    _status = UfoStatus.FLYING;
+	    }
+	    else
+	    {
+		    _status = isCrashed() ? UfoStatus.CRASHED : UfoStatus.LANDED;
+	    }
+    }
+
+    /// Sets the UFO's progress on the trajectory track.
+    internal void setTrajectoryPoint(uint np) =>
+        _trajectoryPoint = np;
+
+    /**
+     * Returns the current altitude of the UFO.
+     * @return Altitude as string ID.
+     */
+    internal string getAltitude() =>
+	    _altitude;
+
+    /**
+     * Gets the UFO's landing site ID.
+     * @return landing site ID.
+     */
+    internal int getLandId() =>
+	    _landId;
+
+    /**
+     * Returns the alien race currently residing in the UFO.
+     * @return Alien race.
+     */
+    internal string getAlienRace() =>
+	    _mission.getRace();
+
+    /**
+     * Sets the mission information of the UFO.
+     * The UFO will start at the first point of the trajectory. The actual UFO
+     * information is not changed here, this only sets the information kept on
+     * behalf of the mission.
+     * @param mission Pointer to the actual mission object.
+     * @param trajectory Pointer to the actual mission trajectory.
+     */
+    internal void setMissionInfo(AlienMission mission, UfoTrajectory trajectory)
+    {
+	    Debug.Assert(_mission == null && mission != null && trajectory != null);
+	    _mission = mission;
+	    _mission.increaseLiveUfos();
+	    _trajectoryPoint = 0;
+	    _trajectory = trajectory;
+    }
+
+    /**
+     * Moves the UFO to its destination.
+     */
+    internal void think()
+    {
+        switch (_status)
+        {
+            case UfoStatus.FLYING:
+                move();
+                if (reachedDestination())
+                {
+                    // Prevent further movement.
+                    setSpeed(0);
+                }
+                break;
+            case UfoStatus.LANDED:
+                Debug.Assert(_secondsRemaining >= 5, "Wrong time management.");
+                _secondsRemaining -= 5;
+                break;
+            case UfoStatus.CRASHED:
+                if (!_detected)
+                {
+                    _detected = true;
+                }
+                goto case UfoStatus.DESTROYED;
+                // This gets handled in GeoscapeState::time30Minutes()
+                // Because the original game processes it every 30 minutes!
+            case UfoStatus.DESTROYED:
+                // Do nothing
+                break;
+        }
+    }
+
+    /**
+     * Gets the UFO's battlescape status.
+     * @return Is the UFO currently in battle?
+     */
+    internal bool isInBattlescape() =>
+	    _inBattlescape;
 }

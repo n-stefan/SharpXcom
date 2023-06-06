@@ -19,6 +19,8 @@
 
 namespace SharpXcom.Mod;
 
+enum MapBlockType { MT_UNDEFINED = -1, MT_DEFAULT, MT_LANDINGZONE, MT_EWROAD, MT_NSROAD, MT_CROSSING };
+
 /**
  * Represents a Terrain Map Block.
  * It contains constant info about this mapblock, like its name, dimensions, attributes...
@@ -31,6 +33,8 @@ internal class MapBlock
     int _size_x, _size_y, _size_z;
     List<int> _groups, _revealedFloors;
     Dictionary<string, List<Position>> _items;
+
+    internal MapBlock() { }
 
     /**
      * MapBlock construction.
@@ -100,4 +104,59 @@ internal class MapBlock
 			_items.Add(key, value);
         }
 	}
+
+	/**
+	 * Gets the MapBlock size x.
+	 * @return The size x in tiles.
+	 */
+	internal int getSizeX() =>
+		_size_x;
+
+	/**
+	 * Gets the MapBlock size y.
+	 * @return The size y in tiles.
+	 */
+	internal int getSizeY() =>
+		_size_y;
+
+    /**
+     * Gets the type of mapblock.
+     * @return The mapblock's type.
+     */
+    internal bool isInGroup(int group) =>
+        _groups.Contains(group);
+
+    /**
+     * Sets the MapBlock size z.
+     * @param size_z The size z.
+     */
+    internal void setSizeZ(int size_z) =>
+        _size_z = size_z;
+
+	/**
+	 * Gets the MapBlock name (string).
+	 * @return The name.
+	 */
+	internal string getName() =>
+		_name;
+
+    /**
+     * Gets if this floor should be revealed or not.
+     */
+    internal bool isFloorRevealed(int floor) =>
+        _revealedFloors.Contains(floor);
+
+    /**
+     * Gets the items and their positioning for any items associated with this block.
+     * @return the items and their positions.
+     */
+    internal Dictionary<string, List<Position>> getItems() =>
+        _items;
+
+	/**
+	 * Gets the MapBlock size z.
+	 * @return The size z.
+	 */
+	internal int getSizeZ() =>
+		_size_z;
 }

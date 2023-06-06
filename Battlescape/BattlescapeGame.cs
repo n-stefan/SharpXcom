@@ -77,6 +77,7 @@ internal class BattlescapeGame
     int _currentState;
     /// is debug mode enabled in the battlescape?
     static bool _debugPlay;
+    List<InfoboxOKState> _infoboxQueue;
 
     /**
      * Initializes all the elements in the Battlescape screen.
@@ -575,7 +576,7 @@ internal class BattlescapeGame
         BattleUnit bu = _save.getSelectedUnit();
         if (_save.getSide() == UnitFaction.FACTION_PLAYER)
         {
-            _parentState.showPsiButton(bu != null && bu.getSpecialWeapon(Mod.BattleType.BT_PSIAMP) != null && !bu.isOut());
+            _parentState.showPsiButton(bu != null && bu.getSpecialWeapon(BattleType.BT_PSIAMP) != null && !bu.isOut());
         }
     }
 
@@ -633,4 +634,326 @@ internal class BattlescapeGame
      */
     internal Mod.Mod getMod() =>
         _parentState.getGame().getMod();
+
+    /**
+     * Ends the turn if auto-end battle is enabled
+     * and all mission objectives are completed.
+     */
+    internal void autoEndBattle()
+    {
+        if (Options.battleAutoEnd)
+        {
+            bool end = false;
+            if (_save.getObjectiveType() == SpecialTileType.MUST_DESTROY)
+            {
+                end = _save.allObjectivesDestroyed();
+            }
+            else
+            {
+                int liveAliens = 0;
+                int liveSoldiers = 0;
+                tallyUnits(out liveAliens, out liveSoldiers);
+                end = (liveAliens == 0 || liveSoldiers == 0);
+            }
+            if (end)
+            {
+                _save.setSelectedUnit(null);
+                cancelCurrentAction(true);
+                requestEndTurn();
+            }
+        }
+    }
+
+    /**
+     * Sets up a mission complete notification.
+     */
+    internal void missionComplete()
+    {
+        Game game = _parentState.getGame();
+        if (game.getMod().getDeployment(_save.getMissionType()) != null)
+        {
+            string missionComplete = game.getMod().getDeployment(_save.getMissionType()).getObjectivePopup();
+            if (!string.IsNullOrEmpty(missionComplete))
+            {
+                _infoboxQueue.Add(new InfoboxOKState(game.getLanguage().getString(missionComplete)));
+            }
+        }
+    }
+
+    /**
+     * Requests the end of the turn (waits for explosions etc to really end the turn).
+     */
+    void requestEndTurn()
+    {
+        cancelCurrentAction();
+        if (!_endTurnRequested)
+        {
+            _endTurnRequested = true;
+            statePushBack(null);
+        }
+    }
+
+    /**
+     * Pushes a state to the back.
+     * @param bs Battlestate.
+     */
+    void statePushBack(BattleState bs)
+    {
+        if (!_states.Any())
+        {
+            _states.Insert(0, bs);
+            // end turn request?
+            if (_states.First() == null)
+            {
+                _states.RemoveAt(0);
+                endTurn();
+                return;
+            }
+            else
+            {
+                bs.init();
+            }
+        }
+        else
+        {
+            _states.Add(bs);
+        }
+    }
+
+    /**
+     * Tallies the living units in the game and, if required, converts units into their spawn unit.
+     * @param &liveAliens The integer in which to store the live alien tally.
+     * @param &liveSoldiers The integer in which to store the live XCom tally.
+     * @param convert Should we convert infected units?
+     */
+    void tallyUnits(out int liveAliens, out int liveSoldiers)
+    {
+        liveSoldiers = 0;
+        liveAliens = 0;
+
+        foreach (var j in _save.getUnits())
+        {
+            if (!j.isOut())
+            {
+                if (j.getOriginalFaction() == UnitFaction.FACTION_HOSTILE)
+                {
+                    if (!Options.allowPsionicCapture || j.getFaction() != UnitFaction.FACTION_PLAYER || !j.getCapturable())
+                    {
+                        liveAliens++;
+                    }
+                }
+                else if (j.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
+                {
+                    if (j.getFaction() == UnitFaction.FACTION_PLAYER)
+                    {
+                        liveSoldiers++;
+                    }
+                    else
+                    {
+                        liveAliens++;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Ends the turn.
+     */
+    void endTurn()
+    {
+        _debugPlay = false;
+        _currentAction.type = BattleActionType.BA_NONE;
+        getMap().getWaypoints().Clear();
+        _currentAction.waypoints.Clear();
+        _parentState.showLaunchButton(false);
+        _currentAction.targeting = false;
+        _AISecondMove = false;
+
+        if (!_endTurnProcessed)
+        {
+            if (_save.getTileEngine().closeUfoDoors() != 0 && Mod.Mod.SLIDING_DOOR_CLOSE != -1)
+            {
+                getMod().getSoundByDepth((uint)_save.getDepth(), (uint)Mod.Mod.SLIDING_DOOR_CLOSE).play(); // ufo door closed
+            }
+
+            var p = new Position();
+
+            // check for hot grenades on the ground
+            if (_save.getSide() != UnitFaction.FACTION_NEUTRAL)
+            {
+                for (int i = 0; i < _save.getMapSizeXYZ(); ++i)
+                {
+                    var inventory = _save.getTiles()[i].getInventory();
+                    for (var it = 0; it < inventory.Count;)
+                    {
+                        if (inventory[it].getRules().getBattleType() == BattleType.BT_GRENADE && inventory[it].getFuseTimer() == 0)  // it's a grenade to explode now
+                        {
+                            p.x = _save.getTiles()[i].getPosition().x * 16 + 8;
+                            p.y = _save.getTiles()[i].getPosition().y * 16 + 8;
+                            p.z = _save.getTiles()[i].getPosition().z * 24 - _save.getTiles()[i].getTerrainLevel();
+                            statePushNext(new ExplosionBState(this, p, inventory[it], inventory[it].getPreviousOwner()));
+                            _save.removeItem(inventory[it]);
+                            statePushBack(null);
+                            return;
+                        }
+                        ++it;
+                    }
+                }
+            }
+        }
+        // check for terrain explosions
+        Tile t = _save.getTileEngine().checkForTerrainExplosions();
+        if (t != null)
+        {
+            Position p = new Position(t.getPosition().x * 16, t.getPosition().y * 16, t.getPosition().z * 24);
+            statePushNext(new ExplosionBState(this, p, 0, 0, t));
+            statePushBack(null);
+            return;
+        }
+
+        if (!_endTurnProcessed)
+        {
+            if (_save.getSide() != UnitFaction.FACTION_NEUTRAL)
+            {
+                foreach (var it in _save.getItems())
+                {
+                    if ((it.getRules().getBattleType() == BattleType.BT_GRENADE || it.getRules().getBattleType() == BattleType.BT_PROXIMITYGRENADE) && it.getFuseTimer() > 0)
+                    {
+                        it.setFuseTimer(it.getFuseTimer() - 1);
+                    }
+                }
+            }
+
+            _save.endTurn();
+            t = _save.getTileEngine().checkForTerrainExplosions();
+            if (t != null)
+            {
+                Position p = new Position(t.getPosition().x * 16, t.getPosition().y * 16, t.getPosition().z * 24);
+                statePushNext(new ExplosionBState(this, p, 0, 0, t));
+                statePushBack(null);
+                _endTurnProcessed = true;
+                return;
+            }
+        }
+
+        _endTurnProcessed = false;
+
+        if (_save.getSide() == UnitFaction.FACTION_PLAYER)
+        {
+            setupCursor();
+        }
+        else
+        {
+            getMap().setCursorType(CursorType.CT_NONE);
+        }
+
+        checkForCasualties(null, null, false, false);
+
+        // turn off MCed alien lighting.
+        _save.getTileEngine().calculateUnitLighting();
+
+        // if all units from either faction are killed - the mission is over.
+        int liveAliens = 0;
+        int liveSoldiers = 0;
+        int inExit = 0;
+
+        // Calculate values
+        foreach (var j in _save.getUnits())
+        {
+            if (!j.isOut())
+            {
+                if (j.getOriginalFaction() == UnitFaction.FACTION_HOSTILE)
+                {
+                    if (!Options.allowPsionicCapture || j.getFaction() != UnitFaction.FACTION_PLAYER || !j.getCapturable())
+                    {
+                        liveAliens++;
+                    }
+                }
+                else if (j.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
+                {
+                    if (j.isInExitArea(SpecialTileType.END_POINT))
+                    {
+                        inExit++;
+                    }
+                    if (j.getFaction() == UnitFaction.FACTION_PLAYER)
+                    {
+                        liveSoldiers++;
+                    }
+                    else
+                    {
+                        liveAliens++;
+                    }
+                }
+            }
+        }
+
+        if (_save.allObjectivesDestroyed() && _save.getObjectiveType() == SpecialTileType.MUST_DESTROY)
+        {
+            _parentState.finishBattle(false, liveSoldiers);
+            return;
+        }
+        if (_save.getTurnLimit() > 0 && _save.getTurn() > _save.getTurnLimit())
+        {
+            switch (_save.getChronoTrigger())
+            {
+                case ChronoTrigger.FORCE_ABORT:
+                    _save.setAborted(true);
+                    _parentState.finishBattle(true, inExit);
+                    return;
+                case ChronoTrigger.FORCE_WIN:
+                    _parentState.finishBattle(false, liveSoldiers);
+                    return;
+                case ChronoTrigger.FORCE_LOSE:
+                default:
+                    // force mission failure
+                    _save.setAborted(true);
+                    _parentState.finishBattle(false, 0);
+                    return;
+            }
+        }
+
+        if (liveAliens > 0 && liveSoldiers > 0)
+        {
+            showInfoBoxQueue();
+
+            _parentState.updateSoldierInfo();
+
+            if (playableUnitSelected())
+            {
+                getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+                setupCursor();
+            }
+        }
+
+        bool battleComplete = liveAliens == 0 || liveSoldiers == 0;
+
+        if ((_save.getSide() != UnitFaction.FACTION_NEUTRAL || battleComplete)
+            && _endTurnRequested)
+        {
+            _parentState.getGame().pushState(new NextTurnState(_save, _parentState));
+        }
+        _endTurnRequested = false;
+    }
+
+    /**
+     * Shows the infoboxes in the queue (if any).
+     */
+    void showInfoBoxQueue()
+    {
+        foreach (var i in _infoboxQueue)
+        {
+            _parentState.getGame().pushState(i);
+        }
+
+        _infoboxQueue.Clear();
+    }
+
+    /**
+     * Determines whether a playable unit is selected. Normally only player side units can be selected, but in debug mode one can play with aliens too :)
+     * Is used to see if stats can be displayed.
+     * @return Whether a playable unit is selected.
+     */
+    internal bool playableUnitSelected() =>
+	    _save.getSelectedUnit() != null && (_save.getSide() == UnitFaction.FACTION_PLAYER || _save.getDebugMode());
 }

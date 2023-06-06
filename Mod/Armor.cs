@@ -199,4 +199,177 @@ internal class Armor : IRule
      */
     internal string getCorpseGeoscape() =>
 	    _corpseGeo;
+
+    /** Gets the loftempSet.
+     * @return The loftempsSet.
+     */
+    internal List<int> getLoftempsSet() =>
+	    _loftempsSet;
+
+    /**
+     * Gets the movement type of this armor.
+     * Useful for determining whether the armor can fly.
+     * @important: do not use this function outside the BattleUnit constructor,
+     * unless you are SURE you know what you are doing.
+     * for more information, see the BattleUnit constructor.
+     * @return The movement type.
+     */
+    internal MovementType getMovementType() =>
+	    _movementType;
+
+    /**
+      * Gets pointer to the armor's stats.
+      * @return stats Pointer to the armor's stats.
+      */
+    internal UnitStats getStats() =>
+	    _stats;
+
+    /**
+     * Gets whether or not to draw bubbles (breathing animation).
+     * @return True if breathing animation is enabled, false otherwise.
+     */
+    internal bool drawBubbles() =>
+	    _drawBubbles;
+
+    /**
+     * Gets the front armor level.
+     * @return The front armor level.
+     */
+    internal int getFrontArmor() =>
+	    _frontArmor;
+
+    /**
+     * Gets the side armor level.
+     * @return The side armor level.
+     */
+    internal int getSideArmor() =>
+	    _sideArmor;
+
+    /**
+     * Gets the rear armor level.
+     * @return The rear armor level.
+     */
+    internal int getRearArmor() =>
+	    _rearArmor;
+
+    /**
+     * Gets the under armor level.
+     * @return The under armor level.
+     */
+    internal int getUnderArmor() =>
+	    _underArmor;
+
+    /**
+     * Gets hair base color group for replacement, if 0 then don't replace colors.
+     * @return Color group or 0.
+     */
+    internal int getFaceColorGroup() =>
+	    _faceColorGroup;
+
+    /**
+     * Gets new face colors for replacement, if 0 then don't replace colors.
+     * @return Color index or 0.
+     */
+    internal int getFaceColor(int i)
+    {
+	    if ((uint)i < _faceColor.Count)
+	    {
+		    return _faceColor[i];
+	    }
+	    else
+	    {
+		    return 0;
+	    }
+    }
+
+    /**
+     * Gets hair base color group for replacement, if 0 then don't replace colors.
+     * @return Color group or 0.
+     */
+    internal int getHairColorGroup() =>
+	    _hairColorGroup;
+
+    /**
+     * Gets new hair colors for replacement, if 0 then don't replace colors.
+     * @return Color index or 0.
+     */
+    internal int getHairColor(int i)
+    {
+	    if ((uint)i < _hairColor.Count)
+	    {
+		    return _hairColor[i];
+	    }
+	    else
+	    {
+		    return 0;
+	    }
+    }
+
+    /**
+     * Gets utile base color group for replacement, if 0 then don't replace colors.
+     * @return Color group or 0.
+     */
+    internal int getUtileColorGroup() =>
+	    _utileColorGroup;
+
+    /**
+     * Gets new utile colors for replacement, if 0 then don't replace colors.
+     * @return Color index or 0.
+     */
+    internal int getUtileColor(int i)
+    {
+	    if ((uint)i < _utileColor.Count)
+	    {
+		    return _utileColor[i];
+	    }
+	    else
+	    {
+		    return 0;
+	    }
+    }
+
+    /**
+     * Gets rank base color group for replacement, if 0 then don't replace colors.
+     * @return Color group or 0.
+     */
+    internal int getRankColorGroup() =>
+	    _rankColorGroup;
+
+    /**
+     * Gets new rank colors for replacement, if 0 then don't replace colors.
+     * @return Color index or 0.
+     */
+    internal int getRankColor(int i)
+    {
+	    if ((uint)i < _rankColor.Count)
+	    {
+		    return _rankColor[i];
+	    }
+	    else
+	    {
+		    return 0;
+	    }
+    }
+
+    /**
+     * Gets the damage modifier for a certain damage type.
+     * @param dt The damageType.
+     * @return The damage modifier 0->1.
+     */
+    internal float getDamageModifier(ItemDamageType dt) =>
+	    _damageModifier[(int)dt];
+
+    /**
+     * Gets the armor's weight.
+     * @return the weight of the armor.
+     */
+    internal int getWeight() =>
+	    _weight;
+
+    /**
+     * Gets the type of special weapon.
+     * @return The name of the special weapon.
+     */
+    internal string getSpecialWeapon() =>
+	    _specWeapon;
 }

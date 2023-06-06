@@ -28,7 +28,7 @@ internal class TileEngine
     const int MAX_VIEW_DISTANCE = 20;
     const int MAX_VIEW_DISTANCE_SQR = MAX_VIEW_DISTANCE * MAX_VIEW_DISTANCE;
     const int MAX_VOXEL_VIEW_DISTANCE = MAX_VIEW_DISTANCE * 16;
-    const int MAX_DARKNESS_TO_SEE_UNITS = 9;
+    internal const int MAX_DARKNESS_TO_SEE_UNITS = 9;
 
     static int[] heightFromCenter = { 0, -2, +2, -4, +4, -6, +6, -8, +8, -12, +12 };
     SavedBattleGame _save;
@@ -113,14 +113,14 @@ internal class TileEngine
 		{
 			item.moveToOwner(null);
 		}
-		else if (item.getRules().getBattleType() != Mod.BattleType.BT_GRENADE && item.getRules().getBattleType() != Mod.BattleType.BT_PROXIMITYGRENADE)
+		else if (item.getRules().getBattleType() != BattleType.BT_GRENADE && item.getRules().getBattleType() != BattleType.BT_PROXIMITYGRENADE)
 		{
 			item.setOwner(null);
 		}
 
 		applyGravity(_save.getTile(p));
 
-		if (item.getRules().getBattleType() == Mod.BattleType.BT_FLARE)
+		if (item.getRules().getBattleType() == BattleType.BT_FLARE)
 		{
 			calculateTerrainLighting();
             calculateFOV(p);
@@ -164,7 +164,7 @@ internal class TileEngine
 
             foreach (var item in _save.getTiles()[i].getInventory())
             {
-                if (item.getRules().getBattleType() == Mod.BattleType.BT_FLARE)
+                if (item.getRules().getBattleType() == BattleType.BT_FLARE)
                 {
                     addLight(_save.getTiles()[i].getPosition(), item.getRules().getPower(), layer);
                 }
@@ -309,7 +309,7 @@ internal class TileEngine
      * (used when terrain has changed, which can reveal new parts of terrain or units).
      * @param position Position of the changed terrain.
      */
-    void calculateFOV(Position position)
+    internal void calculateFOV(Position position)
     {
         foreach (var item in _save.getUnits())
         {
@@ -325,7 +325,7 @@ internal class TileEngine
      * @param unit Unit to check line of sight of.
      * @return True when new aliens are spotted.
      */
-    bool calculateFOV(BattleUnit unit)
+    internal bool calculateFOV(BattleUnit unit)
     {
         uint oldNumVisibleUnits = (uint)unit.getUnitsSpottedThisTurn().Count;
         Position center = unit.getPosition();
@@ -451,7 +451,6 @@ internal class TileEngine
         }
 
         return false;
-
     }
 
     /**
@@ -525,7 +524,7 @@ internal class TileEngine
      * @param pos2 Position of second square.
      * @return Distance.
      */
-    int distance(Position pos1, Position pos2)
+    internal int distance(Position pos1, Position pos2)
     {
 	    int x = pos1.x - pos2.x;
 	    int y = pos1.y - pos2.y;
@@ -1064,8 +1063,8 @@ internal class TileEngine
         if (startTile.getPosition().z != endTile.getPosition().z) return 0;
         Tile tmpTile;
 
-        int direction = 0;
-        Pathfinding.vectorToDirection(endTile.getPosition() - startTile.getPosition(), ref direction);
+        int direction;
+        Pathfinding.vectorToDirection(endTile.getPosition() - startTile.getPosition(), out direction);
         if (direction == -1) return 0;
         int block = 0;
 
@@ -1263,7 +1262,7 @@ internal class TileEngine
         }
 
         // first we check terrain voxel data, not to allow 2x2 units stick through walls
-        for (int i = (int)VoxelType.V_FLOOR; i <= (int)VoxelType.V_OBJECT; ++i)
+        for (var i = VoxelType.V_FLOOR; i <= VoxelType.V_OBJECT; ++i)
         {
             TilePart tp = (TilePart)i;
             MapData mp = tile.getMapData(tp);
@@ -1369,7 +1368,7 @@ internal class TileEngine
 
     /**
       * Calculates sun shading for 1 tile. Sun comes from above and is blocked by floors or objects.
-      * TODO: angle the shadow according to the time? - link to Options::globeSeasons (or whatever the realistic lighting one is)
+      * TODO: angle the shadow according to the time? - link to Options.globeSeasons (or whatever the realistic lighting one is)
       * @param tile The tile to calculate sun shading for.
       */
     void calculateSunShading(Tile tile)
@@ -1425,5 +1424,481 @@ internal class TileEngine
                 addLight(unit.getPosition(), fireLightPower, layer);
             }
         }
+    }
+
+    /**
+     * Checks for chained explosions.
+     *
+     * Chained explosions are explosions which occur after an explosive map object is destroyed.
+     * May be due a direct hit, other explosion or fire.
+     * @return tile on which a explosion occurred
+     */
+    internal Tile checkForTerrainExplosions()
+    {
+        for (int i = 0; i < _save.getMapSizeXYZ(); ++i)
+        {
+            if (_save.getTiles()[i].getExplosive() != 0)
+            {
+                return _save.getTiles()[i];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Handles explosions.
+     *
+     * HE, smoke and fire explodes in a circular pattern on 1 level only. HE however damages floor tiles of the above level. Not the units on it.
+     * HE destroys an object if its armor is lower than the explosive power, then it's HE blockage is applied for further propagation.
+     * See http://www.ufopaedia.org/index.php?title=Explosions for more info.
+     * @param center Center of the explosion in voxelspace.
+     * @param power Power of the explosion.
+     * @param type The damage type of the explosion.
+     * @param maxRadius The maximum radius of the explosion.
+     * @param unit The unit that caused the explosion.
+     */
+    internal void explode(Position center, int power, ItemDamageType type, int maxRadius, BattleUnit unit = null)
+    {
+        double centerZ = center.z / 24 + 0.5;
+        double centerX = center.x / 16 + 0.5;
+        double centerY = center.y / 16 + 0.5;
+        int hitSide = 0;
+        int diagonalWall = 0;
+        int power_;
+        var tilesAffected = new HashSet<Tile>();
+        //KeyValuePair<HashSet<Tile>, bool> ret;
+
+        if (type == ItemDamageType.DT_IN)
+        {
+            power /= 2;
+        }
+
+        int exHeight = Math.Clamp(Options.battleExplosionHeight, 0, 3);
+        int vertdec = 1000; //default flat explosion
+        int dmgRng = type == ItemDamageType.DT_HE ? Mod.Mod.EXPLOSIVE_DAMAGE_RANGE : Mod.Mod.DAMAGE_RANGE;
+
+        switch (exHeight)
+        {
+            case 1:
+                vertdec = 30;
+                break;
+            case 2:
+                vertdec = 10;
+                break;
+            case 3:
+                vertdec = 5;
+                break;
+        }
+
+        Tile origin = _save.getTile(new Position((int)centerX, (int)centerY, (int)centerZ));
+        Tile dest;
+        if (origin.isBigWall()) //precalculations for bigwall deflection
+        {
+            diagonalWall = origin.getMapData(TilePart.O_OBJECT).getBigWall();
+            if (diagonalWall == (int)bigWallTypes.BIGWALLNWSE) //  3 |
+                hitSide = (center.x % 16 - center.y % 16) > 0 ? 1 : -1;
+            if (diagonalWall == (int)bigWallTypes.BIGWALLNESW) //  2 --
+                hitSide = (center.x % 16 + center.y % 16 - 15) > 0 ? 1 : -1;
+        }
+
+        for (int fi = -90; fi <= 90; fi += 5)
+        {
+            // raytrace every 3 degrees makes sure we cover all tiles in a circle.
+            for (int te = 0; te <= 360; te += 3)
+            {
+                double cos_te = Math.Cos(Deg2Rad(te));
+                double sin_te = Math.Sin(Deg2Rad(te));
+                double sin_fi = Math.Sin(Deg2Rad(fi));
+                double cos_fi = Math.Cos(Deg2Rad(fi));
+
+                origin = _save.getTile(new Position((int)centerX, (int)centerY, (int)centerZ));
+                dest = origin;
+                double l = 0;
+                int tileX, tileY, tileZ;
+                power_ = power;
+                while (power_ > 0 && l <= maxRadius)
+                {
+                    if (power_ > 0)
+                    {
+                        if (type == ItemDamageType.DT_HE)
+                        {
+                            // explosives do 1/2 damage to terrain and 1/2 up to 3/2 random damage to units (the halving is handled elsewhere)
+                            dest.setExplosive(power_, 0);
+                        }
+
+                        var ret = tilesAffected.Add(dest); // check if we had this tile already
+                        if (ret)
+                        {
+                            int min = power_ * (100 - dmgRng) / 100;
+                            int max = power_ * (100 + dmgRng) / 100;
+                            BattleUnit bu = dest.getUnit();
+                            Tile tileBelow = _save.getTile(dest.getPosition() - new Position(0, 0, 1));
+                            int wounds = 0;
+                            if (bu == null && dest.getPosition().z > 0 && dest.hasNoFloor(tileBelow))
+                            {
+                                bu = tileBelow.getUnit();
+                                if (bu != null && bu.getHeight() + bu.getFloatHeight() - tileBelow.getTerrainLevel() <= 24)
+                                {
+                                    bu = null; // if the unit below has no voxels poking into the tile, don't damage it.
+                                }
+                            }
+                            if (bu != null && unit != null)
+                            {
+                                wounds = bu.getFatalWounds();
+                            }
+                            switch (type)
+                            {
+                                case ItemDamageType.DT_STUN:
+                                    // power 0 - 200%
+                                    if (bu != null)
+                                    {
+                                        if (distance(dest.getPosition(), new Position((int)centerX, (int)centerY, (int)centerZ)) < 2)
+                                        {
+                                            bu.damage(new Position(0, 0, 0), RNG.generate(min, max), type);
+                                        }
+                                        else
+                                        {
+                                            bu.damage(new Position((int)centerX, (int)centerY, (int)centerZ) - dest.getPosition(), RNG.generate(min, max), type);
+                                        }
+                                    }
+                                    foreach (var it in dest.getInventory())
+                                    {
+                                        if (it.getUnit() != null)
+                                        {
+                                            it.getUnit().damage(new Position(0, 0, 0), RNG.generate(min, max), type);
+                                        }
+                                    }
+                                    break;
+                                case ItemDamageType.DT_HE:
+                                    {
+                                        // power 50 - 150%
+                                        if (bu != null)
+                                        {
+                                            if (
+                                                    (
+                                                        Math.Abs(dest.getPosition().x - (int)centerX) < 2
+                                                        && Math.Abs(dest.getPosition().y - (int)centerY) < 2
+                                                        && dest.getPosition().z == (int)centerZ
+                                                    )
+                                                    || dest.getPosition().z > (int)centerZ
+                                                )
+                                            {
+                                                // ground zero effect is in effect, or unit is above explosion
+                                                bu.damage(new Position(0, 0, 0), (RNG.generate(min, max)), type);
+                                            }
+                                            else
+                                            {
+                                                // directional damage relative to explosion position.
+                                                // units above the explosion will be hit in the legs, units lateral to or below will be hit in the torso
+                                                bu.damage(new Position((int)centerX, (int)centerY, (int)(centerZ + 5)) - dest.getPosition(), (RNG.generate(min, max)), type);
+                                            }
+                                        }
+                                        List<BattleItem> temp = dest.getInventory(); // copy this list since it might change
+                                        foreach (var it in temp)
+                                        {
+                                            if (power_ > it.getRules().getArmor())
+                                            {
+                                                if (it.getUnit() != null && it.getUnit().getStatus() == UnitStatus.STATUS_UNCONSCIOUS)
+                                                {
+                                                    it.getUnit().kill();
+                                                }
+                                                _save.removeItem(it);
+                                            }
+                                        }
+                                    }
+                                    break;
+
+                                case ItemDamageType.DT_SMOKE:
+                                    // smoke from explosions always stay 6 to 14 turns - power of a smoke grenade is 60
+                                    if (dest.getSmoke() < 10 && dest.getTerrainLevel() > -24)
+                                    {
+                                        dest.setFire(0);
+                                        dest.setSmoke(RNG.generate(7, 15));
+                                    }
+                                    break;
+
+                                case ItemDamageType.DT_IN:
+                                    if (!dest.isVoid())
+                                    {
+                                        if (dest.getFire() == 0 && (dest.getMapData(TilePart.O_FLOOR) != null || dest.getMapData(TilePart.O_OBJECT) != null))
+                                        {
+                                            dest.setFire(dest.getFuel() + 1);
+                                            dest.setSmoke(Math.Clamp(15 - (dest.getFlammability() / 10), 1, 12));
+                                        }
+                                        if (bu != null)
+                                        {
+                                            float resistance = bu.getArmor().getDamageModifier(ItemDamageType.DT_IN);
+                                            if (resistance > 0.0)
+                                            {
+                                                bu.damage(new Position(0, 0, 12 - dest.getTerrainLevel()), RNG.generate(Mod.Mod.FIRE_DAMAGE_RANGE[0], Mod.Mod.FIRE_DAMAGE_RANGE[1]), ItemDamageType.DT_IN, true);
+                                                int burnTime = RNG.generate(0, (int)(5.0f * resistance));
+                                                if (bu.getFire() < burnTime)
+                                                {
+                                                    bu.setFire(burnTime); // catch fire and burn
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            if (unit != null && bu != null && bu.getFaction() != unit.getFaction())
+                            {
+                                unit.addFiringExp();
+                                // if it's going to bleed to death and it's not a player, give credit for the kill.
+                                if (wounds < bu.getFatalWounds() && bu.getFaction() != UnitFaction.FACTION_PLAYER)
+                                {
+                                    bu.killedBy(unit.getFaction());
+                                }
+                            }
+
+                        }
+                    }
+
+                    l += 1.0;
+
+                    tileX = (int)(Math.Floor(centerX + l * sin_te * cos_fi));
+                    tileY = (int)(Math.Floor(centerY + l * cos_te * cos_fi));
+                    tileZ = (int)(Math.Floor(centerZ + l * sin_fi));
+
+                    origin = dest;
+                    dest = _save.getTile(new Position(tileX, tileY, tileZ));
+
+                    if (dest == null) break; // out of map!
+
+                    // blockage by terrain is deducted from the explosion power
+                    power_ -= 10; // explosive damage decreases by 10 per tile
+                    if (origin.getPosition().z != tileZ)
+                        power_ -= vertdec; //3d explosion factor
+
+                    if (type == ItemDamageType.DT_IN)
+                    {
+                        int dir;
+                        Pathfinding.vectorToDirection(origin.getPosition() - dest.getPosition(), out dir);
+                        if (dir != -1 && dir % 2 != 0) power_ -= 5; // diagonal movement costs an extra 50% for fire.
+                    }
+                    if (l > 0.5)
+                    {
+                        if (l > 1.5)
+                        {
+                            power_ -= verticalBlockage(origin, dest, type, false) * 2;
+                            power_ -= horizontalBlockage(origin, dest, type, false) * 2;
+                        }
+                        else //tricky bigwall deflection /Volutar
+                        {
+                            bool skipObject = diagonalWall == 0;
+                            if (diagonalWall == (int)bigWallTypes.BIGWALLNESW) // --
+                            {
+                                if (hitSide < 0 && te >= 135 && te < 315)
+                                    skipObject = true;
+                                if (hitSide > 0 && (te < 135 || te > 315))
+                                    skipObject = true;
+                            }
+                            if (diagonalWall == (int)bigWallTypes.BIGWALLNWSE) // |
+                            {
+                                if (hitSide > 0 && te >= 45 && te < 225)
+                                    skipObject = true;
+                                if (hitSide < 0 && (te < 45 || te > 225))
+                                    skipObject = true;
+                            }
+                            power_ -= verticalBlockage(origin, dest, type, skipObject) * 2;
+                            power_ -= horizontalBlockage(origin, dest, type, skipObject) * 2;
+
+                        }
+                    }
+                }
+            }
+        }
+        // now detonate the tiles affected with HE
+
+        if (type == ItemDamageType.DT_HE)
+        {
+            foreach (var i in tilesAffected)
+            {
+                if (detonate(i))
+                {
+                    _save.addDestroyedObjective();
+                }
+                applyGravity(i);
+                Tile j = _save.getTile(i.getPosition() + new Position(0, 0, 1));
+                if (j != null)
+                    applyGravity(j);
+            }
+        }
+
+        calculateSunShading(); // roofs could have been destroyed
+        calculateTerrainLighting(); // fires could have been started
+        calculateFOV(center / new Position(16, 16, 24));
+    }
+
+    static TilePart[] parts = { TilePart.O_FLOOR, TilePart.O_WESTWALL, TilePart.O_NORTHWALL, TilePart.O_FLOOR, TilePart.O_WESTWALL, TilePart.O_NORTHWALL, TilePart.O_OBJECT, TilePart.O_OBJECT, TilePart.O_OBJECT }; //6th is the object of current
+    /**
+     * Applies the explosive power to the tile parts. This is where the actual destruction takes place.
+     * Must affect 9 objects (6 box sides and the object inside plus 2 outer walls).
+     * @param tile Tile affected.
+     * @return True if the objective was destroyed.
+     */
+    bool detonate(Tile tile)
+    {
+        int explosive = tile.getExplosive();
+        if (explosive == 0) return false; // no damage applied for this tile
+        tile.setExplosive(0, 0, true);
+        bool objective = false;
+        Tile[] tiles = new Tile[9];
+        Position pos = tile.getPosition();
+
+        tiles[0] = _save.getTile(new Position(pos.x, pos.y, pos.z + 1)); //ceiling
+        tiles[1] = _save.getTile(new Position(pos.x + 1, pos.y, pos.z)); //east wall
+        tiles[2] = _save.getTile(new Position(pos.x, pos.y + 1, pos.z)); //south wall
+        tiles[3] = tiles[4] = tiles[5] = tiles[6] = tile;
+        tiles[7] = _save.getTile(new Position(pos.x, pos.y - 1, pos.z)); //north bigwall
+        tiles[8] = _save.getTile(new Position(pos.x - 1, pos.y, pos.z)); //west bigwall
+
+        int remainingPower, fireProof, fuel;
+        bool destroyed, bigwalldestroyed = true, skipnorthwest = false;
+        for (int i = 8; i >= 0; --i)
+        {
+            if (tiles[i] == null || tiles[i].getMapData(parts[i]) == null)
+                continue; //skip out of map and emptiness
+            int bigwall = tiles[i].getMapData(parts[i]).getBigWall();
+            if (i > 6 && !((bigwall == 1) || (bigwall == 8) || (i == 8 && bigwall == 6) || (i == 7 && bigwall == 7)))
+                continue;
+            if ((bigwall != 0)) skipnorthwest = true;
+            if (!bigwalldestroyed && i < 6) //when ground shouldn't be destroyed
+                continue;
+            if (skipnorthwest && (i == 2 || i == 1)) continue;
+            remainingPower = explosive;
+            destroyed = false;
+            int volume = 0;
+            TilePart currentpart = parts[i], currentpart2;
+            int diemcd;
+            fireProof = tiles[i].getFlammability(currentpart);
+            fuel = tiles[i].getFuel(currentpart) + 1;
+            // get the volume of the object by checking it's loftemps objects.
+            for (int j = 0; j < 12; j++)
+            {
+                if (tiles[i].getMapData(currentpart).getLoftID(j) != 0)
+                    ++volume;
+            }
+            if (i == 6 &&
+                (bigwall == 2 || bigwall == 3) && //diagonals
+                (2 * tiles[i].getMapData(currentpart).getArmor()) > remainingPower) //not enough to destroy
+            {
+                bigwalldestroyed = false;
+            }
+            // iterate through tile armor and destroy if can
+            while (tiles[i].getMapData(currentpart) != null &&
+                    (2 * tiles[i].getMapData(currentpart).getArmor()) <= remainingPower &&
+                    tiles[i].getMapData(currentpart).getArmor() != 255)
+            {
+                if (i == 6 && (bigwall == 2 || bigwall == 3)) //diagonals for the current tile
+                {
+                    bigwalldestroyed = true;
+                }
+                if (i == 6 && (bigwall == 6 || bigwall == 7 || bigwall == 8)) //n/w/nw
+                {
+                    skipnorthwest = false;
+                }
+                remainingPower -= 2 * tiles[i].getMapData(currentpart).getArmor();
+                destroyed = true;
+                if (_save.getMissionType() == "STR_BASE_DEFENSE" &&
+                    tiles[i].getMapData(currentpart).isBaseModule())
+                {
+                    var pair = _save.getModuleMap()[tile.getPosition().x / 10][tile.getPosition().y / 10];
+                    _save.getModuleMap()[tile.getPosition().x / 10][tile.getPosition().y / 10] = KeyValuePair.Create(pair.Key, pair.Value - 1);
+                }
+                //this trick is to follow transformed object parts (object can become a ground)
+                diemcd = tiles[i].getMapData(currentpart).getDieMCD();
+                if (diemcd != 0)
+                    currentpart2 = tiles[i].getMapData(currentpart).getDataset().getObject((uint)diemcd).getObjectType();
+                else
+                    currentpart2 = currentpart;
+                if (tiles[i].destroy(currentpart, _save.getObjectiveType()))
+                    objective = true;
+                currentpart = currentpart2;
+                if (tiles[i].getMapData(currentpart) != null) // take new values
+                {
+                    fireProof = tiles[i].getFlammability(currentpart);
+                    fuel = tiles[i].getFuel(currentpart) + 1;
+                }
+            }
+            // set tile on fire
+            if ((2 * fireProof) < remainingPower)
+            {
+                if (tiles[i].getMapData(TilePart.O_FLOOR) != null || tiles[i].getMapData(TilePart.O_OBJECT) != null)
+                {
+                    tiles[i].setFire(fuel);
+                    tiles[i].setSmoke(Math.Clamp(15 - (fireProof / 10), 1, 12));
+                }
+            }
+            // add some smoke if tile was destroyed and not set on fire
+            if (destroyed)
+            {
+                if (tiles[i].getFire() != 0 && tiles[i].getMapData(TilePart.O_FLOOR) == null && tiles[i].getMapData(TilePart.O_OBJECT) == null)
+                {
+                    tiles[i].setFire(0);// if the object set the floor on fire, and the floor was subsequently destroyed, the fire needs to go out
+                }
+
+                if (tiles[i].getFire() == 0)
+                {
+                    int smoke = RNG.generate(1, (volume / 2) + 3) + (volume / 2);
+                    if (smoke > tiles[i].getSmoke())
+                    {
+                        tiles[i].setSmoke(Math.Clamp(smoke, 0, 15));
+                    }
+                }
+            }
+        }
+        return objective;
+    }
+
+    /**
+     * Closes ufo doors.
+     * @return Whether doors are closed.
+     */
+    internal int closeUfoDoors()
+    {
+        int doorsclosed = 0;
+
+        // prepare a list of tiles on fire/smoke & close any ufo doors
+        for (int i = 0; i < _save.getMapSizeXYZ(); ++i)
+        {
+            if (_save.getTiles()[i].getUnit() != null && _save.getTiles()[i].getUnit().getArmor().getSize() > 1)
+            {
+                BattleUnit bu = _save.getTiles()[i].getUnit();
+                Tile tile = _save.getTiles()[i];
+                Tile oneTileNorth = _save.getTile(tile.getPosition() + new Position(0, -1, 0));
+                Tile oneTileWest = _save.getTile(tile.getPosition() + new Position(-1, 0, 0));
+                if ((tile.isUfoDoorOpen(TilePart.O_NORTHWALL) && oneTileNorth != null && oneTileNorth.getUnit() != null && oneTileNorth.getUnit() == bu) ||
+                    (tile.isUfoDoorOpen(TilePart.O_WESTWALL) && oneTileWest != null && oneTileWest.getUnit() != null && oneTileWest.getUnit() == bu))
+                {
+                    continue;
+                }
+            }
+            doorsclosed += _save.getTiles()[i].closeUfoDoor();
+        }
+
+        return doorsclosed;
+    }
+
+    /**
+     * Gets the AI to look through a window.
+     * @param position Current position.
+     * @return Direction or -1 when no window found.
+     */
+    internal int faceWindow(Position position)
+    {
+        Tile tile = _save.getTile(position);
+        if (tile != null && tile.getMapData(TilePart.O_NORTHWALL) != null && tile.getMapData(TilePart.O_NORTHWALL).getBlock(ItemDamageType.DT_NONE) == 0) return 0;
+        tile = _save.getTile(position + oneTileEast);
+        if (tile != null && tile.getMapData(TilePart.O_WESTWALL) != null && tile.getMapData(TilePart.O_WESTWALL).getBlock(ItemDamageType.DT_NONE) == 0) return 2;
+        tile = _save.getTile(position + oneTileSouth);
+        if (tile != null && tile.getMapData(TilePart.O_NORTHWALL) != null && tile.getMapData(TilePart.O_NORTHWALL).getBlock(ItemDamageType.DT_NONE) == 0) return 4;
+        tile = _save.getTile(position);
+        if (tile != null && tile.getMapData(TilePart.O_WESTWALL) != null && tile.getMapData(TilePart.O_WESTWALL).getBlock(ItemDamageType.DT_NONE) == 0) return 6;
+
+        return -1;
     }
 }

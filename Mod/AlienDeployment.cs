@@ -25,7 +25,7 @@ enum EscapeType { ESCAPE_NONE, ESCAPE_EXIT, ESCAPE_ENTRY, ESCAPE_EITHER };
 
 struct ItemSet
 {
-    List<string> items;
+    internal List<string> items;
 
     /**
 	 * Loads the ItemSet from a YAML file.
@@ -37,10 +37,10 @@ struct ItemSet
 
 struct DeploymentData
 {
-    int alienRank;
-    int lowQty, highQty, dQty, extraQty;
-    int percentageOutsideUfo;
-    List<ItemSet> itemSets;
+    internal int alienRank;
+    internal int lowQty, highQty, dQty, extraQty;
+    internal int percentageOutsideUfo;
+    internal List<ItemSet> itemSets;
 
     /**
 	 * Loads the DeploymentData from a YAML file.
@@ -269,4 +269,177 @@ internal class AlienDeployment : IRule
      */
     internal int getPoints() =>
 	    _points;
+
+    /**
+     * Gets the score penalty XCom receives for letting this mission despawn.
+     * @return the score for letting this site despawn.
+     */
+    internal int getDespawnPenalty() =>
+	    _despawnPenalty;
+
+    /**
+     * Returns the minimum duration for this mission type.
+     * @return Duration in hours.
+     */
+    internal int getDurationMin() =>
+	    _durationMin;
+
+    /**
+     * Returns the maximum duration for this mission type.
+     * @return Duration in hours.
+     */
+    internal int getDurationMax() =>
+	    _durationMax;
+
+    internal string chooseGenMissionType() =>
+	    _genMission.choose();
+
+    internal int getGenMissionFrequency() =>
+	    _genMissionFrequency;
+
+    /**
+     * Gets the maximum number of turns we have before this mission ends.
+     * @return the turn limit.
+     */
+    internal int getTurnLimit() =>
+	    _turnLimit;
+
+    /**
+     * Gets the action type to perform when the timer expires.
+     * @return the action type to perform.
+     */
+    internal ChronoTrigger getChronoTrigger() =>
+	    _chronoTrigger;
+
+    /**
+     * Gets the turn at which the players become exposed to the AI.
+     * @return the turn to start cheating.
+     */
+    internal int getCheatTurn() =>
+	    _cheatTurn;
+
+    /**
+     * Gets dimensions.
+     * @param width Width.
+     * @param length Length.
+     * @param height Height.
+     */
+    internal void getDimensions(out int width, out int length, out int height)
+    {
+	    width = _width;
+	    length = _length;
+	    height = _height;
+    }
+
+    /**
+     * Gets the terrain for battlescape generation.
+     * @return The terrain.
+     */
+    internal List<string> getTerrains() =>
+	    _terrains;
+
+    /**
+     * Gets the shade level for battlescape generation.
+     * @return The shade level.
+     */
+    internal int getShade() =>
+	    _shade;
+
+    /**
+     * Gets the script to use to generate a mission of this type.
+     * @return The script to use to generate a mission of this type.
+     */
+    internal string getScript() =>
+	    _script;
+
+    /**
+     * Gets the number of civilians.
+     * @return The number of civilians.
+     */
+    internal int getCivilians() =>
+	    _civilians;
+
+    /**
+     * Gets The maximum depth for this deployment.
+     * @return The maximum depth.
+     */
+    internal int getMaxDepth() =>
+	    _maxDepth;
+
+    /**
+     * Gets The minimum depth for this deployment.
+     * @return The minimum depth.
+     */
+    internal int getMinDepth() =>
+	    _minDepth;
+
+    /**
+     * Gets The list of musics this deployment has to choose from.
+     * @return The list of track names.
+     */
+    internal List<string> getMusic() =>
+	    _music;
+
+    /**
+     * Gets the target type for this mission (ie: alien control consoles and synomium devices).
+     * @return the target type for this mission.
+     */
+    internal int getObjectiveType() =>
+	    _objectiveType;
+
+    /**
+     * Gets the number of objectives required by this mission.
+     * @return the number of objectives required.
+     */
+    internal int getObjectivesRequired() =>
+	    _objectivesRequired;
+
+    /**
+     * Gets the string name for the popup to splash when the objective conditions are met.
+     * @return the string to pop up.
+     */
+    internal string getObjectivePopup() =>
+	    _objectivePopup;
+
+    /**
+     * Gets the next stage of the mission.
+     * @return The next stage of the mission.
+     */
+    internal string getNextStage() =>
+	    _nextStage;
+
+    /**
+    * Gets the cutscene to play when the mission is aborted.
+    * @return the cutscene to play when the mission is aborted.
+    */
+    internal string getAbortCutscene() =>
+	    _abortCutscene;
+
+    /**
+     * Gets the cutscene to play when the mission is lost.
+     * @return the cutscene to play when the mission is lost.
+     */
+    internal string getLoseCutscene() =>
+	    _loseCutscene;
+
+    /**
+     * Gets the cutscene to play when the mission is won.
+     * @return the cutscene to play when the mission is won.
+     */
+    internal string getWinCutscene() =>
+	    _winCutscene;
+
+    /**
+     * Gets the race to use on the next stage of the mission.
+     * @return The race for the next stage of the mission.
+     */
+    internal string getRace() =>
+	    _race;
+
+    /**
+     * Gets a pointer to the data.
+     * @return Pointer to the data.
+     */
+    internal List<DeploymentData> getDeploymentData() =>
+        _data;
 }

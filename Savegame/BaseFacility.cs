@@ -127,4 +127,20 @@ internal class BaseFacility
      */
     internal void setCraft(Craft craft) =>
         _craftForDrawing = craft;
+
+    /**
+     * Returns the base facility's X position on the
+     * base grid that it's placed on.
+     * @return X position in grid squares.
+     */
+    internal int getX() =>
+	    _x;
+
+    /**
+     * Returns the base facility's Y position on the
+     * base grid that it's placed on.
+     * @return Y position in grid squares.
+     */
+    internal int getY() =>
+	    _y;
 }

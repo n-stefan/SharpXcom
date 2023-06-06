@@ -128,7 +128,7 @@ internal class Craft : MovingTarget
      * Returns the globe marker for the craft.
      * @return Marker sprite, -1 if none.
      */
-    internal override int getMarker()
+    protected override int getMarker()
     {
 	    if (_status != "STR_OUT")
 		    return -1;
@@ -502,4 +502,268 @@ internal class Craft : MovingTarget
 		    }
 	    }
     }
+
+    /**
+     * Returns if a certain target is inside the craft's
+     * radar range, taking in account the positions of both.
+     * @param target Pointer to target to compare.
+     * @return True if inside radar range.
+     */
+    internal bool insideRadarRange(Target target)
+    {
+	    double range = Nautical(_rules.getRadarRange());
+	    return (getDistance(target) <= range);
+    }
+
+    /**
+     * Returns if a certain target is detected by the craft's
+     * radar, taking in account the range and chance.
+     * @param target Pointer to target to compare.
+     * @return True if it's detected, False otherwise.
+     */
+    internal bool detect(Target target)
+    {
+	    if (_rules.getRadarRange() == 0 || !insideRadarRange(target))
+		    return false;
+
+	    // backward compatibility with vanilla
+	    if (_rules.getRadarChance() == 100)
+		    return true;
+
+	    Ufo u = (Ufo)target;
+	    int chance = _rules.getRadarChance() * (100 + u.getVisibility()) / 100;
+	    return RNG.percent(chance);
+    }
+
+    /**
+     * Refuels the craft every 30 minutes
+     * while it's docked in the base.
+     * @return The item ID missing for refuelling, or "" if none.
+     */
+    internal string refuel()
+    {
+        string fuel = null;
+        if (_fuel < _rules.getMaxFuel())
+        {
+            string item = _rules.getRefuelItem();
+            if (string.IsNullOrEmpty(item))
+            {
+                setFuel(_fuel + _rules.getRefuelRate());
+            }
+            else
+            {
+                if (_base.getStorageItems().getItem(item) > 0)
+                {
+                    _base.getStorageItems().removeItem(item);
+                    setFuel(_fuel + _rules.getRefuelRate());
+                    _lowFuel = false;
+                }
+                else if (!_lowFuel)
+                {
+                    fuel = item;
+                    if (_fuel > 0)
+                    {
+                        _status = "STR_READY";
+                    }
+                    else
+                    {
+                        _lowFuel = true;
+                    }
+                }
+            }
+        }
+        if (_fuel >= _rules.getMaxFuel())
+        {
+            _status = "STR_READY";
+            foreach (var i in _weapons)
+            {
+                if (i != null && i.isRearming())
+                {
+                    _status = "STR_REARMING";
+                    break;
+                }
+            }
+        }
+        return fuel;
+    }
+
+    /**
+     * Changes the amount of fuel currently contained
+     * in this craft.
+     * @param fuel Amount of fuel.
+     */
+    void setFuel(int fuel)
+    {
+        _fuel = fuel;
+        if (_fuel > _rules.getMaxFuel())
+        {
+            _fuel = _rules.getMaxFuel();
+        }
+        else if (_fuel < 0)
+        {
+            _fuel = 0;
+        }
+    }
+
+    /**
+     * Returns the amount of fuel currently contained
+     * in this craft.
+     * @return Amount of fuel.
+     */
+    internal int getFuel() =>
+	    _fuel;
+
+    /**
+     * Returns whether the craft is currently low on fuel
+     * (only has enough to head back to base).
+     * @return True if it's low, false otherwise.
+     */
+    internal bool getLowFuel() =>
+	    _lowFuel;
+
+    /**
+     * Changes whether the craft is currently low on fuel
+     * (only has enough to head back to base).
+     * @param low True if it's low, false otherwise.
+     */
+    internal void setLowFuel(bool low) =>
+        _lowFuel = low;
+
+    /**
+     * Returns the minimum required fuel for the
+     * craft to make it back to base.
+     * @return Fuel amount.
+     */
+    internal int getFuelLimit() =>
+	    getFuelLimit(_base);
+
+    /**
+     * Returns the minimum required fuel for the
+     * craft to go to a base.
+     * @param base Pointer to target base.
+     * @return Fuel amount.
+     */
+    int getFuelLimit(Base @base) =>
+	    (int)Math.Floor(getFuelConsumption(_rules.getMaxSpeed()) * getDistance(@base) / _speedMaxRadian);
+
+    /**
+     * Consumes the craft's fuel every 10 minutes
+     * while it's on the air.
+     */
+    internal void consumeFuel() =>
+        setFuel(_fuel - getFuelConsumption());
+
+    /**
+     * Returns the amount of fuel the craft uses up
+     * while it's on the air, based on its current speed.
+     * @return Fuel amount.
+     */
+    int getFuelConsumption() =>
+	    getFuelConsumption(_speed);
+
+    /**
+     * Returns the amount of fuel the craft uses up
+     * while it's on the air.
+     * @param speed Craft speed for estimation.
+     * @return Fuel amount.
+     */
+    int getFuelConsumption(int speed)
+    {
+	    if (!string.IsNullOrEmpty(_rules.getRefuelItem()))
+		    return 1;
+	    return (int)Math.Floor(speed / 100.0);
+    }
+
+    /**
+     * Returns the amount of soldiers from a list
+     * that are currently attached to this craft.
+     * @return Number of soldiers.
+     */
+    internal int getNumSoldiers()
+    {
+	    if (_rules.getSoldiers() == 0)
+		    return 0;
+
+	    int total = 0;
+
+	    foreach (var i in _base.getSoldiers())
+	    {
+		    if (i.getCraft() == this)
+			    total++;
+	    }
+
+	    return total;
+    }
+
+    /**
+     * Returns the amount of vehicles currently
+     * contained in this craft.
+     * @return Number of vehicles.
+     */
+    internal int getNumVehicles() =>
+	    _vehicles.Count;
+
+    /**
+     * Returns the craft's dogfight status.
+     * @return Is the craft ion a dogfight?
+     */
+    internal bool isInDogfight() =>
+	    _inDogfight;
+
+    /**
+     * Changes the craft's dogfight status.
+     * @param inDogfight True if it's in dogfight, False otherwise.
+     */
+    internal void setInDogfight(bool inDogfight) =>
+        _inDogfight = inDogfight;
+
+    /// Returns the craft destroyed status.
+    /**
+     * If the amount of damage the craft take
+     * is more than it's health it will be
+     * destroyed.
+     * @return Is the craft destroyed?
+     */
+    internal bool isDestroyed() =>
+	    (_damage >= _rules.getMaxDamage());
+
+    /**
+     * Moves the craft to its destination.
+     */
+    internal void think()
+    {
+        if (_takeoff == 0)
+        {
+            move();
+        }
+        else
+        {
+            _takeoff--;
+            resetMeetPoint();
+        }
+        if (reachedDestination() && _dest == (Target)_base)
+        {
+            setInterceptionOrder(0); // just to be sure
+            checkup();
+            setDestination(null);
+            setSpeed(0);
+            _lowFuel = false;
+            _mission = false;
+            _takeoff = 0;
+        }
+    }
+
+    /**
+     * Sets interception order (first craft to leave the base gets 1, second 2, etc.).
+     * @param order Interception order.
+     */
+    void setInterceptionOrder(int order) =>
+	    _interceptionOrder = order;
+
+    /**
+     * Returns the base the craft belongs to.
+     * @return Pointer to base.
+     */
+    internal Base getBase() =>
+	    _base;
 }

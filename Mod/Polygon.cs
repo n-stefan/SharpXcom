@@ -174,4 +174,12 @@ internal class Polygon
      */
     internal void setTexture(int tex) =>
         _texture = tex;
+
+	/**
+	 * Returns the texture used to draw the polygon
+	 * (textures are stored in a set).
+	 * @return Texture sprite number.
+	 */
+	internal int getTexture() =>
+		_texture;
 }

@@ -38,6 +38,6 @@ internal class Waypoint : Target
      * Returns the globe marker for the waypoint.
      * @return Marker sprite, -1 if none.
      */
-    internal override int getMarker() =>
+    protected override int getMarker() =>
 	    6;
 }

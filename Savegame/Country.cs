@@ -127,4 +127,25 @@ internal class Country
      */
     internal void addActivityAlien(int activity) =>
         _activityAlien[^1] += activity;
+
+    /**
+     * Adds to the country's xcom activity level.
+     * @param activity how many points to add.
+     */
+    internal void addActivityXcom(int activity) =>
+        _activityXcom[^1] += activity;
+
+    /**
+     * no setter for this one, as it gets set automatically
+     * at month's end if _newPact is set.
+     * @return if we have signed a pact.
+     */
+    internal bool getPact() =>
+	    _pact;
+
+    /**
+     * @return if we will sign a new pact.
+     */
+    internal bool getNewPact() =>
+	    _newPact;
 }

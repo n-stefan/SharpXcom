@@ -37,6 +37,7 @@ internal class Base : Target
     List<Production> _productions;
     List<ResearchProject> _research;
     List<Vehicle> _vehicles;
+    List<BaseFacility> _defenses;
 
     /**
      * Initializes an empty base.
@@ -109,7 +110,7 @@ internal class Base : Target
      * Returns the globe marker for the base.
      * @return Marker sprite, -1 if none.
      */
-    internal override int getMarker()
+    protected override int getMarker()
     {
 	    // Cheap hack to hide bases when they haven't been placed yet
 	    if (AreSame(_lon, 0.0) && AreSame(_lat, 0.0))
@@ -511,7 +512,7 @@ internal class Base : Target
      * @param craft Pointer to craft.
      * @param unload Unload craft contents before removing.
      */
-    internal bool removeCraft(Craft craft, bool unload)
+    internal Craft removeCraft(Craft craft, bool unload)
     {
         // Unload craft
         if (unload)
@@ -534,9 +535,246 @@ internal class Base : Target
         {
             if (c == craft)
             {
-                return _crafts.Remove(c);
+                _crafts.Remove(c);
+                return c;
             }
         }
-        return false;
+        return null;
     }
+
+    /**
+     * Returns if a certain target is inside the base's
+     * radar range, taking in account the positions of both.
+     * @param target Pointer to target to compare.
+     * @return 0 - outside radar range, 1 - inside conventional radar range, 2 - inside hyper-wave decoder range.
+     */
+    internal int insideRadarRange(Target target)
+    {
+	    bool insideRange = false;
+	    double distance = getDistance(target) * 60.0 * (180.0 / M_PI);
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getRules().getRadarRange() >= distance && i.getBuildTime() == 0)
+		    {
+			    if (i.getRules().isHyperwave())
+			    {
+				    return 2;
+			    }
+			    insideRange = true;
+		    }
+	    }
+
+	    return insideRange? 1 : 0;
+    }
+
+    /**
+     * Returns if a certain target is covered by the base's
+     * radar range, taking in account the range and chance.
+     * @param target Pointer to target to compare.
+     * @return 0 - not detected, 1 - detected by conventional radar, 2 - detected by hyper-wave decoder.
+     */
+    internal int detect(Target target)
+    {
+	    int chance = 0;
+	    double distance = getDistance(target) * 60.0 * (180.0 / M_PI);
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getRules().getRadarRange() >= distance && i.getBuildTime() == 0)
+		    {
+			    int radarChance = i.getRules().getRadarChance();
+			    if (i.getRules().isHyperwave())
+			    {
+				    if (radarChance == 100 || RNG.percent(radarChance))
+				    {
+					    return 2;
+				    }
+			    }
+			    else
+			    {
+				    chance += radarChance;
+			    }
+		    }
+	    }
+	    if (chance == 0) return 0;
+
+	    Ufo u = (Ufo)target;
+	    if (u != null)
+	    {
+		    chance = chance * (100 + u.getVisibility()) / 100;
+	    }
+
+	    return RNG.percent(chance)? 1 : 0;
+    }
+
+    /**
+     * Calculate the detection chance of this base.
+     * Big bases without mindshields are easier to detect.
+     * @param difficulty The savegame difficulty.
+     * @return The detection chance.
+     */
+    internal uint getDetectionChance()
+    {
+	    int mindShields = _facilities.Count(isMindShield);
+	    int completedFacilities = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    completedFacilities += i.getRules().getSize() * i.getRules().getSize();
+		    }
+	    }
+	    return ((uint)((completedFacilities / 6 + 15) / (mindShields + 1)));
+    }
+
+    /**
+     * Only fully operational facilities are checked.
+     * @param facility Pointer to the facility to check.
+     * @return If @a facility can act as a mind shield.
+     */
+    bool isMindShield(BaseFacility facility)
+    {
+	    if (facility.getBuildTime() != 0)
+	    {
+		    // Still building this
+		    return false;
+	    }
+	    return (facility.getRules().isMindShield());
+    }
+
+    internal List<BaseFacility> getDefenses() =>
+        _defenses;
+
+    /**
+     * Returns the amount of soldiers contained
+     * in the base without any assignments.
+     * @param checkCombatReadiness does what it says on the tin.
+     * @return Number of soldiers.
+     */
+    internal int getAvailableSoldiers(bool checkCombatReadiness)
+    {
+	    int total = 0;
+	    foreach (var i in _soldiers)
+	    {
+		    if (!checkCombatReadiness && i.getCraft() == null)
+		    {
+			    total++;
+		    }
+		    else if (checkCombatReadiness && ((i.getCraft() != null && i.getCraft().getStatus() != "STR_OUT") ||
+			    (i.getCraft() == null && i.getWoundRecovery() == 0)))
+		    {
+			    total++;
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the list of vehicles currently equipped
+     * in the base.
+     * @return Pointer to vehicle list.
+     */
+    internal List<Vehicle> getVehicles() =>
+        _vehicles;
+
+    internal void setupDefenses()
+    {
+        _defenses.Clear();
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0 && i.getRules().getDefenseValue() != 0)
+            {
+                _defenses.Add(i);
+            }
+        }
+
+        foreach (var i in getCrafts())
+            foreach (var j in i.getVehicles())
+                foreach (var k in _vehicles)
+                    if (k == j) { _vehicles.Remove(k); break; } // to avoid calling a vehicle's destructor for tanks on crafts
+
+        _vehicles.Clear();
+
+        // add vehicles that are in the crafts of the base, if it's not out
+        foreach (var c in getCrafts())
+        {
+            if (c.getStatus() != "STR_OUT")
+            {
+                foreach (var i in c.getVehicles())
+                {
+                    _vehicles.Add(i);
+                }
+            }
+        }
+
+        // add vehicles left on the base
+        var e = _items.getContents().GetEnumerator();
+        e.MoveNext();
+        while (e.Current.Key != null)
+        {
+            string itemId = e.Current.Key;
+            int itemQty = e.Current.Value;
+            RuleItem rule = _mod.getItem(itemId, true);
+            if (rule.isFixed())
+            {
+                int size = 4;
+                if (_mod.getUnit(itemId) != null)
+                {
+                    size = _mod.getArmor(_mod.getUnit(itemId).getArmor(), true).getSize();
+                }
+                if (!rule.getCompatibleAmmo().Any()) // so this vehicle does not need ammo
+                {
+                    for (int j = 0; j < itemQty; ++j)
+                    {
+                        _vehicles.Add(new Vehicle(rule, rule.getClipSize(), size));
+                    }
+                    _items.removeItem(itemId, itemQty);
+                }
+                else // so this vehicle needs ammo
+                {
+                    RuleItem ammo = _mod.getItem(rule.getCompatibleAmmo().First(), true);
+                    int ammoPerVehicle, clipSize;
+                    if (ammo.getClipSize() > 0 && rule.getClipSize() > 0)
+                    {
+                        clipSize = rule.getClipSize();
+                        ammoPerVehicle = clipSize / ammo.getClipSize();
+                    }
+                    else
+                    {
+                        clipSize = ammo.getClipSize();
+                        ammoPerVehicle = clipSize;
+                    }
+                    int baseQty = _items.getItem(ammo.getType()) / ammoPerVehicle;
+                    if (baseQty == 0)
+                    {
+                        e.MoveNext();
+                        continue;
+                    }
+                    int canBeAdded = Math.Min(itemQty, baseQty);
+                    for (int j = 0; j < canBeAdded; ++j)
+                    {
+                        _vehicles.Add(new Vehicle(rule, clipSize, size));
+                        _items.removeItem(ammo.getType(), ammoPerVehicle);
+                    }
+                    _items.removeItem(itemId, canBeAdded);
+                }
+
+                e = _items.getContents().GetEnumerator(); // we have to start over because iterator is broken because of the removeItem
+            }
+            else e.MoveNext();
+        }
+    }
+
+    /**
+     * Get the base's retaliation status.
+     * @return If the base is a valid target for alien retaliation.
+     */
+    internal bool getRetaliationTarget() =>
+	    _retaliationTarget;
+
+    /**
+     * Changes the base's battlescape status.
+     * @param inbattle True if it's in battle, False otherwise.
+     */
+    internal void setInBattlescape(bool inbattle) =>
+        _inBattlescape = inbattle;
 }

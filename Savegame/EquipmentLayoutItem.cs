@@ -113,4 +113,39 @@ internal class EquipmentLayoutItem
 	    _ammoItem = node["ammoItem"].ToString() ?? "NONE";
 	    _fuseTimer = int.TryParse(node["fuseTimer"].ToString(), out int fuseTimer) ? fuseTimer : -1;
     }
+
+    /**
+     * Returns the item's type which has to be in a slot.
+     * @return item type.
+     */
+    internal string getItemType() =>
+	    _itemType;
+
+    /**
+     * Returns the position-X in the slot to be occupied.
+     * @return slot-X.
+     */
+    internal int getSlotX() =>
+	    _slotX;
+
+    /**
+     * Returns the position-Y in the slot to be occupied.
+     * @return slot-Y.
+     */
+    internal int getSlotY() =>
+	    _slotY;
+
+    /**
+     * Returns the ammo has to be loaded into the item.
+     * @return ammo type.
+     */
+    internal string getAmmoItem() =>
+	    _ammoItem;
+
+    /**
+     * Returns the turn until explosion of the item. (if it's an activated grenade-type)
+     * @return turn count.
+     */
+    internal int getFuseTimer() =>
+	    _fuseTimer;
 }

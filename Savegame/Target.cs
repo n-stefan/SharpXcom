@@ -57,7 +57,7 @@ internal class Target
      * following this target.
      * @return List of crafts.
      */
-    List<Craft> getCraftFollowers()
+    internal List<Craft> getCraftFollowers()
     {
 	    var crafts = new List<Craft>();
 	    foreach (var follower in _followers)
@@ -96,7 +96,7 @@ internal class Target
      * Saves the target to a YAML file.
      * @returns YAML node.
      */
-    internal virtual YamlNode save()
+    protected virtual YamlNode save()
     {
         var node = new YamlMappingNode
         {
@@ -131,7 +131,7 @@ internal class Target
         string.Empty;
 
     /// Gets the target's marker sprite.
-    internal virtual int getMarker() =>
+    protected virtual int getMarker() =>
         0;
 
     /**
@@ -233,4 +233,22 @@ internal class Target
      */
     string getMarkerName() =>
 	    getType() + "_";
+
+	/// Gets the distance to another target.
+	internal double getDistance(Target target) =>
+        getDistance(target.getLongitude(), target.getLatitude());
+
+    /**
+     * Returns the great circle distance to another
+     * target on the globe.
+     * @param lon Longitude.
+     * @param lat Latitude.
+     * @returns Distance in radian.
+     */
+    protected double getDistance(double lon, double lat)
+    {
+	    if (AreSame(lon, _lon) && AreSame(lat, _lat))
+		    return 0.0;
+	    return Math.Acos(Math.Cos(_lat) * Math.Cos(lat) * Math.Cos(lon - _lon) + Math.Sin(_lat) * Math.Sin(lat));
+    }
 }

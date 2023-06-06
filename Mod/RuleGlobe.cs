@@ -183,4 +183,12 @@ internal class RuleGlobe
 			throw new Exception(filename + " not found");
 		}
 	}
+
+	/**
+	 * Returns the rules for the specified texture.
+	 * @param id Texture ID.
+	 * @return Rules for the texture.
+	 */
+	internal Texture getTexture(int id) =>
+		_textures.TryGetValue(id, out Texture texture) ? texture : null;
 }

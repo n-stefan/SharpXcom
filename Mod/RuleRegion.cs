@@ -25,9 +25,9 @@ namespace SharpXcom.Mod;
  */
 struct MissionArea
 {
-	double lonMin, lonMax, latMin, latMax;
-	int texture;
-	string name;
+	internal double lonMin, lonMax, latMin, latMax;
+	internal int texture;
+	internal string name;
 
     public static bool operator ==(MissionArea a, MissionArea b) =>
 		AreSame(a.lonMax, b.lonMax) && AreSame(a.lonMin, b.lonMin) && AreSame(a.latMax, b.latMax) && AreSame(a.latMin, b.latMin);
@@ -35,7 +35,7 @@ struct MissionArea
     public static bool operator !=(MissionArea a, MissionArea b) =>
         !(a == b);
 
-    bool isPoint() =>
+    internal bool isPoint() =>
 		AreSame(lonMin, lonMax) && AreSame(latMin, latMax);
 
     /**
@@ -200,4 +200,49 @@ internal class RuleRegion : IRule
 	    }
 	    return false;
     }
+
+    /**
+     * Gets a random point that is guaranteed to be inside the given zone.
+     * @param zone The target zone.
+     * @return A pair of longitude and latitude.
+     */
+    internal KeyValuePair<double, double> getRandomPoint(uint z)
+    {
+        var zone = (int)z;
+        if (zone < _missionZones.Count)
+	    {
+		    int a = RNG.generate(0, _missionZones[zone].areas.Count - 1);
+		    double lonMin = _missionZones[zone].areas[a].lonMin;
+		    double lonMax = _missionZones[zone].areas[a].lonMax;
+		    double latMin = _missionZones[zone].areas[a].latMin;
+		    double latMax = _missionZones[zone].areas[a].latMax;
+		    if (lonMin > lonMax)
+		    {
+			    lonMin = _missionZones[zone].areas[a].lonMax;
+			    lonMax = _missionZones[zone].areas[a].lonMin;
+		    }
+		    if (latMin > latMax)
+		    {
+			    latMin = _missionZones[zone].areas[a].latMax;
+			    latMax = _missionZones[zone].areas[a].latMin;
+		    }
+		    double lon = RNG.generate(lonMin, lonMax);
+		    double lat = RNG.generate(latMin, latMax);
+		    return KeyValuePair.Create(lon, lat);
+	    }
+	    Debug.Assert(false, "Invalid zone number");
+	    return KeyValuePair.Create(0.0, 0.0);
+    }
+
+    /// Gets the substitute mission region.
+    internal string getMissionRegion() =>
+        _missionRegion;
+
+    /**
+     * Gets the weight of this region for mission selection.
+     * This is only used when creating a new game, since these weights change in the course of the game.
+     * @return The initial weight of this region.
+     */
+    internal uint getWeight() =>
+	    _regionWeight;
 }

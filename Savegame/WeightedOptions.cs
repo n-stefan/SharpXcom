@@ -80,7 +80,7 @@ internal class WeightedOptions
 	 * @param id The option name.
 	 * @param weight The option's new weight.
 	 */
-	void set(string id, uint weight)
+	internal void set(string id, uint weight)
 	{
 		if (_choices.ContainsKey(id))
 		{
@@ -108,4 +108,27 @@ internal class WeightedOptions
 
     /// Remove all entries.
     internal void clear() { _totalWeight = 0; _choices.Clear(); }
+
+	/**
+	 * Select a random choice from among the contents.
+	 * This MUST be called on non-empty objects.
+	 * Each time this is called, the returned value can be different.
+	 * @return The key of the selected choice.
+	 */
+	internal string choose()
+	{
+		if (_totalWeight == 0)
+		{
+			return string.Empty;
+		}
+		uint var = (uint)RNG.generate(0, _totalWeight);
+		foreach (var ii in _choices)
+		{
+			if (var <= ii.Value)
+				return ii.Key;
+			var -= ii.Value;
+		}
+		// We always have a valid iterator here.
+		return string.Empty;
+	}
 }

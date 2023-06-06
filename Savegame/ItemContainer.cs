@@ -99,12 +99,12 @@ internal class ItemContainer
 	internal void load(YamlNode node) =>
         _qty = ((YamlMappingNode)node).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
 
-	/**
+    /**
 	 * Removes an item amount from the container.
 	 * @param id Item ID.
 	 * @param qty Item quantity.
 	 */
-	internal void removeItem(string id, int qty)
+    internal void removeItem(string id, int qty = 1)
 	{
 		if (string.IsNullOrEmpty(id) || !_qty.ContainsKey(id))
 		{

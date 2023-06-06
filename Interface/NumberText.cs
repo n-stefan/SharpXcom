@@ -241,4 +241,23 @@ internal class NumberText : Surface
         _color = color;
         _redraw = true;
     }
+
+    internal void setBordered(bool bordered) =>
+        _bordered = bordered;
+
+    /**
+     * Replaces a certain amount of colors in the number text palette.
+     * @param colors Pointer to the set of colors.
+     * @param firstcolor Offset of the first color to replace.
+     * @param ncolors Amount of colors to replace.
+     */
+    internal void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    {
+        base.setPalette(colors, firstcolor, ncolors);
+        for (int i = 0; i < 10; ++i)
+        {
+            _chars[i].setPalette(colors, firstcolor, ncolors);
+            _borderedChars[i].setPalette(colors, firstcolor, ncolors);
+        }
+    }
 }

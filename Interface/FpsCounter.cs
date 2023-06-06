@@ -109,4 +109,13 @@ internal class FpsCounter : Surface
             Options.fpsCounter = _visible;
         }
     }
+
+    /**
+     * Draws the FPS counter.
+     */
+    internal void draw()
+    {
+        base.draw();
+        _text.blit(this);
+    }
 }

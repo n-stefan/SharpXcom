@@ -28,27 +28,27 @@ enum MissionObjective { OBJECTIVE_SCORE, OBJECTIVE_INFILTRATION, OBJECTIVE_BASE,
 struct MissionWave
 {
     /// The type of the spawned UFOs.
-    string ufoType;
+    internal string ufoType;
     /// The number of UFOs that will be generated.
     /**
 	 * The UFOs are generated sequentially, one every @a spawnTimer minutes.
 	 */
-    uint ufoCount;
+    internal uint ufoCount;
     /// The trajectory ID for this wave's UFOs.
     /**
 	 * Trajectories control the way UFOs fly around the Geoscape.
 	 */
-    string trajectory;
+    internal string trajectory;
     /// Number of minutes between UFOs in the wave.
     /**
 	 * The actual value used is spawnTimer/4 or 3*spawnTimer/4.
 	 */
-    uint spawnTimer;
+    internal uint spawnTimer;
     /// This wave performs the mission objective.
     /**
 	 * The UFO executes a special action based on the mission objective.
 	 */
-    bool objective;
+    internal bool objective;
 
     /**
 	 * Loads the MissionWave from a YAML file.
@@ -182,4 +182,46 @@ internal class RuleAlienMission : IRule
 			}
 		}
 	}
+
+    /// Gets the number of waves.
+    internal int getWaveCount() =>
+        _waves.Count;
+
+    /// Gets the full wave information.
+    internal MissionWave getWave(uint index) =>
+        _waves[(int)index];
+
+    /// Gets the zone for spawning an alien site or base.
+    internal int getSpawnZone() =>
+        _spawnZone;
+
+    /// the type of missionSite to spawn (if any)
+    internal string getSiteType() =>
+        _siteType;
+
+    /**
+     * Returns the Alien score for this mission.
+     * @return Amount of points.
+     */
+    internal int getPoints() =>
+	    _points;
+
+    /// Gets the UFO type for special spawns.
+    internal string getSpawnUfo() =>
+        _spawnUfo;
+
+    /**
+     * Chooses one of the available races for this mission.
+     * The racial distribution may vary based on the current game date.
+     * @param monthsPassed The number of months that have passed in the game world.
+     * @return The string id of the race.
+     */
+    internal string generateRace(uint monthsPassed)
+    {
+        int rc;
+        for (rc = _raceDistribution.Count - 1; rc >= 0 && monthsPassed < _raceDistribution[rc].Key; --rc);
+        if (rc < 0)
+		    return string.Empty;
+	    return _raceDistribution[rc].Value.choose();
+    }
 }
