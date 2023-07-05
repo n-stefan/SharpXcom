@@ -183,4 +183,26 @@ internal class RuleUfo : IRule
      */
     internal RuleTerrain getBattlescapeTerrainData() =>
 	    _battlescapeTerrainData;
+
+    /**
+     * For user-defined UFOs, use a surface for the "preview" image.
+     * @return The name of the surface that represents this UFO.
+     */
+    internal string getModSprite() =>
+	    _modSprite;
+
+    /**
+     * Gets the ID of the sprite used to draw the UFO
+     * in the Dogfight window.
+     * @return The sprite ID.
+     */
+    internal int getSprite() =>
+	    _sprite;
+
+    /**
+     * Gets the UFO's break off time.
+     * @return The UFO's break off time in game seconds.
+     */
+    internal int getBreakOffTime() =>
+	    _breakOffTime;
 }

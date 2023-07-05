@@ -141,4 +141,11 @@ internal class RuleManufacture : IListOrder, IRule
      */
     internal int getManufactureCost() =>
 	    _cost;
+
+    /**
+     * Gets the required workspace to start production.
+     * @return The required workspace.
+     */
+    internal int getRequiredSpace() =>
+	    _space;
 }

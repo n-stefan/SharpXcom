@@ -25,6 +25,8 @@ namespace SharpXcom.Savegame;
  */
 internal class Base : Target
 {
+    const int BASE_SIZE = 6;
+
     Mod.Mod _mod;
     int _scientists, _engineers;
     bool _inBattlescape;
@@ -402,7 +404,7 @@ internal class Base : Target
      * available in the base.
      * @return Storage space.
      */
-    int getAvailableStores()
+    internal int getAvailableStores()
     {
 	    int total = 0;
 	    foreach (var i in _facilities)
@@ -420,7 +422,7 @@ internal class Base : Target
      * and equipment about to arrive.
      * @return Storage space.
      */
-    double getUsedStores()
+    internal double getUsedStores()
     {
         double total = _items.getTotalSize(_mod);
         foreach (var i in _crafts)
@@ -777,4 +779,424 @@ internal class Base : Target
      */
     internal void setInBattlescape(bool inbattle) =>
         _inBattlescape = inbattle;
+
+    /**
+     * Returns the total amount of living quarters
+     * available in the base.
+     * @return Living space.
+     */
+    internal int getAvailableQuarters()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getPersonnel();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the amount of living quarters used up
+     * by personnel in the base.
+     * @return Living space.
+     */
+    internal int getUsedQuarters() =>
+	    getTotalSoldiers() + getTotalScientists() + getTotalEngineers();
+
+    /**
+     * Returns the total amount of soldiers contained
+     * in the base.
+     * @return Number of soldiers.
+     */
+    internal int getTotalSoldiers()
+    {
+	    int total = _soldiers.Count;
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_SOLDIER)
+		    {
+			    total += i.getQuantity();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of laboratories
+     * available in the base.
+     * @return Laboratory space.
+     */
+    internal int getAvailableLaboratories()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getLaboratories();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the amount of laboratories used up
+     * by research projects in the base.
+     * @return Laboratory space.
+     */
+    internal int getUsedLaboratories()
+    {
+	    List<ResearchProject> research = getResearch();
+	    int usedLabSpace = 0;
+	    foreach (var itResearch in research)
+	    {
+		    usedLabSpace += itResearch.getAssigned();
+	    }
+	    return usedLabSpace;
+    }
+
+    /**
+     * Returns the total amount of workshops
+     * available in the base.
+     * @return Workshop space.
+     */
+    internal int getAvailableWorkshops()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getWorkshops();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the amount of workshops used up
+     * by manufacturing projects in the base.
+     * @return Storage space.
+     */
+    internal int getUsedWorkshops()
+    {
+	    int usedWorkShop = 0;
+	    foreach (var iter in _productions)
+	    {
+		    usedWorkShop += (iter.getAssignedEngineers() + iter.getRules().getRequiredSpace());
+	    }
+	    return usedWorkShop;
+    }
+
+    /**
+     * Returns the total amount of hangars
+     * available in the base.
+     * @return Number of hangars.
+     */
+    internal int getAvailableHangars()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getCrafts();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the amount of hangars used up
+     * by crafts in the base.
+     * @return Number of hangars.
+     */
+    internal int getUsedHangars()
+    {
+	    int total = _crafts.Count;
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_CRAFT)
+		    {
+			    total += i.getQuantity();
+		    }
+	    }
+	    foreach (var i in _productions)
+	    {
+		    if (i.getRules().getCategory() == "STR_CRAFT")
+		    {
+			    // This should be fixed on the case when (*i)->getInfiniteAmount() == TRUE
+			    total += (i.getAmountTotal() - i.getAmountProduced());
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of used
+     * Psi Lab Space in the base.
+     * @return used Psi Lab space.
+     */
+    internal int getUsedPsiLabs()
+    {
+	    int total = 0;
+	    foreach (var s in _soldiers)
+	    {
+		    if (s.isInPsiTraining())
+		    {
+			    total++;
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of Containment Space
+     * available in the base.
+     * @return Containment Lab space.
+     */
+    internal int getAvailableContainment()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getAliens();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of used
+     * Containment Space in the base.
+     * @return Containment Lab space.
+     */
+    internal int getUsedContainment()
+    {
+	    int total = 0;
+	    foreach (var i in _items.getContents())
+	    {
+		    if (_mod.getItem(i.Key, true).isAlien())
+		    {
+			    total += i.Value;
+		    }
+	    }
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_ITEM)
+		    {
+			    if (_mod.getItem(i.getItems(), true).isAlien())
+			    {
+				    total += i.getQuantity();
+			    }
+		    }
+	    }
+	    foreach (var i in _research)
+	    {
+		    RuleResearch projRules = i.getRules();
+		    if (projRules.needItem() && _mod.getUnit(projRules.getName()) != null)
+		    {
+			    ++total;
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Gets a sorted list of the facilities(=iterators) NOT connected to the Access Lift.
+     * @param remove Facility to ignore (in case of facility dismantling).
+     * @return a sorted list of iterators pointing to elements in _facilities.
+     */
+    internal List<BaseFacility> getDisconnectedFacilities(BaseFacility remove)
+    {
+        var result = new List<BaseFacility>();
+
+        if (remove != null && remove.getRules().isLift())
+        { // Theoretically this is impossible, but sanity check is good :)
+            foreach (var i in _facilities)
+            {
+                if (i != remove) result.Add(i);
+            }
+            return result;
+        }
+
+        var facilitiesConnStates = new List<KeyValuePair<BaseFacility, bool>?>();
+        var grid = new KeyValuePair<BaseFacility, bool>?[BASE_SIZE, BASE_SIZE];
+        BaseFacility lift = null;
+
+        for (int x = 0; x < BASE_SIZE; ++x)
+        {
+            for (int y = 0; y < BASE_SIZE; ++y)
+            {
+                grid[x, y] = null;
+            }
+        }
+
+        // Ok, fill up the grid(+facilitiesConnStates), and search the lift
+        foreach (var i in _facilities)
+        {
+            if (i != remove)
+            {
+                if (i.getRules().isLift()) lift = i;
+                for (int x = 0; x != i.getRules().getSize(); ++x)
+                {
+                    for (int y = 0; y != i.getRules().getSize(); ++y)
+                    {
+                        var p = KeyValuePair.Create(i, false);
+                        facilitiesConnStates.Add(p);
+                        grid[i.getX() + x, i.getY() + y] = p;
+                    }
+                }
+            }
+        }
+
+        // we're in real trouble if this happens...
+        if (lift == null)
+        {
+            //TODO: something clever.
+            return result;
+        }
+
+        // Now make the recursion manually using a stack
+        var stack = new Stack<KeyValuePair<int, int>>();
+        stack.Push(KeyValuePair.Create(lift.getX(), lift.getY()));
+        while (stack.Any())
+        {
+            int x = stack.Peek().Key, y = stack.Peek().Value;
+            stack.Pop();
+            if (x >= 0 && x < BASE_SIZE && y >= 0 && y < BASE_SIZE && grid[x, y] != null && !grid[x, y].Value.Value)
+            {
+                grid[x, y] = KeyValuePair.Create(grid[x, y].Value.Key, true);
+                BaseFacility fac = grid[x, y].Value.Key;
+                BaseFacility neighborLeft = (x - 1 >= 0 && grid[x - 1, y] != null) ? grid[x - 1, y].Value.Key : null;
+                BaseFacility neighborRight = (x + 1 < BASE_SIZE && grid[x + 1, y] != null) ? grid[x + 1, y].Value.Key : null;
+                BaseFacility neighborTop = (y - 1 >= 0 && grid[x, y - 1] != null) ? grid[x, y - 1].Value.Key : null;
+                BaseFacility neighborBottom = (y + 1 < BASE_SIZE && grid[x, y + 1] != null) ? grid[x, y + 1].Value.Key : null;
+                if ((fac.getBuildTime() == 0) || (neighborLeft != null && (neighborLeft == fac || neighborLeft.getBuildTime() > neighborLeft.getRules().getBuildTime()))) stack.Push(KeyValuePair.Create(x - 1, y));
+                if ((fac.getBuildTime() == 0) || (neighborRight != null && (neighborRight == fac || neighborRight.getBuildTime() > neighborRight.getRules().getBuildTime()))) stack.Push(KeyValuePair.Create(x + 1, y));
+                if ((fac.getBuildTime() == 0) || (neighborTop != null && (neighborTop == fac || neighborTop.getBuildTime() > neighborTop.getRules().getBuildTime()))) stack.Push(KeyValuePair.Create(x, y - 1));
+                if ((fac.getBuildTime() == 0) || (neighborBottom != null && (neighborBottom == fac || neighborBottom.getBuildTime() > neighborBottom.getRules().getBuildTime()))) stack.Push(KeyValuePair.Create(x, y + 1));
+            }
+        }
+
+        BaseFacility lastFacility = null;
+        for (var i = 0; i < facilitiesConnStates.Count; i++)
+        {
+            // Not a connected fac.? -> push its iterator into the list!
+            // Oh, and we don't want duplicates (facilities with bigger sizes like hangar)
+            if (facilitiesConnStates[i].Value.Key != lastFacility && !facilitiesConnStates[i].Value.Value) result.Add(facilitiesConnStates[i].Value.Key);
+            lastFacility = facilitiesConnStates[i].Value.Key;
+            facilitiesConnStates[i] = null; // We don't need the pair anymore.
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the amount of scientists contained
+     * in the base without any assignments.
+     * @return Number of scientists.
+     */
+    internal int getAvailableScientists() =>
+	    getScientists();
+
+    /**
+     * Returns the amount of engineers contained
+     * in the base without any assignments.
+     * @return Number of engineers.
+     */
+    internal int getAvailableEngineers() =>
+	    getEngineers();
+
+    /**
+     * Returns the amount of engineers currently in use.
+     * @return Amount of engineers.
+     */
+    internal int getAllocatedEngineers()
+    {
+	    int total = 0;
+	    foreach (var iter in _productions)
+	    {
+		    total += iter.getAssignedEngineers();
+	    }
+	    return total;
+    }
+
+    /**
+     * Return workshop space not used by a Production
+     * @return workshop space not used by a Production
+     */
+    internal int getFreeWorkshops() =>
+	    getAvailableWorkshops() - getUsedWorkshops();
+
+    /**
+     * Return containment space not in use
+     * @return containment space not in use
+     */
+    internal int getFreeContainment() =>
+	    getAvailableContainment() - getUsedContainment();
+
+    /**
+     * Return laboratories space not used by a ResearchProject
+     * @return laboratories space not used by a ResearchProject
+     */
+    internal int getFreeLaboratories() =>
+	    getAvailableLaboratories() - getUsedLaboratories();
+
+    internal int getGravShields()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0 && i.getRules().isGravShield())
+		    {
+			    ++total;
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Cleans up the defenses vector and optionally reclaims the tanks and their ammo.
+     * @param reclaimItems determines whether the HWPs should be returned to storage.
+     */
+    internal void cleanupDefenses(bool reclaimItems)
+    {
+        _defenses.Clear();
+
+        foreach (var i in getCrafts())
+            foreach (var j in i.getVehicles())
+                foreach (var k in _vehicles)
+                    if (k == j) { _vehicles.Remove(k); break; } // to avoid calling a vehicle's destructor for tanks on crafts
+
+        while (_vehicles.Count > 0)
+        {
+            if (reclaimItems)
+            {
+                RuleItem rule = _vehicles[0].getRules();
+                string type = rule.getType();
+                _items.addItem(type);
+                if (rule.getCompatibleAmmo().Any())
+                {
+                    RuleItem ammo = _mod.getItem(rule.getCompatibleAmmo().First(), true);
+                    int ammoPerVehicle;
+                    if (ammo.getClipSize() > 0 && rule.getClipSize() > 0)
+                    {
+                        ammoPerVehicle = rule.getClipSize() / ammo.getClipSize();
+                    }
+                    else
+                    {
+                        ammoPerVehicle = ammo.getClipSize();
+                    }
+                    _items.addItem(ammo.getType(), ammoPerVehicle);
+                }
+            }
+            _vehicles.RemoveAt(0);
+        }
+    }
 }

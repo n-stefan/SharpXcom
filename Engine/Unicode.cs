@@ -171,7 +171,7 @@ internal class Unicode
      * @param currency Currency symbol.
      * @return The formatted string.
      */
-    static string formatNumber(long value, string currency)
+    internal static string formatNumber(long value, string currency = "")
     {
 	    const string thousands_sep = "\xC2\xA0"; // TOK_NBSP
 
@@ -193,4 +193,13 @@ internal class Unicode
 	    }
 	    return s;
     }
+
+    /**
+     * Takes an integer value and formats it as percentage,
+     * adding a % sign.
+     * @param value The percentage value.
+     * @return The formatted string.
+     */
+    internal static string formatPercentage(int value) =>
+        $"{value}%";
 }

@@ -117,7 +117,7 @@ internal class BattlescapeGame
     /**
      * Cleans up all the deleted states.
      */
-    void cleanupDeleted() =>
+    internal void cleanupDeleted() =>
         _deleted.Clear();
 
     /**
@@ -726,7 +726,7 @@ internal class BattlescapeGame
      * @param &liveSoldiers The integer in which to store the live XCom tally.
      * @param convert Should we convert infected units?
      */
-    void tallyUnits(out int liveAliens, out int liveSoldiers)
+    internal void tallyUnits(out int liveAliens, out int liveSoldiers)
     {
         liveSoldiers = 0;
         liveAliens = 0;
@@ -807,7 +807,7 @@ internal class BattlescapeGame
         if (t != null)
         {
             Position p = new Position(t.getPosition().x * 16, t.getPosition().y * 16, t.getPosition().z * 24);
-            statePushNext(new ExplosionBState(this, p, 0, 0, t));
+            statePushNext(new ExplosionBState(this, p, null, null, t));
             statePushBack(null);
             return;
         }
@@ -830,7 +830,7 @@ internal class BattlescapeGame
             if (t != null)
             {
                 Position p = new Position(t.getPosition().x * 16, t.getPosition().y * 16, t.getPosition().z * 24);
-                statePushNext(new ExplosionBState(this, p, 0, 0, t));
+                statePushNext(new ExplosionBState(this, p, null, null, t));
                 statePushBack(null);
                 _endTurnProcessed = true;
                 return;
@@ -956,4 +956,18 @@ internal class BattlescapeGame
      */
     internal bool playableUnitSelected() =>
 	    _save.getSelectedUnit() != null && (_save.getSide() == UnitFaction.FACTION_PLAYER || _save.getDebugMode());
+
+    /// Returns whether panic has been handled.
+    internal bool getPanicHandled() =>
+        _playerPanicHandled;
+
+    /**
+     * Determines whether an action is currently going on?
+     * @return true or false.
+     */
+    internal bool isBusy() =>
+	    _states.Any();
+
+    internal List<BattleState> getStates() =>
+        _states;
 }

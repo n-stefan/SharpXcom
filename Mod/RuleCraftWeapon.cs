@@ -128,4 +128,51 @@ internal class RuleCraftWeapon : IRule
      */
     internal int getAmmoMax() =>
 	    _ammoMax;
+
+    /**
+     * Gets the amount of time the craft weapon takes to
+     * reload in cautious mode.
+     * @return The time in game seconds.
+     */
+    internal int getCautiousReload() =>
+	    _reloadCautious;
+
+    /**
+     * Gets the maximum range of this craft weapon.
+     * @return The range in km.
+     */
+    internal int getRange() =>
+	    _range;
+
+    /**
+     * Gets the amount of time the craft weapon takes to
+     * reload in standard mode.
+     * @return The time in game seconds.
+     */
+    internal int getStandardReload() =>
+	    _reloadStandard;
+
+    /**
+     * Gets the amount of time the craft weapon takes to
+     * reload in aggressive mode.
+     * @return The time in game seconds.
+     */
+    internal int getAggressiveReload() =>
+	    _reloadAggressive;
+
+    /**
+     * Gets the ID of the sprite used to draw the craft weapon
+     * in the Equip Craft and Interception screens.
+     * @return The sprite ID.
+     */
+    internal int getSprite() =>
+	    _sprite;
+
+    /**
+     * Gets the language string that names this craft weapon.
+     * Each craft weapon type has a unique name.
+     * @return The craft weapon's name.
+     */
+    internal string getType() =>
+	    _type;
 }

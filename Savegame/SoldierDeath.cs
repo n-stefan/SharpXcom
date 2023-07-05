@@ -78,4 +78,11 @@ internal class SoldierDeath
 		    _cause.load(node["cause"]);
 	    }
     }
+
+    /**
+    * Returns the time of death of this soldier.
+    * @return Pointer to the time.
+    */
+    internal BattleUnitKills getCause() =>
+	    _cause;
 }

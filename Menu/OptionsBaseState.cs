@@ -168,7 +168,7 @@ internal class OptionsBaseState : State
      * Saves the new options and returns to the proper origin screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    internal void btnOkClick(Engine.Action _)
     {
         Options.switchDisplay();
         int dX = Options.baseXResolution;
@@ -210,7 +210,7 @@ internal class OptionsBaseState : State
         }
     }
 
-    void restart(OptionsOrigin origin)
+    internal static void restart(OptionsOrigin origin)
     {
         if (origin == OptionsOrigin.OPT_MENU)
         {

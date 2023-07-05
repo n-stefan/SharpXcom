@@ -491,4 +491,87 @@ internal class Ufo : MovingTarget
      */
     internal bool isInBattlescape() =>
 	    _inBattlescape;
+
+    /**
+     * Sets the UFO's battlescape status.
+     * @param inbattle True if it's in battle, False otherwise.
+     */
+    internal void setInBattlescape(bool inbattle)
+    {
+        if (inbattle)
+            setSpeed(0);
+        _inBattlescape = inbattle;
+    }
+
+    /**
+     * Gets the escape timer for dogfights.
+     * @return how many ticks until the ship tries to leave.
+     */
+    internal int getEscapeCountdown() =>
+	    _escapeCountdown;
+
+    /**
+     * Sets the number of ticks until the ufo fires its weapon.
+     * @param time number of ticks until refire.
+     */
+    internal void setFireCountdown(int time) =>
+        _fireCountdown = time;
+
+    /**
+     * Sets the countdown timer for escaping a dogfight.
+     * @param time how many ticks until the ship attempts to escape.
+     */
+    internal void setEscapeCountdown(int time) =>
+        _escapeCountdown = time;
+
+    /**
+     * Sets a flag denoting that this ufo has had its timers decremented.
+     * prevents multiple interceptions from decrementing or resetting an already running timer.
+     * this flag is reset in advance each time the geoscape processes the dogfights.
+     * @param processed whether or not we've had our timers processed.
+     */
+    internal void setInterceptionProcessed(bool processed) =>
+        _processedIntercept = processed;
+
+    /**
+     * Returns the current direction the UFO is heading in.
+     * @return Direction.
+     */
+    internal string getDirection() =>
+	    _direction;
+
+    /**
+     * Returns the Mission type of the UFO.
+     * @return Mission.
+     */
+    internal string getMissionType() =>
+	    _mission.getRules().getType();
+
+    /**
+     * Returns the amount of damage this UFO has taken.
+     * @return Amount of damage.
+     */
+    internal int getDamage() =>
+	    _damage;
+
+    /**
+     * Changes the amount of damage this UFO has taken.
+     * @param damage Amount of damage.
+     */
+    internal void setDamage(int damage)
+    {
+        _damage = damage;
+        if (_damage < 0)
+        {
+            _damage = 0;
+        }
+        if (isDestroyed())
+        {
+            _status = UfoStatus.DESTROYED;
+        }
+        else if (isCrashed())
+        {
+            _status = UfoStatus.CRASHED;
+        }
+    }
 }

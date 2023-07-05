@@ -76,4 +76,25 @@ internal class RuleCommendations
             _killCriteria.Add(list);
         }
     }
+
+    /**
+     * Get the commendation's description.
+     * @return string Commendation description.
+     */
+    internal string getDescription() =>
+	    _description;
+
+    /**
+     * Get the commendation's sprite.
+     * @return int Sprite number.
+     */
+    internal int getSprite() =>
+	    _sprite;
+
+    /**
+     * Get the commendation's award criteria.
+     * @return map<string, int> Commendation criteria.
+     */
+    internal Dictionary<string, List<int>> getCriteria() =>
+        _criteria;
 }

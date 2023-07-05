@@ -228,7 +228,7 @@ internal class Options
      * Resets the options back to their defaults.
      * @param includeMods Reset mods to default as well.
      */
-    static void resetDefault(bool includeMods)
+    internal static void resetDefault(bool includeMods)
     {
         foreach (var item in _info)
         {
@@ -1153,4 +1153,11 @@ internal class Options
         (newAllowResize, allowResize) = (allowResize, newAllowResize);
         (newBorderless, borderless) = (borderless, newBorderless);
     }
+
+    /**
+     * Returns the game's list of all available option information.
+     * @return List of OptionInfo's.
+     */
+    internal static List<OptionInfo> getOptionInfo() =>
+        _info;
 }

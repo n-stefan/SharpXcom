@@ -224,4 +224,27 @@ internal class RuleAlienMission : IRule
 		    return string.Empty;
 	    return _raceDistribution[rc].Value.choose();
     }
+
+    /**
+     * Returns the chances of this mission being generated based on the current game date.
+     * @param monthsPassed The number of months that have passed in the game world.
+     * @return The weight.
+     */
+    internal int getWeight(uint monthsPassed)
+    {
+	    if (!_weights.Any())
+	    {
+		    return 1;
+	    }
+	    int weight = 0;
+	    foreach (var i in _weights)
+	    {
+		    if (i.Key > monthsPassed)
+		    {
+			    break;
+		    }
+		    weight = i.Value;
+	    }
+	    return weight;
+    }
 }

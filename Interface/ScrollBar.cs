@@ -86,4 +86,11 @@ internal class ScrollBar : InteractiveSurface
      */
     internal void setColor(byte color) =>
         _color = color;
+
+    /**
+     * Returns the color used to render the scrollbar.
+     * @return Color value.
+     */
+    internal byte getColor() =>
+	    _color;
 }

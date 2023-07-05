@@ -368,7 +368,7 @@ internal class GeoscapeState : State
         }
         else
         {
-            _game.pushState(new BasescapeState(0, _globe));
+            _game.pushState(new BasescapeState(null, _globe));
         }
     }
 
@@ -395,7 +395,7 @@ internal class GeoscapeState : State
         {
             return;
         }
-        Ufopaedia.open(_game);
+        Ufopaedia.Ufopaedia.open(_game);
     }
 
     /**
@@ -673,12 +673,12 @@ internal class GeoscapeState : State
                 _dogfights.Add(_dogfightsToBeStarted.Last());
                 _dogfightsToBeStarted.RemoveAt(_dogfightsToBeStarted.Count - 1);
                 _dogfights.Last().setInterceptionNumber(getFirstFreeDogfightSlot());
-                _dogfights.Last().setInterceptionsCount(_dogfights.Count + _dogfightsToBeStarted.Count);
+                _dogfights.Last().setInterceptionsCount((uint)(_dogfights.Count + _dogfightsToBeStarted.Count));
             }
             // Set correct number of interceptions for every dogfight.
             foreach (var d in _dogfights)
             {
-                d.setInterceptionsCount(_dogfights.Count);
+                d.setInterceptionsCount((uint)_dogfights.Count);
             }
         }
     }
@@ -761,7 +761,7 @@ internal class GeoscapeState : State
      * Slows down the timer back to minimum speed,
      * for when important events occur.
      */
-    void timerReset()
+    internal void timerReset()
     {
         var ev = new SDL_Event();
         ev.button.button = (byte)SDL_BUTTON_LEFT;
@@ -827,7 +827,7 @@ internal class GeoscapeState : State
      * and pauses the game timer respectively.
      * @param state Pointer to popup state.
      */
-    void popup(State state)
+    internal void popup(State state)
     {
         _pause = true;
         _popups.Add(state);
@@ -1881,7 +1881,7 @@ internal class GeoscapeState : State
      * @param base Base to defend.
      * @param ufo Ufo attacking base.
      */
-    void handleBaseDefense(Base @base, Ufo ufo)
+    internal void handleBaseDefense(Base @base, Ufo ufo)
     {
         // Whatever happens in the base defense, the UFO has finished its duty
         ufo.setStatus(UfoStatus.DESTROYED);
@@ -1896,7 +1896,7 @@ internal class GeoscapeState : State
             bgen.setAlienRace(ufo.getAlienRace());
             bgen.run();
             _pause = true;
-            _game.pushState(new BriefingState(0, @base));
+            _game.pushState(new BriefingState(null, @base));
         }
         else
         {
@@ -2276,4 +2276,12 @@ internal class GeoscapeState : State
 		    throw new Exception("Alien Base tried to generate undefined mission: " + missionName);
 	    }
     }
+
+    /**
+     * Returns a pointer to the Geoscape globe for
+     * access by other substates.
+     * @return Pointer to globe.
+     */
+    internal Globe getGlobe() =>
+	    _globe;
 }

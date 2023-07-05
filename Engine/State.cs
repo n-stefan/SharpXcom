@@ -287,7 +287,7 @@ internal class State
      * of states, so they can be created once while being
      * repeatedly switched back into focus).
      */
-    protected virtual void init()
+    /* protected virtual */ private void init()
     {
         _game.getScreen().setPalette(_palette);
         _game.getCursor().setPalette(_palette);
@@ -484,4 +484,14 @@ internal class State
             }
         }
     }
+
+    /**
+     * Get the localized text for dictionary key @a id.
+     * This function forwards the call to Language::getString(const std::string &, unsigned).
+     * @param id The dictionary key to search for.
+     * @param n The number to use for the proper version.
+     * @return The localized text.
+     */
+    protected LocalizedText tr(string id, uint n) =>
+	    _game.getLanguage().getString(id, n);
 }

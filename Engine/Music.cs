@@ -63,7 +63,7 @@ internal class Music
      * Plays the contained music track.
      * @param loop Amount of times to loop the track. -1 = infinite
      */
-    internal virtual void play(int loop = -1)
+    protected virtual void play(int loop = -1)
     {
 #if !__NO_MUSIC
         if (!Options.mute)

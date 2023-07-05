@@ -298,4 +298,35 @@ internal class RuleCraft : IListOrder, IRule
      */
     internal RuleTerrain getBattlescapeTerrainData() =>
         _battlescapeTerrainData;
+
+    /**
+     * Gets the sell value of this craft
+     * Rented craft should use 0.
+     * @return The sell value.
+     */
+    internal int getSellCost() =>
+	    _costSell;
+
+    /**
+     * Gets the ID of the sprite used to draw the craft
+     * in the Basescape and Equip Craft screens.
+     * @return The Sprite ID.
+     */
+    internal int getSprite() =>
+	    _sprite;
+
+    /**
+     * Gets the maximum number of vehicles that
+     * the craft can carry.
+     * @return The vehicle capacity.
+     */
+    internal int getVehicles() =>
+	    _vehicles;
+
+    /**
+     * Checks if this ship is capable of going to mars.
+     * @return True if this ship is capable of going to mars.
+     */
+    internal bool getSpacecraft() =>
+	    _spacecraft;
 }

@@ -158,4 +158,11 @@ internal class Window : Surface
         _bg = bg;
         _redraw = true;
     }
+
+    /**
+     * Changes the vertical offset of the surface in the Y axis.
+     * @param dy Y position in pixels.
+     */
+    internal void setDY(int dy) =>
+        _dy = dy;
 }

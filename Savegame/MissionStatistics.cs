@@ -25,19 +25,19 @@ namespace SharpXcom.Savegame;
 internal struct MissionStatistics
 {
     // Variables
-    int id;
+    internal int id;
     int markerId;
-    GameTime time;
-    string region, country, type, ufo;
-    bool success;
-    int score;
-    string alienRace;
+    internal GameTime time;
+    internal string region, country, type, ufo;
+    internal bool success;
+    internal int score;
+    internal string alienRace;
     int daylight;
     bool valiantCrux;
     int lootValue;
     string markerName;
     string rating;
-    Dictionary<int, int> injuryList;
+    internal Dictionary<int, int> injuryList;
 
     public MissionStatistics()
     {
@@ -82,4 +82,67 @@ internal struct MissionStatistics
 		if (lootValue != 0) node.Add("lootValue", lootValue.ToString());
         return node;
 	}
+
+	internal string getMissionName(Language lang)
+	{
+		if (!string.IsNullOrEmpty(markerName))
+		{
+			return lang.getString(markerName).arg(markerId);
+		}
+		else
+		{
+			return lang.getString(type);
+		}
+	}
+
+	internal string getRatingString(Language lang)
+	{
+		string ss;
+		if (success)
+		{
+			ss = lang.getString("STR_VICTORY");
+		}
+		else
+		{
+			ss = lang.getString("STR_DEFEAT");
+		}
+		ss = $"{ss} - {lang.getString(rating)}";
+		return ss;
+	}
+
+    internal bool isUfoMission()
+	{
+		if (ufo != "NO_UFO")
+		{
+			return true;
+		}
+		return false;
+	}
+
+    internal string getLocationString()
+	{
+		if (country == "STR_UNKNOWN")
+		{
+			return region;
+		}
+		else
+		{
+			return country;
+		}
+	}
+
+    internal string getDaylightString()
+	{
+		if (isDarkness())
+		{
+			return "STR_NIGHT";
+		}
+		else
+		{
+			return "STR_DAY";
+		}
+	}
+
+    bool isDarkness() =>
+		daylight > TileEngine.MAX_DARKNESS_TO_SEE_UNITS;
 }

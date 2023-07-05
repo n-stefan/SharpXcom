@@ -21,6 +21,16 @@ namespace SharpXcom.Savegame;
 
 enum TransferType { TRANSFER_ITEM, TRANSFER_CRAFT, TRANSFER_SOLDIER, TRANSFER_SCIENTIST, TRANSFER_ENGINEER };
 
+/* struct */ class TransferRow
+{
+    internal TransferType type;
+    internal object rule;
+    internal string name;
+    internal int cost;
+    internal int qtySrc, qtyDst;
+    internal int amount;
+}
+
 /**
  * Represents an item transfer.
  * Items are placed "in transit" whenever they are
@@ -249,4 +259,30 @@ internal class Transfer
      */
     internal string getItems() =>
 	    _itemId;
+
+    /**
+     * Returns the name of the contents of the transfer.
+     * @param lang Language to get strings from.
+     * @return Name string.
+     */
+    internal string getName(Language lang)
+    {
+	    if (_soldier != null)
+	    {
+		    return _soldier.getName();
+	    }
+	    else if (_craft != null)
+	    {
+		    return _craft.getName(lang);
+	    }
+	    else if (_scientists != 0)
+	    {
+		    return lang.getString("STR_SCIENTISTS");
+	    }
+	    else if (_engineers != 0)
+	    {
+		    return lang.getString("STR_ENGINEERS");
+	    }
+	    return lang.getString(_itemId);
+    }
 }

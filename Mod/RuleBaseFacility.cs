@@ -226,4 +226,90 @@ internal class RuleBaseFacility : IListOrder, IRule
      */
     internal string getMapName() =>
 	    _mapName;
+
+    /**
+     * Gets the number of base personnel (soldiers, scientists,
+     * engineers) this facility can contain.
+     * @return The number of personnel.
+     */
+    internal int getPersonnel() =>
+	    _personnel;
+
+    /**
+     * Gets the amount of laboratory space this facility provides
+     * for research projects.
+     * @return The laboratory space.
+     */
+    internal int getLaboratories() =>
+	    _labs;
+
+    /**
+     * Gets the amount of workshop space this facility provides
+     * for manufacturing projects.
+     * @return The workshop space.
+     */
+    internal int getWorkshops() =>
+	    _workshops;
+
+    /**
+     * Gets the number of base craft this facility can contain.
+     * @return The number of craft.
+     */
+    internal int getCrafts() =>
+	    _crafts;
+
+    /**
+     * Gets the number of captured live aliens this facility
+     * can contain.
+     * @return The number of aliens.
+     */
+    internal int getAliens() =>
+	    _aliens;
+
+    /**
+     * Checks if this facility is the core access lift
+     * of a base. Every base has an access lift and all
+     * facilities have to be connected to it.
+     * @return True if it's a lift.
+     */
+    internal bool isLift() =>
+	    _lift;
+
+    /**
+     * Gets the amount of time that this facility takes
+     * to be constructed since placement.
+     * @return The time in days.
+     */
+    internal int getBuildTime() =>
+	    _buildTime;
+
+    /**
+     * Checks if this facility has a grav shield,
+     * which doubles base defense's fire ratio.
+     * @return True if it has a grav shield.
+     */
+    internal bool isGravShield() =>
+	    _grav;
+
+    /**
+     * Gets the fire sound of this facility's weaponry.
+     * @return The sound index number.
+     */
+    internal int getFireSound() =>
+	    _fireSound;
+
+    /**
+     * Gets the hit ratio of this facility's weaponry
+     * against UFO invasions on the base.
+     * @return The hit ratio as a percentage.
+     */
+    internal int getHitRatio() =>
+	    _hitRatio;
+
+    /**
+     * Gets the hit sound of this facility's weaponry.
+     * @return The sound index number.
+     */
+    internal int getHitSound() =>
+	    _hitSound;
 }

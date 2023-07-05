@@ -372,4 +372,11 @@ internal class Armor : IRule
      */
     internal string getSpecialWeapon() =>
 	    _specWeapon;
+
+    /**
+    * Gets the list of units this armor applies to.
+    * @return The list of unit IDs (empty = applies to all).
+    */
+    internal List<string> getUnits() =>
+	    _units;
 }

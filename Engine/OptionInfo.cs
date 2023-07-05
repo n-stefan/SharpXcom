@@ -188,4 +188,69 @@ internal class OptionInfo
 		        break;
 	    }
     }
+
+    /**
+     * Returns the variable type of the option.
+     * @return Option type.
+     */
+    internal OptionType type() =>
+	    _type;
+
+    /**
+     * Returns the description of the option. Options with
+     * descriptions show up in the Options screens.
+     * @return Language string ID for the description.
+     */
+    internal string description() =>
+	    _desc;
+
+    /**
+     * Returns the category of the option. Options with
+     * categories show up in the Options screens.
+     * @return Language string ID for the category.
+     */
+    internal string category() =>
+	    _cat;
+
+    /**
+     * Returns the pointer to the key option,
+     * or throws an exception if it's not a key.
+     * @return Pointer to the option.
+     */
+    internal ref SDL_Keycode asKey()
+    {
+	    if (_type != OptionType.OPTION_KEY)
+	    {
+		    throw new Exception(_id + " is not a key!");
+	    }
+	    return ref _ref.k;
+    }
+
+    /**
+     * Returns the pointer to the boolean option,
+     * or throws an exception if it's not a boolean.
+     * @return Pointer to the option.
+     */
+    internal ref bool asBool()
+    {
+	    if (_type != OptionType.OPTION_BOOL)
+	    {
+		    throw new Exception(_id + " is not a boolean!");
+	    }
+	    return ref _ref.b;
+    }
+
+    /**
+     * Returns the pointer to the integer option,
+     * or throws an exception if it's not a integer.
+     * @return Pointer to the option.
+     */
+    internal ref int asInt()
+    {
+	    if (_type != OptionType.OPTION_INT)
+	    {
+		    throw new Exception(_id + " is not an integer!");
+	    }
+	    return ref _ref.i;
+    }
 }

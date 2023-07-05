@@ -309,4 +309,34 @@ record struct BattleUnitKills
 		bodypart = (UnitBodyPart)int.Parse(node["bodypart"].ToString());
 		id = int.Parse(node["id"].ToString());
 	}
+
+    /// Convert kill Status to string.
+    internal string getKillStatusString()
+	{
+		switch (status)
+		{
+		    case UnitStatus.STATUS_DEAD:        return "STR_KILLED";
+		    case UnitStatus.STATUS_UNCONSCIOUS: return "STR_STUNNED";
+		    case UnitStatus.STATUS_PANICKING:   return "STR_PANICKED";
+		    case UnitStatus.STATUS_TURNING:     return "STR_MINDCONTROLLED";
+		    default:                            return "status error";
+		}
+	}
+
+	/// Get human-readable victim name.
+	internal string getUnitName(Language lang)
+	{
+		if (!string.IsNullOrEmpty(name))
+		{
+			return name;
+		}
+		else if (!string.IsNullOrEmpty(type))
+		{
+			return lang.getString(type);
+		}
+		else
+		{
+            return $"{lang.getString(race)} {lang.getString(rank)}";
+		}
+	}
 }

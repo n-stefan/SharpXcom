@@ -84,6 +84,47 @@ internal class SoldierCommendations
 	    _decorationLevel = int.Parse(node["decorationLevel"].ToString());
 	    _isNew = bool.TryParse(node["isNew"].ToString(), out bool isNew) ? isNew : false;
     }
+
+    /**
+     * Get the soldier's commendation's noun.
+     * @return string Commendation noun
+     */
+    internal string getNoun() =>
+	    _noun;
+
+    /**
+     * Get the soldier commendation level's description.
+     * @return string Commendation level description.
+     */
+    internal string getDecorationDescription() =>
+	    $"STR_AWARD_DECOR_{_decorationLevel}";
+
+    /**
+     * Get the soldier commendation level's int.
+     * @return int Commendation level.
+     */
+    internal int getDecorationLevelInt() =>
+	    _decorationLevel;
+
+    /**
+     * Get newness of commendation.
+     * @return bool Is the commendation new?
+     */
+    internal bool isNew() =>
+	    _isNew;
+
+    /**
+     * Set the newness of the commendation to old.
+     */
+    internal void makeOld() =>
+        _isNew = false;
+
+    /**
+     * Get the soldier commendation level's name.
+     * @return string Commendation level.
+     */
+    internal string getDecorationLevelName(int skipCounter) =>
+        $"STR_AWARD_{_decorationLevel - skipCounter}";
 }
 
 internal class SoldierDiary
@@ -285,4 +326,247 @@ internal class SoldierDiary
 	    _globeTrotter = bool.Parse(node["globeTrotter"].ToString());
 	    _slaveKillsTotal = int.Parse(node["slaveKillsTotal"].ToString());
     }
+
+    /**
+     *
+     */
+    internal Dictionary<string, int> getAlienRaceTotal()
+    {
+        var list = new Dictionary<string, int>();
+        foreach (var kill in _killList)
+        {
+            list[kill.race]++;
+        }
+        return list;
+    }
+
+    /**
+     * Get list of kills sorted by rank
+     * @return
+     */
+    internal Dictionary<string, int> getAlienRankTotal()
+    {
+        var list = new Dictionary<string, int>();
+        foreach (var kill in _killList)
+        {
+            list[kill.rank]++;
+        }
+        return list;
+    }
+
+    /**
+     *
+     */
+    internal Dictionary<string, int> getWeaponTotal()
+    {
+        var list = new Dictionary<string, int>();
+        foreach (var kill in _killList)
+        {
+            if (kill.faction == UnitFaction.FACTION_HOSTILE)
+                list[kill.weapon]++;
+        }
+        return list;
+    }
+
+    /**
+     *
+     */
+    internal int getKillTotal()
+    {
+	    int killTotal = 0;
+
+	    foreach (var i in _killList)
+	    {
+		    if (i.status == UnitStatus.STATUS_DEAD && i.faction == UnitFaction.FACTION_HOSTILE)
+		    {
+			    killTotal++;
+		    }
+	    }
+
+	    return killTotal;
+    }
+
+    /**
+     *
+     */
+    internal int getStunTotal()
+    {
+	    int stunTotal = 0;
+
+	    foreach (var i in _killList)
+	    {
+		    if (i.status == UnitStatus.STATUS_UNCONSCIOUS && i.faction == UnitFaction.FACTION_HOSTILE)
+		    {
+			    stunTotal++;
+		    }
+	    }
+
+	    return stunTotal;
+    }
+
+    /**
+     *  Get the soldier's accuracy.
+     */
+    internal int getAccuracy()
+    {
+	    if (_shotsFiredCounterTotal != 0)
+		    return 100 * _shotsLandedCounterTotal / _shotsFiredCounterTotal;
+	    return 0;
+    }
+
+    /**
+     *
+     */
+    internal int getControlTotal()
+    {
+	    int controlTotal = 0;
+
+	    foreach (var i in _killList)
+	    {
+		    if (i.status == UnitStatus.STATUS_TURNING && i.faction == UnitFaction.FACTION_HOSTILE)
+		    {
+			    controlTotal++;
+		    }
+	    }
+
+	    return controlTotal;
+    }
+
+    /**
+     *  Get a map of the amount of missions done in each region.
+     *  @param MissionStatistics
+     */
+    internal Dictionary<string, int> getRegionTotal(List<MissionStatistics> missionStatistics)
+    {
+	    var regionTotal = new Dictionary<string, int>();
+
+	    foreach (var i in missionStatistics)
+	    {
+		    foreach (var j in _missionIdList)
+		    {
+			    if (j == i.id)
+			    {
+				    regionTotal[i.region]++;
+			    }
+		    }
+	    }
+
+	    return regionTotal;
+    }
+
+    /**
+     *  Get a map of the amount of missions done in each type.
+     *  @param MissionStatistics
+     */
+    internal Dictionary<string, int> getTypeTotal(List<MissionStatistics> missionStatistics)
+    {
+	    var typeTotal = new Dictionary<string, int>();
+
+	    foreach (var i in missionStatistics)
+	    {
+		    foreach (var j in _missionIdList)
+		    {
+			    if (j == i.id)
+			    {
+				    typeTotal[i.type]++;
+			    }
+		    }
+	    }
+
+	    return typeTotal;
+    }
+
+    /**
+     *  Get a map of the amount of missions done in each UFO.
+     *  @param MissionStatistics
+     */
+    internal Dictionary<string, int> getUFOTotal(List<MissionStatistics> missionStatistics)
+    {
+	    var ufoTotal = new Dictionary<string, int>();
+
+	    foreach (var i in missionStatistics)
+	    {
+		    foreach (var j in _missionIdList)
+		    {
+			    if (j == i.id)
+			    {
+				    ufoTotal[i.ufo]++;
+			    }
+		    }
+	    }
+
+	    return ufoTotal;
+    }
+
+    /**
+     *
+     */
+    internal int getMissionTotal() =>
+	    _missionIdList.Count;
+
+    /**
+     *  Get the total if wins.
+     *  @param Mission Statistics
+     */
+    internal int getWinTotal(List<MissionStatistics> missionStatistics)
+    {
+	    int winTotal = 0;
+
+	    foreach (var i in missionStatistics)
+	    {
+		    foreach (var j in _missionIdList)
+		    {
+			    if (j == i.id)
+			    {
+				    if (i.success)
+				    {
+					    winTotal++;
+				    }
+			    }
+		    }
+	    }
+
+	    return winTotal;
+    }
+
+    /**
+     *  Get the total score.
+     *  @param Mission Statistics
+     */
+    internal int getScoreTotal(List<MissionStatistics> missionStatistics)
+    {
+	    int scoreTotal = 0;
+
+	    foreach (var i in missionStatistics)
+	    {
+		    foreach (var j in _missionIdList)
+		    {
+			    if (j == i.id)
+			    {
+				    scoreTotal += i.score;
+			    }
+		    }
+	    }
+
+	    return scoreTotal;
+    }
+
+    /**
+     *
+     */
+    internal int getDaysWoundedTotal() =>
+	    _daysWoundedTotal;
+
+    /**
+     * Get vector of kills.
+     * @return vector of BattleUnitKills
+     */
+    internal List<BattleUnitKills> getKills() =>
+	    _killList;
+
+    /**
+     * Increment soldier's service time one month
+     */
+    internal void addMonthlyService() =>
+        _monthsService++;
 }

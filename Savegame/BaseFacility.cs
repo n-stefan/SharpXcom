@@ -143,4 +143,24 @@ internal class BaseFacility
      */
     internal int getY() =>
 	    _y;
+
+    /**
+     * Returns if this facility is currently being
+     * used by its base.
+     * @return True if it's under use, False otherwise.
+     */
+    internal bool inUse()
+    {
+	    if (_buildTime > 0)
+	    {
+		    return false;
+	    }
+	    return ((_rules.getPersonnel() > 0 && _base.getAvailableQuarters() - _rules.getPersonnel() < _base.getUsedQuarters()) ||
+			    (_rules.getStorage() > 0 && _base.getAvailableStores() - _rules.getStorage() < _base.getUsedStores()) ||
+			    (_rules.getLaboratories() > 0 && _base.getAvailableLaboratories() - _rules.getLaboratories() < _base.getUsedLaboratories()) ||
+			    (_rules.getWorkshops() > 0 && _base.getAvailableWorkshops() - _rules.getWorkshops() < _base.getUsedWorkshops()) ||
+			    (_rules.getCrafts() > 0 && _base.getAvailableHangars() - _rules.getCrafts() < _base.getUsedHangars()) ||
+			    (_rules.getPsiLaboratories() > 0 && _base.getAvailablePsiLabs() - _rules.getPsiLaboratories() < _base.getUsedPsiLabs()) ||
+			    (_rules.getAliens() > 0 && _base.getAvailableContainment() - _rules.getAliens() < _base.getUsedContainment()));
+    }
 }

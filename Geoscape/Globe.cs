@@ -153,6 +153,7 @@ internal class Globe : InteractiveSurface
     const int CITY_MARKER = 8;
     const double ROTATE_LATITUDE = 0.06;
     const double ROTATE_LONGITUDE = 0.10;
+    const int NEAR_RADIUS = 25;
 
     short _cenX, _cenY;
     double _cenLon, _cenLat, _rotLon, _rotLat, _hoverLon, _hoverLat;
@@ -820,5 +821,141 @@ internal class Globe : InteractiveSurface
         norm = 1.0 / norm;
         sun_direction *= norm;
         return sun_direction;
+    }
+
+    internal void setCraftRange(double lon, double lat, double range)
+    {
+        _craft = (range > 0.0);
+        _craftLon = lon;
+        _craftLat = lat;
+        _craftRange = range;
+    }
+
+    /**
+     * Converts a cartesian point into a polar point for
+     * mapping a globe click onto the flat world map.
+     * @param x X position of the cartesian point.
+     * @param y Y position of the cartesian point.
+     * @param lon Pointer to the output longitude.
+     * @param lat Pointer to the output latitude.
+     */
+    internal void cartToPolar(short x, short y, out double lon, out double lat)
+    {
+	    // Orthographic projection
+	    x -= _cenX;
+	    y -= _cenY;
+
+	    double rho = Math.Sqrt((double)(x*x + y*y));
+	    double c = Math.Asin(rho / _radius);
+	    if ( AreSame(rho, 0.0) )
+	    {
+		    lat = _cenLat;
+		    lon = _cenLon;
+
+	    }
+	    else
+	    {
+		    lat = Math.Asin((y * Math.Sin(c) * Math.Cos(_cenLat)) / rho + Math.Cos(c) * Math.Sin(_cenLat));
+		    lon = Math.Atan2(x * Math.Sin(c),(rho * Math.Cos(_cenLat) * Math.Cos(c) - y * Math.Sin(_cenLat) * Math.Sin(c))) + _cenLon;
+	    }
+
+	    // Keep between 0 and 2xPI
+	    while (lon < 0)
+		    lon += 2 * M_PI;
+	    while (lon >= 2 * M_PI)
+		    lon -= 2 * M_PI;
+    }
+
+    /**
+     * Returns a list of all the targets currently near a certain
+     * cartesian point over the globe.
+     * @param x X coordinate of point.
+     * @param y Y coordinate of point.
+     * @param craft Only get craft targets.
+     * @return List of pointers to targets.
+     */
+    internal List<Target> getTargets(int x, int y, bool craft)
+    {
+	    var v = new List<Target>();
+	    if (!craft)
+	    {
+		    foreach (var i in _game.getSavedGame().getBases())
+		    {
+			    if (i.getLongitude() == 0.0 && i.getLatitude() == 0.0)
+				    continue;
+
+			    if (targetNear(i, x, y))
+			    {
+				    v.Add(i);
+			    }
+
+			    foreach (var j in i.getCrafts())
+			    {
+				    if (j.getLongitude() == i.getLongitude() && j.getLatitude() == i.getLatitude() && j.getDestination() == null)
+					    continue;
+
+				    if (targetNear(j, x, y))
+				    {
+					    v.Add(j);
+				    }
+			    }
+		    }
+	    }
+	    foreach (var i in _game.getSavedGame().getUfos())
+	    {
+		    if (!i.getDetected())
+			    continue;
+
+		    if (targetNear(i, x, y))
+		    {
+			    v.Add(i);
+		    }
+	    }
+	    foreach (var i in _game.getSavedGame().getWaypoints())
+	    {
+		    if (targetNear(i, x, y))
+		    {
+			    v.Add(i);
+		    }
+	    }
+	    foreach (var i in _game.getSavedGame().getMissionSites())
+	    {
+		    if (targetNear(i, x, y))
+		    {
+			    v.Add(i);
+		    }
+	    }
+	    foreach (var i in _game.getSavedGame().getAlienBases())
+	    {
+		    if (!i.isDiscovered())
+		    {
+			    continue;
+		    }
+		    if (targetNear(i, x, y))
+		    {
+			    v.Add(i);
+		    }
+	    }
+	    return v;
+    }
+
+    /**
+     * Checks if a certain target is near a certain cartesian point
+     * (within a circled area around it) over the globe.
+     * @param target Pointer to target.
+     * @param x X coordinate of point.
+     * @param y Y coordinate of point.
+     * @return True if it's near, false otherwise.
+     */
+    bool targetNear(Target target, int x, int y)
+    {
+	    short tx, ty;
+	    if (pointBack(target.getLongitude(), target.getLatitude()))
+		    return false;
+	    polarToCart(target.getLongitude(), target.getLatitude(), out tx, out ty);
+
+	    int dx = x - tx;
+	    int dy = y - ty;
+	    return (dx * dx + dy * dy <= NEAR_RADIUS);
     }
 }

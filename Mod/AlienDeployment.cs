@@ -63,9 +63,9 @@ struct DeploymentData
 
 struct BriefingData
 {
-    int palette, textOffset;
-    string title, desc, music, background, cutscene;
-    bool showCraft, showTarget;
+    internal int palette, textOffset;
+    internal string title, desc, music, background, cutscene;
+    internal bool showCraft, showTarget;
     
     public BriefingData()
     {
@@ -442,4 +442,32 @@ internal class AlienDeployment : IRule
      */
     internal List<DeploymentData> getDeploymentData() =>
         _data;
+
+    /**
+     * Gets the briefing data for this mission type.
+     * @return data for the briefing window to use.
+     */
+    internal BriefingData getBriefingData() =>
+	    _briefingData;
+
+    /**
+    * Gets the alert background displayed when this mission spawns.
+    * @return Sprite ID for the background.
+    */
+    internal string getAlertBackground() =>
+	    _alertBackground;
+
+    /**
+     * Gets the alert message displayed when this mission spawns.
+     * @return String ID for the message.
+     */
+    internal string getAlertMessage() =>
+	    _alert;
+
+    /**
+     * Gets if winning this mission completes the game.
+     * @return if winning this mission completes the game.
+     */
+    internal bool isFinalDestination() =>
+	    _finalDestination;
 }

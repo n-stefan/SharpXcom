@@ -158,4 +158,18 @@ internal class MissionSite : Target
      */
     internal string getAlienRace() =>
 	    _race;
+
+    /**
+     * Sets the mission site's battlescape status.
+     * @param inbattle True if it's in battle, False otherwise.
+     */
+    internal void setInBattlescape(bool inbattle) =>
+        _inBattlescape = inbattle;
+
+    /**
+     * Gets the mission site's associated city, if any.
+     * @return String ID for the city, "" if none.
+     */
+    internal string getCity() =>
+	    _city;
 }

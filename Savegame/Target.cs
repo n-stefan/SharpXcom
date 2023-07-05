@@ -212,7 +212,7 @@ internal class Target
      * @param lang Language to get strings from.
      * @return Full name.
      */
-    internal virtual string getName(Language lang)
+    protected virtual string getName(Language lang)
     {
 	    if (string.IsNullOrEmpty(_name))
 		    return getDefaultName(lang);
@@ -224,7 +224,7 @@ internal class Target
      * @param lang Language to get strings from.
      * @return Full name.
      */
-    string getDefaultName(Language lang) =>
+    internal string getDefaultName(Language lang) =>
 	    lang.getString(getMarkerName()).arg(_id);
 
     /**

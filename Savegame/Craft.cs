@@ -757,7 +757,7 @@ internal class Craft : MovingTarget
      * Sets interception order (first craft to leave the base gets 1, second 2, etc.).
      * @param order Interception order.
      */
-    void setInterceptionOrder(int order) =>
+    internal void setInterceptionOrder(int order) =>
 	    _interceptionOrder = order;
 
     /**
@@ -766,4 +766,97 @@ internal class Craft : MovingTarget
      */
     internal Base getBase() =>
 	    _base;
+
+    /**
+     * Changes the craft's battlescape status.
+     * @param inbattle True if it's in battle, False otherwise.
+     */
+    internal void setInBattlescape(bool inbattle)
+    {
+        if (inbattle)
+            setSpeed(0);
+        _inBattlescape = inbattle;
+    }
+
+    /**
+     * Gets interception order.
+     * @return Interception order.
+     */
+    internal int getInterceptionOrder() =>
+	    _interceptionOrder;
+
+    /**
+     * Returns the ratio between the amount of damage this
+     * craft can take and the total it can take before it's
+     * destroyed.
+     * @return Percentage of damage.
+     */
+    internal int getDamagePercentage() =>
+	    (int)Math.Floor((double)_damage / _rules.getMaxDamage() * 100);
+
+    /**
+     * Returns whether the craft has just done a ground mission,
+     * and is forced to return to base.
+     * @return True if it's returning, false otherwise.
+     */
+    internal bool getMissionComplete() =>
+	    _mission;
+
+    /**
+     * Returns the amount of weapons currently
+     * equipped on this craft.
+     * @return Number of weapons.
+     */
+    internal int getNumWeapons()
+    {
+	    if (_rules.getWeapons() == 0)
+	    {
+		    return 0;
+	    }
+
+	    int total = 0;
+
+	    foreach (var i in _weapons)
+	    {
+		    if (i != null)
+		    {
+			    total++;
+		    }
+	    }
+
+	    return total;
+    }
+
+    /**
+     * Returns the current altitude of the craft.
+     * @return Altitude.
+     */
+    internal string getAltitude()
+    {
+	    Ufo u = (Ufo)_dest;
+	    if (u != null && u.getAltitude() != "STR_GROUND")
+	    {
+		    return u.getAltitude();
+	    }
+	    else
+	    {
+		    return "STR_VERY_LOW";
+	    }
+    }
+
+    /**
+     * Returns the ratio between the amount of fuel currently
+     * contained in this craft and the total it can carry.
+     * @return Percentage of fuel.
+     */
+    internal int getFuelPercentage() =>
+	    (int)Math.Floor((double)_fuel / _rules.getMaxFuel() * 100.0);
+
+    /**
+     * Returns the maximum range the craft can travel
+     * from its origin base on its current fuel.
+     * @return Range in radians.
+     */
+    internal double getBaseRange() =>
+	    _fuel / 2.0 / getFuelConsumption(_rules.getMaxSpeed()) * _speedMaxRadian;
 }

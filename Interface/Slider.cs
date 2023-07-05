@@ -88,7 +88,7 @@ internal class Slider : InteractiveSurface
      * positions it appropriately.
      * @param value New value.
      */
-    void setValue(int value)
+    internal void setValue(int value)
     {
         if (_min < _max)
         {
@@ -123,4 +123,31 @@ internal class Slider : InteractiveSurface
         _frame.setColor(color);
         _button.setColor(color);
     }
+
+    /**
+     * Changes the range of values the slider
+     * can contain.
+     * @param min Minimum value.
+     * @param max Maximum value.
+     */
+    internal void setRange(int min, int max)
+    {
+        _min = min;
+        _max = max;
+        setValue(_value);
+    }
+
+    /**
+     * Sets a function to be called every time the slider's value changes.
+     * @param handler Action handler.
+     */
+    internal void onChange(ActionHandler handler) =>
+        _change = handler;
+
+    /**
+     * Returns the current value of the slider.
+     * @return Value.
+     */
+    internal int getValue() =>
+	    _value;
 }

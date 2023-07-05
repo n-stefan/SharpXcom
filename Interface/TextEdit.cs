@@ -135,4 +135,58 @@ internal class TextEdit : InteractiveSurface
      */
     internal void setConstraint(TextEditConstraint constraint) =>
         _textEditConstraint = constraint;
+
+    // Override the base class' method properly.
+    internal override void setFocus(bool focus) =>
+        setFocus(focus, true);
+
+    /**
+     * Controls the blinking animation when
+     * the text edit is focused.
+     * @param focus True if focused, false otherwise.
+     * @param modal True to lock input to this control, false otherwise.
+     */
+    void setFocus(bool focus, bool modal)
+    {
+        _modal = modal;
+        if (focus != _isFocused)
+        {
+            _redraw = true;
+            base.setFocus(focus);
+            if (_isFocused)
+            {
+                //SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+                _caretPos = (uint)_value.Length;
+                _blink = true;
+                _timer.start();
+                if (_modal)
+                    _state.setModal(this);
+            }
+            else
+            {
+                _blink = false;
+                _timer.stop();
+                //SDL_EnableKeyRepeat(0, SDL_DEFAULT_REPEAT_INTERVAL);
+                if (_modal)
+                    _state.setModal(null);
+            }
+        }
+    }
+
+    /**
+     * Changes the way the text is aligned vertically
+     * relative to the drawing area.
+     * @param valign Vertical alignment.
+     */
+    internal void setVerticalAlign(TextVAlign valign) =>
+        _text.setVerticalAlign(valign);
+
+    /**
+     * Enables/disables text wordwrapping. When enabled, lines of
+     * text are automatically split to ensure they stay within the
+     * drawing area, otherwise they simply go off the edge.
+     * @param wrap Wordwrapping setting.
+     */
+    internal void setWordWrap(bool wrap) =>
+        _text.setWordWrap(wrap);
 }

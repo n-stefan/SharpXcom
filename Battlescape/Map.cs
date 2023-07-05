@@ -232,4 +232,18 @@ internal class Map : InteractiveSurface
      */
     internal Camera getCamera() =>
         _camera;
+
+    /**
+     * Get the hidden movement screen's vertical position.
+     * @return the vertical position of the hidden movement window.
+     */
+    internal int getMessageY() =>
+	    _message.getY();
+
+    /**
+     * Gets the current projectile sprite on the map.
+     * @return Projectile or 0 if there is no projectile sprite on the map.
+     */
+    internal Projectile getProjectile() =>
+	    _projectile;
 }

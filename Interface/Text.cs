@@ -389,4 +389,11 @@ internal class Text : InteractiveSurface
      */
     internal Font getFont() =>
 	    _font;
+
+    /**
+     * Returns the color used to render the text.
+     * @return Color value.
+     */
+    internal byte getColor() =>
+	    _color;
 }

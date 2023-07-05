@@ -1,4 +1,5 @@
-﻿global using SharpXcom.Battlescape;
+﻿global using SharpXcom.Basescape;
+global using SharpXcom.Battlescape;
 global using SharpXcom.Engine;
 global using SharpXcom.Engine.Adlib;
 global using SharpXcom.Geoscape;

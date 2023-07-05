@@ -58,16 +58,16 @@ internal class Production
     internal int getAssignedEngineers() =>
 	    _engineers;
 
-    int getTimeSpent() =>
+    internal int getTimeSpent() =>
 	    _timeSpent;
 
-    int getAmountTotal() =>
+    internal int getAmountTotal() =>
 	    _amount;
 
-    bool getInfiniteAmount() =>
+    internal bool getInfiniteAmount() =>
 	    _infinite;
 
-    bool getSellItems() =>
+    internal bool getSellItems() =>
 	    _sell;
 
     internal RuleManufacture getRules() =>
@@ -144,7 +144,7 @@ internal class Production
 		return productionProgress_e.PROGRESS_NOT_COMPLETE;
 	}
 
-	int getAmountProduced()
+	internal int getAmountProduced()
 	{
 		if (_rules.getManufactureTime() > 0)
 			return _timeSpent / _rules.getManufactureTime();
@@ -167,7 +167,7 @@ internal class Production
 		return true;
 	}
 
-	void startItem(Base b, SavedGame g, Mod.Mod m)
+	internal void startItem(Base b, SavedGame g, Mod.Mod m)
 	{
 		g.setFunds(g.getFunds() - _rules.getManufactureCost());
 		foreach (var iter in _rules.getRequiredItems())
@@ -191,4 +191,13 @@ internal class Production
 			}
 		}
 	}
+
+    internal void setInfiniteAmount(bool inf) =>
+        _infinite = inf;
+
+    internal void setAmountTotal(int amount) =>
+        _amount = amount;
+
+    internal void setSellItems(bool sell) =>
+        _sell = sell;
 }

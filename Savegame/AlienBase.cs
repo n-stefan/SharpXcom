@@ -109,4 +109,11 @@ internal class AlienBase : Target
      */
     internal bool isInBattlescape() =>
 	    _inBattlescape;
+
+    /**
+     * Sets the alien base's battlescape status.
+     * @param inbattle True if it's in battle, False otherwise.
+     */
+    internal void setInBattlescape(bool inbattle) =>
+        _inBattlescape = inbattle;
 }

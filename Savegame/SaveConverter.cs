@@ -1141,7 +1141,7 @@ internal class SaveConverter
         {
             int rdata = i * ENTRY_SIZE;
             ArticleDefinition article = _mod.getUfopaediaArticle(_rules.getUfopaedia()[i]);
-            if (article != null && article.section != UFOPAEDIA_NOT_AVAILABLE)
+            if (article != null && article.section != Ufopaedia.Ufopaedia.UFOPAEDIA_NOT_AVAILABLE)
             {
                 bool discovered = data[rdata + 0x08] == 2;
                 if (discovered)

@@ -49,4 +49,12 @@ internal class ToggleTextButton : TextButton
 
     internal bool getPressed() =>
         _isPressed;
+
+    /// When this is set, Surface::invert() is called with the value from mid when it's time to invert the button
+    internal void setInvertColor(byte color)
+    {
+        _invertedColor = color;
+        _fakeGroup = null;
+        _redraw = true;
+    }
 }

@@ -94,4 +94,17 @@ internal class Region
      */
     internal void addActivityXcom(int activity) =>
         _activityXcom[^1] += activity;
+
+    /**
+     * Store last month's counters, start new counters.
+     */
+    internal void newMonth()
+    {
+        _activityAlien.Add(0);
+        _activityXcom.Add(0);
+        if (_activityAlien.Count > 12)
+            _activityAlien.RemoveAt(0);
+        if (_activityXcom.Count > 12)
+            _activityXcom.RemoveAt(0);
+    }
 }

@@ -819,7 +819,7 @@ internal class SavedGame
      * @param research is the project we are checking for
      * @return whether or not it has been popped up.
      */
-    bool wasResearchPopped(RuleResearch research) =>
+    internal bool wasResearchPopped(RuleResearch research) =>
         _poppedResearch.Contains(research);
 
     /**
@@ -883,7 +883,7 @@ internal class SavedGame
      * Adds up the monthly funding of all the countries.
      * @return Total funding.
      */
-    int getCountryFunding()
+    internal int getCountryFunding()
     {
 	    int total = 0;
 	    foreach (var i in _countries)
@@ -897,7 +897,7 @@ internal class SavedGame
      * Adds up the monthly maintenance of all the bases.
      * @return Total maintenance.
      */
-    int getBaseMaintenance()
+    internal int getBaseMaintenance()
     {
 	    int total = 0;
 	    foreach (var i in _bases)
@@ -997,4 +997,123 @@ internal class SavedGame
      */
     internal int getDifficultyCoefficient() =>
 	    Mod.Mod.DIFFICULTY_COEFFICIENT[Math.Min((int)_difficulty, 4)];
+
+    /**
+     * Sets the last selected player base.
+     * @param base number of the base.
+     */
+    internal void setSelectedBase(uint @base) =>
+        _selectedBase = @base;
+
+    /**
+     * Returns the list of dead soldiers.
+     * @return Pointer to soldier list.
+     */
+    internal List<Soldier> getDeadSoldiers() =>
+        _deadSoldiers;
+
+    /**
+     * Changes the game's name shown in Save screens.
+     * @param name New name.
+     */
+    internal void setName(string name) =>
+	    _name = name;
+
+    /**
+     * Sets the last selected armour.
+     * @param value The new value for last selected armor - Armor type string.
+     */
+
+    internal void setLastSelectedArmor(string value) =>
+	    _lastselectedArmor = value;
+
+    /**
+     * Find a mission type in the active alien missions.
+     * @param region The region string ID.
+     * @param objective The active mission objective.
+     * @return A pointer to the mission, or 0 if no mission matched.
+     */
+    internal AlienMission findAlienMission(string region, MissionObjective objective) =>
+	    _activeMissions.Find(x => x.matchRegionAndType(region, objective));
+
+    /**
+     * return if the player has been
+     * warned about poor performance.
+     * @return true or false.
+     */
+    internal bool getWarned() =>
+	    _warned;
+
+    /**
+     * sets the player's "warned" status.
+     * @param warned set "warned" to this.
+     */
+    internal void setWarned(bool warned) =>
+        _warned = warned;
+
+    /**
+     * Returns pointer to the Soldier given it's unique ID.
+     * @param id A soldier's unique id.
+     * @return Pointer to Soldier.
+     */
+    internal Soldier getSoldier(int id)
+    {
+	    foreach (var i in _bases)
+	    {
+		    foreach (var j in i.getSoldiers())
+		    {
+			    if (j.getId() == id)
+			    {
+				    return j;
+			    }
+		    }
+	    }
+	    foreach (var j in _deadSoldiers)
+	    {
+		    if (j.getId() == id)
+		    {
+			    return j;
+		    }
+	    }
+	    return null;
+    }
+
+    /*
+     * @return the GraphRegionToggles.
+     */
+    internal string getGraphRegionToggles() =>
+	    _graphRegionToggles;
+
+    /*
+     * @return the GraphCountryToggles.
+     */
+    internal string getGraphCountryToggles() =>
+	    _graphCountryToggles;
+
+    /*
+     * @return the GraphFinanceToggles.
+     */
+    internal string getGraphFinanceToggles() =>
+	    _graphFinanceToggles;
+
+    /**
+     * Sets the GraphRegionToggles.
+     * @param value The new value for GraphRegionToggles.
+     */
+    internal void setGraphRegionToggles(string value) =>
+	    _graphRegionToggles = value;
+
+    /**
+     * Sets the GraphCountryToggles.
+     * @param value The new value for GraphCountryToggles.
+     */
+    internal void setGraphCountryToggles(string value) =>
+	    _graphCountryToggles = value;
+
+    /**
+     * Sets the GraphFinanceToggles.
+     * @param value The new value for GraphFinanceToggles.
+     */
+    internal void setGraphFinanceToggles(string value) =>
+	    _graphFinanceToggles = value;
 }

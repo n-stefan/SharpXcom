@@ -228,7 +228,7 @@ struct FallXCOM2 : IColorFunc<byte, int, int, int, int>
 /**
  * Mod data used when loading resources
  */
-class /* struct */ ModData
+/* struct */ class ModData
 {
     /// Mod name
     internal string name;
@@ -273,10 +273,10 @@ internal class Mod
     static int WALK_OFFSET;
     static int FLYING_SOUND;
     static int BUTTON_PRESS;
-    static int UFO_FIRE;
+    internal static int UFO_FIRE;
     static int UFO_HIT;
     static int UFO_CRASH;
-    static int UFO_EXPLODE;
+    internal static int UFO_EXPLODE;
     static int INTERCEPTOR_HIT;
     static int INTERCEPTOR_EXPLODE;
     internal static int DAMAGE_RANGE;
@@ -898,7 +898,7 @@ internal class Mod
         // special cases
         _craftWeaponsIndex.Sort(new compareRuleCraftWeapon(this));
         _armorsIndex.Sort(new compareRuleArmor(this));
-        _ufopaediaSections[Ufopaedia.UFOPAEDIA_NOT_AVAILABLE] = 0;
+        _ufopaediaSections[Ufopaedia.Ufopaedia.UFOPAEDIA_NOT_AVAILABLE] = 0;
         _ufopaediaIndex.Sort(new compareRuleArticleDefinition(this));
         _ufopaediaCatIndex.Sort(new compareSection(this));
     }
@@ -1426,7 +1426,7 @@ internal class Mod
      * @param sound ID of the sound.
      * @return Pointer to the sound.
      */
-    Sound getSound(string set, uint sound, bool error = true)
+    internal Sound getSound(string set, uint sound, bool error = true)
     {
 	    if (Options.mute)
 	    {
@@ -2254,7 +2254,7 @@ internal class Mod
 			    }
 			    _ufopaediaListOrder += 100;
 			    rule.load(ufopaedia, _ufopaediaListOrder);
-			    if (rule.section != Ufopaedia.UFOPAEDIA_NOT_AVAILABLE)
+			    if (rule.section != Ufopaedia.Ufopaedia.UFOPAEDIA_NOT_AVAILABLE)
 			    {
 				    if (!_ufopaediaSections.ContainsKey(rule.section))
 				    {
@@ -2990,4 +2990,120 @@ internal class Mod
     */
     internal bool isDemigod() =>
 	    _difficultyDemigod;
+
+    /**
+     * Returns the list of all craft weapons
+     * provided by the mod.
+     * @return List of craft weapons.
+     */
+    internal List<string> getCraftWeaponsList() =>
+	    _craftWeaponsIndex;
+
+    /**
+     * Returns the list of all armors
+     * provided by the mod.
+     * @return List of armors.
+     */
+    internal List<string> getArmorsList() =>
+	    _armorsIndex;
+
+    /**
+     * Returns the list of all items
+     * provided by the mod.
+     * @return List of items.
+     */
+    internal List<string> getItemsList() =>
+	    _itemsIndex;
+
+    internal Dictionary<string, SoundDefinition> getSoundDefinitions() =>
+	    _soundDefs;
+
+    /**
+     * Gets the list of commendations provided by the mod.
+     * @return The list of commendations.
+     */
+    internal Dictionary<string, RuleCommendations> getCommendationsList() =>
+	    _commendations;
+
+    /**
+     * Returns the list of all crafts
+     * provided by the mod.
+     * @return List of crafts.
+     */
+    internal List<string> getCraftsList() =>
+	    _craftsIndex;
+
+    /**
+     * Returns the list of all articles
+     * provided by the mod.
+     * @return List of articles.
+     */
+    internal List<string> getUfopaediaList() =>
+	    _ufopaediaIndex;
+
+    /**
+    * Returns the list of all article categories
+    * provided by the mod.
+    * @return List of categories.
+    */
+    internal List<string> getUfopaediaCategoryList() =>
+	    _ufopaediaCatIndex;
+
+    internal string getFinalResearch() =>
+	    _finalResearch;
+
+    /**
+     * Returns the list of all alien deployments
+     * provided by the mod.
+     * @return List of alien deployments.
+     */
+    internal List<string> getDeploymentsList() =>
+	    _deploymentsIndex;
+
+    /**
+     * Returns the rules for a random alien mission based on a specific objective.
+     * @param objective Alien mission objective.
+     * @return Rules for the alien mission.
+     */
+    internal RuleAlienMission getRandomMission(MissionObjective objective, uint monthsPassed)
+    {
+	    int totalWeight = 0;
+	    var possibilities = new Dictionary<int, RuleAlienMission>();
+	    foreach (var i in _alienMissions)
+	    {
+		    if (i.Value.getObjective() == objective && i.Value.getWeight(monthsPassed) > 0)
+		    {
+			    totalWeight += i.Value.getWeight(monthsPassed);
+			    possibilities[totalWeight] = i.Value;
+		    }
+	    }
+	    if (totalWeight > 0)
+	    {
+		    int pick = RNG.generate(1, totalWeight);
+		    foreach (var i in possibilities)
+		    {
+			    if (pick <= i.Key)
+			    {
+				    return i.Value;
+			    }
+		    }
+	    }
+	    return null;
+    }
+
+    /**
+     * Returns the minimum amount of score the player can have,
+     * otherwise they are defeated. Changes based on difficulty.
+     * @return Score.
+     */
+    internal int getDefeatScore() =>
+	    _defeatScore;
+
+    /**
+     * Returns the minimum amount of funds the player can have,
+     * otherwise they are defeated.
+     * @return Funds.
+     */
+    internal int getDefeatFunds() =>
+	    _defeatFunds;
 }

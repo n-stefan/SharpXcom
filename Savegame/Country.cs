@@ -148,4 +148,15 @@ internal class Country
      */
     internal bool getNewPact() =>
 	    _newPact;
+
+    /*
+     * Keith Richards would be so proud
+     * @return satisfaction level, 0 = alien pact, 1 = unhappy, 2 = satisfied, 3 = happy.
+     */
+    internal int getSatisfaction()
+    {
+	    if (_pact)
+		    return 0;
+	    return _satisfaction;
+    }
 }

@@ -29,7 +29,7 @@ namespace SharpXcom.Interface;
 internal class ImageButton : InteractiveSurface
 {
     byte _color;
-    ImageButton[] _group;
+    ImageButton _group;
     bool _inverted;
 
     /**
@@ -64,4 +64,16 @@ internal class ImageButton : InteractiveSurface
      */
     protected void setColor(byte color) =>
         _color = color;
+
+    /**
+     * Changes the button group this image button belongs to.
+     * @param group Pointer to the pressed button pointer in the group.
+     * Null makes it a regular button.
+     */
+    internal void setGroup(ImageButton group)
+    {
+        _group = group;
+        if (_group != null && _group == this)
+            invert((byte)(_color + 3));
+    }
 }

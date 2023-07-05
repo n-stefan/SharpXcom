@@ -52,8 +52,8 @@ internal class ArticleDefinition
     internal string section;
     protected UfopaediaTypeId _type_id;
     int _listOrder;
-    string id;
-    string title;
+    internal string id;
+    internal string title;
     internal List<string> requires;
 
     /**
@@ -96,6 +96,13 @@ internal class ArticleDefinition
             _listOrder = listOrder;
 		}
 	}
+
+    /**
+	 * Gets the article definition type. (Text, TextImage, Craft, ...)
+	 * @return The type of article definition of this instance.
+	 */
+    internal UfopaediaTypeId getType() =>
+		_type_id;
 }
 
 /**

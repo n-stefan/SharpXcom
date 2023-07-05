@@ -532,4 +532,11 @@ internal class RuleItem : IListOrder, IRule
      */
     internal bool isRecoverable() =>
 	    _recover;
+
+    /**
+     * Returns if this is a live alien.
+     * @return True if this is a live alien.
+     */
+    internal bool isAlien() =>
+	    _liveAlien;
 }

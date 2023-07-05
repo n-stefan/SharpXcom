@@ -31,6 +31,7 @@ delegate void ActionHandler(Action action);
 internal class InteractiveSurface : Surface
 {
     const int NUM_BUTTONS = 7;
+    const SDL_Keycode SDLK_ANY = (SDL_Keycode)(-1); // using an unused keycode to represent an "any key"
 
     byte _buttonsPressed;
     protected ActionHandler _in, _over, _out;
@@ -407,7 +408,7 @@ internal class InteractiveSurface : Surface
      * @param handler Action handler.
      * @param key Keyboard button to check for (note: ignores key modifiers). Set to SDLK_ANY for any key.
      */
-    internal void onKeyboardPress(ActionHandler handler, SDL_Keycode key)
+    internal void onKeyboardPress(ActionHandler handler, SDL_Keycode key = SDLK_ANY)
     {
         if (key == SDL_Keycode.SDLK_UNKNOWN)
         {
@@ -452,7 +453,7 @@ internal class InteractiveSurface : Surface
      */
     internal void onKeyboardRelease(ActionHandler handler, SDL_Keycode key)
     {
-        if (key ==  SDL_Keycode.SDLK_UNKNOWN)
+        if (key == SDL_Keycode.SDLK_UNKNOWN)
         {
             // Ignore unknown keys
             return;
@@ -466,4 +467,12 @@ internal class InteractiveSurface : Surface
             _keyRelease.Remove(key);
         }
     }
+
+    /**
+     * Changes the surface's focus. Surfaces will only receive
+     * keyboard events if focused.
+     * @param focus Is it focused?
+     */
+    internal virtual void setFocus(bool focus) =>
+        _isFocused = focus;
 }

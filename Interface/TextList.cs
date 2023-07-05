@@ -536,4 +536,204 @@ internal class TextList : InteractiveSurface
         _down.setColor(color);
         _scrollbar.setColor(color);
     }
+
+    /**
+     * If enabled, the text in different columns will be separated by dots.
+     * Otherwise, it will only be separated by blank space.
+     * @param dot True for dots, False for spaces.
+     */
+    internal void setDot(bool dot) =>
+        _dot = dot;
+
+    /**
+     * Sets the position of the column of arrow buttons
+     * in the text list.
+     * @param pos X in pixels (-1 to disable).
+     * @param type Arrow orientation type.
+     */
+    internal void setArrowColumn(int pos, ArrowOrientation type)
+    {
+        _arrowPos = pos;
+        _arrowType = type;
+        _arrowsLeftEdge = getX() + _arrowPos;
+        _arrowsRightEdge = _arrowsLeftEdge + 12 + 11;
+    }
+
+    /**
+     * Sets a function to be called every time the left arrows are mouse pressed.
+     * @param handler Action handler.
+     */
+    internal void onLeftArrowPress(ActionHandler handler)
+    {
+        _leftPress = handler;
+        foreach (var i in _arrowLeft)
+        {
+            i.onMousePress(handler);
+        }
+    }
+
+    /**
+     * Sets a function to be called every time the left arrows are mouse released.
+     * @param handler Action handler.
+     */
+    internal void onLeftArrowRelease(ActionHandler handler)
+    {
+        _leftRelease = handler;
+        foreach (var i in _arrowLeft)
+        {
+            i.onMouseRelease(handler);
+        }
+    }
+
+    /**
+     * Sets a function to be called every time the left arrows are mouse clicked.
+     * @param handler Action handler.
+     */
+    internal void onLeftArrowClick(ActionHandler handler)
+    {
+        _leftClick = handler;
+        foreach (var i in _arrowLeft)
+        {
+            i.onMouseClick(handler, 0);
+        }
+    }
+
+    /**
+     * Sets a function to be called every time the right arrows are mouse pressed.
+     * @param handler Action handler.
+     */
+    internal void onRightArrowPress(ActionHandler handler)
+    {
+        _rightPress = handler;
+        foreach (var i in _arrowRight)
+        {
+            i.onMousePress(handler);
+        }
+    }
+
+    /**
+     * Sets a function to be called every time the right arrows are mouse released.
+     * @param handler Action handler.
+     */
+    internal void onRightArrowRelease(ActionHandler handler)
+    {
+        _rightRelease = handler;
+        foreach (var i in _arrowRight)
+        {
+            i.onMouseRelease(handler);
+        }
+    }
+
+    /**
+     * Sets a function to be called every time the right arrows are mouse clicked.
+     * @param handler Action handler.
+     */
+    internal void onRightArrowClick(ActionHandler handler)
+    {
+        _rightClick = handler;
+        foreach (var i in _arrowRight)
+        {
+            i.onMouseClick(handler, 0);
+        }
+    }
+
+    /**
+     * Gets the arrowsLeftEdge.
+     * @return arrowsLeftEdge.
+     */
+    internal int getArrowsLeftEdge() =>
+        _arrowsLeftEdge;
+
+    /**
+     * Gets the arrowsRightEdge.
+     * @return arrowsRightEdge.
+     */
+    internal int getArrowsRightEdge() =>
+        _arrowsRightEdge;
+
+    /**
+     * Changes the text of a specific Text object in the list.
+     * @param row Row number.
+     * @param column Column number.
+     * @param text Text string.
+     */
+    internal void setCellText(uint row, uint column, string text)
+    {
+	    _texts[(int)row][(int)column].setText(text);
+	    _redraw = true;
+    }
+
+    /**
+     * Returns the color of the text in the list.
+     * @return Color value.
+     */
+    internal byte getColor() =>
+	    _color;
+
+    /**
+     * Enables/disables text wordwrapping. When enabled, rows can
+     * take up multiple lines of the list, otherwise every row
+     * is restricted to one line.
+     * @param wrap Wordwrapping setting.
+     */
+    internal void setWordWrap(bool wrap) =>
+        _wrap = wrap;
+
+    /**
+     * Changes the color of a specific Text object in the list.
+     * @param row Row number.
+     * @param column Column number.
+     * @param color Text color.
+     */
+    internal void setCellColor(uint row, uint column, byte color)
+    {
+        _texts[(int)row][(int)column].setColor(color);
+        _redraw = true;
+    }
+
+    internal int getScrollbarColor() =>
+        _scrollbar.getColor();
+
+    /*
+     * get the scroll depth.
+     * @return scroll depth.
+     */
+    internal uint getScroll() =>
+        _scroll;
+
+    /**
+     * Returns the amount of physical rows stored in the list.
+     * @return Number of rows.
+     */
+    internal uint getRows() =>
+        (uint)_rows.Count;
+
+    /**
+     * Changes the text list to use the big-size font.
+     */
+    internal void setBig()
+    {
+        _font = _big;
+
+        _selector = null;
+        _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
+        _selector.setPalette(getPaletteColors());
+        _selector.setVisible(false);
+
+        updateVisible();
+    }
+
+    /**
+     * Updates the amount of visible rows according to the
+     * current list and font size.
+     */
+    void updateVisible()
+    {
+        _visibleRows = 0;
+        for (int y = 0; y < getHeight(); y += _font.getHeight() + _font.getSpacing())
+        {
+            _visibleRows++;
+        }
+        updateArrows();
+    }
 }

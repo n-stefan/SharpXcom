@@ -177,7 +177,7 @@ internal class Language
      * @param n Number to use to decide the proper form.
      * @return String with the requested ID.
      */
-    LocalizedText getString(string id, uint n)
+    internal LocalizedText getString(string id, uint n)
     {
 	    Debug.Assert(!string.IsNullOrEmpty(id));
         string id1 = $"{id}_zero", id2 = $"{id}{_handler.getSuffix(n)}", id3 = $"{id}_other";

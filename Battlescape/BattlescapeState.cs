@@ -43,6 +43,9 @@ internal class BattlescapeState : State
     InteractiveSurface _btnLeftHandItem, _btnRightHandItem;
     Text _txtName;
     BattlescapeButton _btnUnitUp, _btnUnitDown, _btnMapUp, _btnMapDown, _btnShowMap, _btnKneel;
+    bool _isMouseScrolling, _isMouseScrolled;
+    bool _autosave;
+    bool _firstInit;
 
     //TODO: ctor, dtor
 
@@ -137,7 +140,7 @@ internal class BattlescapeState : State
             BattlescapeGenerator bgen = new BattlescapeGenerator(_game);
             bgen.nextStage();
             _game.popState();
-            _game.pushState(new BriefingState(0, 0));
+            _game.pushState(new BriefingState(null, null));
         }
         else
         {
@@ -347,4 +350,54 @@ internal class BattlescapeState : State
      */
     BattleItem getSpecialMeleeWeapon(BattleUnit battleUnit) =>
         battleUnit.getSpecialWeapon(BattleType.BT_MELEE);
+
+    /**
+     * Clears mouse-scrolling state (isMouseScrolling).
+     */
+    internal void clearMouseScrollingState() =>
+        _isMouseScrolling = false;
+
+    /**
+     * Centers on the currently selected soldier.
+     * @param action Pointer to an action.
+     */
+    internal void btnCenterClick(Engine.Action _)
+    {
+        if (playableUnitSelected())
+        {
+            _map.getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+            _map.refreshSelectorPosition();
+        }
+    }
+
+    /**
+     * Autosave the game the next time the battlescape is displayed.
+     */
+    internal void autosave() =>
+        _autosave = true;
+
+    /**
+     * Determines whether a playable unit is selected. Normally only player side units can be selected, but in debug mode one can play with aliens too :)
+     * Is used to see if action buttons will work.
+     * @return Whether a playable unit is selected.
+     */
+    bool playableUnitSelected() =>
+        _save.getSelectedUnit() != null && allowButtons();
+
+    /**
+     * Determines whether the player is allowed to press buttons.
+     * Buttons are disabled in the middle of a shot, during the alien turn,
+     * and while a player's units are panicking.
+     * The save button is an exception as we want to still be able to save if something
+     * goes wrong during the alien turn, and submit the save file for dissection.
+     * @param allowSaving True, if the help button was clicked.
+     * @return True if the player can still press buttons.
+     */
+    bool allowButtons(bool allowSaving = false)
+    {
+	    return ((allowSaving || _save.getSide() == UnitFaction.FACTION_PLAYER || _save.getDebugMode())
+		    && (_battleGame.getPanicHandled() || _firstInit )
+		    && (allowSaving || !_battleGame.isBusy() || _firstInit)
+		    && (_map.getProjectile() == null));
+    }
 }

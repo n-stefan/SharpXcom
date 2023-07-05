@@ -2995,4 +2995,62 @@ internal class BattlescapeGenerator
         _save.getTileEngine().calculateTerrainLighting();
         _save.getTileEngine().calculateUnitLighting();
     }
+
+    /**
+     * Sets the world texture where a ufo crashed. This is used to determine the terrain.
+     * @param texture Texture id of the polygon on the globe.
+     */
+    internal void setWorldTexture(Texture texture) =>
+        _worldTexture = texture;
+
+    /**
+     * Sets the world shade where a ufo crashed. This is used to determine the battlescape light level.
+     * @param shade Shade of the polygon on the globe.
+     */
+    internal void setWorldShade(int shade)
+    {
+        if (shade > 15) shade = 15;
+        if (shade < 0) shade = 0;
+        _worldShade = shade;
+    }
+
+    /**
+     * Sets the XCom craft involved in the battle.
+     * @param craft Pointer to XCom craft.
+     */
+    internal void setCraft(Craft craft)
+    {
+        _craft = craft;
+        _craft.setInBattlescape(true);
+    }
+
+    /**
+     * Sets the ufo involved in the battle.
+     * @param ufo Pointer to UFO.
+     */
+    internal void setUfo(Ufo ufo)
+    {
+        _ufo = ufo;
+        _ufo.setInBattlescape(true);
+    }
+
+    /**
+     * Sets the mission site involved in the battle.
+     * @param mission Pointer to mission site.
+     */
+    internal void setMissionSite(MissionSite mission)
+    {
+        _mission = mission;
+        _mission.setInBattlescape(true);
+    }
+
+    /**
+     * Sets the alien base involved in the battle.
+     * @param base Pointer to alien base.
+     */
+    internal void setAlienBase(AlienBase @base)
+    {
+        _alienBase = @base;
+        _alienBase.setInBattlescape(true);
+    }
 }

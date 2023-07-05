@@ -38,7 +38,7 @@ internal class Bar : Surface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    Bar(int width, int height, int x, int y) : base(width, height, x, y)
+    internal Bar(int width, int height, int x, int y) : base(width, height, x, y)
     {
         _color = 0;
         _color2 = 0;
@@ -82,6 +82,16 @@ internal class Bar : Surface
     internal void setValue2(double value)
     {
         _value2 = (value < 0.0) ? 0.0 : value;
+        _redraw = true;
+    }
+
+    /**
+     * Changes the scale factor used to draw the bar values.
+     * @param scale Scale in pixels/unit.
+     */
+    internal void setScale(double scale)
+    {
+        _scale = scale;
         _redraw = true;
     }
 }

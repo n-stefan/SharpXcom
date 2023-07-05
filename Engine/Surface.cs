@@ -972,4 +972,31 @@ internal class Surface
      */
     internal string getTooltip() =>
 	    _tooltip;
+
+    /**
+     * Inverts all the colors in the surface according to a middle point.
+     * Used for effects like shifting a button between pressed and unpressed.
+     * @param mid Middle point.
+     */
+    protected void invert(byte mid)
+    {
+        // Lock the surface
+        @lock();
+
+        for (int x = 0, y = 0; x < getWidth() && y < getHeight();)
+        {
+            byte pixel = getPixel(x, y);
+            if (pixel > 0)
+            {
+                setPixelIterative(ref x, ref y, (byte)(pixel + 2 * ((int)mid - (int)pixel)));
+            }
+            else
+            {
+                setPixelIterative(ref x, ref y, 0);
+            }
+        }
+
+        // Unlock the surface
+        unlock();
+    }
 }

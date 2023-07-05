@@ -1,6 +1,7 @@
 ﻿
 //TODO:
 // protected virtual/override methods
+// think(), handle(), init(), ... missing methods
 // yaml load defaults
 
 /*

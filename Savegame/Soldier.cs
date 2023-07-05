@@ -480,4 +480,67 @@ internal class Soldier
      */
     internal UnitStats getInitStats() =>
         _initialStats;
+
+    /**
+     * changes whether or not the unit is in psi training
+     */
+    internal void setPsiTraining(bool psi) =>
+        _psiTraining = psi;
+
+	/**
+	 * returns this soldier's psionic strength improvement score for this month.
+	 */
+	internal int getPsiStrImprovement() =>
+		_psiStrImprovement;
+
+	/**
+	 * returns this soldier's psionic skill improvement score for this month.
+	 * @return score
+	 */
+	internal int getImprovement() =>
+		_improvement;
+
+	/**
+	 * Returns a graphic representation of
+	 * the soldier's military rank.
+	 * @note THE MEANING OF LIFE
+	 * @return Sprite ID for rank.
+	 */
+	internal int getRankSprite() =>
+		42 + (int)_rank;
+
+	/**
+	 * Returns the soldier's amount of kills.
+	 * @return Kills.
+	 */
+	internal int getKills() =>
+		_kills;
+
+	/**
+	 * Returns the soldier's death details.
+	 * @return Pointer to death data. NULL if no death has occurred.
+	 */
+	internal SoldierDeath getDeath() =>
+		_death;
+
+	/**
+	 * Changes the soldier's full name.
+	 * @param name Soldier name.
+	 */
+	internal void setName(string name) =>
+		_name = name;
+
+    /**
+     * Changes the unit's current armor.
+     * @param armor Pointer to armor data.
+     */
+    internal void setArmor(Armor armor) =>
+        _armor = armor;
+
+    /**
+     * Returns the soldier's diary.
+     * @return Diary.
+     */
+    internal SoldierDiary getDiary() =>
+        _diary;
 }
