@@ -1096,7 +1096,7 @@ internal class BattlescapeGenerator
         }
     }
 
-    void autoEquip(List<BattleUnit> units, Mod.Mod mod, SavedBattleGame addToSave, List<BattleItem> craftInv,
+    internal static void autoEquip(List<BattleUnit> units, Mod.Mod mod, SavedBattleGame addToSave, List<BattleItem> craftInv,
             RuleInventory groundRuleInv, int worldShade, bool allowAutoLoadout, bool overrideEquipmentLayout)
     {
         for (int pass = 0; pass < 4; ++pass)
@@ -3053,4 +3053,22 @@ internal class BattlescapeGenerator
         _alienBase = @base;
         _alienBase.setInBattlescape(true);
     }
+
+    /**
+     * Sets the terrain to be used in battle generation.
+     * @param terrain Pointer to the terrain rules.
+     */
+    internal void setTerrain(RuleTerrain terrain) =>
+	    _terrain = terrain;
+
+    /**
+     * Sets the alien item level. This is used to determine how advanced the equipment of the aliens will be.
+     * note: this only applies to "New Battle" type games. we intentionally don't alter the month for those,
+     * because we're using monthsPassed -1 for new battle in other sections of code.
+     * - this value should be from 0 to the size of the itemLevel array in the ruleset (default 9).
+     * - at a certain number of months higher item levels appear more and more and lower ones will gradually disappear
+     * @param alienItemLevel AlienItemLevel.
+     */
+    internal void setAlienItemlevel(int alienItemLevel) =>
+	    _alienItemLevel = alienItemLevel;
 }

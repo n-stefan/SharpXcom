@@ -252,7 +252,7 @@ internal class GeoscapeCraftState : State
      * Returns the craft back to its base.
      * @param action Pointer to an action.
      */
-    void btnBaseClick(Engine.Action _)
+    void btnBaseClick(Action _)
     {
         _game.popState();
         _craft.returnToBase();
@@ -263,7 +263,7 @@ internal class GeoscapeCraftState : State
      * Changes the craft's target.
      * @param action Pointer to an action.
      */
-    void btnTargetClick(Engine.Action _)
+    void btnTargetClick(Action _)
     {
         _game.popState();
         _game.pushState(new SelectDestinationState(_craft, _globe));
@@ -274,7 +274,7 @@ internal class GeoscapeCraftState : State
      * Sets the craft to patrol the current location.
      * @param action Pointer to an action.
      */
-    void btnPatrolClick(Engine.Action _)
+    void btnPatrolClick(Action _)
     {
         _game.popState();
         _craft.setDestination(null);
@@ -285,7 +285,7 @@ internal class GeoscapeCraftState : State
      * Closes the window.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _)
+    void btnCancelClick(Action _)
     {
         // Go to the last known UFO position
         if (_waypoint != null)

@@ -35,7 +35,7 @@ internal class BaseDefenseState : State
     Text _txtTitle, _txtInit;
     TextList _lstDefenses;
     TextButton _btnOk;
-    Engine.Timer _timer;
+    Timer _timer;
 
     /**
      * Initializes all the elements in the Base Defense screen.
@@ -91,7 +91,7 @@ internal class BaseDefenseState : State
         _lstDefenses.setColumns(3, 134, 70, 50);
         _gravShields = _base.getGravShields();
         _defenses = _base.getDefenses().Count;
-        _timer = new Engine.Timer(250);
+        _timer = new Timer(250);
         _timer.onTimer((StateHandler)nextStep);
         _timer.start();
 
@@ -108,7 +108,7 @@ internal class BaseDefenseState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         _timer.stop();
         _game.popState();

@@ -98,7 +98,7 @@ internal class ConfirmLandingState : State
      * Enters the mission.
      * @param action Pointer to an action.
      */
-    void btnYesClick(Engine.Action _)
+    void btnYesClick(Action _)
     {
         _game.popState();
         Ufo u = (Ufo)_craft.getDestination();
@@ -145,7 +145,7 @@ internal class ConfirmLandingState : State
      * Returns the craft to base and closes the window.
      * @param action Pointer to an action.
      */
-    void btnNoClick(Engine.Action _)
+    void btnNoClick(Action _)
     {
         _craft.returnToBase();
         _game.popState();

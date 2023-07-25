@@ -129,14 +129,14 @@ internal class CraftWeaponsState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 
     /**
      * Equips the weapon on the craft and returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void lstWeaponsClick(Engine.Action _)
+    void lstWeaponsClick(Action _)
     {
         CraftWeapon current = _base.getCrafts()[(int)_craft].getWeapons()[(int)_weapon];
         // Remove current weapon

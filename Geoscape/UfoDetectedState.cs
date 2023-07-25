@@ -197,7 +197,7 @@ internal class UfoDetectedState : State
      * Picks a craft to intercept the UFO.
      * @param action Pointer to an action.
      */
-    void btnInterceptClick(Engine.Action _)
+    void btnInterceptClick(Action _)
     {
         _state.timerReset();
         _state.getGlobe().center(_ufo.getLongitude(), _ufo.getLatitude());
@@ -208,7 +208,7 @@ internal class UfoDetectedState : State
      * Centers on the UFO and returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCentreClick(Engine.Action _)
+    void btnCentreClick(Action _)
     {
         _state.timerReset();
         _state.getGlobe().center(_ufo.getLongitude(), _ufo.getLatitude());
@@ -219,6 +219,6 @@ internal class UfoDetectedState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 }

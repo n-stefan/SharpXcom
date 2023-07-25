@@ -245,4 +245,11 @@ internal class RuleRegion : IRule
      */
     internal uint getWeight() =>
 	    _regionWeight;
+
+    /**
+     * Gets the cost of building a base inside this region.
+     * @return The construction cost.
+     */
+    internal int getBaseCost() =>
+	    _cost;
 }

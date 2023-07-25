@@ -19,7 +19,7 @@
 
 namespace SharpXcom.Battlescape;
 
-struct ReequipStat { string item; int qty; string craft; }
+struct ReequipStat { internal string item; internal int qty; internal string craft; }
 
 struct RecoveryItem { string name; int value; }
 
@@ -276,7 +276,7 @@ internal class DebriefingState : State
     * Shows a tooltip for the appropriate text.
     * @param action Pointer to an action.
     */
-    void txtTooltipIn(Engine.Action action)
+    void txtTooltipIn(Action action)
     {
 	    _currentTooltip = action.getSender().getTooltip();
 	    _txtTooltip.setText(tr(_currentTooltip));}
@@ -285,7 +285,7 @@ internal class DebriefingState : State
     * Clears the tooltip text.
     * @param action Pointer to an action.
     */
-    void txtTooltipOut(Engine.Action action)
+    void txtTooltipOut(Action action)
     {
 	    if (_currentTooltip == action.getSender().getTooltip())
 	    {
@@ -297,7 +297,7 @@ internal class DebriefingState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         _game.popState();
         if (_game.getSavedGame().getMonthsPassed() == -1)
@@ -352,7 +352,7 @@ internal class DebriefingState : State
      * Displays soldiers' stat increases.
      * @param action Pointer to an action.
      */
-    void btnStatsClick(Engine.Action _)
+    void btnStatsClick(Action _)
     {
         _showSoldierStats = !_showSoldierStats;
         applyVisibility();

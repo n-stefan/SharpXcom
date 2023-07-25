@@ -90,14 +90,14 @@ internal class PsiTrainingState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Goes to the allocation screen for the corresponding base.
      * @param action Pointer to an action.
      */
-    void btnBaseXClick(Engine.Action action)
+    void btnBaseXClick(Action action)
     {
         for (int i = 0; i < _btnBases.Count; ++i)
         {

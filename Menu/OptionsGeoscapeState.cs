@@ -173,55 +173,55 @@ internal class OptionsGeoscapeState : OptionsBaseState
      * Changes the Drag Scroll option.
      * @param action Pointer to an action.
      */
-    void cbxDragScrollChange(Engine.Action _) =>
+    void cbxDragScrollChange(Action _) =>
         Options.geoDragScrollButton = (int)_cbxDragScroll.getSelected();
 
     /**
      * Updates the scroll speed.
      * @param action Pointer to an action.
      */
-    void slrScrollSpeedChange(Engine.Action _) =>
+    void slrScrollSpeedChange(Action _) =>
         Options.geoScrollSpeed = _slrScrollSpeed.getValue();
 
     /**
      * Updates the dogfight speed.
      * @param action Pointer to an action.
      */
-    void slrDogfightSpeedChange(Engine.Action _) =>
+    void slrDogfightSpeedChange(Action _) =>
         Options.dogfightSpeed = _slrDogfightSpeed.getValue();
 
     /**
      * Updates the clock speed.
      * @param action Pointer to an action.
      */
-    void slrClockSpeedChange(Engine.Action _) =>
+    void slrClockSpeedChange(Action _) =>
         Options.geoClockSpeed = _slrClockSpeed.getValue();
 
     /**
      * Changes the Globe Country Borders option.
      * @param action Pointer to an action.
      */
-    void btnGlobeCountriesClick(Engine.Action _) =>
+    void btnGlobeCountriesClick(Action _) =>
         Options.globeDetail = _btnGlobeCountries.getPressed();
 
     /**
      * Changes the Globe Radar Ranges option.
      * @param action Pointer to an action.
      */
-    void btnGlobeRadarsClick(Engine.Action _) =>
+    void btnGlobeRadarsClick(Action _) =>
         Options.globeRadarLines = _btnGlobeRadars.getPressed();
 
     /**
      * Changes the Globe Flight Paths option.
      * @param action Pointer to an action.
      */
-    void btnGlobePathsClick(Engine.Action _) =>
+    void btnGlobePathsClick(Action _) =>
         Options.globeFlightPaths = _btnGlobePaths.getPressed();
 
     /**
      * Changes the Show Funds option.
      * @param action Pointer to an action.
      */
-    void btnShowFundsClick(Engine.Action _) =>
+    void btnShowFundsClick(Action _) =>
         Options.showFundsOnGeoscape = _btnShowFunds.getPressed();
 }

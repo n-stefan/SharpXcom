@@ -30,7 +30,7 @@ internal class OptionsConfirmState : State
     Window _window;
     TextButton _btnYes, _btnNo;
     Text _txtTitle, _txtTimer;
-    Engine.Timer _timer;
+    Timer _timer;
 
     /**
      * Initializes all the elements in the Confirm Display Options screen.
@@ -50,7 +50,7 @@ internal class OptionsConfirmState : State
         _btnNo = new TextButton(50, 20, 200, 120);
         _txtTitle = new Text(206, 20, 57, 70);
         _txtTimer = new Text(206, 20, 57, 100);
-        _timer = new Engine.Timer(1000);
+        _timer = new Timer(1000);
 
         // Set palette
         setInterface("optionsMenu", false, _game.getSavedGame() != null ? _game.getSavedGame().getSavedBattle() : null);
@@ -100,7 +100,7 @@ internal class OptionsConfirmState : State
      * Goes back to the Main Menu.
      * @param action Pointer to an action.
      */
-    void btnYesClick(Engine.Action _)
+    void btnYesClick(Action _)
     {
         _game.popState();
         OptionsBaseState.restart(_origin);
@@ -110,7 +110,7 @@ internal class OptionsConfirmState : State
      * Restores the original display options.
      * @param action Pointer to an action.
      */
-    void btnNoClick(Engine.Action _)
+    void btnNoClick(Action _)
     {
         Options.switchDisplay();
         Screen.updateScale(Options.battlescapeScale, ref Options.baseXBattlescape, ref Options.baseYBattlescape, _origin == OptionsOrigin.OPT_BATTLESCAPE);

@@ -94,14 +94,14 @@ internal class CraftPatrolState : State
      * Closes the window.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Opens up the Craft window.
      * @param action Pointer to an action.
      */
-    void btnRedirectClick(Engine.Action _)
+    void btnRedirectClick(Action _)
     {
         _game.popState();
         _game.pushState(new GeoscapeCraftState(_craft, _globe, null));

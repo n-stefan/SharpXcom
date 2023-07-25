@@ -27,7 +27,7 @@ internal class ManufactureInfoState : State
     Base _base;
     RuleManufacture _item;
     Production _production;
-    Engine.Timer _timerMoreEngineer, _timerMoreUnit, _timerLessEngineer, _timerLessUnit;
+    Timer _timerMoreEngineer, _timerMoreUnit, _timerLessEngineer, _timerLessUnit;
     Window _window;
     Text _txtTitle, _txtAvailableEngineer, _txtAvailableSpace, _txtMonthlyProfit, _txtAllocatedEngineer, _txtUnitToProduce, _txtUnitUp, _txtUnitDown, _txtEngineerUp, _txtEngineerDown, _txtAllocated, _txtTodo;
     TextButton _btnStop, _btnOk;
@@ -202,10 +202,10 @@ internal class ManufactureInfoState : State
         initProfitInfo();
         setAssignedEngineer();
 
-        _timerMoreEngineer = new Engine.Timer(250);
-        _timerLessEngineer = new Engine.Timer(250);
-        _timerMoreUnit = new Engine.Timer(250);
-        _timerLessUnit = new Engine.Timer(250);
+        _timerMoreEngineer = new Timer(250);
+        _timerLessEngineer = new Timer(250);
+        _timerMoreUnit = new Timer(250);
+        _timerLessUnit = new Timer(250);
         _timerMoreEngineer.onTimer((StateHandler)onMoreEngineer);
         _timerLessEngineer.onTimer((StateHandler)onLessEngineer);
         _timerMoreUnit.onTimer((StateHandler)onMoreUnit);
@@ -216,7 +216,7 @@ internal class ManufactureInfoState : State
      * Increases or decreases the Engineers according the mouse-wheel used.
      * @param action A pointer to an Action.
      */
-    void handleWheelEngineer(Engine.Action action)
+    void handleWheelEngineer(Action action)
     {
         if (action.getDetails().wheel.y > 0) moreEngineer(Options.changeValueByMouseWheel);
         else if (action.getDetails().wheel.y < 0) lessEngineer(Options.changeValueByMouseWheel);
@@ -226,7 +226,7 @@ internal class ManufactureInfoState : State
      * Increases or decreases the Units to produce according the mouse-wheel used.
      * @param action A pointer to an Action.
      */
-    void handleWheelUnit(Engine.Action action)
+    void handleWheelUnit(Action action)
     {
         if (action.getDetails().wheel.y > 0) moreUnit(Options.changeValueByMouseWheel);
         else if (action.getDetails().wheel.y < 0) lessUnit(Options.changeValueByMouseWheel);
@@ -236,7 +236,7 @@ internal class ManufactureInfoState : State
      * Starts the timerMoreEngineer.
      * @param action A pointer to an Action.
      */
-    void moreEngineerPress(Engine.Action action)
+    void moreEngineerPress(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT) _timerMoreEngineer.start();
     }
@@ -245,7 +245,7 @@ internal class ManufactureInfoState : State
      * Stops the timerMoreEngineer.
      * @param action A pointer to an Action.
      */
-    void moreEngineerRelease(Engine.Action action)
+    void moreEngineerRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -258,7 +258,7 @@ internal class ManufactureInfoState : State
      * Allocates all engineers.
      * @param action A pointer to an Action.
      */
-    void moreEngineerClick(Engine.Action action)
+    void moreEngineerClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT) moreEngineer(int.MaxValue);
         if (action.getDetails().button.button == SDL_BUTTON_LEFT) moreEngineer(1);
@@ -268,7 +268,7 @@ internal class ManufactureInfoState : State
      * Starts the timerLessEngineer.
      * @param action A pointer to an Action.
      */
-    void lessEngineerPress(Engine.Action action)
+    void lessEngineerPress(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT) _timerLessEngineer.start();
     }
@@ -277,7 +277,7 @@ internal class ManufactureInfoState : State
      * Stops the timerLessEngineer.
      * @param action A pointer to an Action.
      */
-    void lessEngineerRelease(Engine.Action action)
+    void lessEngineerRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -290,7 +290,7 @@ internal class ManufactureInfoState : State
      * Removes engineers from the production.
      * @param action A pointer to an Action.
      */
-    void lessEngineerClick(Engine.Action action)
+    void lessEngineerClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT) lessEngineer(int.MaxValue);
         if (action.getDetails().button.button == SDL_BUTTON_LEFT) lessEngineer(1);
@@ -300,7 +300,7 @@ internal class ManufactureInfoState : State
      * Starts the timerMoreUnit.
      * @param action A pointer to an Action.
      */
-    void moreUnitPress(Engine.Action action)
+    void moreUnitPress(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT && _production.getAmountTotal() < int.MaxValue)
             _timerMoreUnit.start();
@@ -310,7 +310,7 @@ internal class ManufactureInfoState : State
      * Stops the timerMoreUnit.
      * @param action A pointer to an Action.
      */
-    void moreUnitRelease(Engine.Action action)
+    void moreUnitRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -323,7 +323,7 @@ internal class ManufactureInfoState : State
      * Increases the "units to produce", in the case of a right-click, to infinite, and 1 on left-click.
      * @param action A pointer to an Action.
      */
-    void moreUnitClick(Engine.Action action)
+    void moreUnitClick(Action action)
     {
         if (_production.getInfiniteAmount()) return; // We can't increase over infinite :)
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
@@ -348,7 +348,7 @@ internal class ManufactureInfoState : State
      * Starts the timerLessUnit.
      * @param action A pointer to an Action.
      */
-    void lessUnitPress(Engine.Action action)
+    void lessUnitPress(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT) _timerLessUnit.start();
     }
@@ -357,7 +357,7 @@ internal class ManufactureInfoState : State
      * Stops the timerLessUnit.
      * @param action A pointer to an Action.
      */
-    void lessUnitRelease(Engine.Action action)
+    void lessUnitRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -370,7 +370,7 @@ internal class ManufactureInfoState : State
      * Decreases the units to produce.
      * @param action A pointer to an Action.
      */
-    void lessUnitClick(Engine.Action action)
+    void lessUnitClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT
         || action.getDetails().button.button == SDL_BUTTON_LEFT)
@@ -390,14 +390,14 @@ internal class ManufactureInfoState : State
      * Refreshes profit values.
      * @param action A pointer to an Action.
      */
-    void btnSellClick(Engine.Action _) =>
+    void btnSellClick(Action _) =>
         setAssignedEngineer();
 
     /**
      * Starts this Production (if new). Returns to the previous screen.
      * @param action A pointer to an Action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         if (_item != null)
         {
@@ -411,7 +411,7 @@ internal class ManufactureInfoState : State
      * Stops this Production. Returns to the previous screen.
      * @param action A pointer to an Action.
      */
-    void btnStopClick(Engine.Action _)
+    void btnStopClick(Action _)
     {
         _base.removeProduction(_production);
         exitState();

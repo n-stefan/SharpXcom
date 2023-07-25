@@ -185,7 +185,7 @@ internal class BattlescapeGame
     /**
      * Sets the cursor according to the selected action.
      */
-    void setupCursor()
+    internal void setupCursor()
     {
         if (_currentAction.targeting)
         {
@@ -970,4 +970,28 @@ internal class BattlescapeGame
 
     internal List<BattleState> getStates() =>
         _states;
+
+    /**
+     * Gets a pointer to access action members directly.
+     * @return Pointer to action.
+     */
+    internal ref BattleAction getCurrentAction() =>
+        ref _currentAction;
+
+    /**
+      * Cancels all selected user actions.
+      */
+    internal void cancelAllActions()
+    {
+        _save.getPathfinding().removePreview();
+
+        _currentAction.waypoints.Clear();
+        getMap().getWaypoints().Clear();
+        _parentState.showLaunchButton(false);
+
+        _currentAction.targeting = false;
+        _currentAction.type = BattleActionType.BA_NONE;
+        setupCursor();
+        _parentState.getGame().getCursor().setVisible(true);
+    }
 }

@@ -171,7 +171,7 @@ internal class Globe : InteractiveSurface
     SurfaceSet _texture, _markerSet;
     Surface _markers, _countries, _radars;
     FastLineClip _clipper;
-    Engine.Timer _blinkTimer, _rotTimer;
+    Timer _blinkTimer, _rotTimer;
     uint _zoom, _zoomOld, _zoomTexture;
     GlobeStaticData static_data;
     double _radius, _radiusStep;
@@ -236,10 +236,10 @@ internal class Globe : InteractiveSurface
         _clipper = new FastLineClip(x, x + width, y, y + height);
 
         // Animation timers
-        _blinkTimer = new Engine.Timer(100);
+        _blinkTimer = new Timer(100);
         _blinkTimer.onTimer((SurfaceHandler)blink);
         _blinkTimer.start();
-        _rotTimer = new Engine.Timer(10);
+        _rotTimer = new Timer(10);
         _rotTimer.onTimer((SurfaceHandler)rotate);
 
         _cenLon = _game.getSavedGame().getGlobeLongitude();
@@ -958,4 +958,13 @@ internal class Globe : InteractiveSurface
 	    int dy = y - ty;
 	    return (dx * dx + dy * dy <= NEAR_RADIUS);
     }
+
+    internal void setNewBaseHoverPos(double lon, double lat)
+    {
+        _hoverLon = lon;
+        _hoverLat = lat;
+    }
+
+    internal void setNewBaseHover(bool hover) =>
+        _hover = hover;
 }

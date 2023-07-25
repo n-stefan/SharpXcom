@@ -258,7 +258,7 @@ internal class Base : Target
      * for maintaining the facilities in the base.
      * @return Maintenance costs.
      */
-    int getFacilityMaintenance()
+    internal int getFacilityMaintenance()
     {
 	    int total = 0;
 	    foreach (var i in _facilities)
@@ -276,7 +276,7 @@ internal class Base : Target
      * in the base.
      * @return Number of engineers.
      */
-    int getTotalEngineers()
+    internal int getTotalEngineers()
     {
 	    int total = _engineers;
 	    foreach (var i in _transfers)
@@ -298,7 +298,7 @@ internal class Base : Target
      * in the base.
      * @return Number of scientists.
      */
-    int getTotalScientists()
+    internal int getTotalScientists()
     {
 	    int total = _scientists;
 	    foreach (var i in _transfers)
@@ -1198,5 +1198,31 @@ internal class Base : Target
             }
             _vehicles.RemoveAt(0);
         }
+    }
+
+    /**
+     * Returns the total amount of soldiers of
+     * a certain type stored in the base.
+     * @param soldier Soldier type.
+     * @return Number of soldiers.
+     */
+    internal int getSoldierCount(string soldier)
+    {
+	    int total = 0;
+	    foreach (var i in _transfers)
+	    {
+		    if (i.getType() == TransferType.TRANSFER_SOLDIER && i.getSoldier().getRules().getType() == soldier)
+		    {
+			    total++;
+		    }
+	    }
+	    foreach (var i in _soldiers)
+	    {
+		    if (i.getRules().getType() == soldier)
+		    {
+			    total++;
+		    }
+	    }
+	    return total;
     }
 }

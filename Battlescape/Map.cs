@@ -62,7 +62,7 @@ internal class Map : InteractiveSurface
     int _spriteWidth, _spriteHeight;
     BattlescapeMessage _message;
     Camera _camera;
-    Engine.Timer _scrollMouseTimer, _scrollKeyTimer, _obstacleTimer;
+    Timer _scrollMouseTimer, _scrollKeyTimer, _obstacleTimer;
     Text _txtAccuracy;
     List<Position> _waypoints;
 
@@ -121,12 +121,12 @@ internal class Map : InteractiveSurface
         _message.setY((visibleMapHeight - _message.getHeight()) / 2);
         _message.setTextColor((byte)_messageColor);
         _camera = new Camera(_spriteWidth, _spriteHeight, _save.getMapSizeX(), _save.getMapSizeY(), _save.getMapSizeZ(), this, visibleMapHeight);
-        _scrollMouseTimer = new Engine.Timer(SCROLL_INTERVAL);
+        _scrollMouseTimer = new Timer(SCROLL_INTERVAL);
         _scrollMouseTimer.onTimer((SurfaceHandler)scrollMouse);
-        _scrollKeyTimer = new Engine.Timer(SCROLL_INTERVAL);
+        _scrollKeyTimer = new Timer(SCROLL_INTERVAL);
         _scrollKeyTimer.onTimer((SurfaceHandler)scrollKey);
         _camera.setScrollTimer(_scrollMouseTimer, _scrollKeyTimer);
-        _obstacleTimer = new Engine.Timer(2500);
+        _obstacleTimer = new Timer(2500);
         _obstacleTimer.stop();
         _obstacleTimer.onTimer((SurfaceHandler)disableObstacles);
 

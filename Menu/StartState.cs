@@ -32,7 +32,7 @@ internal class StartState : State
     Font _font;
     Language _lang;
     Text _text, _cursor;
-    Engine.Timer _timer;
+    Timer _timer;
     string _output;
 
     static LoadingPhase loading;
@@ -67,7 +67,7 @@ internal class StartState : State
 
         _text = new Text(Options.baseXResolution, Options.baseYResolution, 0, 0);
         _cursor = new Text(_font.getWidth(), _font.getHeight(), 0, 0);
-        _timer = new Engine.Timer(150);
+        _timer = new Timer(150);
 
         setPalette(_font.getPalette(), 0, 2);
 

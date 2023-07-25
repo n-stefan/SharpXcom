@@ -312,4 +312,12 @@ internal class RuleBaseFacility : IListOrder, IRule
      */
     internal int getHitSound() =>
 	    _hitSound;
+
+    /**
+     * Gets the amount of funds that this facility costs
+     * to build on a base.
+     * @return The building cost.
+     */
+    internal int getBuildCost() =>
+	    _buildCost;
 }

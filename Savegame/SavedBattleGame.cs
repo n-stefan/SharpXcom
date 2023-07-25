@@ -1169,4 +1169,77 @@ internal class SavedBattleGame
         _selectedUnit = _units[i];
         return _selectedUnit;
     }
+
+    /**
+     * Selects the previous player unit.
+     * @param checkReselect Whether to check if we should reselect a unit.
+     * @param setReselect Don't reselect a unit.
+     * @param checkInventory Whether to check if the unit has an inventory.
+     * @return Pointer to new selected BattleUnit, NULL if none can be selected.
+     * @sa selectPlayerUnit
+     */
+    internal BattleUnit selectPreviousPlayerUnit(bool checkReselect, bool setReselect, bool checkInventory) =>
+        selectPlayerUnit(-1, checkReselect, setReselect, checkInventory);
+
+    /**
+     * Resets all the units to their current standing tile(s).
+     */
+    internal void resetUnitTiles()
+    {
+        foreach (var i in _units)
+        {
+            if (!i.isOut())
+            {
+                int size = i.getArmor().getSize() - 1;
+                if (i.getTile() != null && i.getTile().getUnit() == i)
+                {
+                    for (int x = size; x >= 0; x--)
+                    {
+                        for (int y = size; y >= 0; y--)
+                        {
+                            getTile(i.getTile().getPosition() + new Position(x, y, 0)).setUnit(null);
+                        }
+                    }
+                }
+                for (int x = size; x >= 0; x--)
+                {
+                    for (int y = size; y >= 0; y--)
+                    {
+                        Tile t = getTile(i.getPosition() + new Position(x, y, 0));
+                        t.setUnit(i, getTile(t.getPosition() + new Position(0, 0, -1)));
+                    }
+                }
+
+            }
+            if (i.getFaction() == UnitFaction.FACTION_PLAYER)
+            {
+                i.setVisible(true);
+            }
+        }
+        _beforeGame = false;
+    }
+
+    /**
+     * Move all the leftover items in base defense missions to random locations in the storage facilities
+     * @param t the tile where all our goodies are initially stored.
+     */
+    internal void randomizeItemLocations(Tile t)
+    {
+        if (_storageSpace.Any())
+        {
+            var inventory = t.getInventory();
+            for (var it = 0; it < inventory.Count;)
+            {
+                if (inventory[it].getSlot().getId() == "STR_GROUND")
+                {
+                    getTile(_storageSpace[RNG.generate(0, _storageSpace.Count - 1)]).addItem(inventory[it], inventory[it].getSlot());
+                    t.getInventory().RemoveAt(it);
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+        }
+    }
 }

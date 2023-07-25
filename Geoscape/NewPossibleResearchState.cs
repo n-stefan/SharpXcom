@@ -106,14 +106,14 @@ internal class NewPossibleResearchState : State
      * return to the previous screen
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Open the ResearchState so the player can dispatch available scientist.
      * @param action Pointer to an action.
      */
-    void btnResearchClick(Engine.Action _)
+    void btnResearchClick(Action _)
     {
         _game.popState();
         _game.pushState(new ResearchState(_base));

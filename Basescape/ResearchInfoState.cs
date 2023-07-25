@@ -27,7 +27,7 @@ internal class ResearchInfoState : State
     Base _base;
     ResearchProject _project;
     RuleResearch _rule;
-    Engine.Timer _timerMore, _timerLess;
+    Timer _timerMore, _timerLess;
     Window _window;
     Text _txtTitle, _txtAvailableScientist, _txtAvailableSpace, _txtAllocatedScientist, _txtMore, _txtLess;
     TextButton _btnCancel;
@@ -147,9 +147,9 @@ internal class ResearchInfoState : State
         _btnLess.onMouseRelease(lessRelease);
         _btnLess.onMouseClick(lessClick, 0);
 
-        _timerMore = new Engine.Timer(250);
+        _timerMore = new Timer(250);
         _timerMore.onTimer((StateHandler)more);
-        _timerLess = new Engine.Timer(250);
+        _timerLess = new Timer(250);
         _timerLess.onTimer((StateHandler)less);
 
         _btnOk.onMouseClick(btnOkClick);
@@ -173,7 +173,7 @@ internal class ResearchInfoState : State
      * Increases or decreases the scientists according the mouse-wheel used.
      * @param action Pointer to an Action.
      */
-    void handleWheel(Engine.Action action)
+    void handleWheel(Action action)
     {
         if (action.getDetails().wheel.y > 0) moreByValue(Options.changeValueByMouseWheel);
         else if (action.getDetails().wheel.y < 0) lessByValue(Options.changeValueByMouseWheel);
@@ -183,7 +183,7 @@ internal class ResearchInfoState : State
      * Starts the timeMore timer.
      * @param action Pointer to an Action.
      */
-    void morePress(Engine.Action action)
+    void morePress(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT) _timerMore.start();
     }
@@ -192,7 +192,7 @@ internal class ResearchInfoState : State
      * Stops the timeMore timer.
      * @param action Pointer to an Action.
      */
-    void moreRelease(Engine.Action action)
+    void moreRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -206,7 +206,7 @@ internal class ResearchInfoState : State
      * one scientist on left-click, all scientists on right-click.
      * @param action Pointer to an Action.
      */
-    void moreClick(Engine.Action action)
+    void moreClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
             moreByValue(int.MaxValue);
@@ -218,7 +218,7 @@ internal class ResearchInfoState : State
      * Starts the timeLess timer.
      * @param action Pointer to an Action.
      */
-    void lessPress(Engine.Action action)
+    void lessPress(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT) _timerLess.start();
     }
@@ -227,7 +227,7 @@ internal class ResearchInfoState : State
      * Stops the timeLess timer.
      * @param action Pointer to an Action.
      */
-    void lessRelease(Engine.Action action)
+    void lessRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -241,7 +241,7 @@ internal class ResearchInfoState : State
      * one scientist on left-click, all scientists on right-click.
      * @param action Pointer to an Action.
      */
-    void lessClick(Engine.Action action)
+    void lessClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
             lessByValue(int.MaxValue);
@@ -271,7 +271,7 @@ internal class ResearchInfoState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
@@ -279,7 +279,7 @@ internal class ResearchInfoState : State
      * research list.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _)
+    void btnCancelClick(Action _)
     {
         _base.removeResearch(_project);
         _game.popState();

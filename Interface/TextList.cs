@@ -517,9 +517,9 @@ internal class TextList : InteractiveSurface
      * @param row Row number.
      * @param color Text color.
      */
-    internal void setRowColor(int row, byte color)
+    internal void setRowColor(uint row, byte color)
     {
-        foreach (var text in _texts[row])
+        foreach (var text in _texts[(int)row])
         {
             text.setColor(color);
         }
@@ -736,4 +736,31 @@ internal class TextList : InteractiveSurface
         }
         updateArrows();
     }
+
+    internal void setFlooding(bool flooding) =>
+        _flooding = flooding;
+
+    /**
+     * Returns the height of a specific text row in the list.
+     * @param row Row number.
+     * @return height in pixels.
+     */
+    internal int getNumTextLines(uint row) =>
+	    _texts[(int)row].First().getNumLines();
+
+    /**
+     * Returns the height of a specific text row in the list.
+     * @param row Row number.
+     * @return height in pixels.
+     */
+    internal int getTextHeight(uint row) =>
+	    _texts[(int)row].First().getTextHeight();
+
+    /**
+     * Returns the Y position of a specific text row in the list.
+     * @param row Row number.
+     * @return Y position in pixels.
+     */
+    internal int getRowY(uint row) =>
+	    getY() + _texts[(int)row][0].getY();
 }

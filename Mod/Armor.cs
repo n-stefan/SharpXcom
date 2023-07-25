@@ -379,4 +379,11 @@ internal class Armor : IRule
     */
     internal List<string> getUnits() =>
 	    _units;
+
+    /**
+     * Gets the unit's inventory sprite.
+     * @return The inventory sprite name.
+     */
+    internal string getSpriteInventory() =>
+	    _spriteInv;
 }

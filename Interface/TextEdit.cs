@@ -35,7 +35,7 @@ internal class TextEdit : InteractiveSurface
     ActionHandler _change;
     State _state;
     Text _text, _caret;
-    Engine.Timer _timer;
+    Timer _timer;
     string _value;
 
     /**
@@ -58,7 +58,7 @@ internal class TextEdit : InteractiveSurface
 
         _isFocused = false;
         _text = new Text(width, height, 0, 0);
-        _timer = new Engine.Timer(100);
+        _timer = new Timer(100);
         _timer.onTimer((SurfaceHandler)blink);
         _caret = new Text(16, 17, 0, 0);
         _caret.setText("|");
@@ -146,7 +146,7 @@ internal class TextEdit : InteractiveSurface
      * @param focus True if focused, false otherwise.
      * @param modal True to lock input to this control, false otherwise.
      */
-    void setFocus(bool focus, bool modal)
+    internal void setFocus(bool focus, bool modal)
     {
         _modal = modal;
         if (focus != _isFocused)

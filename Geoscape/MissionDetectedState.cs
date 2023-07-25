@@ -95,7 +95,7 @@ internal class MissionDetectedState : State
      * Picks a craft to intercept the mission site.
      * @param action Pointer to an action.
      */
-    void btnInterceptClick(Engine.Action _)
+    void btnInterceptClick(Action _)
     {
         _state.timerReset();
         _state.getGlobe().center(_mission.getLongitude(), _mission.getLatitude());
@@ -106,7 +106,7 @@ internal class MissionDetectedState : State
      * Centers on the mission site and returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCenterClick(Engine.Action _)
+    void btnCenterClick(Action _)
     {
         _state.timerReset();
         _state.getGlobe().center(_mission.getLongitude(), _mission.getLatitude());
@@ -117,6 +117,6 @@ internal class MissionDetectedState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 }

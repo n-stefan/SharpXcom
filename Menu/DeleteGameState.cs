@@ -86,7 +86,7 @@ internal class DeleteGameState : State
      */
     ~DeleteGameState() { }
 
-    void btnYesClick(Engine.Action _)
+    void btnYesClick(Action _)
     {
         _game.popState();
         if (!CrossPlatform.deleteFile(_filename))
@@ -99,6 +99,6 @@ internal class DeleteGameState : State
         }
     }
 
-    void btnNoClick(Engine.Action _) =>
+    void btnNoClick(Action _) =>
         _game.popState();
 }

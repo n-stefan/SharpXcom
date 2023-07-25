@@ -44,7 +44,7 @@ internal class DogfightState : State
     Text _txtAmmo1, _txtAmmo2, _txtDistance, _txtStatus, _txtInterceptionNumber;
     InteractiveSurface _btnMinimizedIcon;
     ImageButton _mode;
-    Engine.Timer _craftDamageAnimTimer;
+    Timer _craftDamageAnimTimer;
     int[] _colors = new int[11];
     List<CraftWeaponProjectile> _projectiles;
 
@@ -115,7 +115,7 @@ internal class DogfightState : State
         _txtInterceptionNumber = new Text(16, 9, _minimizedIconX + 18, _minimizedIconY + 6);
 
         _mode = _btnStandoff;
-        _craftDamageAnimTimer = new Engine.Timer(500);
+        _craftDamageAnimTimer = new Timer(500);
 
         // Set palette
         setInterface("dogfight");
@@ -421,7 +421,7 @@ internal class DogfightState : State
      * Hides the front view of the UFO.
      * @param action Pointer to an action.
      */
-    void previewClick(Engine.Action _)
+    void previewClick(Action _)
     {
         _preview.setVisible(false);
         // Reenable all other buttons to prevent misclicks
@@ -440,7 +440,7 @@ internal class DogfightState : State
      * Minimizes the dogfight window.
      * @param action Pointer to an action.
      */
-    void btnMinimizeClick(Engine.Action _)
+    void btnMinimizeClick(Action _)
     {
         if (!_ufo.isCrashed() && !_craft.isDestroyed() && !_ufoBreakingOff)
         {
@@ -505,7 +505,7 @@ internal class DogfightState : State
      * Switches to Standoff mode (maximum range).
      * @param action Pointer to an action.
      */
-    void btnStandoffPress(Engine.Action _)
+    void btnStandoffPress(Action _)
     {
         if (!_ufo.isCrashed() && !_craft.isDestroyed() && !_ufoBreakingOff)
         {
@@ -519,7 +519,7 @@ internal class DogfightState : State
      * Switches to Cautious mode (maximum weapon range).
      * @param action Pointer to an action.
      */
-    void btnCautiousPress(Engine.Action _)
+    void btnCautiousPress(Action _)
     {
         if (!_ufo.isCrashed() && !_craft.isDestroyed() && !_ufoBreakingOff)
         {
@@ -567,7 +567,7 @@ internal class DogfightState : State
      * Switches to Standard mode (minimum weapon range).
      * @param action Pointer to an action.
      */
-    void btnStandardPress(Engine.Action _)
+    void btnStandardPress(Action _)
     {
         if (!_ufo.isCrashed() && !_craft.isDestroyed() && !_ufoBreakingOff)
         {
@@ -615,7 +615,7 @@ internal class DogfightState : State
      * Switches to Aggressive mode (minimum range).
      * @param action Pointer to an action.
      */
-    void btnAggressivePress(Engine.Action _)
+    void btnAggressivePress(Action _)
     {
         if (!_ufo.isCrashed() && !_craft.isDestroyed() && !_ufoBreakingOff)
         {
@@ -637,7 +637,7 @@ internal class DogfightState : State
      * Disengages from the UFO.
      * @param action Pointer to an action.
      */
-    void btnDisengagePress(Engine.Action _)
+    void btnDisengagePress(Action _)
     {
         if (!_ufo.isCrashed() && !_craft.isDestroyed() && !_ufoBreakingOff)
         {
@@ -651,7 +651,7 @@ internal class DogfightState : State
      * Shows a front view of the UFO.
      * @param action Pointer to an action.
      */
-    void btnUfoClick(Engine.Action _)
+    void btnUfoClick(Action _)
     {
         _preview.setVisible(true);
         // Disable all other buttons to prevent misclicks
@@ -670,7 +670,7 @@ internal class DogfightState : State
      * Maximizes the interception window.
      * @param action Pointer to an action.
      */
-    void btnMinimizedIconClick(Engine.Action _)
+    void btnMinimizedIconClick(Action _)
     {
         if (_craft.getRules().isWaterOnly() && _ufo.getAltitudeInt() > _craft.getRules().getMaxAltitude())
         {
@@ -715,7 +715,7 @@ internal class DogfightState : State
      * Toggles usage of weapon number 1.
      * @param action Pointer to an action.
      */
-    void weapon1Click(Engine.Action _)
+    void weapon1Click(Action _)
     {
         _weapon1Enabled = !_weapon1Enabled;
         recolor(0, _weapon1Enabled);
@@ -725,7 +725,7 @@ internal class DogfightState : State
      * Toggles usage of weapon number 2.
      * @param action Pointer to an action.
      */
-    void weapon2Click(Engine.Action _)
+    void weapon2Click(Action _)
     {
         _weapon2Enabled = !_weapon2Enabled;
         recolor(1, _weapon2Enabled);

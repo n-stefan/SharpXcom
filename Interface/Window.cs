@@ -41,7 +41,7 @@ internal class Window : Surface
     double _popupStep;
     State _state;
     bool _contrast, _screen, _thinBorder;
-    Engine.Timer _timer;
+    Timer _timer;
     internal static Sound[] soundPopup = new Sound[3];
 
     /**
@@ -66,7 +66,7 @@ internal class Window : Surface
         _screen = false;
         _thinBorder = false;
 
-        _timer = new Engine.Timer(10);
+        _timer = new Timer(10);
         _timer.onTimer((SurfaceHandler)this.popup);
 
         if (_popup == WindowPopup.POPUP_NONE)

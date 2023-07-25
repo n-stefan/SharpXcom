@@ -492,7 +492,7 @@ internal class SoldierInfoState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         _game.popState();
         if (_game.getSavedGame().getMonthsPassed() > -1 && Options.storageLimitsEnforced && _base != null && _base.storesOverfull())
@@ -506,7 +506,7 @@ internal class SoldierInfoState : State
      * Goes to the next soldier.
      * @param action Pointer to an action.
      */
-    void btnNextClick(Engine.Action _)
+    void btnNextClick(Action _)
     {
         _soldierId++;
         if (_soldierId >= _list.Count)
@@ -518,7 +518,7 @@ internal class SoldierInfoState : State
      * Goes to the previous soldier.
      * @param action Pointer to an action.
      */
-    void btnPrevClick(Engine.Action _)
+    void btnPrevClick(Action _)
     {
         if (_soldierId == 0)
             _soldierId = (uint)(_list.Count - 1);
@@ -531,7 +531,7 @@ internal class SoldierInfoState : State
      * Shows the Select Armor window.
      * @param action Pointer to an action.
      */
-    void btnArmorClick(Engine.Action _)
+    void btnArmorClick(Action _)
     {
         if (_soldier.getCraft() == null || (_soldier.getCraft() != null && _soldier.getCraft().getStatus() != "STR_OUT"))
         {
@@ -543,14 +543,14 @@ internal class SoldierInfoState : State
      * Changes the soldier's name.
      * @param action Pointer to an action.
      */
-    void edtSoldierChange(Engine.Action _) =>
+    void edtSoldierChange(Action _) =>
         _soldier.setName(_edtSoldier.getText());
 
     /**
      * Disables the soldier input.
      * @param action Pointer to an action.
      */
-    void edtSoldierPress(Engine.Action _)
+    void edtSoldierPress(Action _)
     {
         if (_base == null)
         {
@@ -562,14 +562,14 @@ internal class SoldierInfoState : State
      * Shows the Sack Soldier window.
      * @param action Pointer to an action.
      */
-    void btnSackClick(Engine.Action _) =>
+    void btnSackClick(Action _) =>
         _game.pushState(new SackSoldierState(_base, _soldierId));
 
     /**
      * Shows the Diary Soldier window.
      * @param action Pointer to an action.
      */
-    void btnDiaryClick(Engine.Action _) =>
+    void btnDiaryClick(Action _) =>
         _game.pushState(new SoldierDiaryOverviewState(_base, _soldierId, this));
 
     /**

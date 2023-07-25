@@ -104,7 +104,7 @@ internal class OptionsAdvancedState : OptionsBaseState
      * Changes the clicked setting.
      * @param action Pointer to an action.
      */
-    void lstOptionsClick(Engine.Action action)
+    void lstOptionsClick(Action action)
     {
         byte button = action.getDetails().button.button;
         if (button != SDL_BUTTON_LEFT && button != SDL_BUTTON_RIGHT)
@@ -179,7 +179,7 @@ internal class OptionsAdvancedState : OptionsBaseState
         _lstOptions.setCellText(sel, 1, settingText);
     }
 
-    void lstOptionsMouseOver(Engine.Action _)
+    void lstOptionsMouseOver(Action _)
     {
         uint sel = _lstOptions.getSelectedRow();
         OptionInfo setting = getSetting(sel);
@@ -191,7 +191,7 @@ internal class OptionsAdvancedState : OptionsBaseState
         _txtTooltip.setText(desc);
     }
 
-    void lstOptionsMouseOut(Engine.Action _) =>
+    void lstOptionsMouseOut(Action _) =>
         _txtTooltip.setText(string.Empty);
 
     /**

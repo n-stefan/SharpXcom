@@ -210,7 +210,7 @@ internal class TileEngine
      * @param t Tile.
      * @return Tile where the items end up in eventually.
      */
-    Tile applyGravity(Tile t)
+    internal Tile applyGravity(Tile t)
     {
         if (t == null || (!t.getInventory().Any() && t.getUnit() == null)) return t; // skip this if there are no items
 

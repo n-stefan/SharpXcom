@@ -114,14 +114,14 @@ internal class SoldierDiaryMissionState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Goes to the previous mission.
      * @param action Pointer to an action.
      */
-    void btnPrevClick(Engine.Action _)
+    void btnPrevClick(Action _)
     {
         if (_rowEntry == 0)
             _rowEntry = _soldier.getDiary().getMissionTotal() - 1;
@@ -134,7 +134,7 @@ internal class SoldierDiaryMissionState : State
      * Goes to the next mission.
      * @param action Pointer to an action.
      */
-    void btnNextClick(Engine.Action _)
+    void btnNextClick(Action _)
     {
         _rowEntry++;
         if (_rowEntry >= _soldier.getDiary().getMissionTotal())

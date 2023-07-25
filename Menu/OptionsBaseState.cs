@@ -124,7 +124,7 @@ internal class OptionsBaseState : State
      */
     ~OptionsBaseState() { }
 
-    void btnGroupPress(Engine.Action action)
+    void btnGroupPress(Action action)
     {
         Surface sender = action.getSender();
         //if (sender != _group)
@@ -168,7 +168,7 @@ internal class OptionsBaseState : State
      * Saves the new options and returns to the proper origin screen.
      * @param action Pointer to an action.
      */
-    internal void btnOkClick(Engine.Action _)
+    internal void btnOkClick(Action _)
     {
         Options.switchDisplay();
         int dX = Options.baseXResolution;
@@ -233,7 +233,7 @@ internal class OptionsBaseState : State
      * Loads previous options and returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _)
+    void btnCancelClick(Action _)
     {
         Options.reload = false;
         Options.load();
@@ -248,7 +248,7 @@ internal class OptionsBaseState : State
      * Restores the Options to default settings.
      * @param action Pointer to an action.
      */
-    void btnDefaultClick(Engine.Action _) =>
+    void btnDefaultClick(Action _) =>
         _game.pushState(new OptionsDefaultsState(_origin, this));
 
     /**
@@ -258,19 +258,19 @@ internal class OptionsBaseState : State
     protected void setCategory(TextButton button)
     {
         _group = button;
-        _btnVideo.setGroup(ref _group);
-        _btnAudio.setGroup(ref _group);
-        _btnControls.setGroup(ref _group);
-        _btnGeoscape.setGroup(ref _group);
-        _btnBattlescape.setGroup(ref _group);
-        _btnAdvanced.setGroup(ref _group);
+        _btnVideo.setGroup(_group);
+        _btnAudio.setGroup(_group);
+        _btnControls.setGroup(_group);
+        _btnGeoscape.setGroup(_group);
+        _btnBattlescape.setGroup(_group);
+        _btnAdvanced.setGroup(_group);
     }
 
     /**
      * Shows a tooltip for the appropriate button.
      * @param action Pointer to an action.
      */
-    protected void txtTooltipIn(Engine.Action action)
+    protected void txtTooltipIn(Action action)
     {
         _currentTooltip = action.getSender().getTooltip();
         _txtTooltip.setText(tr(_currentTooltip));
@@ -280,7 +280,7 @@ internal class OptionsBaseState : State
      * Clears the tooltip text.
      * @param action Pointer to an action.
      */
-    protected void txtTooltipOut(Engine.Action action)
+    protected void txtTooltipOut(Action action)
     {
         if (_currentTooltip == action.getSender().getTooltip())
         {

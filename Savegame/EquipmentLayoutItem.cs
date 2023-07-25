@@ -47,7 +47,7 @@ internal class EquipmentLayoutItem
      * @param ammoItem The ammo has to be loaded into the item. (it's type)
      * @param fuseTimer The turn until explosion of the item. (if it's an activated grenade-type)
      */
-    EquipmentLayoutItem(string itemType, string slot, int slotX, int slotY, string ammoItem, int fuseTimer)
+    internal EquipmentLayoutItem(string itemType, string slot, int slotX, int slotY, string ammoItem, int fuseTimer)
     {
         _itemType = itemType;
         _slot = slot;

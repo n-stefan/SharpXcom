@@ -39,7 +39,7 @@ internal class SellState : State
     List<string> _cats;
     HashSet<string> _craftWeapons, _armors;
     List<TransferRow> _items;
-    Engine.Timer _timerInc, _timerDec;
+    Timer _timerInc, _timerDec;
     List<int> _rows;
 
     /**
@@ -240,9 +240,9 @@ internal class SellState : State
 
         updateList();
 
-        _timerInc = new Engine.Timer(250);
+        _timerInc = new Timer(250);
         _timerInc.onTimer((StateHandler)increase);
-        _timerDec = new Engine.Timer(250);
+        _timerDec = new Timer(250);
         _timerDec.onTimer((StateHandler)decrease);
     }
 
@@ -259,7 +259,7 @@ internal class SellState : State
      * Starts increasing the item.
      * @param action Pointer to an action.
      */
-    void lstItemsLeftArrowPress(Engine.Action action)
+    void lstItemsLeftArrowPress(Action action)
     {
         _sel = _lstItems.getSelectedRow();
         if (action.getDetails().button.button == SDL_BUTTON_LEFT && !_timerInc.isRunning()) _timerInc.start();
@@ -269,7 +269,7 @@ internal class SellState : State
      * Stops increasing the item.
      * @param action Pointer to an action.
      */
-    void lstItemsLeftArrowRelease(Engine.Action action)
+    void lstItemsLeftArrowRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -282,7 +282,7 @@ internal class SellState : State
      * by one on left-click, to max on right-click.
      * @param action Pointer to an action.
      */
-    void lstItemsLeftArrowClick(Engine.Action action)
+    void lstItemsLeftArrowClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT) changeByValue(int.MaxValue, 1);
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
@@ -297,7 +297,7 @@ internal class SellState : State
      * Starts decreasing the item.
      * @param action Pointer to an action.
      */
-    void lstItemsRightArrowPress(Engine.Action action)
+    void lstItemsRightArrowPress(Action action)
     {
         _sel = _lstItems.getSelectedRow();
         if (action.getDetails().button.button == SDL_BUTTON_LEFT && !_timerDec.isRunning()) _timerDec.start();
@@ -307,7 +307,7 @@ internal class SellState : State
      * Stops decreasing the item.
      * @param action Pointer to an action.
      */
-    void lstItemsRightArrowRelease(Engine.Action action)
+    void lstItemsRightArrowRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -320,7 +320,7 @@ internal class SellState : State
      * by one on left-click, to 0 on right-click.
      * @param action Pointer to an action.
      */
-    void lstItemsRightArrowClick(Engine.Action action)
+    void lstItemsRightArrowClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT) changeByValue(int.MaxValue, -1);
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
@@ -335,7 +335,7 @@ internal class SellState : State
      * Handles the mouse-wheels on the arrow-buttons.
      * @param action Pointer to an action.
      */
-    void lstItemsMousePress(Engine.Action action)
+    void lstItemsMousePress(Action action)
     {
         _sel = _lstItems.getSelectedRow();
         if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
@@ -469,7 +469,7 @@ internal class SellState : State
      * Sells the selected items.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         _game.getSavedGame().setFunds(_game.getSavedGame().getFunds() + _total);
         Soldier soldier;
@@ -570,13 +570,13 @@ internal class SellState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 
     /**
     * Updates the production list to match the category filter.
     */
-    void cbxCategoryChange(Engine.Action _) =>
+    void cbxCategoryChange(Action _) =>
 	    updateList();
 
     /**
@@ -612,17 +612,17 @@ internal class SellState : State
 
         if (getRow().amount > 0)
         {
-            _lstItems.setRowColor((int)_sel, _lstItems.getSecondaryColor());
+            _lstItems.setRowColor(_sel, _lstItems.getSecondaryColor());
         }
         else
         {
-            _lstItems.setRowColor((int)_sel, _lstItems.getColor());
+            _lstItems.setRowColor(_sel, _lstItems.getColor());
             if (getRow().type == TransferType.TRANSFER_ITEM)
             {
                 RuleItem rule = (RuleItem)getRow().rule;
                 if (rule.getBattleType() == BattleType.BT_AMMO || (rule.getBattleType() == BattleType.BT_NONE && rule.getClipSize() > 0))
                 {
-                    _lstItems.setRowColor((int)_sel, _ammoColor);
+                    _lstItems.setRowColor(_sel, _ammoColor);
                 }
             }
         }
@@ -674,11 +674,11 @@ internal class SellState : State
             _rows.Add(i);
             if (_items[i].amount > 0)
             {
-                _lstItems.setRowColor(_rows.Count - 1, _lstItems.getSecondaryColor());
+                _lstItems.setRowColor((uint)(_rows.Count - 1), _lstItems.getSecondaryColor());
             }
             else if (ammo)
             {
-                _lstItems.setRowColor(_rows.Count - 1, _ammoColor);
+                _lstItems.setRowColor((uint)(_rows.Count - 1), _ammoColor);
             }
         }
     }

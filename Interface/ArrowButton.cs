@@ -30,7 +30,7 @@ internal class ArrowButton : ImageButton
 {
     ArrowShape _shape;
     TextList _list;
-    Engine.Timer _timer;
+    Timer _timer;
 
     /**
      * Sets up an arrow button with the specified size and position.
@@ -45,7 +45,7 @@ internal class ArrowButton : ImageButton
         _shape = shape;
         _list = null;
 
-        _timer = new Engine.Timer(50);
+        _timer = new Timer(50);
         _timer.onTimer((SurfaceHandler)scroll);
     }
 

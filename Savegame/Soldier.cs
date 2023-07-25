@@ -543,4 +543,53 @@ internal class Soldier
      */
     internal SoldierDiary getDiary() =>
         _diary;
+
+    /**
+     * Returns the unit's promotion status and resets it.
+     * @return True if recently promoted, False otherwise.
+     */
+    internal bool isPromoted()
+    {
+        bool promoted = _recentlyPromoted;
+        _recentlyPromoted = false;
+        return promoted;
+    }
+
+	/**
+	 * Returns the soldier's craft string, which
+	 * is either the soldier's wounded status,
+	 * the assigned craft name, or none.
+	 * @param lang Language to get strings from.
+	 * @return Full name.
+	 */
+	internal string getCraftString(Language lang)
+	{
+		string s;
+		if (_recovery > 0)
+		{
+			s = lang.getString("STR_WOUNDED");
+		}
+		else if (_craft == null)
+		{
+			s = lang.getString("STR_NONE_UC");
+		}
+		else
+		{
+			s = _craft.getName(lang);
+		}
+		return s;
+	}
+
+	/**
+	 * Increase the soldier's military rank.
+	 */
+	internal void promoteRank()
+	{
+		_rank = (SoldierRank)((int)_rank + 1);
+		if (_rank > SoldierRank.RANK_SQUADDIE)
+		{
+			// only promotions above SQUADDIE are worth to be mentioned
+			_recentlyPromoted = true;
+		}
+	}
 }

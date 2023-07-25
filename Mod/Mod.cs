@@ -267,7 +267,7 @@ internal class Mod
     static int EXPLOSION_OFFSET;
     static int SMOKE_OFFSET;
     static int UNDERWATER_SMOKE_OFFSET;
-    static int ITEM_DROP;
+    internal static int ITEM_DROP;
     static int ITEM_THROW;
     static int ITEM_RELOAD;
     static int WALK_OFFSET;
@@ -2925,7 +2925,7 @@ internal class Mod
      * @param name Terrain name.
      * @return Rules for the terrain.
      */
-    internal RuleTerrain getTerrain(string name, bool error) =>
+    internal RuleTerrain getTerrain(string name, bool error = false) =>
 	    getRule(name, "Terrain", _terrains, error);
 
     /**
@@ -3106,4 +3106,115 @@ internal class Mod
      */
     internal int getDefeatFunds() =>
 	    _defeatFunds;
+
+    /**
+     * Returns the list of all base facilities
+     * provided by the mod.
+     * @return List of base facilities.
+     */
+    internal List<string> getBaseFacilitiesList() =>
+	    _facilitiesIndex;
+
+    /**
+     * Generates and returns a list of facilities for custom bases.
+     * The list contains all the facilities that are listed in the 'startingBase'
+     * part of the ruleset.
+     * @return The list of facilities for custom bases.
+     */
+    internal List<RuleBaseFacility> getCustomBaseFacilities()
+    {
+	    var placeList = new List<RuleBaseFacility>();
+
+        foreach (var i in ((YamlSequenceNode)_startingBase["facilities"]).Children)
+	    {
+		    string type = i["type"].ToString();
+		    RuleBaseFacility facility = getBaseFacility(type, true);
+		    if (!facility.isLift())
+		    {
+			    placeList.Add(facility);
+		    }
+	    }
+	    return placeList;
+    }
+
+    /**
+     * Returns the time it takes to transfer personnel
+     * between bases.
+     * @return Time in hours.
+     */
+    internal int getPersonnelTime() =>
+	    _timePersonnel;
+
+    /**
+     * Creates a new randomly-generated soldier.
+     * @param save Saved game the soldier belongs to.
+     * @param type The soldier type to generate.
+     * @return Newly generated soldier.
+     */
+    internal Soldier genSoldier(SavedGame save, string type)
+    {
+	    Soldier soldier = null;
+	    int newId = save.getId("STR_SOLDIER");
+	    if (string.IsNullOrEmpty(type))
+	    {
+		    type = _soldiersIndex.First();
+	    }
+
+	    // Check for duplicates
+	    // Original X-COM gives up after 10 tries so might as well do the same here
+	    bool duplicate = true;
+	    for (int tries = 0; tries < 10 && duplicate; ++tries)
+	    {
+		    soldier = null;
+		    soldier = new Soldier(getSoldier(type, true), getArmor(getSoldier(type, true).getArmor(), true), newId);
+		    duplicate = false;
+            var bases = save.getBases();
+            for (var i = 0; i < bases.Count && !duplicate; ++i)
+		    {
+                var soldiers = bases[i].getSoldiers();
+                for (var j = 0; j < soldiers.Count && !duplicate; ++j)
+			    {
+				    if (soldiers[j].getName() == soldier.getName())
+				    {
+					    duplicate = true;
+				    }
+			    }
+                var transfers = bases[i].getTransfers();
+                for (var k = 0; k < transfers.Count && !duplicate; ++k)
+			    {
+				    if (transfers[k].getType() == TransferType.TRANSFER_SOLDIER && transfers[k].getSoldier().getName() == soldier.getName())
+				    {
+					    duplicate = true;
+				    }
+			    }
+		    }
+	    }
+
+	    // calculate new statString
+	    soldier.calcStatString(getStatStrings(), (Options.psiStrengthEval && save.isResearched(getPsiRequirements())));
+
+	    return soldier;
+    }
+
+    /**
+     * Returns the list of all alien races.
+     * provided by the mod.
+     * @return List of alien races.
+     */
+    internal List<string> getAlienRacesList() =>
+	    _aliensIndex;
+
+    /**
+     * Returns the list of alien mission types.
+     * @return The list of alien mission types.
+     */
+    internal List<string> getAlienMissionList() =>
+	    _alienMissionsIndex;
+
+    /**
+     * Gets the defined starting base.
+     * @return The starting base definition.
+     */
+    internal YamlNode getStartingBase() =>
+	    _startingBase;
 }

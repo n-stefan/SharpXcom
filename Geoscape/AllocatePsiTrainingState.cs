@@ -99,7 +99,7 @@ internal class AllocatePsiTrainingState : State
         _lstSoldiers.setBackground(_window);
         _lstSoldiers.setMargin(2);
         _lstSoldiers.onMouseClick(lstSoldiersClick);
-        int row = 0;
+        uint row = 0;
         foreach (var s in @base.getSoldiers())
         {
             string ssStr;
@@ -145,7 +145,7 @@ internal class AllocatePsiTrainingState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         foreach (var i in _base.getSoldiers())
         {
@@ -158,7 +158,7 @@ internal class AllocatePsiTrainingState : State
      * Assigns / removes a soldier from Psi Training.
      * @param action Pointer to an action.
      */
-    void lstSoldiersClick(Engine.Action action)
+    void lstSoldiersClick(Action action)
     {
         _sel = _lstSoldiers.getSelectedRow();
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
@@ -168,7 +168,7 @@ internal class AllocatePsiTrainingState : State
                 if (_base.getUsedPsiLabs() < _base.getAvailablePsiLabs())
                 {
                     _lstSoldiers.setCellText(_sel, 3, tr("STR_YES"));
-                    _lstSoldiers.setRowColor((int)_sel, _lstSoldiers.getSecondaryColor());
+                    _lstSoldiers.setRowColor(_sel, _lstSoldiers.getSecondaryColor());
                     _labSpace--;
                     _txtRemaining.setText(tr("STR_REMAINING_PSI_LAB_CAPACITY").arg(_labSpace));
                     _base.getSoldiers()[(int)_sel].setPsiTraining(true);
@@ -177,7 +177,7 @@ internal class AllocatePsiTrainingState : State
             else
             {
                 _lstSoldiers.setCellText(_sel, 3, tr("STR_NO"));
-                _lstSoldiers.setRowColor((int)_sel, _lstSoldiers.getColor());
+                _lstSoldiers.setRowColor(_sel, _lstSoldiers.getColor());
                 _labSpace++;
                 _txtRemaining.setText(tr("STR_REMAINING_PSI_LAB_CAPACITY").arg(_labSpace));
                 _base.getSoldiers()[(int)_sel].setPsiTraining(false);

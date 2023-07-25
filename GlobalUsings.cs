@@ -30,3 +30,5 @@ global using static SharpXcom.FMath;
 global using static SharpXcom.NativeImports;
 global using static SharpXcom.Savegame.SerializationHelper;
 global using static SharpXcom.Version;
+global using Action = SharpXcom.Engine.Action;
+global using Timer = SharpXcom.Engine.Timer;

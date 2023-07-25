@@ -109,21 +109,21 @@ internal class ResearchState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnNewClick(Engine.Action _) =>
+    void btnNewClick(Action _) =>
         _game.pushState(new NewResearchListState(_base));
 
     /**
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Displays the list of possible ResearchProjects.
      * @param action Pointer to an action.
      */
-    void onSelectProject(Engine.Action _)
+    void onSelectProject(Action _)
     {
         List<ResearchProject> baseProjects = _base.getResearch();
         _game.pushState(new ResearchInfoState(_base, baseProjects[(int)_lstResearch.getSelectedRow()]));

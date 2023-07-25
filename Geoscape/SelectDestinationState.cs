@@ -152,7 +152,7 @@ internal class SelectDestinationState : State
      * or right-clicks to scroll the globe.
      * @param action Pointer to an action.
      */
-    void globeClick(Engine.Action action)
+    void globeClick(Action action)
     {
         double lon, lat;
         int mouseX = (int)Math.Floor(action.getAbsoluteXMouse()), mouseY = (int)Math.Floor(action.getAbsoluteYMouse());
@@ -183,94 +183,94 @@ internal class SelectDestinationState : State
      * Starts rotating the globe to the left.
      * @param action Pointer to an action.
      */
-    void btnRotateLeftPress(Engine.Action _) =>
+    void btnRotateLeftPress(Action _) =>
         _globe.rotateLeft();
 
     /**
      * Stops rotating the globe to the left.
      * @param action Pointer to an action.
      */
-    void btnRotateLeftRelease(Engine.Action _) =>
+    void btnRotateLeftRelease(Action _) =>
         _globe.rotateStopLon();
 
     /**
      * Starts rotating the globe to the right.
      * @param action Pointer to an action.
      */
-    void btnRotateRightPress(Engine.Action _) =>
+    void btnRotateRightPress(Action _) =>
         _globe.rotateRight();
 
     /**
      * Stops rotating the globe to the right.
      * @param action Pointer to an action.
      */
-    void btnRotateRightRelease(Engine.Action _) =>
+    void btnRotateRightRelease(Action _) =>
         _globe.rotateStopLon();
 
     /**
      * Starts rotating the globe upwards.
      * @param action Pointer to an action.
      */
-    void btnRotateUpPress(Engine.Action _) =>
+    void btnRotateUpPress(Action _) =>
         _globe.rotateUp();
 
     /**
      * Stops rotating the globe upwards.
      * @param action Pointer to an action.
      */
-    void btnRotateUpRelease(Engine.Action _) =>
+    void btnRotateUpRelease(Action _) =>
         _globe.rotateStopLat();
 
     /**
      * Starts rotating the globe downwards.
      * @param action Pointer to an action.
      */
-    void btnRotateDownPress(Engine.Action _) =>
+    void btnRotateDownPress(Action _) =>
         _globe.rotateDown();
 
     /**
      * Stops rotating the globe downwards.
      * @param action Pointer to an action.
      */
-    void btnRotateDownRelease(Engine.Action _) =>
+    void btnRotateDownRelease(Action _) =>
         _globe.rotateStopLat();
 
     /**
      * Zooms into the globe.
      * @param action Pointer to an action.
      */
-    void btnZoomInLeftClick(Engine.Action _) =>
+    void btnZoomInLeftClick(Action _) =>
         _globe.zoomIn();
 
     /**
      * Zooms the globe maximum.
      * @param action Pointer to an action.
      */
-    void btnZoomInRightClick(Engine.Action _) =>
+    void btnZoomInRightClick(Action _) =>
         _globe.zoomMax();
 
     /**
      * Zooms out of the globe.
      * @param action Pointer to an action.
      */
-    void btnZoomOutLeftClick(Engine.Action _) =>
+    void btnZoomOutLeftClick(Action _) =>
         _globe.zoomOut();
 
     /**
      * Zooms the globe minimum.
      * @param action Pointer to an action.
      */
-    void btnZoomOutRightClick(Engine.Action _) =>
+    void btnZoomOutRightClick(Action _) =>
         _globe.zoomMin();
 
     /**
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 
-    void btnCydoniaClick(Engine.Action _)
+    void btnCydoniaClick(Action _)
     {
         if (_craft.getNumSoldiers() > 0 || _craft.getNumVehicles() > 0)
         {

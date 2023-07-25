@@ -34,7 +34,7 @@ internal class UfopaediaStartState : State
     Text _txtTitle;
     TextButton _btnOk;
     ArrowButton _btnScrollUp, _btnScrollDown;
-    Engine.Timer _timerScroll;
+    Timer _timerScroll;
     List<TextButton> _btnSections;
 
     internal UfopaediaStartState()
@@ -108,7 +108,7 @@ internal class UfopaediaStartState : State
         _btnScrollDown.onMousePress(btnScrollDownPress);
         _btnScrollDown.onMouseRelease(btnScrollRelease);
 
-        _timerScroll = new Engine.Timer(50);
+        _timerScroll = new Timer(50);
         _timerScroll.onTimer((StateHandler)scroll);
     }
 
@@ -122,7 +122,7 @@ internal class UfopaediaStartState : State
 	 * Displays the list of articles for this section.
 	 * @param action Pointer to an action.
 	 */
-    void btnSectionClick(Engine.Action action)
+    void btnSectionClick(Action action)
     {
         for (int i = 0; i < _btnSections.Count; ++i)
         {
@@ -138,7 +138,7 @@ internal class UfopaediaStartState : State
 	 * Scrolls the section buttons up.
 	 * @param action Pointer to an action.
 	 */
-    void btnScrollUpClick(Engine.Action _)
+    void btnScrollUpClick(Action _)
     {
         _scroll = -1;
         scroll();
@@ -148,7 +148,7 @@ internal class UfopaediaStartState : State
 	 * Scrolls the section buttons down.
 	 * @param action Pointer to an action.
 	 */
-    void btnScrollDownClick(Engine.Action _)
+    void btnScrollDownClick(Action _)
     {
         _scroll = 1;
         scroll();
@@ -158,14 +158,14 @@ internal class UfopaediaStartState : State
 	 * Returns to the previous screen.
 	 * @param action Pointer to an action.
 	 */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
 	 * Starts scrolling the section buttons up.
 	 * @param action Pointer to an action.
 	 */
-    void btnScrollUpPress(Engine.Action _)
+    void btnScrollUpPress(Action _)
     {
         _scroll = -1;
         _timerScroll.start();
@@ -175,14 +175,14 @@ internal class UfopaediaStartState : State
 	 * Stops scrolling the section buttons.
 	 * @param action Pointer to an action.
 	 */
-    void btnScrollRelease(Engine.Action _) =>
+    void btnScrollRelease(Action _) =>
         _timerScroll.stop();
 
     /**
 	 * Starts scrolling the section buttons down.
 	 * @param action Pointer to an action.
 	 */
-    void btnScrollDownPress(Engine.Action _)
+    void btnScrollDownPress(Action _)
     {
         _scroll = 1;
         _timerScroll.start();

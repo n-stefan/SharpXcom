@@ -107,7 +107,7 @@ internal class CraftsState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         _game.popState();
 
@@ -122,7 +122,7 @@ internal class CraftsState : State
      * Shows the selected craft's info.
      * @param action Pointer to an action.
      */
-    void lstCraftsClick(Engine.Action _)
+    void lstCraftsClick(Action _)
     {
         if (_base.getCrafts()[(int)_lstCrafts.getSelectedRow()].getStatus() != "STR_OUT")
         {

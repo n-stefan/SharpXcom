@@ -162,7 +162,7 @@ internal class BasescapeState : State
      * Processes clicking on facilities.
      * @param action Pointer to an action.
      */
-    void viewLeftClick(Engine.Action _)
+    void viewLeftClick(Action _)
     {
         BaseFacility fac = _view.getSelectedFacility();
         if (fac != null)
@@ -188,7 +188,7 @@ internal class BasescapeState : State
      * Processes right clicking on facilities.
      * @param action Pointer to an action.
      */
-    void viewRightClick(Engine.Action _)
+    void viewRightClick(Action _)
     {
         BaseFacility f = _view.getSelectedFacility();
         if (f == null)
@@ -245,7 +245,7 @@ internal class BasescapeState : State
      * Displays the name of the facility the mouse is over.
      * @param action Pointer to an action.
      */
-    void viewMouseOver(Engine.Action _)
+    void viewMouseOver(Action _)
     {
         BaseFacility f = _view.getSelectedFacility();
         string ss = null;
@@ -271,14 +271,14 @@ internal class BasescapeState : State
      * Clears the facility name.
      * @param action Pointer to an action.
      */
-    void viewMouseOut(Engine.Action _) =>
+    void viewMouseOut(Action _) =>
         _txtFacility.setText(string.Empty);
 
     /**
      * Selects a new base to display.
      * @param action Pointer to an action.
      */
-    void miniClick(Engine.Action _)
+    void miniClick(Action _)
     {
         var @base = _mini.getHoveredBase();
         if (@base < _game.getSavedGame().getBases().Count)
@@ -292,7 +292,7 @@ internal class BasescapeState : State
      * Selects a new base to display.
      * @param action Pointer to an action.
      */
-    void handleKeyPress(Engine.Action action)
+    void handleKeyPress(Action action)
     {
         if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
         {
@@ -321,14 +321,14 @@ internal class BasescapeState : State
      * Changes the Base name.
      * @param action Pointer to an action.
      */
-    void edtBaseChange(Engine.Action _) =>
+    void edtBaseChange(Action _) =>
         _base.setName(_edtBase.getText());
 
     /**
      * Goes to the Build New Base screen.
      * @param action Pointer to an action.
      */
-    void btnNewBaseClick(Engine.Action _)
+    void btnNewBaseClick(Action _)
     {
         Base @base = new Base(_game.getMod());
         _game.popState();
@@ -339,70 +339,70 @@ internal class BasescapeState : State
      * Goes to the Base Info screen.
      * @param action Pointer to an action.
      */
-    void btnBaseInfoClick(Engine.Action _) =>
+    void btnBaseInfoClick(Action _) =>
         _game.pushState(new BaseInfoState(_base, this));
 
     /**
      * Goes to the Soldiers screen.
      * @param action Pointer to an action.
      */
-    void btnSoldiersClick(Engine.Action _) =>
+    void btnSoldiersClick(Action _) =>
         _game.pushState(new SoldiersState(_base));
 
     /**
      * Goes to the Crafts screen.
      * @param action Pointer to an action.
      */
-    void btnCraftsClick(Engine.Action _) =>
+    void btnCraftsClick(Action _) =>
         _game.pushState(new CraftsState(_base));
 
     /**
      * Opens the Build Facilities window.
      * @param action Pointer to an action.
      */
-    void btnFacilitiesClick(Engine.Action _) =>
+    void btnFacilitiesClick(Action _) =>
         _game.pushState(new BuildFacilitiesState(_base, this));
 
     /**
      * Goes to the Research screen.
      * @param action Pointer to an action.
      */
-    void btnResearchClick(Engine.Action _) =>
+    void btnResearchClick(Action _) =>
         _game.pushState(new ResearchState(_base));
 
     /**
      * Goes to the Manufacture screen.
      * @param action Pointer to an action.
      */
-    void btnManufactureClick(Engine.Action _) =>
+    void btnManufactureClick(Action _) =>
         _game.pushState(new ManufactureState(_base));
 
     /**
      * Goes to the Purchase screen.
      * @param action Pointer to an action.
      */
-    void btnPurchaseClick(Engine.Action _) =>
+    void btnPurchaseClick(Action _) =>
         _game.pushState(new PurchaseState(_base));
 
     /**
      * Goes to the Select Destination Base window.
      * @param action Pointer to an action.
      */
-    void btnTransferClick(Engine.Action _) =>
+    void btnTransferClick(Action _) =>
         _game.pushState(new TransferBaseState(_base));
 
     /**
      * Goes to the Sell screen.
      * @param action Pointer to an action.
      */
-    void btnSellClick(Engine.Action _) =>
+    void btnSellClick(Action _) =>
         _game.pushState(new SellState(_base));
 
     /**
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnGeoscapeClick(Engine.Action _) =>
+    void btnGeoscapeClick(Action _) =>
         _game.popState();
 
     /**

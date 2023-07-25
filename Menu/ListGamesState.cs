@@ -163,14 +163,14 @@ internal class ListGamesState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 
     /**
      * Shows the details of the currently hovered save.
      * @param action Pointer to an action.
      */
-    void lstSavesMouseOver(Engine.Action _)
+    void lstSavesMouseOver(Action _)
     {
         int sel = (int)(_lstSaves.getSelectedRow() - _firstValidRow);
         string wstr = null;
@@ -185,14 +185,14 @@ internal class ListGamesState : State
      * Clears the details.
      * @param action Pointer to an action.
      */
-    void lstSavesMouseOut(Engine.Action _) =>
+    void lstSavesMouseOut(Action _) =>
         _txtDetails.setText(tr("STR_DETAILS").arg(string.Empty));
 
     /**
      * Deletes the selected save.
      * @param action Pointer to an action.
      */
-    void lstSavesPress(Engine.Action action)
+    void lstSavesPress(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT && _lstSaves.getSelectedRow() >= _firstValidRow)
         {
@@ -204,7 +204,7 @@ internal class ListGamesState : State
      * Sorts the saves by name.
      * @param action Pointer to an action.
      */
-    void sortNameClick(Engine.Action _)
+    void sortNameClick(Action _)
     {
         if (_sortable)
         {
@@ -226,7 +226,7 @@ internal class ListGamesState : State
      * Sorts the saves by date.
      * @param action Pointer to an action.
      */
-    void sortDateClick(Engine.Action _)
+    void sortDateClick(Action _)
     {
         if (_sortable)
         {
@@ -299,7 +299,7 @@ internal class ListGamesState : State
      */
     void updateList()
     {
-        int row = 0;
+        uint row = 0;
         byte color = _lstSaves.getSecondaryColor();
         foreach (var save in _saves)
         {

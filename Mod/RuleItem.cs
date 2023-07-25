@@ -539,4 +539,20 @@ internal class RuleItem : IListOrder, IRule
      */
     internal bool isAlien() =>
 	    _liveAlien;
+
+    /**
+     * Gets the amount of time this item
+     * takes to arrive at a base.
+     * @return The time in hours.
+     */
+    internal int getTransferTime() =>
+	    _transferTime;
+
+    /**
+     * Gets the amount of money this item
+     * costs to purchase (0 if not purchasable).
+     * @return The buy cost.
+     */
+    internal int getBuyCost() =>
+	    _costBuy;
 }

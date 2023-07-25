@@ -76,4 +76,12 @@ internal class Vehicle
 	    }
 	    return _ammo;
     }
+
+    /**
+     * Returns the size occupied by this vehicle
+     * in a transport craft.
+     * @return Size in tiles.
+     */
+    internal int getSize() =>
+	    _size;
 }

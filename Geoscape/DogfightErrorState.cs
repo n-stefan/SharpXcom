@@ -89,14 +89,14 @@ internal class DogfightErrorState : State
      * Closes the window.
      * @param action Pointer to an action.
      */
-    void btnInterceptClick(Engine.Action _) =>
+    void btnInterceptClick(Action _) =>
         _game.popState();
 
     /**
      * Returns the craft to base.
      * @param action Pointer to an action.
      */
-    void btnBaseClick(Engine.Action _)
+    void btnBaseClick(Action _)
     {
         _craft.returnToBase();
         _game.popState();

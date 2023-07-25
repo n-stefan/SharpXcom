@@ -93,7 +93,7 @@ internal class MultipleTargetsState : State
      * Pick a target to display.
      * @param action Pointer to an action.
      */
-    void btnTargetClick(Engine.Action action)
+    void btnTargetClick(Action action)
     {
         for (int i = 0; i < _btnTargets.Count; ++i)
         {
@@ -109,7 +109,7 @@ internal class MultipleTargetsState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 
     /**

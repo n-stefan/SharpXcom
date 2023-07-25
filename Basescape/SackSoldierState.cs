@@ -92,7 +92,7 @@ internal class SackSoldierState : State
      * to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         Soldier soldier = _base.getSoldiers()[(int)_soldierId];
         if (soldier.getArmor().getStoreItem() != Armor.NONE)
@@ -108,6 +108,6 @@ internal class SackSoldierState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 }

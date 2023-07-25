@@ -338,7 +338,7 @@ internal class OptionsVideoState : OptionsBaseState
      * Changes the Display Width option.
      * @param action Pointer to an action.
      */
-    void txtDisplayWidthChange(Engine.Action _)
+    void txtDisplayWidthChange(Action _)
     {
         string ss;
         int width = 0;
@@ -365,7 +365,7 @@ internal class OptionsVideoState : OptionsBaseState
      * Changes the Display Height option.
      * @param action Pointer to an action.
      */
-    void txtDisplayHeightChange(Engine.Action _)
+    void txtDisplayHeightChange(Action _)
     {
         string ss;
         int height = 0;
@@ -392,7 +392,7 @@ internal class OptionsVideoState : OptionsBaseState
      * Changes the Display Mode options.
      * @param action Pointer to an action.
      */
-    void updateDisplayMode(Engine.Action _)
+    void updateDisplayMode(Action _)
     {
         switch (_cbxDisplayMode.getSelected())
         {
@@ -425,21 +425,21 @@ internal class OptionsVideoState : OptionsBaseState
      * Changes the geoscape scale.
      * @param action Pointer to an action.
      */
-    void updateGeoscapeScale(Engine.Action _) =>
+    void updateGeoscapeScale(Action _) =>
         Options.newGeoscapeScale = (int)_cbxGeoScale.getSelected();
 
     /**
      * Updates the Battlescape scale.
      * @param action Pointer to an action.
      */
-    void updateBattlescapeScale(Engine.Action _) =>
+    void updateBattlescapeScale(Action _) =>
         Options.newBattlescapeScale = (int)_cbxBattleScale.getSelected();
 
     /**
      * Changes the Filter options.
      * @param action Pointer to an action.
      */
-    void cbxFilterChange(Engine.Action _)
+    void cbxFilterChange(Action _)
     {
         switch (_cbxFilter.getSelected())
         {
@@ -481,14 +481,14 @@ internal class OptionsVideoState : OptionsBaseState
      * Changes the Language option.
      * @param action Pointer to an action.
      */
-    void cbxLanguageChange(Engine.Action _) =>
+    void cbxLanguageChange(Action _) =>
         Options.language = _langs[(int)_cbxLanguage.getSelected()];
 
     /**
      * Selects a bigger display resolution.
      * @param action Pointer to an action.
      */
-    void btnDisplayResolutionUpClick(Engine.Action _)
+    void btnDisplayResolutionUpClick(Action _)
     {
         if (_resAmount == 0)
             return;
@@ -507,7 +507,7 @@ internal class OptionsVideoState : OptionsBaseState
      * Selects a smaller display resolution.
      * @param action Pointer to an action.
      */
-    void btnDisplayResolutionDownClick(Engine.Action _)
+    void btnDisplayResolutionDownClick(Action _)
     {
         if (_resAmount == 0)
             return;
@@ -540,14 +540,14 @@ internal class OptionsVideoState : OptionsBaseState
      * Changes the Letterboxing option.
      * @param action Pointer to an action.
      */
-    void btnLetterboxClick(Engine.Action _) =>
+    void btnLetterboxClick(Action _) =>
         Options.keepAspectRatio = _btnLetterbox.getPressed();
 
     /**
      * Changes the Lock Mouse option.
      * @param action Pointer to an action.
      */
-    void btnLockMouseClick(Engine.Action _)
+    void btnLockMouseClick(Action _)
     {
         Options.captureMouse = _btnLockMouse.getPressed() ? SDL_bool.SDL_TRUE : SDL_bool.SDL_FALSE; //SDL_GrabMode
         SDL_SetRelativeMouseMode(Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
@@ -557,7 +557,7 @@ internal class OptionsVideoState : OptionsBaseState
      * Ask user where he wants to root screen.
      * @param action Pointer to an action.
      */
-    void btnRootWindowedModeClick(Engine.Action _)
+    void btnRootWindowedModeClick(Action _)
     {
         if (_btnRootWindowedMode.getPressed())
         {

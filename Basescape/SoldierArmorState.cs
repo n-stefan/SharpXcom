@@ -125,14 +125,14 @@ internal class SoldierArmorState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 
     /**
      * Equips the armor on the soldier and returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void lstArmorClick(Engine.Action _)
+    void lstArmorClick(Action _)
     {
         Soldier soldier = _base.getSoldiers()[(int)_soldier];
         if (_game.getSavedGame().getMonthsPassed() != -1)

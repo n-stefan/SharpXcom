@@ -265,7 +265,7 @@ internal class BaseInfoState : State
      * Selects a new base to display.
      * @param action Pointer to an action.
      */
-    void miniClick(Engine.Action _)
+    void miniClick(Action _)
     {
         var @base = _mini.getHoveredBase();
         if (@base < _game.getSavedGame().getBases().Count)
@@ -281,7 +281,7 @@ internal class BaseInfoState : State
      * Selects a new base to display.
      * @param action Pointer to an action.
      */
-    void handleKeyPress(Engine.Action action)
+    void handleKeyPress(Action action)
     {
         if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
         {
@@ -312,34 +312,34 @@ internal class BaseInfoState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Goes to the Transfers window.
      * @param action Pointer to an action.
      */
-    void btnTransfersClick(Engine.Action _) =>
+    void btnTransfersClick(Action _) =>
         _game.pushState(new TransfersState(_base));
 
     /**
      * Goes to the Stores screen.
      * @param action Pointer to an action.
      */
-    void btnStoresClick(Engine.Action _) =>
+    void btnStoresClick(Action _) =>
         _game.pushState(new StoresState(_base));
 
     /**
      * Goes to the Monthly Costs screen.
      * @param action Pointer to an action.
      */
-    void btnMonthlyCostsClick(Engine.Action _) =>
+    void btnMonthlyCostsClick(Action _) =>
         _game.pushState(new MonthlyCostsState(_base));
 
     /**
      * Changes the base name.
      * @param action Pointer to an action.
      */
-    void edtBaseChange(Engine.Action _) =>
+    void edtBaseChange(Action _) =>
         _base.setName(_edtBase.getText());
 }

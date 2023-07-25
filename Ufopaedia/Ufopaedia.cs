@@ -215,6 +215,6 @@ internal class Ufopaedia
                 return new ArticleStateTFTDUso((ArticleDefinitionTFTD)article);
             default: break;
         }
-        return 0;
+        return null;
     }
 }

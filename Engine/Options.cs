@@ -931,7 +931,7 @@ internal class Options
 	    }
     }
 
-    static void refreshMods()
+    internal static void refreshMods()
     {
         if (reload)
         {

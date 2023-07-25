@@ -31,7 +31,7 @@ internal class BattlescapeState : State
     BattlescapeButton _btnEndTurn, _btnAbort, _btnLaunch, _btnPsi, _reserve;
     BattlescapeGame _battleGame;
     WarningMessage _warning;
-    Engine.Timer _animTimer, _gameTimer;
+    Timer _animTimer, _gameTimer;
     SavedBattleGame _save;
     List<State> _popups;
     InteractiveSurface[] _btnVisibleUnit = new InteractiveSurface[VISIBLE_MAX];
@@ -361,7 +361,7 @@ internal class BattlescapeState : State
      * Centers on the currently selected soldier.
      * @param action Pointer to an action.
      */
-    internal void btnCenterClick(Engine.Action _)
+    internal void btnCenterClick(Action _)
     {
         if (playableUnitSelected())
         {
@@ -399,5 +399,43 @@ internal class BattlescapeState : State
 		    && (_battleGame.getPanicHandled() || _firstInit )
 		    && (allowSaving || !_battleGame.isBusy() || _firstInit)
 		    && (_map.getProjectile() == null));
+    }
+
+    /**
+     * Selects the previous soldier.
+     * @param checkReselect When true, don't select a unit that has been previously flagged.
+     * @param setReselect When true, flag the current unit first.
+     * @param checkInventory When true, don't select a unit that has no inventory.
+     */
+    internal void selectPreviousPlayerUnit(bool checkReselect, bool setReselect, bool checkInventory)
+    {
+        if (allowButtons())
+        {
+            BattleUnit unit = _save.selectPreviousPlayerUnit(checkReselect, setReselect, checkInventory);
+            updateSoldierInfo();
+            if (unit != null) _map.getCamera().centerOnPosition(unit.getPosition());
+            _battleGame.cancelAllActions();
+            _battleGame.getCurrentAction().actor = unit;
+            _battleGame.setupCursor();
+        }
+    }
+
+    /**
+     * Selects the next soldier.
+     * @param checkReselect When true, don't select a unit that has been previously flagged.
+     * @param setReselect When true, flag the current unit first.
+     * @param checkInventory When true, don't select a unit that has no inventory.
+     */
+    internal void selectNextPlayerUnit(bool checkReselect = false, bool setReselect = false, bool checkInventory = false, bool checkFOV = true)
+    {
+        if (allowButtons())
+        {
+            BattleUnit unit = _save.selectNextPlayerUnit(checkReselect, setReselect, checkInventory);
+            updateSoldierInfo(checkFOV);
+            if (unit != null) _map.getCamera().centerOnPosition(unit.getPosition());
+            _battleGame.cancelAllActions();
+            _battleGame.getCurrentAction().actor = unit;
+            _battleGame.setupCursor();
+        }
     }
 }

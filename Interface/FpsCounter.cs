@@ -26,7 +26,7 @@ namespace SharpXcom.Interface;
 internal class FpsCounter : Surface
 {
 	NumberText _text;
-    Engine.Timer _timer;
+    Timer _timer;
     int _frames;
 
     /**
@@ -42,7 +42,7 @@ internal class FpsCounter : Surface
 
         _visible = Options.fpsCounter;
 
-        _timer = new Engine.Timer(1000);
+        _timer = new Timer(1000);
         _timer.onTimer((SurfaceHandler)update);
         _timer.start();
 
@@ -101,7 +101,7 @@ internal class FpsCounter : Surface
      * Shows / hides the FPS counter.
      * @param action Pointer to an action.
      */
-    internal void handle(Engine.Action action)
+    internal void handle(Action action)
     {
         if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == Options.keyFps)
         {

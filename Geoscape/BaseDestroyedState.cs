@@ -107,7 +107,7 @@ internal class BaseDestroyedState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         _game.popState();
         foreach (var i in _game.getSavedGame().getBases())

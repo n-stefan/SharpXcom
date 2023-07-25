@@ -95,7 +95,7 @@ internal class ConfirmDestinationState : State
      * Confirms the selected target for the craft.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         Waypoint w = (Waypoint)_target;
         if (w != null && w.getId() == 0)
@@ -113,7 +113,7 @@ internal class ConfirmDestinationState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _)
+    void btnCancelClick(Action _)
     {
         Waypoint w = (Waypoint)_target;
         if (w != null && w.getId() == 0)

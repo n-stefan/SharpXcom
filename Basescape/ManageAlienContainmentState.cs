@@ -35,7 +35,7 @@ internal class ManageAlienContainmentState : State
     TextList _lstAliens;
     List<int> _qtys;
     List<string> _aliens;
-    Engine.Timer _timerInc, _timerDec;
+    Timer _timerInc, _timerDec;
 
     /**
      * Initializes all the elements in the Manage Alien Containment screen.
@@ -172,11 +172,11 @@ internal class ManageAlienContainmentState : State
             _aliens.Add(i);
             _qtys.Add(0);
             _lstAliens.addRow(4, tr(i), "0", "0", "1");
-            _lstAliens.setRowColor(_qtys.Count - 1, _lstAliens.getSecondaryColor());
+            _lstAliens.setRowColor((uint)(_qtys.Count - 1), _lstAliens.getSecondaryColor());
         }
-        _timerInc = new Engine.Timer(250);
+        _timerInc = new Timer(250);
         _timerInc.onTimer((StateHandler)increase);
-        _timerDec = new Engine.Timer(250);
+        _timerDec = new Timer(250);
         _timerDec.onTimer((StateHandler)decrease);
     }
 
@@ -193,7 +193,7 @@ internal class ManageAlienContainmentState : State
      * Deals with the selected aliens.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         for (int i = 0; i < _qtys.Count; ++i)
         {
@@ -235,14 +235,14 @@ internal class ManageAlienContainmentState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 
     /**
      * Starts decreasing the alien count.
      * @param action Pointer to an action.
      */
-    void lstItemsLeftArrowPress(Engine.Action action)
+    void lstItemsLeftArrowPress(Action action)
     {
         _sel = _lstAliens.getSelectedRow();
         if (action.getDetails().button.button == SDL_BUTTON_LEFT && !_timerDec.isRunning()) _timerDec.start();
@@ -252,7 +252,7 @@ internal class ManageAlienContainmentState : State
      * Stops decreasing the alien count.
      * @param action Pointer to an action.
      */
-    void lstItemsLeftArrowRelease(Engine.Action action)
+    void lstItemsLeftArrowRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -265,7 +265,7 @@ internal class ManageAlienContainmentState : State
      * by one on left-click, to 0 on right-click.
      * @param action Pointer to an action.
      */
-    void lstItemsLeftArrowClick(Engine.Action action)
+    void lstItemsLeftArrowClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT) decreaseByValue(int.MaxValue);
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
@@ -280,7 +280,7 @@ internal class ManageAlienContainmentState : State
      * Starts increasing the alien count.
      * @param action Pointer to an action.
      */
-    void lstItemsRightArrowPress(Engine.Action action)
+    void lstItemsRightArrowPress(Action action)
     {
         _sel = _lstAliens.getSelectedRow();
         if (action.getDetails().button.button == SDL_BUTTON_LEFT && !_timerInc.isRunning()) _timerInc.start();
@@ -290,7 +290,7 @@ internal class ManageAlienContainmentState : State
      * Stops increasing the alien count.
      * @param action Pointer to an action.
      */
-    void lstItemsRightArrowRelease(Engine.Action action)
+    void lstItemsRightArrowRelease(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
         {
@@ -303,7 +303,7 @@ internal class ManageAlienContainmentState : State
      * by one on left-click, to max on right-click.
      * @param action Pointer to an action.
      */
-    void lstItemsRightArrowClick(Engine.Action action)
+    void lstItemsRightArrowClick(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT) increaseByValue(int.MaxValue);
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)
@@ -318,7 +318,7 @@ internal class ManageAlienContainmentState : State
      * Handles the mouse-wheels on the arrow-buttons.
      * @param action Pointer to an action.
      */
-    void lstItemsMousePress(Engine.Action action)
+    void lstItemsMousePress(Action action)
     {
         _sel = _lstAliens.getSelectedRow();
         if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
@@ -407,7 +407,7 @@ internal class ManageAlienContainmentState : State
         string ss = qty.ToString();
         string ss2 = _qtys[(int)_sel].ToString();
 
-        _lstAliens.setRowColor((int)_sel, (qty == 0) ? _lstAliens.getSecondaryColor() : _lstAliens.getColor());
+        _lstAliens.setRowColor(_sel, (qty == 0) ? _lstAliens.getSecondaryColor() : _lstAliens.getColor());
         _lstAliens.setCellText(_sel, 1, ss);
         _lstAliens.setCellText(_sel, 2, ss2);
 

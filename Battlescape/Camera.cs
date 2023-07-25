@@ -24,7 +24,7 @@ namespace SharpXcom.Battlescape;
  */
 internal class Camera
 {
-    Engine.Timer _scrollMouseTimer, _scrollKeyTimer;
+    Timer _scrollMouseTimer, _scrollKeyTimer;
     int _spriteWidth, _spriteHeight;
     int _mapsize_x, _mapsize_y, _mapsize_z;
     int _screenWidth, _screenHeight;
@@ -119,7 +119,7 @@ internal class Camera
      * @param mouse Pointer to mouse timer.
      * @param key Pointer to key timer.
      */
-    internal void setScrollTimer(Engine.Timer mouse, Engine.Timer key)
+    internal void setScrollTimer(Timer mouse, Timer key)
     {
         _scrollMouseTimer = mouse;
         _scrollKeyTimer = key;

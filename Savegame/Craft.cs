@@ -643,8 +643,8 @@ internal class Craft : MovingTarget
      * @param base Pointer to target base.
      * @return Fuel amount.
      */
-    int getFuelLimit(Base @base) =>
-	    (int)Math.Floor(getFuelConsumption(_rules.getMaxSpeed()) * getDistance(@base) / _speedMaxRadian);
+    internal int getFuelLimit(Base @base) =>
+        (int)Math.Floor(getFuelConsumption(_rules.getMaxSpeed()) * getDistance(@base) / _speedMaxRadian);
 
     /**
      * Consumes the craft's fuel every 10 minutes
@@ -859,4 +859,46 @@ internal class Craft : MovingTarget
      */
     internal double getBaseRange() =>
 	    _fuel / 2.0 / getFuelConsumption(_rules.getMaxSpeed()) * _speedMaxRadian;
+
+    /**
+     * Returns the amount of space available for
+     * soldiers and vehicles.
+     * @return Space available.
+     */
+    internal int getSpaceAvailable() =>
+	    _rules.getSoldiers() - getSpaceUsed();
+
+    /**
+     * Returns the amount of space in use by
+     * soldiers and vehicles.
+     * @return Space used.
+     */
+    internal int getSpaceUsed()
+    {
+	    int vehicleSpaceUsed = 0;
+	    foreach (var i in _vehicles)
+	    {
+		    vehicleSpaceUsed += i.getSize();
+	    }
+	    return getNumSoldiers() + vehicleSpaceUsed;
+    }
+
+    /**
+     * Returns the total amount of vehicles of
+     * a certain type stored in the craft.
+     * @param vehicle Vehicle type.
+     * @return Number of vehicles.
+     */
+    internal int getVehicleCount(string vehicle)
+    {
+	    int total = 0;
+	    foreach (var i in _vehicles)
+	    {
+		    if (i.getRules().getType() == vehicle)
+		    {
+			    total++;
+		    }
+	    }
+	    return total;
+    }
 }

@@ -261,4 +261,42 @@ internal class ComboBox : InteractiveSurface
      */
     internal uint getSelected() =>
 	    _sel;
+
+    /**
+     * Sets a function to be called every time the mouse moves in to the listbox surface.
+     * @param handler Action handler.
+     */
+    internal void onListMouseIn(ActionHandler handler) =>
+	    _list.onMouseIn(handler);
+
+    /**
+     * Sets a function to be called every time the mouse moves out of the listbox surface.
+     * @param handler Action handler.
+     */
+    internal void onListMouseOut(ActionHandler handler) =>
+	    _list.onMouseOut(handler);
+
+    /**
+     * Sets a function to be called every time the mouse moves over the listbox surface.
+     * @param handler Action handler.
+     */
+    internal void onListMouseOver(ActionHandler handler) =>
+	    _list.onMouseOver(handler);
+
+    internal uint getHoveredListIdx()
+    {
+        unchecked
+        {
+            var ret = (uint)-1;
+            if (_list.getVisible())
+            {
+                ret = _list.getSelectedRow();
+            }
+            if ((uint)-1 == ret)
+            {
+                ret = _sel;
+            }
+            return ret;
+        }
+    }
 }

@@ -32,7 +32,7 @@ internal class ToggleTextButton : TextButton
         _fakeGroup = null;
 
         _isPressed = false;
-        base.setGroup(ref _fakeGroup);
+        base.setGroup(_fakeGroup);
     }
 
     ~ToggleTextButton() { }

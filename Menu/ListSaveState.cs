@@ -77,7 +77,7 @@ internal class ListSaveState : ListGamesState
      * Saves the selected save.
      * @param action Pointer to an action.
      */
-    void btnSaveGameClick(Engine.Action _)
+    void btnSaveGameClick(Action _)
     {
         if (_selectedRow != -1)
         {
@@ -122,7 +122,7 @@ internal class ListSaveState : ListGamesState
      * Saves the selected save.
      * @param action Pointer to an action.
      */
-    void edtSaveKeyPress(Engine.Action action)
+    void edtSaveKeyPress(Action action)
     {
         if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_RETURN ||
             action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_KP_ENTER)

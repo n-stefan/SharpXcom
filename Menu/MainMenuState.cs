@@ -106,28 +106,28 @@ internal class MainMenuState : State
      * Opens the New Game window.
      * @param action Pointer to an action.
      */
-    void btnNewGameClick(Engine.Action _) =>
+    void btnNewGameClick(Action _) =>
         _game.pushState(new NewGameState());
 
     /**
      * Opens the New Battle screen.
      * @param action Pointer to an action.
      */
-    void btnNewBattleClick(Engine.Action _) =>
+    void btnNewBattleClick(Action _) =>
         _game.pushState(new NewBattleState());
 
     /**
      * Opens the Load Game screen.
      * @param action Pointer to an action.
      */
-    void btnLoadClick(Engine.Action _) =>
+    void btnLoadClick(Action _) =>
         _game.pushState(new ListLoadState(OptionsOrigin.OPT_MENU));
 
     /**
      * Opens the Options screen.
      * @param action Pointer to an action.
      */
-    void btnOptionsClick(Engine.Action _)
+    void btnOptionsClick(Action _)
     {
         Options.backupDisplay();
         _game.pushState(new OptionsVideoState(OptionsOrigin.OPT_MENU));
@@ -137,13 +137,13 @@ internal class MainMenuState : State
 	* Opens the Mods screen.
 	* @param action Pointer to an action.
 	*/
-	void btnModsClick(Engine.Action _) =>
+	void btnModsClick(Action _) =>
 		_game.pushState(new ModListState());
 
     /**
      * Quits the game.
      * @param action Pointer to an action.
      */
-    void btnQuitClick(Engine.Action _) =>
+    void btnQuitClick(Action _) =>
         _game.quit();
 }

@@ -191,9 +191,9 @@ internal class SoldierDiaryPerformanceState : State
         {
             _group = _btnCommendations;
         }
-        _btnKills.setGroup(ref _group);
-        _btnMissions.setGroup(ref _group);
-        _btnCommendations.setGroup(ref _group);
+        _btnKills.setGroup(_group);
+        _btnMissions.setGroup(_group);
+        _btnCommendations.setGroup(_group);
 
         init(); // Populate the list
     }
@@ -207,7 +207,7 @@ internal class SoldierDiaryPerformanceState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         _soldierDiaryOverviewState.setSoldierId(_soldierId);
         _game.popState();
@@ -216,7 +216,7 @@ internal class SoldierDiaryPerformanceState : State
     /**
      * Display Kills totals.
      */
-    void btnKillsToggle(Engine.Action _)
+    void btnKillsToggle(Action _)
     {
         _display = SoldierDiaryDisplay.DIARY_KILLS;
         init();
@@ -225,7 +225,7 @@ internal class SoldierDiaryPerformanceState : State
     /**
      * Display Missions totals.
      */
-    void btnMissionsToggle(Engine.Action _)
+    void btnMissionsToggle(Action _)
     {
         _display = SoldierDiaryDisplay.DIARY_MISSIONS;
         init();
@@ -234,7 +234,7 @@ internal class SoldierDiaryPerformanceState : State
     /**
      * Display Commendations.
      */
-    void btnCommendationsToggle(Engine.Action _)
+    void btnCommendationsToggle(Action _)
     {
         _display = SoldierDiaryDisplay.DIARY_COMMENDATIONS;
         init();
@@ -244,7 +244,7 @@ internal class SoldierDiaryPerformanceState : State
      * Goes to the next soldier.
      * @param action Pointer to an action.
      */
-    void btnNextClick(Engine.Action _)
+    void btnNextClick(Action _)
     {
         _soldierId++;
         if (_soldierId >= _list.Count)
@@ -256,7 +256,7 @@ internal class SoldierDiaryPerformanceState : State
      * Goes to the previous soldier.
      * @param action Pointer to an action.
      */
-    void btnPrevClick(Engine.Action _)
+    void btnPrevClick(Action _)
     {
         if (_soldierId == 0)
             _soldierId = (uint)(_list.Count - 1);
@@ -268,7 +268,7 @@ internal class SoldierDiaryPerformanceState : State
     /*
      *
      */
-    void lstInfoMouseOver(Engine.Action _)
+    void lstInfoMouseOver(Action _)
     {
         uint _sel;
         _sel = _lstCommendations.getSelectedRow();
@@ -286,7 +286,7 @@ internal class SoldierDiaryPerformanceState : State
     /*
      *  Clears the Medal information
      */
-    void lstInfoMouseOut(Engine.Action _) =>
+    void lstInfoMouseOut(Action _) =>
         _txtMedalInfo.setText(string.Empty);
 
     /**
@@ -343,7 +343,7 @@ internal class SoldierDiaryPerformanceState : State
             for (int i = 0; i != 3; ++i)
             {
                 _lstPerformance.addRow(1, tr(titleArray[i]));
-                _lstPerformance.setRowColor((int)(_lstPerformance.getRows() - 1), _lstPerformance.getSecondaryColor());
+                _lstPerformance.setRowColor(_lstPerformance.getRows() - 1, _lstPerformance.getSecondaryColor());
                 foreach (var j in mapArray[i])
                 {
                     string ss = j.Value.ToString();
@@ -378,7 +378,7 @@ internal class SoldierDiaryPerformanceState : State
             for (int i = 0; i != 3; ++i)
             {
                 _lstPerformance.addRow(1, tr(titleArray[i]));
-                _lstPerformance.setRowColor((int)(_lstPerformance.getRows() - 1), _lstPerformance.getSecondaryColor());
+                _lstPerformance.setRowColor(_lstPerformance.getRows() - 1, _lstPerformance.getSecondaryColor());
                 foreach (var j in mapArray[i])
                 {
                     if (j.Key == "NO_UFO") continue;

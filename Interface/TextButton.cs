@@ -127,7 +127,7 @@ internal class TextButton : InteractiveSurface
      * @param group Pointer to the pressed button pointer in the group.
      * Null makes it a regular button.
      */
-    internal void setGroup(ref TextButton group)
+    internal void setGroup(TextButton group)
     {
         _group = group;
         _redraw = true;

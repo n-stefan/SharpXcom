@@ -78,7 +78,7 @@ internal class ConfirmCydoniaState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnYesClick(Engine.Action _)
+    void btnYesClick(Action _)
     {
         _game.popState();
         _game.popState();
@@ -106,6 +106,6 @@ internal class ConfirmCydoniaState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnNoClick(Engine.Action _) =>
+    void btnNoClick(Action _) =>
         _game.popState();
 }

@@ -211,7 +211,7 @@ internal class OptionsAudioState : OptionsBaseState
      * Updates the music volume.
      * @param action Pointer to an action.
      */
-    void slrMusicVolumeChange(Engine.Action _)
+    void slrMusicVolumeChange(Action _)
     {
         Options.musicVolume = _slrMusicVolume.getValue();
         _game.setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
@@ -221,7 +221,7 @@ internal class OptionsAudioState : OptionsBaseState
      * Updates the sound volume with the slider.
      * @param action Pointer to an action.
      */
-    void slrSoundVolumeChange(Engine.Action _)
+    void slrSoundVolumeChange(Action _)
     {
         Options.soundVolume = _slrSoundVolume.getValue();
         _game.setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
@@ -231,14 +231,14 @@ internal class OptionsAudioState : OptionsBaseState
      * Plays a game sound for volume preview.
      * @param action Pointer to an action.
      */
-    void slrSoundVolumeRelease(Engine.Action _) =>
+    void slrSoundVolumeRelease(Action _) =>
         _game.getMod().getSound("GEO.CAT", (uint)Mod.Mod.UFO_FIRE).play();
 
     /**
      * Updates the UI volume with the slider.
      * @param action Pointer to an action.
      */
-    void slrUiVolumeChange(Engine.Action _)
+    void slrUiVolumeChange(Action _)
     {
         Options.uiVolume = _slrUiVolume.getValue();
         _game.setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
@@ -248,14 +248,14 @@ internal class OptionsAudioState : OptionsBaseState
      * Plays a UI sound for volume preview.
      * @param action Pointer to an action.
      */
-    void slrUiVolumeRelease(Engine.Action _) =>
+    void slrUiVolumeRelease(Action _) =>
         TextButton.soundPress.play(Mix_GroupAvailable(0));
 
     /**
      * Changes the Music Format option.
      * @param action Pointer to an action.
      */
-    void cbxMusicFormatChange(Engine.Action _)
+    void cbxMusicFormatChange(Action _)
     {
         Options.preferredMusic = (MusicFormat)_cbxMusicFormat.getSelected();
         Options.reload = true;
@@ -265,7 +265,7 @@ internal class OptionsAudioState : OptionsBaseState
      * Changes the Sound Format option.
      * @param action Pointer to an action.
      */
-    void cbxSoundFormatChange(Engine.Action _)
+    void cbxSoundFormatChange(Action _)
     {
         Options.preferredSound = (SoundFormat)_cbxSoundFormat.getSelected();
         Options.reload = true;
@@ -275,13 +275,13 @@ internal class OptionsAudioState : OptionsBaseState
      * Changes the Video Format option.
      * @param action Pointer to an action.
      */
-    void cbxVideoFormatChange(Engine.Action _) =>
+    void cbxVideoFormatChange(Action _) =>
         Options.preferredVideo = (VideoFormat)_cbxVideoFormat.getSelected();
 
     /**
      * Updates the Background Mute option.
      * @param action Pointer to an action.
      */
-    void btnBackgroundMuteClick(Engine.Action _) =>
+    void btnBackgroundMuteClick(Action _) =>
         Options.backgroundMute = _btnBackgroundMute.getPressed();
 }

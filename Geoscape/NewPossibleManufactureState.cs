@@ -88,14 +88,14 @@ internal class NewPossibleManufactureState : State
      * return to the previous screen
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Open the ManufactureState so the player can dispatch available scientist.
      * @param action Pointer to an action.
      */
-    void btnManufactureClick(Engine.Action _)
+    void btnManufactureClick(Action _)
     {
         _game.popState();
         _game.pushState(new ManufactureState(_base));

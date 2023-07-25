@@ -346,7 +346,7 @@ internal class GraphsState : State
     /**
      * 'Shift' the buttons to display only GRAPH_MAX_BUTTONS - reset their state from toggles
      */
-    void shiftButtons(Engine.Action action)
+    void shiftButtons(Action action)
     {
         // only if active 'screen' is other than finance
         if (_finance)
@@ -399,7 +399,7 @@ internal class GraphsState : State
      * Handles a click on a region button.
      * @param action Pointer to an action.
      */
-    void btnRegionListClick(Engine.Action action)
+    void btnRegionListClick(Action action)
     {
         int number = 0;
         ToggleTextButton button = (ToggleTextButton)action.getSender();
@@ -429,7 +429,7 @@ internal class GraphsState : State
      * Handles a click on a country button.
      * @param action Pointer to an action.
      */
-    void btnCountryListClick(Engine.Action action)
+    void btnCountryListClick(Action action)
     {
         int number = 0;
         ToggleTextButton button = (ToggleTextButton)action.getSender();
@@ -459,7 +459,7 @@ internal class GraphsState : State
      * handles a click on a finances button.
      * @param action Pointer to an action.
      */
-    void btnFinanceListClick(Engine.Action action)
+    void btnFinanceListClick(Action action)
     {
         int number = 0;
         ToggleTextButton button = (ToggleTextButton)action.getSender();
@@ -483,7 +483,7 @@ internal class GraphsState : State
      * Switches to the UFO Region Activity screen.
      * @param action Pointer to an action.
      */
-    void btnUfoRegionClick(Engine.Action _)
+    void btnUfoRegionClick(Action _)
     {
         _alien = true;
         _income = false;
@@ -504,7 +504,7 @@ internal class GraphsState : State
      * Switches to the UFO Country activity screen.
      * @param action Pointer to an action.
      */
-    void btnUfoCountryClick(Engine.Action _)
+    void btnUfoCountryClick(Action _)
     {
         _alien = true;
         _income = false;
@@ -525,7 +525,7 @@ internal class GraphsState : State
      * Switches to the XCom Region activity screen.
      * @param action Pointer to an action.
      */
-    void btnXcomRegionClick(Engine.Action _)
+    void btnXcomRegionClick(Action _)
     {
         _alien = false;
         _income = false;
@@ -546,7 +546,7 @@ internal class GraphsState : State
      * Switches to the XCom Country activity screen.
      * @param action Pointer to an action.
      */
-    void btnXcomCountryClick(Engine.Action _)
+    void btnXcomCountryClick(Action _)
     {
         _alien = false;
         _income = false;
@@ -567,7 +567,7 @@ internal class GraphsState : State
      * Switches to the Income screen.
      * @param action Pointer to an action.
      */
-    void btnIncomeClick(Engine.Action _)
+    void btnIncomeClick(Action _)
     {
         _alien = false;
         _income = true;
@@ -589,7 +589,7 @@ internal class GraphsState : State
      * Switches to the Finances screen.
      * @param action Pointer to an action.
      */
-    void btnFinanceClick(Engine.Action _)
+    void btnFinanceClick(Action _)
     {
         _alien = false;
         _income = false;
@@ -609,7 +609,7 @@ internal class GraphsState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnGeoscapeClick(Engine.Action _) =>
+    void btnGeoscapeClick(Action _) =>
         _game.popState();
 
     /**

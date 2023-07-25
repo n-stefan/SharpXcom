@@ -236,7 +236,7 @@ internal class MonthlyReportState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         if (!_gameOver)
         {

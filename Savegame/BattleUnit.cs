@@ -1618,7 +1618,7 @@ internal class BattleUnit
      * @param debugAppendId Append unit ID to name for debug purposes.
      * @return name Widecharstring of the unit's name.
      */
-    internal string getName(Language lang, bool debugAppendId)
+    internal string getName(Language lang, bool debugAppendId = false)
     {
 	    if (_type != "SOLDIER" && lang != null)
 	    {
@@ -1969,5 +1969,58 @@ internal class BattleUnit
     {
         _stunlevel -= power;
         if (_stunlevel < 0) _stunlevel = 0;
+    }
+
+    /**
+     * Checks if there's an inventory item in
+     * the specified inventory position.
+     * @param slot Inventory slot.
+     * @param x X position in slot.
+     * @param y Y position in slot.
+     * @return Item in the slot, or NULL if none.
+     */
+    internal BattleItem getItem(RuleInventory slot, int x, int y)
+    {
+	    // Soldier items
+	    if (slot.getType() != InventoryType.INV_GROUND)
+	    {
+		    foreach (var i in _inventory)
+		    {
+			    if (i.getSlot() == slot && i.occupiesSlot(x, y))
+			    {
+				    return i;
+			    }
+		    }
+	    }
+	    // Ground items
+	    else if (_tile != null)
+	    {
+		    foreach (var i in _tile.getInventory())
+		    {
+			    if (i.occupiesSlot(x, y))
+			    {
+				    return i;
+			    }
+		    }
+	    }
+	    return null;
+    }
+
+    /**
+     * Spend time units if it can. Return false if it can't.
+     * @param tu
+     * @return flag if it could spend the time units or not.
+     */
+    internal bool spendTimeUnits(int tu)
+    {
+        if (tu <= _tu)
+        {
+            _tu -= tu;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

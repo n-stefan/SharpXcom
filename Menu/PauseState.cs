@@ -131,28 +131,28 @@ internal class PauseState : State
      * Opens the Load Game screen.
      * @param action Pointer to an action.
      */
-    void btnLoadClick(Engine.Action _) =>
+    void btnLoadClick(Action _) =>
         _game.pushState(new ListLoadState(_origin));
 
     /**
      * Opens the Save Game screen.
      * @param action Pointer to an action.
      */
-    void btnSaveClick(Engine.Action _) =>
+    void btnSaveClick(Action _) =>
         _game.pushState(new ListSaveState(_origin));
 
     /**
      * Opens the Abandon Game window.
      * @param action Pointer to an action.
      */
-    void btnAbandonClick(Engine.Action _) =>
+    void btnAbandonClick(Action _) =>
         _game.pushState(new AbandonGameState(_origin));
 
     /**
      * Opens the Game Options screen.
      * @param action Pointer to an action.
      */
-    void btnOptionsClick(Engine.Action _)
+    void btnOptionsClick(Action _)
     {
         Options.backupDisplay();
         if (_origin == OptionsOrigin.OPT_GEOSCAPE)
@@ -173,6 +173,6 @@ internal class PauseState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 }

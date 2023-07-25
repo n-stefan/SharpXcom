@@ -90,14 +90,14 @@ internal class ResearchCompleteState : State
      * return to the previous screen
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * open the Ufopaedia to the entry about the Research.
      * @param action Pointer to an action.
      */
-    void btnReportClick(Engine.Action _)
+    void btnReportClick(Action _)
     {
         _game.popState();
         string name;

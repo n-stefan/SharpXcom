@@ -68,8 +68,8 @@ internal class CommendationState : State
 		_lstSoldiers.setBackground(_window);
 		_lstSoldiers.setMargin(8);
 
-		int row = 0;
-		int titleRow = 0;
+		uint row = 0;
+		uint titleRow = 0;
 		Dictionary<string, RuleCommendations> commendationsList = _game.getMod().getCommendationsList();
 		bool modularCommendation;
 		string noun;
@@ -141,11 +141,11 @@ internal class CommendationState : State
 				// Medal name
 				if (modularCommendation)
 				{
-					_lstSoldiers.setCellText((uint)titleRow, 0, tr(commList.Current.Key).arg(tr(noun)));
+					_lstSoldiers.setCellText(titleRow, 0, tr(commList.Current.Key).arg(tr(noun)));
 				}
 				else
 				{
-					_lstSoldiers.setCellText((uint)titleRow, 0, tr(commList.Current.Key));
+					_lstSoldiers.setCellText(titleRow, 0, tr(commList.Current.Key));
 				}
 				_lstSoldiers.setRowColor(titleRow, _lstSoldiers.getSecondaryColor());
 				titleChosen = true;
@@ -166,6 +166,6 @@ internal class CommendationState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 }

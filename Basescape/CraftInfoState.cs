@@ -140,7 +140,7 @@ internal class CraftInfoState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
@@ -148,7 +148,7 @@ internal class CraftInfoState : State
      * the first weapon.
      * @param action Pointer to an action.
      */
-    void btnW1Click(Engine.Action _) =>
+    void btnW1Click(Action _) =>
         _game.pushState(new CraftWeaponsState(_base, _craftId, 0));
 
     /**
@@ -156,35 +156,35 @@ internal class CraftInfoState : State
      * the second weapon.
      * @param action Pointer to an action.
      */
-    void btnW2Click(Engine.Action _) =>
+    void btnW2Click(Action _) =>
         _game.pushState(new CraftWeaponsState(_base, _craftId, 1));
 
     /**
      * Goes to the Select Squad screen.
      * @param action Pointer to an action.
      */
-    void btnCrewClick(Engine.Action _) =>
+    void btnCrewClick(Action _) =>
         _game.pushState(new CraftSoldiersState(_base, _craftId));
 
     /**
      * Goes to the Select Equipment screen.
      * @param action Pointer to an action.
      */
-    void btnEquipClick(Engine.Action _) =>
+    void btnEquipClick(Action _) =>
         _game.pushState(new CraftEquipmentState(_base, _craftId));
 
     /**
      * Goes to the Select Armor screen.
      * @param action Pointer to an action.
      */
-    void btnArmorClick(Engine.Action _) =>
+    void btnArmorClick(Action _) =>
         _game.pushState(new CraftArmorState(_base, _craftId));
 
     /**
      * Changes the Craft name.
      * @param action Pointer to an action.
      */
-    void edtCraftChange(Engine.Action action)
+    void edtCraftChange(Action action)
     {
         if (_edtCraft.getText() == _craft.getDefaultName(_game.getLanguage()))
         {

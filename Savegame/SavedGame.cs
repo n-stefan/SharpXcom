@@ -1034,7 +1034,7 @@ internal class SavedGame
      * @return A pointer to the mission, or 0 if no mission matched.
      */
     internal AlienMission findAlienMission(string region, MissionObjective objective) =>
-	    _activeMissions.Find(x => x.matchRegionAndType(region, objective));
+        _activeMissions.Find(x => x.getRegion() == region && x.getRules().getObjective() == objective);
 
     /**
      * return if the player has been
@@ -1116,4 +1116,26 @@ internal class SavedGame
      */
     internal void setGraphFinanceToggles(string value) =>
 	    _graphFinanceToggles = value;
+
+    /**
+     * Gets the last selected armour
+     * @return last used armor type string
+     */
+    internal string getLastSelectedArmor() =>
+	    _lastselectedArmor;
+
+    /**
+     * Changes if the game is set to ironman mode.
+     * Ironman games cannot be manually saved.
+     * @param ironman Tony Stark
+     */
+    internal void setIronman(bool ironman) =>
+        _ironman = ironman;
+
+    /**
+     * Add a ResearchProject to the list of already discovered ResearchProject
+     * @param research The newly found ResearchProject
+     */
+    internal void addFinishedResearchSimple(RuleResearch research) =>
+	    _discovered.Add(research);
 }

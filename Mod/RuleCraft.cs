@@ -329,4 +329,35 @@ internal class RuleCraft : IListOrder, IRule
      */
     internal bool getSpacecraft() =>
 	    _spacecraft;
+
+    /**
+     * Gets the maximum amount of items this craft can store.
+     * @return number of items.
+     */
+    internal int getMaxItems() =>
+	    _maxItems;
+
+    /**
+     * Gets the list of research required to
+     * acquire this craft.
+     * @return The list of research IDs.
+     */
+    internal List<string> getRequirements() =>
+	    _requires;
+
+    /**
+     * Gets the amount of time this item
+     * takes to arrive at a base.
+     * @return The time in hours.
+     */
+    internal int getTransferTime() =>
+	    _transferTime;
+
+    /**
+     * Gets the cost of this craft for
+     * purchase/rent (0 if not purchasable).
+     * @return The cost.
+     */
+    internal int getBuyCost() =>
+	    _costBuy;
 }

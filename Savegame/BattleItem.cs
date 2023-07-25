@@ -424,4 +424,39 @@ internal class BattleItem
      */
     internal bool isAmmo() =>
 	    _isAmmo;
+
+    /**
+     * Gets the item's inventory X position.
+     * @return X position.
+     */
+    internal int getSlotX() =>
+	    _inventoryX;
+
+    /**
+     * Gets the item's inventory Y position.
+     * @return Y position.
+     */
+    internal int getSlotY() =>
+	    _inventoryY;
+
+    /**
+     * Gets the pain killer quantity of the item.
+     * @return The new pain killer quantity.
+     */
+    internal int getPainKillerQuantity() =>
+	    _painKiller;
+
+    /**
+     * Gets the stimulant quantity of the item.
+     * @return The new stimulant quantity.
+     */
+    internal int getStimulantQuantity() =>
+	    _stimulant;
+
+    /**
+     * Gets the heal quantity of the item.
+     * @return The new heal quantity.
+     */
+    internal int getHealQuantity() =>
+	    _heal;
 }

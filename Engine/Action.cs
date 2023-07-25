@@ -154,4 +154,22 @@ internal class Action
      */
     internal InteractiveSurface getSender() =>
 	    _sender;
+
+    /**
+     * Returns the Y position of the
+     * mouse cursor relative to the game window,
+     * or -1 if this isn't a mouse-related action.
+     * @return Mouse's Y position.
+     */
+    internal int getYMouse() =>
+	    _mouseY;
+
+    /**
+     * Returns the X position of the
+     * mouse cursor relative to the game window,
+     * or -1 if this isn't a mouse-related action.
+     * @return Mouse's X position.
+     */
+    internal int getXMouse() =>
+	    _mouseX;
 }

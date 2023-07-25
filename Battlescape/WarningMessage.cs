@@ -27,7 +27,7 @@ internal class WarningMessage : Surface
 {
     byte _color, _fade;
     Text _text;
-    Engine.Timer _timer;
+    Timer _timer;
 
     /**
      * Sets up a blank warning message with the specified size and position.
@@ -47,7 +47,7 @@ internal class WarningMessage : Surface
         _text.setVerticalAlign(TextVAlign.ALIGN_MIDDLE);
         _text.setWordWrap(true);
 
-        _timer = new Engine.Timer(50);
+        _timer = new Timer(50);
         _timer.onTimer((SurfaceHandler)fade);
 
         setVisible(false);

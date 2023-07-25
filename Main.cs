@@ -1,8 +1,9 @@
 ﻿
 //TODO:
 // protected virtual/override methods
-// think(), handle(), init(), ... missing methods
+// think(), handle(), init(), resize(), ... missing methods
 // yaml load defaults
+// string interpolation => StringBuilder
 
 /*
  * Copyright 2010-2016 OpenXcom Developers.

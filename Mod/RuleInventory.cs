@@ -167,4 +167,18 @@ internal class RuleInventory : IListOrder, IRule
 		    return (foundSlots == totalSlots);
 	    }
     }
+
+    /**
+     * Gets the X position of the inventory section on the screen.
+     * @return The X position in pixels.
+     */
+    internal int getX() =>
+	    _x;
+
+    /**
+     * Gets the Y position of the inventory section on the screen.
+     * @return The Y position in pixels.
+     */
+    internal int getY() =>
+	    _y;
 }

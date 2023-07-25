@@ -28,7 +28,7 @@ internal class NextTurnState : State
 
     SavedBattleGame _battleGame;
     BattlescapeState _state;
-    Engine.Timer _timer;
+    Timer _timer;
     Window _window;
     Text _txtTitle, _txtTurn, _txtSide, _txtMessage;
     Surface _bg;
@@ -121,7 +121,7 @@ internal class NextTurnState : State
 
         if (Options.skipNextTurnScreen)
         {
-            _timer = new Engine.Timer(NEXT_TURN_DELAY);
+            _timer = new Timer(NEXT_TURN_DELAY);
             _timer.onTimer((StateHandler)close);
             _timer.start();
         }

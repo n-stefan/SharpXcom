@@ -210,14 +210,14 @@ internal class OptionsBattlescapeState : OptionsBaseState
      * Changes the Edge Scroll option.
      * @param action Pointer to an action.
      */
-    void cbxEdgeScrollChange(Engine.Action _) =>
+    void cbxEdgeScrollChange(Action _) =>
         Options.battleEdgeScroll = (ScrollType)_cbxEdgeScroll.getSelected();
 
     /**
      * Shows a tooltip for the appropriate button.
      * @param action Pointer to an action.
      */
-    void txtTooltipIn(Engine.Action action)
+    void txtTooltipIn(Action action)
     {
         _currentTooltip = action.getSender().getTooltip();
         _txtTooltip.setText(tr(_currentTooltip));
@@ -227,7 +227,7 @@ internal class OptionsBattlescapeState : OptionsBaseState
      * Clears the tooltip text.
      * @param action Pointer to an action.
      */
-    void txtTooltipOut(Engine.Action action)
+    void txtTooltipOut(Action action)
     {
         if (_currentTooltip == action.getSender().getTooltip())
         {
@@ -239,42 +239,42 @@ internal class OptionsBattlescapeState : OptionsBaseState
      * Changes the Drag Scroll option.
      * @param action Pointer to an action.
      */
-    void cbxDragScrollChange(Engine.Action _) =>
+    void cbxDragScrollChange(Action _) =>
         Options.battleDragScrollButton = (int)_cbxDragScroll.getSelected();
 
     /**
      * Updates the scroll speed.
      * @param action Pointer to an action.
      */
-    void slrScrollSpeedChange(Engine.Action _) =>
+    void slrScrollSpeedChange(Action _) =>
         Options.battleScrollSpeed = _slrScrollSpeed.getValue();
 
     /**
      * Updates the fire speed.
      * @param action Pointer to an action.
      */
-    void slrFireSpeedChange(Engine.Action _) =>
+    void slrFireSpeedChange(Action _) =>
         Options.battleFireSpeed = _slrFireSpeed.getValue();
 
     /**
      * Updates the X-COM movement speed.
      * @param action Pointer to an action.
      */
-    void slrXcomSpeedChange(Engine.Action _) =>
+    void slrXcomSpeedChange(Action _) =>
         Options.battleXcomSpeed = _slrXcomSpeed.getValue();
 
     /**
      * Updates the alien movement speed.
      * @param action Pointer to an action.
      */
-    void slrAlienSpeedChange(Engine.Action _) =>
+    void slrAlienSpeedChange(Action _) =>
         Options.battleAlienSpeed = _slrAlienSpeed.getValue();
 
     /**
      * Updates the path preview options.
      * @param action Pointer to an action.
      */
-    void btnPathPreviewClick(Engine.Action _)
+    void btnPathPreviewClick(Action _)
     {
         int mode = (int)PathPreview.PATH_NONE;
         if (_btnArrows.getPressed())
@@ -292,13 +292,13 @@ internal class OptionsBattlescapeState : OptionsBaseState
      * Updates the Tooltips option.
      * @param action Pointer to an action.
      */
-    void btnTooltipsClick(Engine.Action _) =>
+    void btnTooltipsClick(Action _) =>
         Options.battleTooltips = _btnTooltips.getPressed();
 
     /**
      * Updates the Death Notifications option.
      * @param action Pointer to an action.
      */
-    void btnDeathsClick(Engine.Action _) =>
+    void btnDeathsClick(Action _) =>
         Options.battleNotifyDeath = _btnDeaths.getPressed();
 }

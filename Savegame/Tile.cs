@@ -558,4 +558,21 @@ internal class Tile
 
         return retval;
     }
+
+    /**
+     * Remove an item from the tile.
+     * @param item
+     */
+    internal void removeItem(BattleItem item)
+    {
+        foreach (var i in _inventory)
+        {
+            if (i == item)
+            {
+                _inventory.Remove(i);
+                break;
+            }
+        }
+        item.setTile(null);
+    }
 }

@@ -83,7 +83,7 @@ internal class Cursor : Surface
      * when the mouse moves.
      * @param action Pointer to an action.
      */
-    internal void handle(Engine.Action action)
+    internal void handle(Action action)
     {
         if (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
         {

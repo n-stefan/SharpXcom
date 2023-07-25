@@ -191,4 +191,25 @@ internal class RuleGlobe
 	 */
 	internal Texture getTexture(int id) =>
 		_textures.TryGetValue(id, out Texture texture) ? texture : null;
+
+	/**
+	 * Returns a list of all globe terrains associated with this deployment.
+	 * @param deployment Deployment name.
+	 * @return List of terrains.
+	 */
+	internal List<string> getTerrains(string deployment)
+	{
+		var terrains = new List<string>();
+		foreach (var i in _textures)
+		{
+			if ((!deployment.Any() && !i.Value.getDeployments().Any()) || i.Value.getDeployments().ContainsKey(deployment))
+			{
+				foreach (var j in i.Value.getTerrain())
+				{
+					terrains.Add(j.name);
+				}
+			}
+		}
+		return terrains;
+	}
 }

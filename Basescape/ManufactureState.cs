@@ -126,21 +126,21 @@ internal class ManufactureState : State
      * Opens the screen with the list of possible productions.
      * @param action Pointer to an action.
      */
-    void btnNewProductionClick(Engine.Action _) =>
+    void btnNewProductionClick(Action _) =>
         _game.pushState(new NewManufactureListState(_base));
 
     /**
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Opens the screen displaying production settings.
      * @param action Pointer to an action.
      */
-    void lstManufactureClick(Engine.Action _)
+    void lstManufactureClick(Action _)
     {
         List<Production> productions = _base.getProductions();
         _game.pushState(new ManufactureInfoState(_base, productions[(int)_lstManufacture.getSelectedRow()]));

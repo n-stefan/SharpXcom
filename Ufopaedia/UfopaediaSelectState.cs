@@ -83,14 +83,14 @@ internal class UfopaediaSelectState : State
 	 * Returns to the previous screen.
 	 * @param action Pointer to an action.
 	 */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
 	 *
 	 * @param action Pointer to an action.
 	 */
-    void lstSelectionClick(Engine.Action _) =>
+    void lstSelectionClick(Action _) =>
         Ufopaedia.openArticle(_game, _article_list[(int)_lstSelection.getSelectedRow()]);
 
     void loadSelectionList()

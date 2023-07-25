@@ -91,7 +91,7 @@ internal class OptionsDefaultsState : State
      * Restores the default options.
      * @param action Pointer to an action.
      */
-    void btnYesClick(Engine.Action action)
+    void btnYesClick(Action action)
     {
         Options.resetDefault(false);
         _game.loadLanguages();
@@ -103,6 +103,6 @@ internal class OptionsDefaultsState : State
      * Closes the window.
      * @param action Pointer to an action.
      */
-    void btnNoClick(Engine.Action _) =>
+    void btnNoClick(Action _) =>
         _game.popState();
 }

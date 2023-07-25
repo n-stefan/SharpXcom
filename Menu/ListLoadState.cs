@@ -17,8 +17,6 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Action = SharpXcom.Engine.Action;
-
 namespace SharpXcom.Menu;
 
 /**

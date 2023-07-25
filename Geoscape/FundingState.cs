@@ -101,7 +101,7 @@ internal class FundingState : State
 			_lstCountries.addRow(3, tr(i.getRules().getType()), ss, ss2);
 		}
 		_lstCountries.addRow(2, tr("STR_TOTAL_UC"), Unicode.formatFunding(_game.getSavedGame().getCountryFunding()));
-		_lstCountries.setRowColor(_game.getSavedGame().getCountries().Count, _txtCountry.getColor());
+		_lstCountries.setRowColor((uint)_game.getSavedGame().getCountries().Count, _txtCountry.getColor());
 	}
 
 	/**
@@ -113,6 +113,6 @@ internal class FundingState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 }

@@ -169,4 +169,10 @@ internal class ModInfo
 
     internal string getResourceConfigFile() =>
         _resourceConfigFile;
+
+    internal bool isEngineOk() =>
+        _engineOk;
+
+    internal string getRequiredExtendedEngine() =>
+        _requiredExtendedEngine;
 }

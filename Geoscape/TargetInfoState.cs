@@ -102,21 +102,21 @@ internal class TargetInfoState : State
      * Picks a craft to intercept the UFO.
      * @param action Pointer to an action.
      */
-    void btnInterceptClick(Engine.Action _) =>
+    void btnInterceptClick(Action _) =>
         _game.pushState(new InterceptState(_globe, null, _target));
 
     /**
      * Closes the window.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Changes the target name.
      * @param action Pointer to an action.
      */
-    void edtTitleChange(Engine.Action action)
+    void edtTitleChange(Action action)
     {
         if (_edtTitle.getText() == _target.getDefaultName(_game.getLanguage()))
         {

@@ -470,4 +470,7 @@ internal class AlienDeployment : IRule
      */
     internal bool isFinalDestination() =>
 	    _finalDestination;
+
+    internal bool isAlienBase() =>
+	    _isAlienBase;
 }

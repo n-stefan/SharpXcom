@@ -157,7 +157,7 @@ internal class SoldierDiaryOverviewState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _)
+    void btnOkClick(Action _)
     {
         _soldierInfoState.setSoldierId(_soldierId);
         _game.popState();
@@ -167,28 +167,28 @@ internal class SoldierDiaryOverviewState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnKillsClick(Engine.Action _) =>
+    void btnKillsClick(Action _) =>
         _game.pushState(new SoldierDiaryPerformanceState(_base, _soldierId, this, SoldierDiaryDisplay.DIARY_KILLS));
 
     /**
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnMissionsClick(Engine.Action _) =>
+    void btnMissionsClick(Action _) =>
         _game.pushState(new SoldierDiaryPerformanceState(_base, _soldierId, this, SoldierDiaryDisplay.DIARY_MISSIONS));
 
     /**
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCommendationsClick(Engine.Action _) =>
+    void btnCommendationsClick(Action _) =>
         _game.pushState(new SoldierDiaryPerformanceState(_base, _soldierId, this, SoldierDiaryDisplay.DIARY_COMMENDATIONS));
 
     /**
      * Goes to the next soldier.
      * @param action Pointer to an action.
      */
-    void btnNextClick(Engine.Action _)
+    void btnNextClick(Action _)
     {
         _soldierId++;
         if (_soldierId >= _list.Count)
@@ -200,7 +200,7 @@ internal class SoldierDiaryOverviewState : State
      * Goes to the previous soldier.
      * @param action Pointer to an action.
      */
-    void btnPrevClick(Engine.Action _)
+    void btnPrevClick(Action _)
     {
         if (_soldierId == 0)
             _soldierId = (uint)(_list.Count - 1);
@@ -213,7 +213,7 @@ internal class SoldierDiaryOverviewState : State
      * Shows the selected soldier's info.
      * @param action Pointer to an action.
      */
-    void lstDiaryInfoClick(Engine.Action _)
+    void lstDiaryInfoClick(Action _)
     {
         int absoluteRowEntry = (int)_lstDiary.getSelectedRow();
         _game.pushState(new SoldierDiaryMissionState(_soldier, absoluteRowEntry));

@@ -117,27 +117,27 @@ internal class SoldiersState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Opens the Psionic Training screen.
      * @param action Pointer to an action.
      */
-    void btnPsiTrainingClick(Engine.Action _) =>
+    void btnPsiTrainingClick(Action _) =>
         _game.pushState(new AllocatePsiTrainingState(_base));
 
     /**
      * Opens the Memorial screen.
      * @param action Pointer to an action.
      */
-    void btnMemorialClick(Engine.Action _) =>
+    void btnMemorialClick(Action _) =>
         _game.pushState(new SoldierMemorialState());
 
     /**
      * Shows the selected soldier's info.
      * @param action Pointer to an action.
      */
-    void lstSoldiersClick(Engine.Action _) =>
+    void lstSoldiersClick(Action _) =>
         _game.pushState(new SoldierInfoState(_base, _lstSoldiers.getSelectedRow()));
 }

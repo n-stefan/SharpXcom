@@ -35,7 +35,7 @@ internal class GeoscapeState : State
     TextButton _sideTop, _sideBottom;
     Text _txtFunds, _txtHour, _txtHourSep, _txtMin, _txtMinSep, _txtSec, _txtWeekday, _txtDay, _txtMonth, _txtYear;
     TextButton _timeSpeed;
-    Engine.Timer _gameTimer, _zoomInEffectTimer, _zoomOutEffectTimer, _dogfightStartTimer, _dogfightTimer;
+    Timer _gameTimer, _zoomInEffectTimer, _zoomOutEffectTimer, _dogfightStartTimer, _dogfightTimer;
     Text _txtDebug;
     List<DogfightState> _dogfights, _dogfightsToBeStarted;
     List<State> _popups;
@@ -101,12 +101,12 @@ internal class GeoscapeState : State
         _txtFunds = new Text(59, 8, screenWidth - 61, screenHeight / 2 - 27);
 
         _timeSpeed = _btn5Secs;
-        _gameTimer = new Engine.Timer((uint)Options.geoClockSpeed);
+        _gameTimer = new Timer((uint)Options.geoClockSpeed);
 
-        _zoomInEffectTimer = new Engine.Timer((uint)Options.dogfightSpeed);
-        _zoomOutEffectTimer = new Engine.Timer((uint)Options.dogfightSpeed);
-        _dogfightStartTimer = new Engine.Timer((uint)Options.dogfightSpeed);
-        _dogfightTimer = new Engine.Timer((uint)Options.dogfightSpeed);
+        _zoomInEffectTimer = new Timer((uint)Options.dogfightSpeed);
+        _zoomOutEffectTimer = new Timer((uint)Options.dogfightSpeed);
+        _dogfightStartTimer = new Timer((uint)Options.dogfightSpeed);
+        _dogfightTimer = new Timer((uint)Options.dogfightSpeed);
 
         _txtDebug = new Text(200, 32, 0, 0);
 
@@ -203,42 +203,42 @@ internal class GeoscapeState : State
         _btn5Secs.initText(_game.getMod().getFont("FONT_GEO_BIG"), _game.getMod().getFont("FONT_GEO_SMALL"), _game.getLanguage());
         _btn5Secs.setBig();
         _btn5Secs.setText(tr("STR_5_SECONDS"));
-        _btn5Secs.setGroup(ref _timeSpeed);
+        _btn5Secs.setGroup(_timeSpeed);
         _btn5Secs.onKeyboardPress(btnTimerClick, Options.keyGeoSpeed1);
         _btn5Secs.setGeoscapeButton(true);
 
         _btn1Min.initText(_game.getMod().getFont("FONT_GEO_BIG"), _game.getMod().getFont("FONT_GEO_SMALL"), _game.getLanguage());
         _btn1Min.setBig();
         _btn1Min.setText(tr("STR_1_MINUTE"));
-        _btn1Min.setGroup(ref _timeSpeed);
+        _btn1Min.setGroup(_timeSpeed);
         _btn1Min.onKeyboardPress(btnTimerClick, Options.keyGeoSpeed2);
         _btn1Min.setGeoscapeButton(true);
 
         _btn5Mins.initText(_game.getMod().getFont("FONT_GEO_BIG"), _game.getMod().getFont("FONT_GEO_SMALL"), _game.getLanguage());
         _btn5Mins.setBig();
         _btn5Mins.setText(tr("STR_5_MINUTES"));
-        _btn5Mins.setGroup(ref _timeSpeed);
+        _btn5Mins.setGroup(_timeSpeed);
         _btn5Mins.onKeyboardPress(btnTimerClick, Options.keyGeoSpeed3);
         _btn5Mins.setGeoscapeButton(true);
 
         _btn30Mins.initText(_game.getMod().getFont("FONT_GEO_BIG"), _game.getMod().getFont("FONT_GEO_SMALL"), _game.getLanguage());
         _btn30Mins.setBig();
         _btn30Mins.setText(tr("STR_30_MINUTES"));
-        _btn30Mins.setGroup(ref _timeSpeed);
+        _btn30Mins.setGroup(_timeSpeed);
         _btn30Mins.onKeyboardPress(btnTimerClick, Options.keyGeoSpeed4);
         _btn30Mins.setGeoscapeButton(true);
 
         _btn1Hour.initText(_game.getMod().getFont("FONT_GEO_BIG"), _game.getMod().getFont("FONT_GEO_SMALL"), _game.getLanguage());
         _btn1Hour.setBig();
         _btn1Hour.setText(tr("STR_1_HOUR"));
-        _btn1Hour.setGroup(ref _timeSpeed);
+        _btn1Hour.setGroup(_timeSpeed);
         _btn1Hour.onKeyboardPress(btnTimerClick, Options.keyGeoSpeed5);
         _btn1Hour.setGeoscapeButton(true);
 
         _btn1Day.initText(_game.getMod().getFont("FONT_GEO_BIG"), _game.getMod().getFont("FONT_GEO_SMALL"), _game.getLanguage());
         _btn1Day.setBig();
         _btn1Day.setText(tr("STR_1_DAY"));
-        _btn1Day.setGroup(ref _timeSpeed);
+        _btn1Day.setGroup(_timeSpeed);
         _btn1Day.onKeyboardPress(btnTimerClick, Options.keyGeoSpeed6);
         _btn1Day.setGeoscapeButton(true);
 
@@ -342,7 +342,7 @@ internal class GeoscapeState : State
      * Opens the Intercept window.
      * @param action Pointer to an action.
      */
-    void btnInterceptClick(Engine.Action _)
+    void btnInterceptClick(Action _)
     {
         if (buttonsDisabled())
         {
@@ -355,7 +355,7 @@ internal class GeoscapeState : State
      * Goes to the Basescape screen.
      * @param action Pointer to an action.
      */
-    void btnBasesClick(Engine.Action _)
+    void btnBasesClick(Action _)
     {
         if (buttonsDisabled())
         {
@@ -376,7 +376,7 @@ internal class GeoscapeState : State
      * Goes to the Graphs screen.
      * @param action Pointer to an action.
      */
-    void btnGraphsClick(Engine.Action _)
+    void btnGraphsClick(Action _)
     {
         if (buttonsDisabled())
         {
@@ -389,7 +389,7 @@ internal class GeoscapeState : State
      * Goes to the Ufopaedia window.
      * @param action Pointer to an action.
      */
-    void btnUfopaediaClick(Engine.Action _)
+    void btnUfopaediaClick(Action _)
     {
         if (buttonsDisabled())
         {
@@ -402,7 +402,7 @@ internal class GeoscapeState : State
      * Opens the Options window.
      * @param action Pointer to an action.
      */
-    void btnOptionsClick(Engine.Action _)
+    void btnOptionsClick(Action _)
     {
         if (buttonsDisabled())
         {
@@ -415,7 +415,7 @@ internal class GeoscapeState : State
      * Goes to the Funding screen.
      * @param action Pointer to an action.
      */
-    void btnFundingClick(Engine.Action _)
+    void btnFundingClick(Action _)
     {
         if (buttonsDisabled())
         {
@@ -428,12 +428,12 @@ internal class GeoscapeState : State
      * Handler for clicking on a timer button.
      * @param action pointer to the mouse action.
      */
-    void btnTimerClick(Engine.Action action)
+    void btnTimerClick(Action action)
     {
         var ev = new SDL_Event();
         ev.type = SDL_EventType.SDL_MOUSEBUTTONDOWN;
         ev.button.button = (byte)SDL_BUTTON_LEFT;
-        var a = new Engine.Action(ev, 0.0, 0.0, 0, 0);
+        var a = new Action(ev, 0.0, 0.0, 0, 0);
         action.getSender().mousePress(a, this);
     }
 
@@ -441,84 +441,84 @@ internal class GeoscapeState : State
      * Starts rotating the globe to the left.
      * @param action Pointer to an action.
      */
-    void btnRotateLeftPress(Engine.Action _) =>
+    void btnRotateLeftPress(Action _) =>
         _globe.rotateLeft();
 
     /**
      * Stops rotating the globe to the left.
      * @param action Pointer to an action.
      */
-    void btnRotateLeftRelease(Engine.Action _) =>
+    void btnRotateLeftRelease(Action _) =>
         _globe.rotateStopLon();
 
     /**
      * Starts rotating the globe to the right.
      * @param action Pointer to an action.
      */
-    void btnRotateRightPress(Engine.Action _) =>
+    void btnRotateRightPress(Action _) =>
         _globe.rotateRight();
 
     /**
      * Stops rotating the globe to the right.
      * @param action Pointer to an action.
      */
-    void btnRotateRightRelease(Engine.Action _) =>
+    void btnRotateRightRelease(Action _) =>
         _globe.rotateStopLon();
 
     /**
      * Starts rotating the globe upwards.
      * @param action Pointer to an action.
      */
-    void btnRotateUpPress(Engine.Action _) =>
+    void btnRotateUpPress(Action _) =>
         _globe.rotateUp();
 
     /**
      * Stops rotating the globe upwards.
      * @param action Pointer to an action.
      */
-    void btnRotateUpRelease(Engine.Action _) =>
+    void btnRotateUpRelease(Action _) =>
         _globe.rotateStopLat();
 
     /**
      * Starts rotating the globe downwards.
      * @param action Pointer to an action.
      */
-    void btnRotateDownPress(Engine.Action _) =>
+    void btnRotateDownPress(Action _) =>
         _globe.rotateDown();
 
     /**
      * Stops rotating the globe downwards.
      * @param action Pointer to an action.
      */
-    void btnRotateDownRelease(Engine.Action _) =>
+    void btnRotateDownRelease(Action _) =>
         _globe.rotateStopLat();
 
     /**
      * Zooms into the globe.
      * @param action Pointer to an action.
      */
-    void btnZoomInLeftClick(Engine.Action _) =>
+    void btnZoomInLeftClick(Action _) =>
         _globe.zoomIn();
 
     /**
      * Zooms the globe maximum.
      * @param action Pointer to an action.
      */
-    void btnZoomInRightClick(Engine.Action _) =>
+    void btnZoomInRightClick(Action _) =>
         _globe.zoomMax();
 
     /**
      * Zooms out of the globe.
      * @param action Pointer to an action.
      */
-    void btnZoomOutLeftClick(Engine.Action _) =>
+    void btnZoomOutLeftClick(Action _) =>
         _globe.zoomOut();
 
     /**
      * Zooms the globe minimum.
      * @param action Pointer to an action.
      */
-    void btnZoomOutRightClick(Engine.Action _) =>
+    void btnZoomOutRightClick(Action _) =>
         _globe.zoomMin();
 
     /**
@@ -765,7 +765,7 @@ internal class GeoscapeState : State
     {
         var ev = new SDL_Event();
         ev.button.button = (byte)SDL_BUTTON_LEFT;
-        var act = new Engine.Action(ev, _game.getScreen().getXScale(), _game.getScreen().getYScale(), _game.getScreen().getCursorTopBlackBand(), _game.getScreen().getCursorLeftBlackBand());
+        var act = new Action(ev, _game.getScreen().getXScale(), _game.getScreen().getYScale(), _game.getScreen().getCursorTopBlackBand(), _game.getScreen().getCursorLeftBlackBand());
         _btn5Secs.mousePress(act, this);
     }
 

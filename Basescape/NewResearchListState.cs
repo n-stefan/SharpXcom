@@ -79,13 +79,13 @@ internal class NewResearchListState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOKClick(Engine.Action _) =>
+    void btnOKClick(Action _) =>
         _game.popState();
 
     /**
      * Selects the RuleResearch to work on.
      * @param action Pointer to an action.
      */
-    void onSelectProject(Engine.Action _) =>
+    void onSelectProject(Action _) =>
         _game.pushState(new ResearchInfoState(_base, _projects[(int)_lstResearch.getSelectedRow()]));
 }

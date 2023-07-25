@@ -103,7 +103,7 @@ internal class OptionsControlsState : OptionsBaseState
      * Select a control for changing.
      * @param action Pointer to an action.
      */
-    void lstControlsClick(Engine.Action action)
+    void lstControlsClick(Action action)
     {
         if (action.getDetails().button.button != SDL_BUTTON_LEFT && action.getDetails().button.button != SDL_BUTTON_RIGHT)
         {
@@ -173,7 +173,7 @@ internal class OptionsControlsState : OptionsBaseState
      * Change selected control.
      * @param action Pointer to an action.
      */
-    void lstControlsKeyPress(Engine.Action action)
+    void lstControlsKeyPress(Action action)
     {
         if (_selected != -1)
         {

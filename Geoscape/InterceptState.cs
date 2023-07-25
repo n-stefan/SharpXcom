@@ -106,7 +106,7 @@ internal class InterceptState : State
         _lstCrafts.onMouseClick(lstCraftsLeftClick);
         _lstCrafts.onMouseClick(lstCraftsRightClick, (byte)SDL_BUTTON_RIGHT);
 
-        int row = 0;
+        uint row = 0;
         foreach (var i in _game.getSavedGame().getBases())
         {
             if (_base != null && i != _base)
@@ -144,7 +144,7 @@ internal class InterceptState : State
                 _lstCrafts.addRow(4, j.getName(_game.getLanguage()), tr(j.getStatus()), i.getName(), ss);
                 if (j.getStatus() == "STR_READY")
                 {
-                    _lstCrafts.setCellColor((uint)row, 1, _lstCrafts.getSecondaryColor());
+                    _lstCrafts.setCellColor(row, 1, _lstCrafts.getSecondaryColor());
                 }
                 row++;
             }
@@ -160,14 +160,14 @@ internal class InterceptState : State
      * Closes the window.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action _) =>
+    void btnCancelClick(Action _) =>
         _game.popState();
 
     /**
      * Goes to the base for the respective craft.
      * @param action Pointer to an action.
      */
-    void btnGotoBaseClick(Engine.Action _)
+    void btnGotoBaseClick(Action _)
     {
         _game.popState();
         _game.pushState(new BasescapeState(_base, _globe));
@@ -177,7 +177,7 @@ internal class InterceptState : State
      * Pick a target for the selected craft.
      * @param action Pointer to an action.
      */
-    void lstCraftsLeftClick(Engine.Action _)
+    void lstCraftsLeftClick(Action _)
     {
         Craft c = _crafts[(int)_lstCrafts.getSelectedRow()];
         if (c.getStatus() == "STR_READY" || ((c.getStatus() == "STR_OUT" || Options.craftLaunchAlways) && !c.getLowFuel() && !c.getMissionComplete()))
@@ -198,7 +198,7 @@ internal class InterceptState : State
      * Centers on the selected craft.
      * @param action Pointer to an action.
      */
-    void lstCraftsRightClick(Engine.Action _)
+    void lstCraftsRightClick(Action _)
     {
         Craft c = _crafts[(int)_lstCrafts.getSelectedRow()];
         if (c.getStatus() == "STR_OUT")

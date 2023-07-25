@@ -102,6 +102,6 @@ internal class ErrorMessageState : State
      * Closes the window.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 }

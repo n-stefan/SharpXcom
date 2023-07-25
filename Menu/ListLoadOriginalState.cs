@@ -128,14 +128,14 @@ internal class ListLoadOriginalState : State
      * Switches to OpenXcom saves.
      * @param action Pointer to an action.
      */
-    void btnNewClick(Engine.Action _) =>
+    void btnNewClick(Action _) =>
         _game.popState();
 
     /**
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Engine.Action action)
+    void btnCancelClick(Action action)
     {
         _game.popState();
         _game.popState();
@@ -146,7 +146,7 @@ internal class ListLoadOriginalState : State
      * Loads the specified save.
      * @param action Pointer to an action.
      */
-    void btnSlotClick(Engine.Action action)
+    void btnSlotClick(Action action)
     {
         int n = 0;
         for (int i = 0; i < SaveConverter.NUM_SAVES; ++i)

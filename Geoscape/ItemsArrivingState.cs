@@ -138,14 +138,14 @@ internal class ItemsArrivingState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Engine.Action _) =>
+    void btnOkClick(Action _) =>
         _game.popState();
 
     /**
      * Goes to the base for the respective transfer.
      * @param action Pointer to an action.
      */
-    void btnGotoBaseClick(Engine.Action _)
+    void btnGotoBaseClick(Action _)
     {
         _state.timerReset();
         _game.popState();
