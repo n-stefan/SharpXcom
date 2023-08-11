@@ -159,4 +159,85 @@ internal class Country
 		    return 0;
 	    return _satisfaction;
     }
+
+    /**
+     * reset all the counters,
+     * calculate this month's funding,
+     * set the change value for the month.
+     * @param xcomTotal the council's xcom score
+     * @param alienTotal the council's alien score
+     * @param pactScore the penalty for signing a pact
+     */
+    internal void newMonth(int xcomTotal, int alienTotal, int pactScore)
+    {
+	    _satisfaction = 2;
+	    int funding = getFunding().Last();
+	    int good = (xcomTotal / 10) + _activityXcom.Last();
+	    int bad = (alienTotal / 20) + _activityAlien.Last();
+	    int oldFunding = _funding.Last() / 1000;
+	    int newFunding = (oldFunding * RNG.generate(5, 20) / 100) * 1000;
+
+	    if (bad <= good + 30)
+	    {
+		    if (good > bad + 30)
+		    {
+			    if (RNG.generate(0, good) > bad)
+			    {
+				    // don't go over the cap
+				    int cap = getRules().getFundingCap()*1000;
+				    if (funding + newFunding > cap)
+					    newFunding = cap - funding;
+				    if (newFunding != 0)
+					    _satisfaction = 3;
+			    }
+		    }
+	    }
+	    else
+	    {
+		    if (RNG.generate(0, bad) > good)
+		    {
+			    if (newFunding != 0)
+			    {
+				    newFunding = -newFunding;
+				    // don't go below zero
+				    if (funding + newFunding < 0)
+					    newFunding = 0 - funding;
+				    if (newFunding != 0)
+					    _satisfaction = 1;
+			    }
+		    }
+	    }
+
+	    // about to be in cahoots
+	    if (_newPact && !_pact)
+	    {
+		    _newPact = false;
+		    _pact = true;
+		    addActivityAlien(pactScore);
+	    }
+
+	    // set the new funding and reset the activity meters
+	    if (_pact)
+		    _funding.Add(0);
+	    else if (_satisfaction != 2)
+		    _funding.Add(funding + newFunding);
+	    else
+		    _funding.Add(funding);
+
+	    _activityAlien.Add(0);
+	    _activityXcom.Add(0);
+	    if (_activityAlien.Count > 12)
+		    _activityAlien.RemoveAt(0);
+	    if (_activityXcom.Count > 12)
+		    _activityXcom.RemoveAt(0);
+	    if (_funding.Count > 12)
+		    _funding.RemoveAt(0);
+    }
+
+    /**
+     * Changes the country's current monthly funding.
+     * @param funding Monthly funding.
+     */
+    internal void setFunding(int funding) =>
+        _funding[^1] = funding;
 }

@@ -795,4 +795,28 @@ internal class AlienMission
 	 */
 	internal void setAlienBase(AlienBase @base) =>
 		_base = @base;
+
+	/**
+	 * This function is called when one of the mission's UFOs is shot down (crashed or destroyed).
+	 * Currently the only thing that happens is delaying the next UFO in the mission sequence.
+	 * @param ufo The UFO that was shot down.
+	 */
+	internal void ufoShotDown(Ufo ufo)
+	{
+		switch (ufo.getStatus())
+		{
+			case UfoStatus.FLYING:
+			case UfoStatus.LANDED:
+				Debug.Assert(false, "Ufo seems ok!");
+				break;
+			case UfoStatus.CRASHED:
+			case UfoStatus.DESTROYED:
+				if (_nextWave != _rule.getWaveCount())
+				{
+					// Delay next wave
+					_spawnCountdown += (uint)(30 * (RNG.generate(0, 400) + 48));
+				}
+				break;
+		}
+	}
 }

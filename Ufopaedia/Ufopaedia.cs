@@ -166,7 +166,7 @@ internal class Ufopaedia
 	 * @param article Article definition to release.
 	 * @returns true, if the article is available.
 	 */
-    static bool isArticleAvailable(SavedGame save, ArticleDefinition article) =>
+    internal static bool isArticleAvailable(SavedGame save, ArticleDefinition article) =>
         save.isResearched(article.requires);
 
     /**
@@ -217,4 +217,44 @@ internal class Ufopaedia
         }
         return null;
     }
+
+	/**
+	 * Open the previous article in the list. Loops to the last.
+	 * @param game Pointer to actual game.
+	 */
+	internal static void prev(Game game)
+	{
+		List<ArticleDefinition> articles = getAvailableArticles(game.getSavedGame(), game.getMod());
+		if (_current_index == 0)
+		{
+			// goto last
+			_current_index = (uint)(articles.Count - 1);
+		}
+		else
+		{
+			_current_index--;
+		}
+		game.popState();
+		game.pushState(createArticleState(articles[(int)_current_index]));
+	}
+
+	/**
+	 * Open the next article in the list. Loops to the first.
+	 * @param game Pointer to actual game.
+	 */
+	internal static void next(Game game)
+	{
+		List<ArticleDefinition> articles = getAvailableArticles(game.getSavedGame(), game.getMod());
+		if (_current_index >= articles.Count - 1)
+		{
+			// goto first
+			_current_index = 0;
+		}
+		else
+		{
+			_current_index++;
+		}
+		game.popState();
+		game.pushState(createArticleState(articles[(int)_current_index]));
+	}
 }

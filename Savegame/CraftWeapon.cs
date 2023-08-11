@@ -101,7 +101,7 @@ internal class CraftWeapon
      * @param ammo Weapon ammo.
      * @return If the weapon ran out of ammo.
      */
-    bool setAmmo(int ammo)
+    internal bool setAmmo(int ammo)
     {
         _ammo = ammo;
         if (_ammo < 0)
@@ -147,5 +147,20 @@ internal class CraftWeapon
 	    }
 
 	    return retVal;
+    }
+
+    /*
+     * Fires a projectile from crafts weapon.
+     * @return Pointer to the new projectile.
+     */
+    internal CraftWeaponProjectile fire()
+    {
+	    CraftWeaponProjectile p = new CraftWeaponProjectile();
+	    p.setType(this.getRules().getProjectileType());
+	    p.setSpeed(this.getRules().getProjectileSpeed());
+	    p.setAccuracy(this.getRules().getAccuracy());
+	    p.setDamage(this.getRules().getDamage());
+	    p.setRange(this.getRules().getRange());
+	    return p;
     }
 }

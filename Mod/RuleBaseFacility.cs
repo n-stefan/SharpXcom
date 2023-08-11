@@ -320,4 +320,20 @@ internal class RuleBaseFacility : IListOrder, IRule
      */
     internal int getBuildCost() =>
 	    _buildCost;
+
+    /**
+     * Gets the ID of the sprite used to draw the
+     * base structure of the facility that defines its shape.
+     * @return The sprite ID.
+     */
+    internal int getSpriteShape() =>
+	    _spriteShape;
+
+    /**
+     * Gets the ID of the sprite used to draw the
+     * facility's contents inside the base shape.
+     * @return The sprite ID.
+     */
+    internal int getSpriteFacility() =>
+	    _spriteFacility;
 }

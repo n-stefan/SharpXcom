@@ -575,4 +575,125 @@ internal class Tile
         }
         item.setTile(null);
     }
+
+    /**
+     * get the overlap value of this tile.
+     * @return overlap
+     */
+    internal int getOverlaps() =>
+	    _overlaps;
+
+    /**
+     * Set the amount of turns this tile is smoking. 0 = no smoke.
+     * @param smoke : amount of turns this tile is smoking.
+     */
+    internal void addSmoke(int smoke)
+    {
+	    if (_fire == 0)
+	    {
+		    if (_overlaps == 0)
+		    {
+			    _smoke = Math.Clamp(_smoke + smoke, 1, 15);
+		    }
+		    else
+		    {
+			    _smoke += smoke;
+		    }
+		    _animationOffset = RNG.generate(0,3);
+		    addOverlap();
+	    }
+    }
+
+    /**
+     * set the danger flag on this tile.
+     */
+    internal void setDangerous(bool danger) =>
+	    _danger = danger;
+
+    /*
+     * Ignite starts fire on a tile, it will burn <fuel> rounds. Fuel of a tile is the highest fuel of its objects.
+     * NOT the sum of the fuel of the objects!
+     */
+    internal void ignite(int power)
+    {
+	    if (getFlammability() != 255)
+	    {
+		    power = power - (getFlammability() / 10) + 15;
+		    if (power < 0)
+		    {
+			    power = 0;
+		    }
+		    if (RNG.percent(power) && getFuel() != 0)
+		    {
+			    if (_fire == 0)
+			    {
+				    _smoke = 15 - Math.Clamp(getFlammability() / 10, 1, 12);
+				    _overlaps = 1;
+				    _fire = getFuel() + 1;
+				    _animationOffset = RNG.generate(0,3);
+			    }
+		    }
+	    }
+    }
+
+    /**
+     * New turn preparations.
+     * average out any smoke added by the number of overlaps.
+     * apply fire/smoke damage to units as applicable.
+     */
+    internal void prepareNewTurn(bool smokeDamage)
+    {
+	    // we've received new smoke in this turn, but we're not on fire, average out the smoke.
+	    if ( _overlaps != 0 && _smoke != 0 && _fire == 0)
+	    {
+		    _smoke = Math.Clamp((_smoke / _overlaps) - 1, 0, 15);
+	    }
+	    // if we still have smoke/fire
+	    if (_smoke != 0)
+	    {
+		    if (_unit != null && !_unit.isOut())
+		    {
+			    if (_fire != 0)
+			    {
+				    // this is how we avoid hitting the same unit multiple times.
+				    if ((_unit.getArmor().getSize() == 1 || !_unit.tookFireDamage())
+					    //and avoid setting fire elementals on fire
+					    && _unit.getSpecialAbility() != (int)SpecialAbility.SPECAB_BURNFLOOR && _unit.getSpecialAbility() != (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE)
+				    {
+					    _unit.toggleFireDamage();
+					    // _smoke becomes our damage value
+					    _unit.damage(new Position(0, 0, 0), _smoke, ItemDamageType.DT_IN, true);
+					    // try to set the unit on fire.
+					    if (RNG.percent((int)(40 * _unit.getArmor().getDamageModifier(ItemDamageType.DT_IN))))
+					    {
+						    int burnTime = RNG.generate(0, (int)(5.0f * _unit.getArmor().getDamageModifier(ItemDamageType.DT_IN)));
+						    if (_unit.getFire() < burnTime)
+						    {
+							    _unit.setFire(burnTime);
+						    }
+					    }
+				    }
+			    }
+			    // no fire: must be smoke
+			    else
+			    {
+				    if (smokeDamage)
+				    {
+					    // try to knock this guy out.
+					    if (_unit.getArmor().getDamageModifier(ItemDamageType.DT_SMOKE) > 0.0 && _unit.getArmor().getSize() == 1)
+					    {
+						    _unit.damage(new Position(0,0,0), (_smoke / 4) + 1, ItemDamageType.DT_SMOKE, true);
+					    }
+				    }
+			    }
+		    }
+	    }
+	    _overlaps = 0;
+    }
+
+    /**
+     * increment the overlap value on this tile.
+     */
+    internal void addOverlap() =>
+	    ++_overlaps;
 }

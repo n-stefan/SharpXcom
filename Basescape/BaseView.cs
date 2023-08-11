@@ -284,4 +284,52 @@ internal class BaseView : InteractiveSurface
 	    }
 	    return true;
     }
+
+    /**
+     * ReCalculates the remaining build-time of all queued buildings.
+     */
+    internal void reCalcQueuedBuildings()
+    {
+	    setBase(_base);
+	    var facilities = new List<BaseFacility>();
+	    foreach (var i in _base.getFacilities())
+		    if (i.getBuildTime() > 0)
+		    {
+			    // Set all queued buildings to infinite.
+			    if (i.getBuildTime() > i.getRules().getBuildTime()) i.setBuildTime(int.MaxValue);
+			    facilities.Add(i);
+		    }
+
+	    // Applying a simple Dijkstra Algorithm
+	    while (facilities.Any())
+	    {
+		    BaseFacility min = facilities[0];
+		    foreach (var i in facilities)
+			    if (i.getBuildTime() < min.getBuildTime()) min=i;
+		    BaseFacility facility=min;
+		    facilities.Remove(min);
+		    RuleBaseFacility rule=facility.getRules();
+		    int x=facility.getX(), y=facility.getY();
+		    for (int i = 0; i < rule.getSize(); ++i)
+		    {
+			    if (x > 0) updateNeighborFacilityBuildTime(facility,_facilities[x - 1, y + i]);
+			    if (y > 0) updateNeighborFacilityBuildTime(facility,_facilities[x + i, y - 1]);
+			    if (x + rule.getSize() < BASE_SIZE) updateNeighborFacilityBuildTime(facility,_facilities[x + rule.getSize(), y + i]);
+			    if (y + rule.getSize() < BASE_SIZE) updateNeighborFacilityBuildTime(facility,_facilities[x + i, y + rule.getSize()]);
+		    }
+	    }
+    }
+
+    /**
+     * Updates the neighborFacility's build time. This is for internal use only (reCalcQueuedBuildings()).
+     * @param facility Pointer to a base facility.
+     * @param neighbor Pointer to a neighboring base facility.
+     */
+    void updateNeighborFacilityBuildTime(BaseFacility facility, BaseFacility neighbor)
+    {
+	    if (facility != null && neighbor != null
+	    && neighbor.getBuildTime() > neighbor.getRules().getBuildTime()
+	    && facility.getBuildTime() + neighbor.getRules().getBuildTime() < neighbor.getBuildTime())
+		    neighbor.setBuildTime(facility.getBuildTime() + neighbor.getRules().getBuildTime());
+    }
 }

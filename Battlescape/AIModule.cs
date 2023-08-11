@@ -129,4 +129,14 @@ internal class AIModule
         };
         return node;
     }
+
+    /**
+     * Resets the unsaved AI state.
+     */
+    internal void reset()
+    {
+	    // these variables are not saved in save() and also not initiated in think()
+	    _escapeTUs = 0;
+	    _ambushTUs = 0;
+    }
 }

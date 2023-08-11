@@ -85,4 +85,11 @@ internal class SoldierDeath
     */
     internal BattleUnitKills getCause() =>
 	    _cause;
+
+    /**
+     * Returns the time of death of this soldier.
+     * @return Pointer to the time.
+     */
+    internal GameTime getTime() =>
+	    _time;
 }

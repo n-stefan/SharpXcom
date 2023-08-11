@@ -205,4 +205,65 @@ internal class RuleUfo : IRule
      */
     internal int getBreakOffTime() =>
 	    _breakOffTime;
+
+    /**
+     * Gets the maximum damage done by the
+     * UFO's weapons per shot.
+     * @return The weapon power.
+     */
+    internal int getWeaponPower() =>
+	    _power;
+
+    /**
+     * Gets the maximum range for the
+     * UFO's weapons.
+     * @return The weapon range.
+     */
+    internal int getWeaponRange() =>
+	    _range;
+
+    /**
+     * Gets the amount of points the player
+     * gets for shooting down the UFO.
+     * @return The score.
+     */
+    internal int getScore() =>
+	    _score;
+
+    /**
+     * Gets the weapon reload for UFO ships.
+     * @return The UFO weapon reload time.
+     */
+    internal int getWeaponReload() =>
+	    _reload;
+
+    /**
+     * Gets the radius of this type of UFO
+     * on the dogfighting window.
+     * @return The radius in pixels.
+     */
+    internal int getRadius()
+    {
+	    if (_size == "STR_VERY_SMALL")
+	    {
+		    return 2;
+	    }
+	    else if (_size == "STR_SMALL")
+	    {
+		    return 3;
+	    }
+	    else if (_size == "STR_MEDIUM_UC")
+	    {
+		    return 4;
+	    }
+	    else if (_size == "STR_LARGE")
+	    {
+		    return 5;
+	    }
+	    else if (_size == "STR_VERY_LARGE")
+	    {
+		    return 6;
+	    }
+	    return 0;
+    }
 }

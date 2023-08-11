@@ -227,7 +227,7 @@ internal class AlienStrategy
 	 * Get starting values from the rules.
 	 * @param mod Pointer to the game mod.
 	 */
-	void init(Mod.Mod mod)
+	internal void init(Mod.Mod mod)
 	{
 		foreach (var rr in mod.getRegionsList())
 		{

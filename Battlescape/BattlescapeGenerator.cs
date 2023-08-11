@@ -3071,4 +3071,28 @@ internal class BattlescapeGenerator
      */
     internal void setAlienItemlevel(int alienItemLevel) =>
 	    _alienItemLevel = alienItemLevel;
+
+    /**
+     * Creates a mini-battle-save for managing inventory from the Geoscape.
+     * Kids, don't try this at home!
+     * @param craft Pointer to craft to manage.
+     */
+    internal void runInventory(Craft craft)
+    {
+	    // we need to fake a map for soldier placement
+	    _baseInventory = true;
+	    _mapsize_x = 2;
+	    _mapsize_y = 2;
+	    _mapsize_z = 1;
+	    _save.initMap(_mapsize_x, _mapsize_y, _mapsize_z);
+	    MapDataSet set = new MapDataSet("dummy");
+	    MapData data = new MapData(set);
+	    _craftInventoryTile = _save.getTiles()[0];
+
+	    // ok now generate the battleitems for inventory
+	    setCraft(craft);
+	    deployXCOM();
+	    data = null;
+	    set = null;
+    }
 }

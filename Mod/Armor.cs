@@ -28,7 +28,7 @@ enum ForcedTorso { TORSO_USE_GENDER, TORSO_ALWAYS_MALE, TORSO_ALWAYS_FEMALE };
  */
 internal class Armor : IRule
 {
-    const int DAMAGE_TYPES = 10;
+    internal const int DAMAGE_TYPES = 10;
     internal const string NONE = "STR_NONE";
 
     string _type, _spriteSheet, _spriteInv, _corpseGeo, _storeItem, _specWeapon;

@@ -90,6 +90,7 @@ internal class SavedGame
     Dictionary<string, int> _ids;
     List<RuleResearch> _discovered;
     List<RuleResearch> _poppedResearch;
+	List<Soldier> _soldiers;
 
     /**
      * Initializes a brand new saved game according to the specified difficulty.
@@ -1138,4 +1139,51 @@ internal class SavedGame
      */
     internal void addFinishedResearchSimple(RuleResearch research) =>
 	    _discovered.Add(research);
+
+    /**
+     * Get the list of RuleManufacture which can be manufacture in a Base.
+     * @param productions the list of Productions which are available.
+     * @param mod the Game Mod
+     * @param base a pointer to a Base
+     */
+    internal void getAvailableProductions(List<RuleManufacture> productions, Mod.Mod mod, Base @base)
+    {
+	    List<string> items = mod.getManufactureList();
+	    List<Production> baseProductions = @base.getProductions();
+
+	    foreach (var iter in items)
+	    {
+		    RuleManufacture m = mod.getManufacture(iter);
+		    if (!isResearched(m.getRequirements()))
+		    {
+			    continue;
+		    }
+            if (baseProductions.Any(x => x.getRules() == m))
+		    {
+			    continue;
+		    }
+		    productions.Add(m);
+	    }
+    }
+
+    /**
+     * Returns the list of soldiers in the base.
+     * @return Pointer to the soldier list.
+     */
+    internal List<Soldier> getSoldiers() =>
+	    _soldiers;
+
+    /**
+    * Resets the list of unique object IDs.
+    * @param ids New ID list.
+    */
+    internal Dictionary<string, int> getAllIds() =>
+	    _ids;
+
+    /**
+     *  Returns the list of already discovered ResearchProject
+     * @return the list of already discovered ResearchProject
+     */
+    internal List<RuleResearch> getDiscoveredResearch() =>
+	    _discovered;
 }

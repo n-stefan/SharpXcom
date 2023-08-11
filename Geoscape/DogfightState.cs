@@ -48,6 +48,180 @@ internal class DogfightState : State
     int[] _colors = new int[11];
     List<CraftWeaponProjectile> _projectiles;
 
+    // UFO blobs graphics ...
+    static int[,,] _ufoBlobs = //[8][13][13]
+    {
+		    /*0 STR_VERY_SMALL */
+	    {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 2, 3, 2, 1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 3, 5, 3, 1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 2, 3, 2, 1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        },
+		    /*1 STR_SMALL */
+	    {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 2, 2, 2, 1, 0, 0, 0, 0},
+            {0, 0, 0, 1, 2, 3, 4, 3, 2, 1, 0, 0, 0},
+            {0, 0, 0, 1, 2, 4, 5, 4, 2, 1, 0, 0, 0},
+            {0, 0, 0, 1, 2, 3, 4, 3, 2, 1, 0, 0, 0},
+            {0, 0, 0, 0, 1, 2, 2, 2, 1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        },
+		    /*2 STR_MEDIUM_UC */
+	    {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0},
+            {0, 0, 0, 1, 2, 3, 3, 3, 2, 1, 0, 0, 0},
+            {0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0, 0},
+            {0, 0, 1, 2, 3, 5, 5, 5, 3, 2, 1, 0, 0},
+            {0, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0, 0},
+            {0, 0, 0, 1, 2, 3, 3, 3, 2, 1, 0, 0, 0},
+            {0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        },
+		    /*3 STR_LARGE */
+	    {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0},
+            {0, 0, 1, 2, 2, 3, 3, 3, 2, 2, 1, 0, 0},
+            {0, 0, 1, 2, 3, 4, 4, 4, 3, 2, 1, 0, 0},
+            {0, 1, 2, 3, 4, 5, 5, 5, 4, 3, 2, 1, 0},
+            {0, 1, 2, 3, 4, 5, 5, 5, 4, 3, 2, 1, 0},
+            {0, 1, 2, 3, 4, 5, 5, 5, 4, 3, 2, 1, 0},
+            {0, 0, 1, 2, 3, 4, 4, 4, 3, 2, 1, 0, 0},
+            {0, 0, 1, 2, 2, 3, 3, 3, 2, 2, 1, 0, 0},
+            {0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        },
+		    /*4 STR_VERY_LARGE */
+	    {
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0},
+            {0, 0, 1, 2, 2, 3, 3, 3, 2, 2, 1, 0, 0},
+            {0, 1, 2, 3, 3, 4, 4, 4, 3, 3, 2, 1, 0},
+            {0, 1, 2, 3, 4, 5, 5, 5, 4, 3, 2, 1, 0},
+            {1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1},
+            {1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1},
+            {1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1},
+            {0, 1, 2, 3, 4, 5, 5, 5, 4, 3, 2, 1, 0},
+            {0, 1, 2, 3, 3, 4, 4, 4, 3, 3, 2, 1, 0},
+            {0, 0, 1, 2, 2, 3, 3, 3, 2, 2, 1, 0, 0},
+            {0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0},
+            {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0}
+        },
+		    /*5 STR_HUGE */
+	    {
+            {0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0},
+            {0, 0, 1, 2, 2, 3, 3, 3, 2, 2, 1, 0, 0},
+            {0, 1, 2, 3, 3, 4, 4, 4, 3, 3, 2, 1, 0},
+            {1, 2, 3, 4, 4, 5, 5, 5, 4, 4, 3, 2, 1},
+            {1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1},
+            {2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2},
+            {2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2},
+            {2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2},
+            {1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1},
+            {1, 2, 3, 4, 4, 5, 5, 5, 4, 4, 3, 2, 1},
+            {0, 1, 2, 3, 3, 4, 4, 4, 3, 3, 2, 1, 0},
+            {0, 0, 1, 2, 2, 3, 3, 3, 2, 2, 1, 0, 0},
+            {0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0}
+        },
+		    /*6 STR_VERY_HUGE :p */
+	    {
+            {0, 0, 0, 2, 2, 3, 3, 3, 2, 2, 0, 0, 0},
+            {0, 0, 2, 3, 3, 4, 4, 4, 3, 3, 2, 0, 0},
+            {0, 2, 3, 4, 4, 5, 5, 5, 4, 4, 3, 2, 0},
+            {2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2},
+            {2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2},
+            {3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3},
+            {3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3},
+            {3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3},
+            {2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2},
+            {2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 2},
+            {0, 2, 3, 4, 4, 5, 5, 5, 4, 4, 3, 2, 0},
+            {0, 0, 2, 3, 3, 4, 4, 4, 3, 3, 2, 0, 0},
+            {0, 0, 0, 2, 2, 3, 3, 3, 2, 2, 0, 0, 0}
+        },
+		    /*7 STR_ENOURMOUS */
+	    {
+            {0, 0, 0, 3, 3, 4, 4, 4, 3, 3, 0, 0, 0},
+            {0, 0, 3, 4, 4, 5, 5, 5, 4, 4, 3, 0, 0},
+            {0, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 0},
+            {3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3},
+            {3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3},
+            {4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4},
+            {4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4},
+            {4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4},
+            {3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3},
+            {3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 3},
+            {0, 3, 4, 5, 5, 5, 5, 5, 5, 5, 4, 3, 0},
+            {0, 0, 3, 4, 4, 5, 5, 5, 4, 4, 3, 0, 0},
+            {0, 0, 0, 3, 3, 4, 4, 4, 3, 3, 0, 0, 0}
+        }
+    };
+
+    // Projectile blobs
+    static int[,,] _projectileBlobs = //[4][6][3]
+    {
+		    /*0 STR_STINGRAY_MISSILE ?*/
+	    {
+            {0, 1, 0},
+            {1, 9, 1},
+            {1, 4, 1},
+            {0, 3, 0},
+            {0, 2, 0},
+            {0, 1, 0}
+        },
+		    /*1 STR_AVALANCHE_MISSILE ?*/
+	    {
+            {1, 2, 1},
+            {2, 9, 2},
+            {2, 5, 2},
+            {1, 3, 1},
+            {0, 2, 0},
+            {0, 1, 0}
+        },
+		    /*2 STR_CANNON_ROUND ?*/
+	    {
+            {0, 0, 0},
+            {0, 7, 0},
+            {0, 2, 0},
+            {0, 1, 0},
+            {0, 0, 0},
+            {0, 0, 0}
+        },
+		    /*3 STR_FUSION_BALL ?*/
+	    {
+            {2, 4, 2},
+            {4, 9, 4},
+            {2, 4, 2},
+            {0, 0, 0},
+            {0, 0, 0},
+            {0, 0, 0}
+        }
+    };
+
     /**
      * Initializes all the elements in the Dogfight window.
      * @param game Pointer to the core game.
@@ -1013,5 +1187,682 @@ internal class DogfightState : State
         if (_ufo != null)
             _ufo.setInterceptionProcessed(false);
         _endDogfight = true;
+    }
+
+    /**
+     * Updates all the elements in the dogfight, including ufo movement,
+     * weapons fire, projectile movement, ufo escape conditions,
+     * craft and ufo destruction conditions, and retaliation mission generation, as applicable.
+     */
+    void update()
+    {
+	    bool finalRun = false;
+	    // Check if craft is not low on fuel when window minimized, and
+	    // Check if crafts destination hasn't been changed when window minimized.
+	    Ufo u = (Ufo)_craft.getDestination();
+	    if (u != _ufo || !_craft.isInDogfight() || _craft.getLowFuel() || (_minimized && _ufo.isCrashed()))
+	    {
+		    endDogfight();
+		    return;
+	    }
+
+	    if (!_minimized)
+	    {
+		    animate();
+		    if (!_ufo.isCrashed() && !_ufo.isDestroyed() && !_craft.isDestroyed() && !_ufo.getInterceptionProcessed())
+		    {
+			    _ufo.setInterceptionProcessed(true);
+			    int escapeCounter = _ufo.getEscapeCountdown();
+
+			    if (escapeCounter > 0)
+			    {
+				    escapeCounter--;
+				    _ufo.setEscapeCountdown(escapeCounter);
+				    // Check if UFO is breaking off.
+				    if (escapeCounter == 0)
+				    {
+					    _ufo.setSpeed(_ufo.getRules().getMaxSpeed());
+				    }
+			    }
+			    if (_ufo.getFireCountdown() > 0)
+			    {
+				    _ufo.setFireCountdown(_ufo.getFireCountdown() - 1);
+			    }
+		    }
+	    }
+	    // Crappy craft is chasing UFO.
+	    if (_ufo.getSpeed() > _craft.getRules().getMaxSpeed())
+	    {
+		    _ufoBreakingOff = true;
+		    finalRun = true;
+		    setStatus("STR_UFO_OUTRUNNING_INTERCEPTOR");
+	    }
+	    else
+	    {
+		    _ufoBreakingOff = false;
+	    }
+
+	    bool projectileInFlight = false;
+	    if (!_minimized)
+	    {
+		    int distanceChange = 0;
+
+		    // Update distance
+		    if (!_ufoBreakingOff)
+		    {
+			    if (_currentDist < _targetDist && !_ufo.isCrashed() && !_craft.isDestroyed())
+			    {
+				    distanceChange = 4;
+				    if (_currentDist + distanceChange >_targetDist)
+				    {
+					    distanceChange = _targetDist - _currentDist;
+				    }
+			    }
+			    else if (_currentDist > _targetDist && !_ufo.isCrashed() && !_craft.isDestroyed())
+			    {
+				    distanceChange = -2;
+			    }
+
+			    // don't let the interceptor mystically push or pull its fired projectiles
+			    foreach (var it in _projectiles)
+			    {
+				    if (it.getGlobalType() != CraftWeaponProjectileGlobalType.CWPGT_BEAM && it.getDirection() == (int)Directions.D_UP) it.setPosition(it.getPosition() + distanceChange);
+			    }
+		    }
+		    else
+		    {
+			    distanceChange = 4;
+
+			    // UFOs can try to outrun our missiles, don't adjust projectile positions here
+			    // If UFOs ever fire anything but beams, those positions need to be adjust here though.
+		    }
+
+		    _currentDist += distanceChange;
+
+		    string ss = _currentDist.ToString();
+		    _txtDistance.setText(ss);
+
+		    // Move projectiles and check for hits.
+		    foreach (var it in _projectiles)
+		    {
+			    CraftWeaponProjectile p = it;
+			    p.move();
+			    // Projectiles fired by interceptor.
+			    if (p.getDirection() == (int)Directions.D_UP)
+			    {
+				    // Projectile reached the UFO - determine if it's been hit.
+				    if (((p.getPosition() >= _currentDist) || (p.getGlobalType() == CraftWeaponProjectileGlobalType.CWPGT_BEAM && p.toBeRemoved())) && !_ufo.isCrashed() && !p.getMissed())
+				    {
+					    // UFO hit.
+					    if (RNG.percent((p.getAccuracy() * (100 + 300 / (5 - _ufoSize)) + 100) / 200))
+					    {
+						    // Formula delivered by Volutar
+						    int damage = RNG.generate(p.getDamage() / 2, p.getDamage());
+						    _ufo.setDamage(_ufo.getDamage() + damage);
+						    if (_ufo.isCrashed())
+						    {
+							    _ufo.setShotDownByCraftId(_craft.getUniqueId());
+							    _ufo.setSpeed(0);
+							    _ufo.setDestination(null);
+							    // if the ufo got destroyed here, these no longer apply
+							    _ufoBreakingOff = false;
+							    finalRun = false;
+							    _end = false;
+						    }
+						    if (_ufo.getHitFrame() == 0)
+						    {
+							    _animatingHit = true;
+							    _ufo.setHitFrame(3);
+						    }
+
+						    setStatus("STR_UFO_HIT");
+						    _game.getMod().getSound("GEO.CAT", (uint)Mod.Mod.UFO_HIT).play();
+						    p.remove();
+					    }
+					    // Missed.
+					    else
+					    {
+						    if (p.getGlobalType() == CraftWeaponProjectileGlobalType.CWPGT_BEAM)
+						    {
+							    p.remove();
+						    }
+						    else
+						    {
+							    p.setMissed(true);
+						    }
+					    }
+				    }
+				    // Check if projectile passed it's maximum range.
+				    if (p.getGlobalType() == CraftWeaponProjectileGlobalType.CWPGT_MISSILE && p.getPosition() / 8 >= p.getRange())
+				    {
+					    p.remove();
+				    }
+				    else if (!_ufo.isCrashed())
+				    {
+					    projectileInFlight = true;
+				    }
+			    }
+			    // Projectiles fired by UFO.
+			    else if (p.getDirection() == (int)Directions.D_DOWN)
+			    {
+				    if (p.getGlobalType() == CraftWeaponProjectileGlobalType.CWPGT_MISSILE || (p.getGlobalType() == CraftWeaponProjectileGlobalType.CWPGT_BEAM && p.toBeRemoved()))
+				    {
+					    if (RNG.percent(p.getAccuracy()))
+					    {
+						    // Formula delivered by Volutar
+						    int damage = RNG.generate(0, _ufo.getRules().getWeaponPower());
+						    if (damage != 0)
+						    {
+							    _craft.setDamage(_craft.getDamage() + damage);
+							    drawCraftDamage();
+							    setStatus("STR_INTERCEPTOR_DAMAGED");
+							    _game.getMod().getSound("GEO.CAT", (uint)Mod.Mod.INTERCEPTOR_HIT).play(); //10
+							    if (_mode == _btnCautious && _craft.getDamagePercentage() >= 50)
+							    {
+								    _targetDist = STANDOFF_DIST;
+							    }
+						    }
+					    }
+					    p.remove();
+				    }
+			    }
+		    }
+
+		    // Remove projectiles that hit or missed their target.
+		    for (var it = 0; it < _projectiles.Count;)
+		    {
+			    if (_projectiles[it].toBeRemoved() == true || (_projectiles[it].getMissed() == true && _projectiles[it].getPosition() <= 0))
+			    {
+				    _projectiles.RemoveAt(it);
+			    }
+			    else
+			    {
+				    ++it;
+			    }
+		    }
+
+		    // Handle weapons and craft distance.
+		    for (int i = 0; i < _craft.getRules().getWeapons(); ++i)
+		    {
+			    CraftWeapon w = _craft.getWeapons()[i];
+			    if (w == null)
+			    {
+				    continue;
+			    }
+			    int wTimer;
+			    if (i == 0)
+			    {
+				    wTimer = _w1FireCountdown;
+			    }
+			    else
+			    {
+				    wTimer = _w2FireCountdown;
+			    }
+
+			    // Handle weapon firing
+			    if (wTimer == 0 && _currentDist <= w.getRules().getRange() * 8 && w.getAmmo() > 0 && _mode != _btnStandoff
+				    && _mode != _btnDisengage && !_ufo.isCrashed() && !_craft.isDestroyed())
+			    {
+				    if (i == 0)
+				    {
+					    if (_weapon1Enabled)
+					    {
+						    fireWeapon1();
+						    projectileInFlight = true;
+					    }
+				    }
+				    else
+				    {
+					    if (_weapon2Enabled)
+					    {
+						    fireWeapon2();
+						    projectileInFlight = true;
+					    }
+				    }
+			    }
+			    else if (wTimer > 0)
+			    {
+				    if (i == 0)
+				    {
+					    _w1FireCountdown--;
+				    }
+				    else
+				    {
+					    _w2FireCountdown--;
+				    }
+			    }
+
+			    if (w.getAmmo() == 0 && !projectileInFlight && !_craft.isDestroyed())
+			    {
+				    // Handle craft distance according to option set by user and available ammo.
+				    if (_mode == _btnCautious)
+				    {
+					    minimumDistance();
+				    }
+				    else if (_mode == _btnStandard)
+				    {
+					    maximumDistance();
+				    }
+			    }
+		    }
+
+		    // Handle UFO firing.
+		    if (_currentDist <= _ufo.getRules().getWeaponRange() * 8 && !_ufo.isCrashed() && !_craft.isDestroyed())
+		    {
+			    if (_ufo.getShootingAt() == 0)
+			    {
+				    _ufo.setShootingAt(_interceptionNumber);
+			    }
+			    if (_ufo.getShootingAt() == _interceptionNumber)
+			    {
+				    if (_ufo.getFireCountdown() == 0)
+				    {
+					    ufoFireWeapon();
+				    }
+			    }
+		    }
+		    else if (_ufo.getShootingAt() == _interceptionNumber)
+		    {
+			    _ufo.setShootingAt(0);
+		    }
+	    }
+
+	    // Check when battle is over.
+	    if (_end == true && (((_currentDist > 640 || _minimized) && (_mode == _btnDisengage || _ufoBreakingOff == true)) || (_timeout == 0 && (_ufo.isCrashed() || _craft.isDestroyed()))))
+	    {
+		    if (_ufoBreakingOff)
+		    {
+			    _ufo.move();
+			    _craft.setDestination(_ufo);
+		    }
+		    if (!_destroyCraft && (_destroyUfo || _mode == _btnDisengage))
+		    {
+			    _craft.returnToBase();
+		    }
+		    if (_ufo.isCrashed())
+		    {
+			    List<Craft> followers = _ufo.getCraftFollowers();
+			    foreach (var i in followers)
+			    {
+				    if (i.getNumSoldiers() == 0 && i.getNumVehicles() == 0)
+				    {
+					    i.returnToBase();
+				    }
+			    }
+		    }
+		    endDogfight();
+	    }
+
+	    if (_currentDist > 640 && _ufoBreakingOff)
+	    {
+		    finalRun = true;
+	    }
+
+	    // End dogfight if craft is destroyed.
+	    if (!_end)
+	    {
+		    if (_craft.isDestroyed())
+		    {
+			    setStatus("STR_INTERCEPTOR_DESTROYED");
+			    _timeout += 30;
+			    _game.getMod().getSound("GEO.CAT", (uint)Mod.Mod.INTERCEPTOR_EXPLODE).play();
+			    finalRun = true;
+			    _destroyCraft = true;
+			    _ufo.setShootingAt(0);
+		    }
+
+		    // End dogfight if UFO is crashed or destroyed.
+		    if (_ufo.isCrashed())
+		    {
+			    AlienMission mission = _ufo.getMission();
+			    mission.ufoShotDown(_ufo);
+			    // Check for retaliation trigger.
+			    int retaliationOdds = mission.getRules().getRetaliationOdds();
+			    if (retaliationOdds == -1)
+			    {
+				    retaliationOdds = 100 - (4 * (24 - _game.getSavedGame().getDifficultyCoefficient()));
+			    }
+
+			    if (RNG.percent(retaliationOdds))
+			    {
+				    // Spawn retaliation mission.
+				    string targetRegion;
+				    if (RNG.percent(50 - 6 * _game.getSavedGame().getDifficultyCoefficient()))
+				    {
+					    // Attack on UFO's mission region
+					    targetRegion = _ufo.getMission().getRegion();
+				    }
+				    else
+				    {
+					    // Try to find and attack the originating base.
+					    targetRegion = _game.getSavedGame().locateRegion(_craft.getBase()).getRules().getType();
+					    // TODO: If the base is removed, the mission is canceled.
+				    }
+				    // Difference from original: No retaliation until final UFO lands (Original: Is spawned).
+				    if (_game.getSavedGame().findAlienMission(targetRegion, MissionObjective.OBJECTIVE_RETALIATION) == null)
+				    {
+					    RuleAlienMission rule = _game.getMod().getRandomMission(MissionObjective.OBJECTIVE_RETALIATION, (uint)_game.getSavedGame().getMonthsPassed());
+					    AlienMission newMission = new AlienMission(rule);
+					    newMission.setId(_game.getSavedGame().getId("ALIEN_MISSIONS"));
+					    newMission.setRegion(targetRegion, _game.getMod());
+					    newMission.setRace(_ufo.getAlienRace());
+					    newMission.start(newMission.getRules().getWave(0).spawnTimer); // fixed delay for first scout
+					    _game.getSavedGame().getAlienMissions().Add(newMission);
+				    }
+			    }
+
+			    if (_ufo.isDestroyed())
+			    {
+				    if (_ufo.getShotDownByCraftId().Key == _craft.getUniqueId().Key && _ufo.getShotDownByCraftId().Value == _craft.getUniqueId().Value)
+				    {
+					    foreach (var country in _game.getSavedGame().getCountries())
+					    {
+						    if (country.getRules().insideCountry(_ufo.getLongitude(), _ufo.getLatitude()))
+						    {
+							    country.addActivityXcom(_ufo.getRules().getScore()*2);
+							    break;
+						    }
+					    }
+					    foreach (var region in _game.getSavedGame().getRegions())
+					    {
+						    if (region.getRules().insideRegion(_ufo.getLongitude(), _ufo.getLatitude()))
+						    {
+							    region.addActivityXcom(_ufo.getRules().getScore()*2);
+							    break;
+						    }
+					    }
+					    setStatus("STR_UFO_DESTROYED");
+					    _game.getMod().getSound("GEO.CAT", (uint)Mod.Mod.UFO_EXPLODE).play(); //11
+				    }
+				    _destroyUfo = true;
+			    }
+			    else
+			    {
+				    if (_ufo.getShotDownByCraftId().Key == _craft.getUniqueId().Key && _ufo.getShotDownByCraftId().Value == _craft.getUniqueId().Value)
+				    {
+					    setStatus("STR_UFO_CRASH_LANDS");
+					    _game.getMod().getSound("GEO.CAT", (uint)Mod.Mod.UFO_CRASH).play(); //10
+					    foreach (var country in _game.getSavedGame().getCountries())
+					    {
+						    if (country.getRules().insideCountry(_ufo.getLongitude(), _ufo.getLatitude()))
+						    {
+							    country.addActivityXcom(_ufo.getRules().getScore());
+							    break;
+						    }
+					    }
+					    foreach (var region in _game.getSavedGame().getRegions())
+					    {
+						    if (region.getRules().insideRegion(_ufo.getLongitude(), _ufo.getLatitude()))
+						    {
+							    region.addActivityXcom(_ufo.getRules().getScore());
+							    break;
+						    }
+					    }
+				    }
+				    if (!_state.getGlobe().insideLand(_ufo.getLongitude(), _ufo.getLatitude()))
+				    {
+					    _ufo.setStatus(UfoStatus.DESTROYED);
+					    _destroyUfo = true;
+				    }
+				    else
+				    {
+					    _ufo.setSecondsRemaining((uint)(RNG.generate(24, 96)*3600));
+					    _ufo.setAltitude("STR_GROUND");
+					    if (_ufo.getCrashId() == 0)
+					    {
+						    _ufo.setCrashId(_game.getSavedGame().getId("STR_CRASH_SITE"));
+					    }
+				    }
+			    }
+			    _timeout += 30;
+			    if (_ufo.getShotDownByCraftId().Key != _craft.getUniqueId().Key && _ufo.getShotDownByCraftId().Value != _craft.getUniqueId().Value)
+			    {
+				    _timeout += 50;
+				    _ufo.setHitFrame(3);
+			    }
+			    finalRun = true;
+
+			    if (_ufo.getStatus() == UfoStatus.LANDED)
+			    {
+				    _timeout += 30;
+				    finalRun = true;
+				    _ufo.setShootingAt(0);
+			    }
+		    }
+	    }
+
+	    if (!projectileInFlight && finalRun)
+	    {
+		    _end = true;
+	    }
+    }
+
+    /**
+     *	Each time a UFO will try to fire it's cannons
+     *	a calculation is made. There's only 10% chance
+     *	that it will actually fire.
+     */
+    void ufoFireWeapon()
+    {
+	    int fireCountdown = Math.Max(1, (_ufo.getRules().getWeaponReload() - 2 * _game.getSavedGame().getDifficultyCoefficient()));
+	    _ufo.setFireCountdown(RNG.generate(0, fireCountdown) + fireCountdown);
+
+	    setStatus("STR_UFO_RETURN_FIRE");
+	    CraftWeaponProjectile p = new CraftWeaponProjectile();
+	    p.setType(CraftWeaponProjectileType.CWPT_PLASMA_BEAM);
+	    p.setAccuracy(60);
+	    p.setDamage(_ufo.getRules().getWeaponPower());
+	    p.setDirection((int)Directions.D_DOWN);
+	    p.setHorizontalPosition(CraftWeaponProjectile.HP_CENTER);
+	    p.setPosition(_currentDist - (_ufo.getRules().getRadius() / 2));
+	    _projectiles.Add(p);
+	    _game.getMod().getSound("GEO.CAT", (uint)Mod.Mod.UFO_FIRE).play();
+    }
+
+    /**
+     * Fires a shot from the first weapon
+     * equipped on the craft.
+     */
+    void fireWeapon1()
+    {
+	    CraftWeapon w1 = _craft.getWeapons()[0];
+	    if (w1.setAmmo(w1.getAmmo() - 1))
+	    {
+		    _w1FireCountdown = _w1FireInterval;
+
+		    string ss = w1.getAmmo().ToString();
+		    _txtAmmo1.setText(ss);
+
+		    CraftWeaponProjectile p = w1.fire();
+		    p.setDirection((int)Directions.D_UP);
+		    p.setHorizontalPosition(CraftWeaponProjectile.HP_LEFT);
+		    _projectiles.Add(p);
+
+		    _game.getMod().getSound("GEO.CAT", (uint)w1.getRules().getSound()).play();
+	    }
+    }
+
+    /**
+     * Fires a shot from the second weapon
+     * equipped on the craft.
+     */
+    void fireWeapon2()
+    {
+	    CraftWeapon w2 = _craft.getWeapons()[1];
+	    if (w2.setAmmo(w2.getAmmo() - 1))
+	    {
+		    _w2FireCountdown = _w2FireInterval;
+
+		    string ss = w2.getAmmo().ToString();
+		    _txtAmmo2.setText(ss);
+
+		    CraftWeaponProjectile p = w2.fire();
+		    p.setDirection((int)Directions.D_UP);
+		    p.setHorizontalPosition(CraftWeaponProjectile.HP_RIGHT);
+		    _projectiles.Add(p);
+
+		    _game.getMod().getSound("GEO.CAT", (uint)w2.getRules().getSound()).play();
+	    }
+    }
+
+    /**
+     * Animates the window with a palette effect.
+     */
+    void animate()
+    {
+	    // Animate radar waves and other stuff.
+	    for (int x = 0; x < _window.getWidth(); ++x)
+	    {
+		    for (int y = 0; y < _window.getHeight(); ++y)
+		    {
+			    byte radarPixelColor = _window.getPixel(x, y);
+			    if (radarPixelColor >= _colors[(int)ColorNames.RADAR_MIN] && radarPixelColor < _colors[(int)ColorNames.RADAR_MAX])
+			    {
+				    ++radarPixelColor;
+				    if (radarPixelColor >= _colors[(int)ColorNames.RADAR_MAX])
+				    {
+					    radarPixelColor = (byte)_colors[(int)ColorNames.RADAR_MIN];
+				    }
+				    _window.setPixel(x, y, radarPixelColor);
+			    }
+		    }
+	    }
+
+	    _battle.clear();
+
+	    // Draw UFO.
+	    if (!_ufo.isDestroyed())
+	    {
+		    drawUfo();
+	    }
+
+	    // Draw projectiles.
+	    foreach (var it in _projectiles)
+	    {
+		    drawProjectile(it);
+	    }
+
+	    // Clears text after a while
+	    if (_timeout == 0)
+	    {
+		    _txtStatus.setText(string.Empty);
+	    }
+	    else
+	    {
+		    _timeout--;
+	    }
+
+	    // Animate UFO hit.
+	    bool lastHitAnimFrame = false;
+	    if (_animatingHit && _ufo.getHitFrame() > 0)
+	    {
+		    _ufo.setHitFrame(_ufo.getHitFrame() - 1);
+		    if (_ufo.getHitFrame() == 0)
+		    {
+			    _animatingHit = false;
+			    lastHitAnimFrame = true;
+		    }
+	    }
+
+	    // Animate UFO crash landing.
+	    if (_ufo.isCrashed() && _ufo.getHitFrame() == 0 && !lastHitAnimFrame)
+	    {
+		    --_ufoSize;
+	    }
+    }
+
+    /*
+     * Draws projectiles on the radar screen.
+     * Depending on what type of projectile it is, it's
+     * shape will be different. Currently works for
+     * original sized blobs 3 x 6 pixels.
+     */
+    void drawProjectile(CraftWeaponProjectile p)
+    {
+	    int xPos = _battle.getWidth() / 2 + p.getHorizontalPosition();
+	    // Draw missiles.
+	    if (p.getGlobalType() == CraftWeaponProjectileGlobalType.CWPGT_MISSILE)
+	    {
+		    xPos -= 1;
+		    int yPos = _battle.getHeight() - p.getPosition() / 8;
+		    for (int x = 0; x < 3; ++x)
+		    {
+			    for (int y = 0; y < 6; ++y)
+			    {
+				    int pixelOffset = _projectileBlobs[(int)p.getType(), y, x];
+				    if (pixelOffset == 0)
+				    {
+					    continue;
+				    }
+				    else
+				    {
+					    byte radarPixelColor = _window.getPixel(xPos + x + 3, yPos + y + 3); // + 3 cause of the window frame
+					    byte color = (byte)(radarPixelColor - pixelOffset);
+					    if (color < _colors[(int)ColorNames.BLOB_MIN])
+					    {
+						    color = (byte)_colors[(int)ColorNames.BLOB_MIN];
+					    }
+					    _battle.setPixel(xPos + x, yPos + y, color);
+				    }
+			    }
+		    }
+	    }
+	    // Draw beams.
+	    else if (p.getGlobalType() == CraftWeaponProjectileGlobalType.CWPGT_BEAM)
+	    {
+		    int yStart = _battle.getHeight() - 2;
+		    int yEnd = _battle.getHeight() - (_currentDist / 8);
+		    byte pixelOffset = (byte)p.getState();
+		    for (int y = yStart; y > yEnd; --y)
+		    {
+			    byte radarPixelColor = _window.getPixel(xPos + 3, y + 3);
+			    byte color = (byte)(radarPixelColor - pixelOffset);
+			    if (color < _colors[(int)ColorNames.BLOB_MIN])
+			    {
+				    color = (byte)_colors[(int)ColorNames.BLOB_MIN];
+			    }
+			    _battle.setPixel(xPos, y, color);
+		    }
+	    }
+    }
+
+    /*
+     * Draws the UFO blob on the radar screen.
+     * Currently works only for original sized blobs
+     * 13 x 13 pixels.
+     */
+    void drawUfo()
+    {
+	    if (_ufoSize < 0 || _ufo.isDestroyed())
+	    {
+		    return;
+	    }
+	    int currentUfoXposition =  _battle.getWidth() / 2 - 6;
+	    int currentUfoYposition = _battle.getHeight() - (_currentDist / 8) - 6;
+	    for (int y = 0; y < 13; ++y)
+	    {
+		    for (int x = 0; x < 13; ++x)
+		    {
+			    byte pixelOffset = (byte)_ufoBlobs[_ufoSize + _ufo.getHitFrame(), y, x];
+			    if (pixelOffset == 0)
+			    {
+				    continue;
+			    }
+			    else
+			    {
+				    if (_ufo.isCrashed() || _ufo.getHitFrame() > 0)
+				    {
+					    pixelOffset *= 2;
+				    }
+				    byte radarPixelColor = _window.getPixel(currentUfoXposition + x + 3, currentUfoYposition + y + 3); // + 3 cause of the window frame
+				    byte color = (byte)(radarPixelColor - pixelOffset);
+				    if (color < _colors[(int)ColorNames.BLOB_MIN])
+				    {
+					    color = (byte)_colors[(int)ColorNames.BLOB_MIN];
+				    }
+				    _battle.setPixel(currentUfoXposition + x, currentUfoYposition + y, color);
+			    }
+		    }
+	    }
     }
 }

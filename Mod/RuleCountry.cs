@@ -142,4 +142,15 @@ internal class RuleCountry : IRule
      */
     internal double getLabelLatitude() =>
 	    _labelLat;
+
+    /**
+     * Gets the country's funding cap.
+     * Country funding can never exceed this.
+     * @return The funding cap, in thousands.
+     */
+    internal int getFundingCap() =>
+	    _fundingCap;
+
+	internal List<double> getLonMin() =>
+        _lonMin;
 }

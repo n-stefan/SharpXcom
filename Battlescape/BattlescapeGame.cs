@@ -76,7 +76,7 @@ internal class BattlescapeGame
     List<BattleState> _states, _deleted;
     int _currentState;
     /// is debug mode enabled in the battlescape?
-    static bool _debugPlay;
+    internal static bool _debugPlay;
     List<InfoboxOKState> _infoboxQueue;
 
     /**

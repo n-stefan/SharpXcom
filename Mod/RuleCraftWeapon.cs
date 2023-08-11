@@ -175,4 +175,42 @@ internal class RuleCraftWeapon : IRule
      */
     internal string getType() =>
 	    _type;
+
+    /**
+     * Gets the amount of damage this craft weapon
+     * inflicts on enemy crafts.
+     * @return The damage amount.
+     */
+    internal int getDamage() =>
+	    _damage;
+
+    /**
+     * Gets the percentage chance of each shot of
+     * this craft weapon hitting an enemy craft.
+     * @return The accuracy as a percentage.
+     */
+    internal int getAccuracy() =>
+	    _accuracy;
+
+    /**
+     * Gets the ID of the sound used when firing the weapon
+     * in the Dogfight screen.
+     * @return The sound ID.
+     */
+    internal int getSound() =>
+	    _sound;
+
+    /**
+     * Gets the Projectile Type this weapon will fire
+     * @return The projectile type.
+     */
+    internal CraftWeaponProjectileType getProjectileType() =>
+	    _projectileType;
+
+    /**
+     * Gets the speed of the projectile fired by this weapon
+     * @return The projectile speed.
+     */
+    internal int getProjectileSpeed() =>
+	    _projectileSpeed;
 }

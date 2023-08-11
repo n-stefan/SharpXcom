@@ -360,4 +360,12 @@ internal class RuleCraft : IListOrder, IRule
      */
     internal int getBuyCost() =>
 	    _costBuy;
+
+    /**
+     * Gets the acceleration of the craft for
+     * taking off / stopping.
+     * @return The acceleration.
+     */
+    internal int getAcceleration() =>
+	    _accel;
 }

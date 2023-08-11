@@ -252,4 +252,8 @@ internal class RuleRegion : IRule
      */
     internal int getBaseCost() =>
 	    _cost;
+
+	/// Gets the minimum longitude.
+	internal List<double> getLonMin() =>
+        _lonMin;
 }

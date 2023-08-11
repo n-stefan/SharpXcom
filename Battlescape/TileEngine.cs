@@ -1056,7 +1056,7 @@ internal class TileEngine
      * @param type The type of power/damage.
      * @return Amount of blockage.
      */
-    int horizontalBlockage(Tile startTile, Tile endTile, ItemDamageType type, bool skipObject)
+    internal int horizontalBlockage(Tile startTile, Tile endTile, ItemDamageType type, bool skipObject = false)
     {
         // safety check
         if (startTile == null || endTile == null) return 0;

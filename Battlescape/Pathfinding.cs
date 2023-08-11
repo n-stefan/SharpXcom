@@ -94,7 +94,6 @@ internal class Pathfinding
         _pathPreviewed = !bRemove;
 
         Position pos = _unit.getPosition();
-        var destination = new Position();
         int tus = _unit.getTimeUnits();
         if (_unit.isKneeled())
         {
@@ -115,7 +114,7 @@ internal class Pathfinding
         for (var i = _path.Count - 1; i >= 0; i--)
         {
             int dir = _path[i];
-            int tu = getTUCost(pos, dir, ref destination, _unit, null, false); // gets tu cost, but also gets the destination position.
+            int tu = getTUCost(pos, dir, out var destination, _unit, null, false); // gets tu cost, but also gets the destination position.
             int energyUse = tu;
             if (dir >= DIR_UP)
             {
@@ -197,10 +196,10 @@ internal class Pathfinding
 	 * @param missile Is this a guided missile?
 	 * @return TU cost or 255 if movement is impossible.
 	 */
-    int getTUCost(Position startPosition, int direction, ref Position endPosition, BattleUnit unit, BattleUnit target, bool missile)
+    int getTUCost(Position startPosition, int direction, out Position endPosition, BattleUnit unit, BattleUnit target, bool missile)
     {
         _unit = unit;
-        directionToVector(direction, ref endPosition);
+        directionToVector(direction, out endPosition);
         endPosition += startPosition;
         bool fellDown = false;
         bool triedStairs = false;
@@ -677,14 +676,17 @@ internal class Pathfinding
      * @param direction Source direction.
      * @param vector Pointer to a position (which acts as a vector).
      */
-    void directionToVector(int direction, ref Position vector)
+    internal static void directionToVector(int direction, out Position vector)
     {
         int[] x = { 0, 1, 1, 1, 0, -1, -1, -1, 0, 0 };
         int[] y = { -1, -1, 0, 1, 1, 1, 0, -1, 0, 0 };
         int[] z = { 0, 0, 0, 0, 0, 0, 0, 0, 1, -1 };
-        vector.x = x[direction];
-        vector.y = y[direction];
-        vector.z = z[direction];
+        vector = new Position
+        {
+            x = x[direction],
+            y = y[direction],
+            z = z[direction]
+        };
     }
 
     /**
@@ -696,8 +698,7 @@ internal class Pathfinding
 	 */
     bool validateUpDown(BattleUnit bu, Position startPosition, int direction, bool missile)
     {
-        var endPosition = new Position();
-        directionToVector(direction, ref endPosition);
+        directionToVector(direction, out var endPosition);
         endPosition += startPosition;
         Tile startTile = _save.getTile(startPosition);
         Tile belowStart = _save.getTile(startPosition + new Position(0, 0, -1));

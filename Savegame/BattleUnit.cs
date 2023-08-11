@@ -1838,7 +1838,7 @@ internal class BattleUnit
     /**
      * Prepare for a new turn.
      */
-    internal void prepareNewTurn(bool fullProcess)
+    internal void prepareNewTurn(bool fullProcess = true)
     {
         if (_status == UnitStatus.STATUS_IGNORE_ME)
         {
@@ -2022,5 +2022,131 @@ internal class BattleUnit
         {
             return false;
         }
+    }
+
+    /**
+     * Get the max armor value of a certain armor side.
+     * @param side The side of the armor.
+     * @return Amount of armor.
+     */
+    internal int getMaxArmor(UnitSide side) =>
+	    _maxArmor[(int)side];
+
+    /**
+     * Get the units's rank string.
+     * @return rank.
+     */
+    internal string getRankString() =>
+	    _rank;
+
+    /**
+     * Get how long since this unit was exposed.
+     * @return number of turns
+     */
+    internal int getTurnsSinceSpotted() =>
+	    _turnsSinceSpotted;
+
+    /**
+     * did this unit already take fire damage this turn?
+     * (used to avoid damaging large units multiple times.)
+     * @return ow it burns
+     */
+    internal bool tookFireDamage() =>
+	    _hitByFire;
+
+    /**
+     * toggle the state of the fire damage tracking boolean.
+     */
+    internal void toggleFireDamage() =>
+	    _hitByFire = !_hitByFire;
+
+    /**
+     * Kneel down.
+     * @param kneeled to kneel or to stand up
+     */
+    internal void kneel(bool kneeled)
+    {
+	    _kneeled = kneeled;
+	    _cacheInvalid = true;
+    }
+
+    /**
+     * Advances the turning towards the target direction.
+     * @param turret True to turn the turret, false to turn the unit.
+     */
+    internal void turn(bool turret)
+    {
+	    int a = 0;
+
+	    if (turret)
+	    {
+		    if (_directionTurret == _toDirectionTurret)
+		    {
+			    abortTurn();
+			    return;
+		    }
+		    a = _toDirectionTurret - _directionTurret;
+	    }
+	    else
+	    {
+		    if (_direction == _toDirection)
+		    {
+			    abortTurn();
+			    return;
+		    }
+		    a = _toDirection - _direction;
+	    }
+
+	    if (a != 0) {
+		    if (a > 0) {
+			    if (a <= 4) {
+				    if (!turret) {
+					    if (_turretType > -1)
+						    _directionTurret++;
+					    _direction++;
+				    } else _directionTurret++;
+			    } else {
+				    if (!turret) {
+					    if (_turretType > -1)
+						    _directionTurret--;
+					    _direction--;
+				    } else _directionTurret--;
+			    }
+		    } else {
+			    if (a > -4) {
+				    if (!turret) {
+					    if (_turretType > -1)
+						    _directionTurret--;
+					    _direction--;
+				    } else _directionTurret--;
+			    } else {
+				    if (!turret) {
+					    if (_turretType > -1)
+						    _directionTurret++;
+					    _direction++;
+				    } else _directionTurret++;
+			    }
+		    }
+		    if (_direction < 0) _direction = 7;
+		    if (_direction > 7) _direction = 0;
+		    if (_directionTurret < 0) _directionTurret = 7;
+		    if (_directionTurret > 7) _directionTurret = 0;
+		    if (_visible || _faction == UnitFaction.FACTION_PLAYER)
+			    _cacheInvalid = true;
+	    }
+
+	    if (turret)
+	    {
+		     if (_toDirectionTurret == _directionTurret)
+		     {
+			    // we officially reached our destination
+			    _status = UnitStatus.STATUS_STANDING;
+		     }
+	    }
+	    else if (_toDirection == _direction || _status == UnitStatus.STATUS_UNCONSCIOUS)
+	    {
+		    // we officially reached our destination
+		    _status = UnitStatus.STATUS_STANDING;
+	    }
     }
 }

@@ -247,4 +247,11 @@ internal class RuleAlienMission : IRule
 	    }
 	    return weight;
     }
+
+    /**
+     * Returns the Alien score for this mission.
+     * @return Amount of points.
+     */
+    internal int getRetaliationOdds() =>
+	    _retaliationOdds;
 }

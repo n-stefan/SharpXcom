@@ -48,6 +48,7 @@ internal class Ufo : MovingTarget
     uint _trajectoryPoint;
     bool _detected, _hyperDetected, _processedIntercept;
     int _shootingAt, _hitFrame, _fireCountdown, _escapeCountdown;
+	KeyValuePair<string, int> _shotDownByCraftId;
 
     /**
      * Initializes a UFO of the specified type.
@@ -286,7 +287,7 @@ internal class Ufo : MovingTarget
      * to cause it to crash.
      * @return Crashed status.
      */
-    bool isDestroyed() =>
+    internal bool isDestroyed() =>
 	    (_damage >= _rules.getMaxDamage());
 
     /**
@@ -574,4 +575,59 @@ internal class Ufo : MovingTarget
             _status = UfoStatus.CRASHED;
         }
     }
+
+    /**
+     * Gets which interception window the UFO is active in.
+     * @return which interception window the UFO is active in.
+     */
+    internal int getShootingAt() =>
+	    _shootingAt;
+
+    /**
+     * Sets which interception window the UFO is active in.
+     * @param target the window the UFO is active in.
+     */
+    internal void setShootingAt(int target) =>
+	    _shootingAt = target;
+
+    /**
+     * Gets the number of ticks until the ufo is ready to fire.
+     * @return ticks until weapon is ready.
+     */
+    internal int getFireCountdown() =>
+	    _fireCountdown;
+
+    internal KeyValuePair<string, int> getShotDownByCraftId() =>
+	    _shotDownByCraftId;
+
+    /**
+     * Gets the UFO's hit frame.
+     * @return the hit frame.
+     */
+    internal int getHitFrame() =>
+	    _hitFrame;
+
+    /**
+     * Sets the UFO's hit frame.
+     * @param frame the hit frame.
+     */
+    internal void setHitFrame(int frame) =>
+	    _hitFrame = frame;
+
+    /**
+     * Gets the UFO's crash site ID.
+     * @return the UFO's crash site ID.
+     */
+    internal int getCrashId() =>
+	    _crashId;
+
+    /**
+     * Gets if the ufo has had its timers decremented on this cycle of interception updates.
+     * @return if this ufo has already been processed.
+     */
+    internal bool getInterceptionProcessed() =>
+	    _processedIntercept;
+
+    internal void setShotDownByCraftId(KeyValuePair<string, int> craft) =>
+	    _shotDownByCraftId = craft;
 }

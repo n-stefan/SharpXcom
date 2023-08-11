@@ -555,4 +555,32 @@ internal class RuleItem : IListOrder, IRule
      */
     internal int getBuyCost() =>
 	    _costBuy;
+
+    /**
+     * Gets the number of projectiles this ammo shoots at once.
+     * @return The number of projectiles.
+     */
+    internal int getShotgunPellets() =>
+	    _shotgunPellets;
+
+    /**
+     * Gets the item's accuracy for autoshots.
+     * @return The autoshot accuracy.
+     */
+    internal int getAccuracyAuto() =>
+	    _accuracyAuto;
+
+    /**
+     * Gets the item's accuracy for snapshots.
+     * @return The snapshot accuracy.
+     */
+    internal int getAccuracySnap() =>
+	    _accuracySnap;
+
+    /**
+     * Gets the item's accuracy for aimed shots.
+     * @return The aimed accuracy.
+     */
+    internal int getAccuracyAimed() =>
+	    _accuracyAimed;
 }

@@ -590,4 +590,10 @@ internal class OptionsVideoState : OptionsBaseState
         }
         return new string(str);
     }
+
+    /**
+     * Unpresses Fixed Borderless Pos button
+     */
+    internal void unpressRootWindowedMode() =>
+	    _btnRootWindowedMode.setPressed(false);
 }

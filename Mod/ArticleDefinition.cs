@@ -105,12 +105,51 @@ internal class ArticleDefinition
 		_type_id;
 }
 
+class ArticleDefinitionRect
+{
+	internal int x;
+	internal int y;
+	internal int width;
+	internal int height;
+
+	/**
+	 * Constructor.
+	 */
+	ArticleDefinitionRect()
+	{
+		x = 0;
+		y = 0;
+		width = 0;
+		height = 0;
+	}
+
+	/**
+	 * Sets the rectangle parameters in a function.
+	 * @param set_x X.
+	 * @param set_y Y.
+	 * @param set_width Width.
+	 * @param set_height Height.
+	 */
+	void set(int set_x, int set_y, int set_width, int set_height)
+	{
+		x = set_x;
+		y = set_y;
+		width = set_width;
+		height = set_height;
+	}
+}
+
 /**
  * ArticleDefinitionCraft defines articles for craft, e.g. SKYRANGER.
  * They have a large background image, a stats block and a description positioned differently.
  */
 class ArticleDefinitionCraft : ArticleDefinition
 {
+	internal string image_id;
+	internal ArticleDefinitionRect rect_stats;
+	internal ArticleDefinitionRect rect_text;
+    internal string text;
+
     /**
 	 * Constructor (only setting type of base class).
 	 */
@@ -123,6 +162,9 @@ class ArticleDefinitionCraft : ArticleDefinition
  */
 class ArticleDefinitionCraftWeapon : ArticleDefinition
 {
+	internal string image_id;
+	internal string text;
+
     /**
 	 * Constructor (only setting type of base class).
 	 */
@@ -135,6 +177,9 @@ class ArticleDefinitionCraftWeapon : ArticleDefinition
  */
 class ArticleDefinitionVehicle : ArticleDefinition
 {
+	internal string text;
+	internal string weapon;
+
     /**
 	 * Constructor (only setting type of base class)
 	 */
@@ -147,6 +192,8 @@ class ArticleDefinitionVehicle : ArticleDefinition
  */
 class ArticleDefinitionItem : ArticleDefinition
 {
+	internal string text;
+
     /**
 	 * Constructor (only setting type of base class).
 	 */
@@ -159,6 +206,8 @@ class ArticleDefinitionItem : ArticleDefinition
  */
 class ArticleDefinitionArmor : ArticleDefinition
 {
+	internal string text;
+
     /**
 	 * Constructor (only setting type of base class).
 	 */
@@ -171,6 +220,8 @@ class ArticleDefinitionArmor : ArticleDefinition
  */
 class ArticleDefinitionBaseFacility : ArticleDefinition
 {
+	internal string text;
+
     /**
 	 * Constructor (only setting type of base class).
 	 */
@@ -183,7 +234,9 @@ class ArticleDefinitionBaseFacility : ArticleDefinition
  */
 class ArticleDefinitionTextImage : ArticleDefinition
 {
-    int text_width;
+    internal int text_width;
+	internal string image_id;
+	internal string text;
 
     /**
 	 * Constructor (only setting type of base class).
@@ -197,6 +250,8 @@ class ArticleDefinitionTextImage : ArticleDefinition
  */
 class ArticleDefinitionText : ArticleDefinition
 {
+	internal string text;
+
     /**
 	 * Constructor (only setting type of base class).
 	 */
@@ -209,6 +264,8 @@ class ArticleDefinitionText : ArticleDefinition
  */
 class ArticleDefinitionUfo : ArticleDefinition
 {
+	internal string text;
+
     /**
 	 * Constructor (only setting type of base class).
 	 */
@@ -221,7 +278,10 @@ class ArticleDefinitionUfo : ArticleDefinition
  */
 class ArticleDefinitionTFTD : ArticleDefinition
 {
-    int text_width;
+	internal int text_width;
+	internal string image_id;
+	internal string text;
+	internal string weapon;
 
     /**
 	 * Constructor (only setting type of base class).

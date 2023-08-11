@@ -42,7 +42,7 @@ internal class ManufactureInfoState : State
      * @param base Pointer to the base to get info from.
      * @param item The RuleManufacture to produce.
      */
-    ManufactureInfoState(Base @base, RuleManufacture item)
+    internal ManufactureInfoState(Base @base, RuleManufacture item)
     {
         _base = @base;
         _item = item;

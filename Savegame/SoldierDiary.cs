@@ -38,7 +38,7 @@ internal class SoldierCommendations
     /**
      * Initializes a soldier commendation.
      */
-    SoldierCommendations(string commendationName, string noun)
+    internal SoldierCommendations(string commendationName, string noun)
     {
         _type = commendationName;
         _noun = noun;
@@ -569,4 +569,25 @@ internal class SoldierDiary
      */
     internal void addMonthlyService() =>
         _monthsService++;
+
+    /**
+     *
+     */
+    internal int getShotsFiredTotal() =>
+	    _shotsFiredCounterTotal;
+
+    /**
+     *
+     */
+    internal int getShotsLandedTotal() =>
+	    _shotsLandedCounterTotal;
+
+    /**
+     * Award special commendation to the original 8 soldiers.
+     */
+    internal void awardOriginalEightCommendation()
+    {
+	    // TODO: Unhardcode this
+	    _commendations.Add(new SoldierCommendations("STR_MEDAL_ORIGINAL8_NAME", "NoNoun"));
+    }
 }

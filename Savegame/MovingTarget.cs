@@ -276,7 +276,7 @@ internal class MovingTarget : Target
     /**
      * Executes a movement cycle for the moving target.
      */
-    protected void move()
+    internal void move()
     {
         calculateSpeed();
         if (_dest != null)

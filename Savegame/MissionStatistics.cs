@@ -143,6 +143,24 @@ internal struct MissionStatistics
 		}
 	}
 
-    bool isDarkness() =>
+    internal bool isDarkness() =>
 		daylight > TileEngine.MAX_DARKNESS_TO_SEE_UNITS;
+
+	internal bool isAlienBase()
+	{
+		if (type.Contains("STR_ALIEN_BASE") || type.Contains("STR_ALIEN_COLONY"))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	internal bool isBaseDefense()
+	{
+		if (type == "STR_BASE_DEFENSE")
+		{
+			return true;
+		}
+		return false;
+	}
 }

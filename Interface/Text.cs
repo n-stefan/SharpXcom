@@ -396,4 +396,10 @@ internal class Text : InteractiveSurface
      */
     internal byte getColor() =>
 	    _color;
+
+    /**
+     * Allows the text to be scrollable via mouse wheel.
+     */
+    internal void setScrollable(bool scroll) =>
+	    _scroll = scroll;
 }

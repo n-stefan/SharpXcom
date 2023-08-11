@@ -993,7 +993,7 @@ internal class SavedBattleGame
      * @param mapsize_y
      * @param mapsize_z
      */
-    internal void initMap(int mapsize_x, int mapsize_y, int mapsize_z, bool resetTerrain)
+    internal void initMap(int mapsize_x, int mapsize_y, int mapsize_z, bool resetTerrain = true)
     {
         // Clear old map data
         if (_mapsize_z * _mapsize_y * _mapsize_x > 0)
@@ -1241,5 +1241,290 @@ internal class SavedBattleGame
                 }
             }
         }
+    }
+
+    /**
+     * Ends the current turn and progresses to the next one.
+     */
+    internal void endTurn()
+    {
+	    if (_side == UnitFaction.FACTION_PLAYER)
+	    {
+		    if (_selectedUnit != null && _selectedUnit.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
+			    _lastSelectedUnit = _selectedUnit;
+		    _selectedUnit = null;
+		    _side = UnitFaction.FACTION_HOSTILE;
+	    }
+	    else if (_side == UnitFaction.FACTION_HOSTILE)
+	    {
+		    _side = UnitFaction.FACTION_NEUTRAL;
+		    // if there is no neutral team, we skip this and instantly prepare the new turn for the player
+		    if (selectNextPlayerUnit() == null)
+		    {
+			    prepareNewTurn();
+			    _turn++;
+			    _side = UnitFaction.FACTION_PLAYER;
+			    if (_lastSelectedUnit != null && _lastSelectedUnit.isSelectable(UnitFaction.FACTION_PLAYER, false, false))
+				    _selectedUnit = _lastSelectedUnit;
+			    else
+				    selectNextPlayerUnit();
+			    while (_selectedUnit != null && _selectedUnit.getFaction() != UnitFaction.FACTION_PLAYER)
+				    selectNextPlayerUnit();
+		    }
+
+	    }
+	    else if (_side == UnitFaction.FACTION_NEUTRAL)
+	    {
+		    prepareNewTurn();
+		    _turn++;
+		    _side = UnitFaction.FACTION_PLAYER;
+		    if (_lastSelectedUnit != null && _lastSelectedUnit.isSelectable(UnitFaction.FACTION_PLAYER, false, false))
+			    _selectedUnit = _lastSelectedUnit;
+		    else
+			    selectNextPlayerUnit();
+		    while (_selectedUnit != null && _selectedUnit.getFaction() != UnitFaction.FACTION_PLAYER)
+			    selectNextPlayerUnit();
+	    }
+	    int liveSoldiers, liveAliens;
+
+	    _battleState.getBattleGame().tallyUnits(out liveAliens, out liveSoldiers);
+
+	    if ((_turn > _cheatTurn / 2 && liveAliens <= 2) || _turn > _cheatTurn)
+	    {
+		    _cheating = true;
+	    }
+
+	    if (_side == UnitFaction.FACTION_PLAYER)
+	    {
+		    // update the "number of turns since last spotted"
+		    foreach (var i in _units)
+		    {
+			    if (i.getTurnsSinceSpotted() < 255)
+			    {
+				    i.setTurnsSinceSpotted(i.getTurnsSinceSpotted() + 1);
+			    }
+			    if (_cheating && i.getFaction() == UnitFaction.FACTION_PLAYER && !i.isOut())
+			    {
+				    i.setTurnsSinceSpotted(0);
+			    }
+			    if (i.getAIModule() != null)
+			    {
+				    i.getAIModule().reset(); // clean up AI state
+			    }
+		    }
+	    }
+	    // hide all aliens (VOF calculations below will turn them visible again)
+	    foreach (var i in _units)
+	    {
+		    if (i.getFaction() == _side)
+		    {
+			    i.prepareNewTurn();
+		    }
+		    if (i.getFaction() != UnitFaction.FACTION_PLAYER)
+		    {
+			    i.setVisible(false);
+		    }
+	    }
+
+	    // re-run calculateFOV() *after* all aliens have been set not-visible
+	    _tileEngine.recalculateFOV();
+
+	    if (_side != UnitFaction.FACTION_PLAYER)
+		    selectNextPlayerUnit();
+    }
+
+    /**
+     * Carries out new turn preparations such as fire and smoke spreading.
+     */
+    void prepareNewTurn()
+    {
+	    var tilesOnFire = new List<Tile>();
+	    var tilesOnSmoke = new List<Tile>();
+
+	    // prepare a list of tiles on fire
+	    for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
+	    {
+		    if (getTiles()[i].getFire() > 0)
+		    {
+			    tilesOnFire.Add(getTiles()[i]);
+		    }
+	    }
+
+	    // first: fires spread
+	    foreach (var i in tilesOnFire)
+	    {
+		    // if we haven't added fire here this turn
+		    if (i.getOverlaps() == 0)
+		    {
+			    // reduce the fire timer
+			    i.setFire(i.getFire() -1);
+
+			    // if we're still burning
+			    if (i.getFire() != 0)
+			    {
+				    // propagate in four cardinal directions (0, 2, 4, 6)
+				    for (int dir = 0; dir <= 6; dir += 2)
+				    {
+					    Pathfinding.directionToVector(dir, out var pos);
+					    Tile t = getTile(i.getPosition() + pos);
+					    // if there's no wall blocking the path of the flames...
+					    if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_IN) == 0)
+					    {
+						    // attempt to set this tile on fire
+						    t.ignite(i.getSmoke());
+					    }
+				    }
+			    }
+			    // fire has burnt out
+			    else
+			    {
+				    i.setSmoke(0);
+				    // burn this tile, and any object in it, if it's not fireproof/indestructible.
+				    if (i.getMapData(TilePart.O_OBJECT) != null)
+				    {
+					    if (i.getMapData(TilePart.O_OBJECT).getFlammable() != 255 && i.getMapData(TilePart.O_OBJECT).getArmor() != 255)
+					    {
+						    if (i.destroy(TilePart.O_OBJECT, getObjectiveType()))
+						    {
+							    addDestroyedObjective();
+						    }
+						    if (i.destroy(TilePart.O_FLOOR, getObjectiveType()))
+						    {
+							    addDestroyedObjective();
+						    }
+					    }
+				    }
+				    else if (i.getMapData(TilePart.O_FLOOR) != null)
+				    {
+					    if (i.getMapData(TilePart.O_FLOOR).getFlammable() != 255 && i.getMapData(TilePart.O_FLOOR).getArmor() != 255)
+					    {
+						    if (i.destroy(TilePart.O_FLOOR, getObjectiveType()))
+						    {
+							    addDestroyedObjective();
+						    }
+					    }
+				    }
+				    getTileEngine().applyGravity(i);
+			    }
+		    }
+	    }
+
+	    // prepare a list of tiles on fire/with smoke in them (smoke acts as fire intensity)
+	    for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
+	    {
+		    if (getTiles()[i].getSmoke() > 0)
+		    {
+			    tilesOnSmoke.Add(getTiles()[i]);
+		    }
+		    getTiles()[i].setDangerous(false);
+	    }
+
+	    // now make the smoke spread.
+	    foreach (var i in tilesOnSmoke)
+	    {
+		    // smoke and fire follow slightly different rules.
+		    if (i.getFire() == 0)
+		    {
+			    // reduce the smoke counter
+			    i.setSmoke(i.getSmoke() - 1);
+			    // if we're still smoking
+			    if (i.getSmoke() != 0)
+			    {
+				    // spread in four cardinal directions
+				    for (int dir = 0; dir <= 6; dir += 2)
+				    {
+					    Pathfinding.directionToVector(dir, out var pos);
+					    Tile t = getTile(i.getPosition() + pos);
+					    // as long as there are no walls blocking us
+					    if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_SMOKE) == 0)
+					    {
+						    // only add smoke to empty tiles, or tiles with no fire, and smoke that was added this turn
+						    if (t.getSmoke() == 0 || (t.getFire() == 0 && t.getOverlaps() != 0))
+						    {
+							    t.addSmoke(i.getSmoke());
+						    }
+					    }
+				    }
+			    }
+		    }
+		    else
+		    {
+			    // smoke from fire spreads upwards one level if there's no floor blocking it.
+			    Position pos = new Position(0,0,1);
+			    Tile t = getTile(i.getPosition() + pos);
+			    if (t != null && t.hasNoFloor(i))
+			    {
+				    // only add smoke equal to half the intensity of the fire
+				    t.addSmoke(i.getSmoke()/2);
+			    }
+			    // then it spreads in the four cardinal directions.
+			    for (int dir = 0; dir <= 6; dir += 2)
+			    {
+				    Pathfinding.directionToVector(dir, out pos);
+				    t = getTile(i.getPosition() + pos);
+				    if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_SMOKE) == 0)
+				    {
+					    t.addSmoke(i.getSmoke()/2);
+				    }
+			    }
+		    }
+	    }
+
+	    if (tilesOnFire.Any() || tilesOnSmoke.Any())
+	    {
+		    // do damage to units, average out the smoke, etc.
+		    for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
+		    {
+			    if (getTiles()[i].getSmoke() != 0)
+				    getTiles()[i].prepareNewTurn(getDepth() == 0);
+		    }
+		    // fires could have been started, stopped or smoke could reveal/conceal units.
+		    getTileEngine().calculateTerrainLighting();
+	    }
+
+	    reviveUnconsciousUnits();
+    }
+
+    /**
+     * Checks for units that are unconscious and revives them if they shouldn't be.
+     *
+     * Revived units need a tile to stand on. If the unit's current position is occupied, then
+     * all directions around the tile are searched for a free tile to place the unit in.
+     * If no free tile is found the unit stays unconscious.
+     */
+    void reviveUnconsciousUnits()
+    {
+	    foreach (var i in getUnits())
+	    {
+		    if (i.getArmor().getSize() == 1)
+		    {
+			    Position originalPosition = i.getPosition();
+			    if (originalPosition == new Position(-1, -1, -1))
+			    {
+				    foreach (var j in _items)
+				    {
+					    if (j.getUnit() != null && j.getUnit() == i && j.getOwner() != null)
+					    {
+						    originalPosition = j.getOwner().getPosition();
+					    }
+				    }
+			    }
+			    if (i.getStatus() == UnitStatus.STATUS_UNCONSCIOUS && i.getStunlevel() < i.getHealth() && i.getHealth() > 0)
+			    {
+				    Tile targetTile = getTile(originalPosition);
+				    bool largeUnit = targetTile != null && targetTile.getUnit() != null && targetTile.getUnit() != i && targetTile.getUnit().getArmor().getSize() != 1;
+				    if (placeUnitNearPosition(i, originalPosition, largeUnit))
+				    {
+					    // recover from unconscious
+					    i.turn(false); // makes the unit stand up again
+					    i.kneel(false);
+					    i.setCache(null);
+					    getTileEngine().calculateFOV(i);
+					    getTileEngine().calculateUnitLighting();
+					    removeUnconsciousBodyItem(i);
+				    }
+			    }
+		    }
+	    }
     }
 }

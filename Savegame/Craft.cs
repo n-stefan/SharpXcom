@@ -338,7 +338,7 @@ internal class Craft : MovingTarget
      * Changes the amount of damage this craft has taken.
      * @param damage Amount of damage.
      */
-    void setDamage(int damage)
+    internal void setDamage(int damage)
     {
         _damage = damage;
         if (_damage < 0)
@@ -901,4 +901,18 @@ internal class Craft : MovingTarget
 	    }
 	    return total;
     }
+
+    /**
+     * Gets the craft's unique id.
+     * @return A tuple of the craft's type and per-type id.
+     */
+    internal KeyValuePair<string, int> getUniqueId() =>
+        KeyValuePair.Create(_rules.getType(), _id);
+
+    /**
+     * Returns the amount of damage this craft has taken.
+     * @return Amount of damage.
+     */
+    internal int getDamage() =>
+	    _damage;
 }

@@ -274,11 +274,11 @@ internal class Mod
     static int FLYING_SOUND;
     static int BUTTON_PRESS;
     internal static int UFO_FIRE;
-    static int UFO_HIT;
-    static int UFO_CRASH;
+    internal static int UFO_HIT;
+    internal static int UFO_CRASH;
     internal static int UFO_EXPLODE;
-    static int INTERCEPTOR_HIT;
-    static int INTERCEPTOR_EXPLODE;
+    internal static int INTERCEPTOR_HIT;
+    internal static int INTERCEPTOR_EXPLODE;
     internal static int DAMAGE_RANGE;
     internal static int EXPLOSIVE_DAMAGE_RANGE;
     static int[] WINDOW_POPUP = new int[3];
@@ -2781,7 +2781,7 @@ internal class Mod
      * @param id Country type.
      * @return Rules for the country.
      */
-    internal RuleCountry getCountry(string id, bool error) =>
+    internal RuleCountry getCountry(string id, bool error = false) =>
 	    getRule(id, "Country", _countries, error);
 
     /**
@@ -3217,4 +3217,155 @@ internal class Mod
      */
     internal YamlNode getStartingBase() =>
 	    _startingBase;
+
+    /**
+     * Generates a brand new saved game with starting data.
+     * @return A new saved game.
+     */
+    internal SavedGame newSave()
+    {
+	    SavedGame save = new SavedGame();
+
+	    // Add countries
+	    foreach (var i in _countriesIndex)
+	    {
+		    RuleCountry country = getCountry(i);
+		    if (country.getLonMin().Any())
+			    save.getCountries().Add(new Country(country));
+	    }
+	    // Adjust funding to total $6M
+	    int missing = ((_initialFunding - save.getCountryFunding()/1000) / (int)save.getCountries().Count) * 1000;
+	    foreach (var i in save.getCountries())
+	    {
+		    int funding = i.getFunding().Last() + missing;
+		    if (funding < 0)
+		    {
+			    funding = i.getFunding().Last();
+		    }
+		    i.setFunding(funding);
+	    }
+	    save.setFunds(save.getCountryFunding());
+
+	    // Add regions
+	    foreach (var i in _regionsIndex)
+	    {
+		    RuleRegion region = getRegion(i);
+		    if (region.getLonMin().Any())
+			    save.getRegions().Add(new Region(region));
+	    }
+
+	    // Set up starting base
+	    Base @base = new Base(this);
+	    @base.load(_startingBase, save, true);
+	    save.getBases().Add(@base);
+
+	    // Correct IDs
+	    foreach (var i in @base.getCrafts())
+	    {
+		    save.getId(i.getRules().getType());
+	    }
+
+        // Determine starting transport craft
+        Craft transportCraft = null;
+	    foreach (var c in @base.getCrafts())
+	    {
+		    if (c.getRules().getSoldiers() > 0)
+		    {
+			    transportCraft = c;
+			    break;
+		    }
+	    }
+
+	    // Determine starting soldier types
+	    List<string> soldierTypes = _soldiersIndex;
+	    for (var i = 0; i < soldierTypes.Count;)
+	    {
+		    if (!getSoldier(soldierTypes[i]).getRequirements().Any())
+		    {
+			    ++i;
+		    }
+		    else
+		    {
+			    soldierTypes.RemoveAt(i);
+		    }
+	    }
+
+	    YamlNode node = _startingBase["randomSoldiers"];
+	    var randomTypes = new List<string>();
+	    if (node != null)
+	    {
+		    // Starting soldiers specified by type
+		    if (node is YamlMappingNode map)
+		    {
+			    foreach (var i in map.Children)
+			    {
+                    for (int s = 0; s < int.Parse(i.Value.ToString()); ++s)
+				    {
+					    randomTypes.Add(i.Key.ToString());
+				    }
+			    }
+		    }
+		    // Starting soldiers specified by amount
+		    else if (node is YamlScalarNode)
+		    {
+			    int randomSoldiers = int.Parse(node.ToString());
+			    for (int s = 0; s < randomSoldiers; ++s)
+			    {
+				    randomTypes.Add(soldierTypes[RNG.generate(0, soldierTypes.Count - 1)]);
+			    }
+		    }
+		    // Generate soldiers
+		    int maxSoldiersInTransportCraft = 0;
+		    if (transportCraft != null)
+		    {
+			    maxSoldiersInTransportCraft = transportCraft.getRules().getSoldiers();
+                var vehicles = transportCraft.getVehicles();
+			    for (var v = 0; v < vehicles.Count;)
+			    {
+				    if ((int)maxSoldiersInTransportCraft < vehicles[v].getSize())
+				    {
+					    @base.getStorageItems().addItem(vehicles[v].getRules().getType(), 1);
+					    if (vehicles[v].getAmmo() > 0 && vehicles[v].getRules().getCompatibleAmmo().Any())
+					    {
+						    @base.getStorageItems().addItem(
+							    vehicles[v].getRules().getCompatibleAmmo().First(),
+							    vehicles[v].getAmmo() / getItem(vehicles[v].getRules().getCompatibleAmmo().First()).getClipSize());
+					    }
+					    vehicles.RemoveAt(v);
+				    }
+				    else
+				    {
+					    maxSoldiersInTransportCraft -= vehicles[v].getSize();
+					    ++v;
+				    }
+			    }
+		    }
+
+		    for (int i = 0; i < randomTypes.Count; ++i)
+		    {
+			    Soldier soldier = genSoldier(save, randomTypes[i]);
+			    if (transportCraft != null && i < maxSoldiersInTransportCraft)
+			    {
+				    soldier.setCraft(transportCraft);
+			    }
+			    @base.getSoldiers().Add(soldier);
+			    // Award soldier a special 'original eight' commendation
+			    if (_commendations.ContainsKey("STR_MEDAL_ORIGINAL8_NAME"))
+			    {
+				    SoldierDiary diary = soldier.getDiary();
+				    diary.awardOriginalEightCommendation();
+				    foreach (var comm in diary.getSoldierCommendations())
+				    {
+					    comm.makeOld();
+				    }
+			    }
+		    }
+	    }
+
+	    // Setup alien strategy
+	    save.getAlienStrategy().init(this);
+	    save.setTime(_startingTime);
+
+	    return save;
+    }
 }

@@ -299,4 +299,11 @@ internal class ComboBox : InteractiveSurface
             return ret;
         }
     }
+
+    /**
+     * sets the button text independent of the currently selected option.
+     * @param text the text to display
+     */
+    internal void setText(string text) =>
+	    _button.setText(text);
 }
