@@ -386,4 +386,11 @@ internal class Armor : IRule
      */
     internal string getSpriteInventory() =>
 	    _spriteInv;
+
+    /**
+     * Gets the unit's sprite sheet.
+     * @return The sprite sheet name.
+     */
+    internal string getSpriteSheet() =>
+	    _spriteSheet;
 }

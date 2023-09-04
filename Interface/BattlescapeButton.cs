@@ -131,4 +131,16 @@ internal class BattlescapeButton : InteractiveSurface
             _inverted = press;
         }
     }
+
+    /**
+     * Changes the button group this battlescape button belongs to.
+     * @param group Pointer to the pressed button pointer in the group.
+     * Null makes it a regular button.
+     */
+    internal void setGroup(BattlescapeButton group)
+    {
+	    _group = group;
+	    if (_group != null && _group == this)
+		    _inverted = true;
+    }
 }

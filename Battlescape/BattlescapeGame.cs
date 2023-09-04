@@ -26,7 +26,7 @@ struct BattleAction
     internal BattleActionType type;
     internal BattleUnit actor;
     internal BattleItem weapon;
-    Position target;
+    internal Position target;
     internal List<Position> waypoints;
     internal int TU;
     internal bool targeting;
@@ -34,7 +34,7 @@ struct BattleAction
     internal string result;
     bool strafe, run;
     int diff;
-    int autoShotCounter;
+    internal int autoShotCounter;
     Position cameraPosition;
     bool desperate; // ignoring newly-spotted units
     int finalFacing;
@@ -625,7 +625,7 @@ internal class BattlescapeGame
      * Gets the tilengine.
      * @return tilengine.
      */
-    TileEngine getTileEngine() =>
+    internal TileEngine getTileEngine() =>
         _save.getTileEngine();
 
     /**
@@ -993,5 +993,196 @@ internal class BattlescapeGame
         _currentAction.type = BattleActionType.BA_NONE;
         setupCursor();
         _parentState.getGame().getCursor().setVisible(true);
+    }
+
+    /**
+     * Sets the kneel reservation setting.
+     * @param reserved Should we reserve an extra 4 TUs to kneel?
+     */
+    internal void setKneelReserved(bool reserved) =>
+	    _save.setKneelReserved(reserved);
+
+    /**
+     * Initializes the Battlescape game.
+     */
+    internal void init()
+    {
+	    if (_save.getSide() == UnitFaction.FACTION_PLAYER && _save.getTurn() > 1)
+	    {
+		    _playerPanicHandled = false;
+	    }
+    }
+
+    /**
+     * Gets the depth of the battlescape.
+     * @return the depth of the battlescape.
+     */
+    internal int getDepth() =>
+	    _save.getDepth();
+
+    /**
+     * Removes the current state.
+     *
+     * This is a very important function. It is called by a BattleState (walking, projectile is flying, explosions,...) at the moment this state has finished its action.
+     * Here we check the result of that action and do all the aftermath.
+     * The state is popped off the list.
+     */
+    internal void popState()
+    {
+	    if (Options.traceAI)
+	    {
+            Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} BattlescapeGame.popState() #{_AIActionCounter} with {(_save.getSelectedUnit() != null ? _save.getSelectedUnit().getTimeUnits() : -9999)} TU");
+	    }
+	    bool actionFailed = false;
+
+	    if (!_states.Any()) return;
+
+	    BattleAction action = _states.First().getAction();
+
+	    if (action.actor != null && action.result.Any() && action.actor.getFaction() == UnitFaction.FACTION_PLAYER
+		    && _playerPanicHandled && (_save.getSide() == UnitFaction.FACTION_PLAYER || _debugPlay))
+	    {
+		    _parentState.warning(action.result);
+		    actionFailed = true;
+	    }
+	    _deleted.Add(_states.First());
+	    _states.RemoveAt(0);
+
+	    // handle the end of this unit's actions
+	    if (action.actor != null && noActionsPending(action.actor))
+	    {
+		    if (action.actor.getFaction() == UnitFaction.FACTION_PLAYER)
+		    {
+			    // spend TUs of "target triggered actions" (shooting, throwing) only
+			    // the other actions' TUs (healing,scanning,..) are already take care of
+			    if (action.targeting && _save.getSelectedUnit() != null && !actionFailed)
+			    {
+				    action.actor.spendTimeUnits(action.TU);
+			    }
+			    if (_save.getSide() == UnitFaction.FACTION_PLAYER)
+			    {
+				    // after throwing the cursor returns to default cursor, after shooting it stays in targeting mode and the player can shoot again in the same mode (autoshot,snap,aimed)
+				    if ((action.type == BattleActionType.BA_THROW || action.type == BattleActionType.BA_LAUNCH) && !actionFailed)
+				    {
+					    // clean up the waypoints
+					    if (action.type == BattleActionType.BA_LAUNCH)
+					    {
+						    _currentAction.waypoints.Clear();
+					    }
+
+					    cancelCurrentAction(true);
+				    }
+				    _parentState.getGame().getCursor().setVisible(true);
+				    setupCursor();
+			    }
+		    }
+		    else
+		    {
+			    // spend TUs
+			    action.actor.spendTimeUnits(action.TU);
+			    if (_save.getSide() != UnitFaction.FACTION_PLAYER && !_debugPlay)
+			    {
+				    // AI does three things per unit, before switching to the next, or it got killed before doing the second thing
+				    if (_AIActionCounter > 2 || _save.getSelectedUnit() == null || _save.getSelectedUnit().isOut())
+				    {
+					    if (_save.getSelectedUnit() != null)
+					    {
+						    _save.getSelectedUnit().setCache(null);
+						    getMap().cacheUnit(_save.getSelectedUnit());
+					    }
+					    _AIActionCounter = 0;
+					    if (!_states.Any() && _save.selectNextPlayerUnit(true) == null)
+					    {
+						    if (!_save.getDebugMode())
+						    {
+							    _endTurnRequested = true;
+							    statePushBack(null); // end AI turn
+						    }
+						    else
+						    {
+							    _save.selectNextPlayerUnit();
+							    _debugPlay = true;
+						    }
+					    }
+					    if (_save.getSelectedUnit() != null)
+					    {
+						    getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+					    }
+				    }
+			    }
+			    else if (_debugPlay)
+			    {
+				    _parentState.getGame().getCursor().setVisible(true);
+				    setupCursor();
+			    }
+		    }
+	    }
+
+	    if (_states.Any())
+	    {
+		    // end turn request?
+		    if (_states.First() == null)
+		    {
+			    while (_states.Any())
+			    {
+				    if (_states.First() == null)
+					    _states.RemoveAt(0);
+				    else
+					    break;
+			    }
+			    if (!_states.Any())
+			    {
+				    endTurn();
+				    return;
+			    }
+			    else
+			    {
+				    _states.Add(null);
+			    }
+		    }
+		    // init the next state in queue
+		    _states.First().init();
+	    }
+
+	    // the currently selected unit died or became unconscious or disappeared inexplicably
+	    if (_save.getSelectedUnit() == null || _save.getSelectedUnit().isOut())
+	    {
+		    cancelCurrentAction();
+		    getMap().setCursorType(CursorType.CT_NORMAL, 1);
+		    _parentState.getGame().getCursor().setVisible(true);
+		    if (_save.getSide() == UnitFaction.FACTION_PLAYER)
+			    _save.setSelectedUnit(null);
+		    else
+			    _save.selectNextPlayerUnit(true, true);
+	    }
+	    _parentState.updateSoldierInfo();
+    }
+
+    /**
+     * Determines whether there are any actions pending for the given unit.
+     * @param bu BattleUnit.
+     * @return True if there are no actions pending.
+     */
+    bool noActionsPending(BattleUnit bu)
+    {
+	    if (!_states.Any()) return true;
+
+	    foreach (var i in _states)
+	    {
+		    if (i != null && i.getAction().actor == bu)
+			    return false;
+	    }
+
+	    return true;
+    }
+
+    /**
+     * Pushes a state to the front of the queue and starts it.
+     * @param bs Battlestate.
+     */
+    internal void statePushFront(BattleState bs)
+    {
+	    _states.Insert(0, bs);
+	    bs.init();
     }
 }

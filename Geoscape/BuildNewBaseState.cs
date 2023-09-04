@@ -313,4 +313,26 @@ internal class BuildNewBaseState : State
         _base = null;
         _game.popState();
     }
+
+    /**
+     * Stops the globe and adds radar hover effect.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    _globe.onMouseOver(globeHover);
+	    _globe.rotateStop();
+	    _globe.setNewBaseHover(true);
+    }
+
+    /**
+     * Processes mouse-hover event for base placement,
+     * @param action Pointer to an action.
+     */
+    void globeHover(Action action)
+    {
+	    _mousex = (int)Math.Floor(action.getAbsoluteXMouse());
+	    _mousey = (int)Math.Floor(action.getAbsoluteYMouse());
+	    if (!_hoverTimer.isRunning()) _hoverTimer.start();
+    }
 }

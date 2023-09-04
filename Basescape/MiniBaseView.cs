@@ -26,6 +26,8 @@ namespace SharpXcom.Basescape;
  */
 internal class MiniBaseView : InteractiveSurface
 {
+	internal const uint MAX_BASES = 8;
+
     List<Base> _bases;
     SurfaceSet _texture;
     uint _base, _hoverBase;

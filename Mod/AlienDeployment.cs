@@ -473,4 +473,33 @@ internal class AlienDeployment : IRule
 
     internal bool isAlienBase() =>
 	    _isAlienBase;
+
+    /**
+     * Fills out the variables associated with mission success, and returns if those variables actually contain anything.
+     * @param &text a reference to the text we wish to alter.
+     * @param &score a reference to the score we wish to alter.
+     * @return if there is anything worthwhile processing.
+     */
+    internal bool getObjectiveCompleteInfo(out string text, out int score)
+    {
+	    text = _objectiveCompleteText;
+	    score = _objectiveCompleteScore;
+	    return !string.IsNullOrEmpty(text);
+    }
+
+    /**
+     * Fills out the variables associated with mission failure, and returns if those variables actually contain anything.
+     * @param &text a reference to the text we wish to alter.
+     * @param &score a reference to the score we wish to alter.
+     * @return if there is anything worthwhile processing.
+     */
+    internal bool getObjectiveFailedInfo(out string text, out int score)
+    {
+	    text = _objectiveFailedText;
+	    score = _objectiveFailedScore;
+	    return !string.IsNullOrEmpty(text);
+    }
+
+    internal EscapeType getEscapeType() =>
+	    _escapeType;
 }

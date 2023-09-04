@@ -459,4 +459,26 @@ internal class BattleItem
      */
     internal int getHealQuantity() =>
 	    _heal;
+
+    /**
+     * Gets the XCom property flag. This is to determine at debriefing what goes into the base/craft.
+     * @return True if it's XCom property.
+     */
+    internal bool getXCOMProperty() =>
+	    _XCOMProperty;
+
+    /**
+     * Spends a bullet from the ammo in this item.
+     * @return True if there are bullets left.
+     */
+    internal bool spendBullet()
+    {
+	    if (_ammoQuantity > 0)
+		    _ammoQuantity--;
+
+	    if (_ammoQuantity == 0)
+		    return false;
+	    else
+		    return true;
+    }
 }

@@ -1527,4 +1527,72 @@ internal class SavedBattleGame
 		    }
 	    }
     }
+
+    /**
+     * Sets the kneel reservation setting.
+     * @param reserved Should we reserve an extra 4 TUs to kneel?
+     */
+    internal void setKneelReserved(bool reserved) =>
+	    _kneelReserved = reserved;
+
+    /**
+     * Converts a unit into a unit of another type.
+     * @param unit The unit to convert.
+     * @return Pointer to the new unit.
+     */
+    internal BattleUnit convertUnit(BattleUnit unit, SavedGame saveGame, Mod.Mod mod)
+    {
+	    string newType = unit.getSpawnUnit();
+	    bool visible = unit.getVisible();
+	    // in case the unit was unconscious
+	    removeUnconsciousBodyItem(unit);
+
+	    unit.instaKill();
+
+	    foreach (var i in unit.getInventory())
+	    {
+		    getTileEngine().itemDrop(getTile(unit.getPosition()), i, mod);
+		    i.setOwner(null);
+	    }
+
+	    unit.getInventory().Clear();
+
+	    // remove unit-tile link
+	    unit.setTile(null);
+
+	    getTile(unit.getPosition()).setUnit(null);
+	    Unit newRule = mod.getUnit(newType, true);
+	    string newArmor = newRule.getArmor();
+	    string terroristWeapon = newRule.getRace().Substring(4);
+	    terroristWeapon += "_WEAPON";
+	    RuleItem newItem = mod.getItem(terroristWeapon);
+
+	    BattleUnit newUnit = new BattleUnit(newRule,
+		    UnitFaction.FACTION_HOSTILE,
+		    getUnits().Last().getId() + 1,
+		    mod.getArmor(newArmor, true),
+		    mod.getStatAdjustment((int)saveGame.getDifficulty()),
+		    getDepth());
+
+	    getTile(unit.getPosition()).setUnit(newUnit, getTile(unit.getPosition() + new Position(0,0,-1)));
+	    newUnit.setPosition(unit.getPosition());
+	    newUnit.setDirection(unit.getDirection());
+	    newUnit.setCache(null);
+	    newUnit.setTimeUnits(0);
+	    newUnit.setSpecialWeapon(this, mod);
+	    getUnits().Add(newUnit);
+	    newUnit.setAIModule(new AIModule(this, newUnit, null));
+	    if (newItem != null)
+	    {
+		    BattleItem bi = new BattleItem(newItem, ref getCurrentItemId());
+		    bi.moveToOwner(newUnit);
+		    bi.setSlot(mod.getInventory("STR_RIGHT_HAND", true));
+		    getItems().Add(bi);
+	    }
+	    newUnit.setVisible(visible);
+	    getTileEngine().calculateFOV(newUnit.getPosition());
+	    getTileEngine().applyGravity(newUnit.getTile());
+	    newUnit.dontReselect();
+	    return newUnit;
+    }
 }

@@ -97,4 +97,11 @@ internal class RuleCommendations
      */
     internal Dictionary<string, List<int>> getCriteria() =>
         _criteria;
+
+    /**
+     * Get the commendation's award kill criteria.
+     * @return vecotr<string> Commendation kill criteria.
+     */
+    internal List<List<KeyValuePair<int, List<string>>>> getKillCriteria() =>
+	    _killCriteria;
 }

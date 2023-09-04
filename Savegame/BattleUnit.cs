@@ -1440,9 +1440,9 @@ internal class BattleUnit
                 int abs_x = Math.Abs(relative.x);
                 int abs_y = Math.Abs(relative.y);
                 if (abs_y > abs_x * 2)
-                    relativeDirection = 8 + 4 * ((relative.y > 0) ? 1 : 0);
+                    relativeDirection = 8 + 4 * Convert.ToInt32(relative.y > 0);
                 else if (abs_x > abs_y * 2)
-                    relativeDirection = 10 + 4 * ((relative.x < 0) ? 1 : 0);
+                    relativeDirection = 10 + 4 * Convert.ToInt32(relative.x < 0);
                 else
                 {
                     if (relative.x < 0)
@@ -1958,7 +1958,7 @@ internal class BattleUnit
      * Set a specific number of timeunits.
      * @param tu
      */
-    void setTimeUnits(int tu) =>
+    internal void setTimeUnits(int tu) =>
         _tu = Math.Max(0, tu);
 
     /**
@@ -2074,7 +2074,7 @@ internal class BattleUnit
      * Advances the turning towards the target direction.
      * @param turret True to turn the turret, false to turn the unit.
      */
-    internal void turn(bool turret)
+    internal void turn(bool turret = false)
     {
 	    int a = 0;
 
@@ -2148,5 +2148,288 @@ internal class BattleUnit
 		    // we officially reached our destination
 		    _status = UnitStatus.STATUS_STANDING;
 	    }
+    }
+
+    /**
+     * Check if the unit is still cached in the Map cache.
+     * When the unit changes it needs to be re-cached.
+     * @return True if it needs to be re-cached.
+     */
+    internal bool isCacheInvalid() =>
+	    _cacheInvalid;
+
+    /**
+     * Returns the current cache surface.
+     * When the unit changes it needs to be re-cached.
+     * @param part Unit part to check.
+     * @return Pointer to cache surface used.
+     */
+    internal Surface getCache(int part)
+    {
+	    if (part < 0) part = 0;
+	    return _cache[part];
+    }
+
+    /**
+     * Set health to 0 and set status dead - used when getting zombified.
+     */
+    internal void instaKill()
+    {
+	    _health = 0;
+	    _status = UnitStatus.STATUS_DEAD;
+    }
+
+    /**
+      * Get the unit's value. Used for score at debriefing.
+      * @return value score
+      */
+    internal int getValue() =>
+	    _value;
+
+    /**
+     * Get the faction the unit was killed by.
+     * @return faction
+     */
+    internal UnitFaction killedBy() =>
+	    _killedBy;
+
+    /**
+     * Get the unit that is spawned when this one dies.
+     * @return unit.
+     */
+    internal string getSpawnUnit() =>
+	    _spawnUnit;
+
+    /**
+     * Converts unit to another faction (original faction is still stored).
+     * @param f faction.
+     */
+    internal void convertToFaction(UnitFaction f) =>
+	    _faction = f;
+
+    internal void updateGeoscapeStats(Soldier soldier)
+    {
+	    soldier.addMissionCount();
+	    soldier.addKillCount(_kills);
+    }
+
+    /**
+     * Check if unit eligible for squaddie promotion. If yes, promote the unit.
+     * Increase the mission counter. Calculate the experience increases.
+     * @param geoscape Pointer to geoscape save.
+     * @param statsDiff (out) The passed UnitStats struct will be filled with the stats differences.
+     * @return True if the soldier was eligible for squaddie promotion.
+     */
+    internal bool postMissionProcedures(SavedGame geoscape, out UnitStats statsDiff)
+    {
+        statsDiff = default;
+	    Soldier s = geoscape.getSoldier(_id);
+	    if (s == null)
+	    {
+		    return false;
+	    }
+
+	    updateGeoscapeStats(s);
+
+	    UnitStats stats = s.getCurrentStats();
+	    statsDiff -= stats;        // subtract old stats
+	    UnitStats caps = s.getRules().getStatCaps();
+	    int healthLoss = _stats.health - _health;
+
+	    s.setWoundRecovery((int)RNG.generate((healthLoss*0.5),(healthLoss*1.5)));
+
+	    if (_expBravery != 0 && stats.bravery < caps.bravery)
+	    {
+		    if (_expBravery > RNG.generate(0,10)) stats.bravery += 10;
+	    }
+	    if (_expReactions != 0 && stats.reactions < caps.reactions)
+	    {
+		    stats.reactions += improveStat(_expReactions);
+	    }
+	    if (_expFiring != 0 && stats.firing < caps.firing)
+	    {
+		    stats.firing += improveStat(_expFiring);
+	    }
+	    if (_expMelee != 0 && stats.melee < caps.melee)
+	    {
+		    stats.melee += improveStat(_expMelee);
+	    }
+	    if (_expThrowing != 0 && stats.throwing < caps.throwing)
+	    {
+		    stats.throwing += improveStat(_expThrowing);
+	    }
+	    if (_expPsiSkill != 0 && stats.psiSkill < caps.psiSkill)
+	    {
+		    stats.psiSkill += improveStat(_expPsiSkill);
+	    }
+	    if (_expPsiStrength != 0 && stats.psiStrength < caps.psiStrength)
+	    {
+		    stats.psiStrength += improveStat(_expPsiStrength);
+	    }
+
+	    bool hasImproved = false;
+	    if (_expBravery != 0 || _expReactions != 0 || _expFiring != 0 || _expPsiSkill != 0 || _expPsiStrength != 0 || _expMelee != 0)
+	    {
+		    hasImproved = true;
+		    if (s.getRank() == SoldierRank.RANK_ROOKIE)
+			    s.promoteRank();
+		    int v;
+		    v = caps.tu - stats.tu;
+		    if (v > 0) stats.tu += RNG.generate(0, v/10 + 2);
+		    v = caps.health - stats.health;
+		    if (v > 0) stats.health += RNG.generate(0, v/10 + 2);
+		    v = caps.strength - stats.strength;
+		    if (v > 0) stats.strength += RNG.generate(0, v/10 + 2);
+		    v = caps.stamina - stats.stamina;
+		    if (v > 0) stats.stamina += RNG.generate(0, v/10 + 2);
+	    }
+
+	    statsDiff += stats; // add new stats
+
+	    return hasImproved;
+    }
+
+    /**
+     * Converts the number of experience to the stat increase.
+     * @param Experience counter.
+     * @return Stat increase.
+     */
+    int improveStat(int exp)
+    {
+	    if      (exp > 10) return RNG.generate(2, 6);
+	    else if (exp > 5)  return RNG.generate(1, 4);
+	    else if (exp > 2)  return RNG.generate(1, 3);
+	    else if (exp > 0)  return RNG.generate(0, 1);
+	    else               return 0;
+    }
+
+    /**
+     * Look at a point.
+     * @param point Position to look at.
+     * @param turret True to turn the turret, false to turn the unit.
+     */
+    internal void lookAt(Position point, bool turret)
+    {
+	    int dir = directionTo(point);
+
+	    if (turret)
+	    {
+		    _toDirectionTurret = dir;
+		    if (_toDirectionTurret != _directionTurret)
+		    {
+			    _status = UnitStatus.STATUS_TURNING;
+		    }
+	    }
+	    else
+	    {
+		    _toDirection = dir;
+		    if (_toDirection != _direction
+			    && _toDirection < 8
+			    && _toDirection > -1)
+		    {
+			    _status = UnitStatus.STATUS_TURNING;
+		    }
+	    }
+    }
+
+    /**
+     * Aim. (shows the right hand sprite and weapon holding)
+     * @param aiming true/false
+     */
+    internal void aim(bool aiming)
+    {
+	    if (aiming)
+		    _status = UnitStatus.STATUS_AIMING;
+	    else
+		    _status = UnitStatus.STATUS_STANDING;
+
+	    if (_visible || _faction == UnitFaction.FACTION_PLAYER)
+		    _cacheInvalid = true;
+    }
+
+    /**
+     * Calculate throwing accuracy.
+     * @return throwing Accuracy
+     */
+    internal double getThrowingAccuracy() =>
+	    (double)(getBaseStats().throwing * getAccuracyModifier()) / 100.0;
+
+    /**
+     * Calculate firing accuracy.
+     * Formula = accuracyStat * weaponAccuracy * kneelingbonus(1.15) * one-handPenalty(0.8) * woundsPenalty(% health) * critWoundsPenalty (-10%/wound)
+     * @param actionType
+     * @param item
+     * @return firing Accuracy
+     */
+    internal int getFiringAccuracy(BattleActionType actionType, BattleItem item)
+    {
+	    int weaponAcc = item.getRules().getAccuracySnap();
+	    if (actionType == BattleActionType.BA_AIMEDSHOT || actionType == BattleActionType.BA_LAUNCH)
+		    weaponAcc = item.getRules().getAccuracyAimed();
+	    else if (actionType == BattleActionType.BA_AUTOSHOT)
+		    weaponAcc = item.getRules().getAccuracyAuto();
+	    else if (actionType == BattleActionType.BA_HIT)
+	    {
+		    if (item.getRules().isSkillApplied())
+		    {
+			    return (getBaseStats().melee * item.getRules().getAccuracyMelee() / 100) * getAccuracyModifier(item) / 100;
+		    }
+		    return item.getRules().getAccuracyMelee() * getAccuracyModifier(item) / 100;
+	    }
+
+	    int result = getBaseStats().firing * weaponAcc / 100;
+
+	    if (_kneeled)
+	    {
+		    result = result * 115 / 100;
+	    }
+
+	    if (item.getRules().isTwoHanded())
+	    {
+		    // two handed weapon, means one hand should be empty
+		    if (getItem("STR_RIGHT_HAND") != null && getItem("STR_LEFT_HAND") != null)
+		    {
+			    result = result * 80 / 100;
+		    }
+	    }
+
+	    return result * getAccuracyModifier(item) / 100;
+    }
+
+    /**
+     * Adds one to the throwing exp counter.
+     */
+    internal void addThrowingExp() =>
+	    _expThrowing++;
+
+    /**
+     * To calculate firing accuracy. Takes health and fatal wounds into account.
+     * Formula = accuracyStat * woundsPenalty(% health) * critWoundsPenalty (-10%/wound)
+     * @param item the item we are shooting right now.
+     * @return modifier
+     */
+    int getAccuracyModifier(BattleItem item = null)
+    {
+	    int wounds = _fatalWounds[(int)UnitBodyPart.BODYPART_HEAD];
+
+	    if (item != null)
+	    {
+		    if (item.getRules().isTwoHanded())
+		    {
+			    wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_RIGHTARM] + _fatalWounds[(int)UnitBodyPart.BODYPART_LEFTARM];
+		    }
+		    else
+		    {
+			    if (getItem("STR_RIGHT_HAND") == item)
+			    {
+				    wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_RIGHTARM];
+			    }
+			    else
+			    {
+				    wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_LEFTARM];
+			    }
+		    }
+	    }
+	    return Math.Max(10, 25 * _health / getBaseStats().health + 75 + -10 * wounds);
     }
 }

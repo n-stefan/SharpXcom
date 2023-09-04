@@ -819,4 +819,11 @@ internal class AlienMission
 				break;
 		}
 	}
+
+	/**
+	 * Only alien supply missions ever have a valid pointer.
+	 * @return A pointer (possibly 0) of the AlienBase for this mission.
+	 */
+	internal AlienBase getAlienBase() =>
+		_base;
 }

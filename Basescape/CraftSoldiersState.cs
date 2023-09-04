@@ -454,4 +454,13 @@ internal class CraftSoldiersState : State
 		_txtAvailable.setText(tr("STR_SPACE_AVAILABLE").arg(c.getSpaceAvailable()));
 		_txtUsed.setText(tr("STR_SPACE_USED").arg(c.getSpaceUsed()));
 	}
+
+	/**
+	 * Shows the soldiers in a list.
+	 */
+	protected override void init()
+	{
+		base.init();
+		initList();
+	}
 }

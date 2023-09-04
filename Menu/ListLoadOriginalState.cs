@@ -185,4 +185,17 @@ internal class ListLoadOriginalState : State
             }
         }
     }
+
+    /**
+    * Refreshes the saves list.
+    */
+    protected override void init()
+    {
+	    base.init();
+
+	    if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
+	    {
+		    applyBattlescapeTheme();
+	    }
+    }
 }

@@ -121,4 +121,14 @@ internal class BuildFacilitiesState : State
             _lstFacilities.addRow(1, tr(i.getType()));
         }
     }
+
+    /**
+     * The player can change the selected base
+     * or change info on other screens.
+     */
+    protected override void init()
+    {
+	    _state.init();
+	    base.init();
+    }
 }

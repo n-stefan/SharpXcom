@@ -173,4 +173,21 @@ internal class BriefingState : State
             _game.pushState(new AliensCrashState());
         }
     }
+
+	protected override void init()
+	{
+		base.init();
+
+		if (!string.IsNullOrEmpty(_cutsceneId))
+		{
+			_game.pushState(new CutsceneState(_cutsceneId));
+
+			// don't play the cutscene again when we return to this state
+			_cutsceneId = string.Empty;
+		}
+		else
+		{
+			_game.getMod().playMusic(_musicId);
+		}
+	}
 }

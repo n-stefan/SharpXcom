@@ -174,11 +174,31 @@ internal class Camera
      * @param mapPos X,Y,Z coordinates on the map.
      * @param screenPos Screen position.
      */
-    void convertMapToScreen(Position mapPos, out Position screenPos) =>
+    internal void convertMapToScreen(Position mapPos, out Position screenPos) =>
         screenPos = new Position
         {
             z = 0, // not used
             x = mapPos.x * (_spriteWidth / 2) - mapPos.y * (_spriteWidth / 2),
             y = mapPos.x * (_spriteWidth / 4) + mapPos.y * (_spriteWidth / 4) - mapPos.z * ((_spriteHeight + _spriteWidth / 4) / 2)
         };
+
+    /**
+     * Gets the map offset.
+     * @return The map offset.
+     */
+    internal Position getMapOffset() =>
+	    _mapOffset;
+
+    /**
+     * Sets the view level.
+     * @param viewlevel New view level.
+     */
+    internal void setViewLevel(int viewlevel)
+    {
+	    _mapOffset.z = Math.Clamp(viewlevel, 0, _mapsize_z - 1);
+	    _map.draw();
+    }
+
+    internal void stopMouseScrolling() =>
+	    _scrollMouseTimer.stop();
 }

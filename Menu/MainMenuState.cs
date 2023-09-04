@@ -22,13 +22,13 @@ namespace SharpXcom.Menu;
 // Utility class for enqueuing a state in the stack that goes to the main menu
 class GoToMainMenuState : State
 {
-    void init()
-    {
-        Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
-        _game.getScreen().resetDisplay(false);
-        _game.setState(new MainMenuState());
-    }
-};
+	protected override void init()
+	{
+		Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
+		_game.getScreen().resetDisplay(false);
+		_game.setState(new MainMenuState());
+	}
+}
 
 /**
  * Main Menu window displayed when first

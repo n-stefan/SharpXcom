@@ -27,7 +27,7 @@ namespace SharpXcom.Engine;
  * information from/to the user, and are linked to the core game
  * engine which manages them.
  */
-internal class State
+internal abstract class State
 {
     /// Initializes static member
     internal static Game _game;
@@ -287,7 +287,7 @@ internal class State
      * of states, so they can be created once while being
      * repeatedly switched back into focus).
      */
-    /* protected virtual */ private void init()
+    protected virtual void init()
     {
         _game.getScreen().setPalette(_palette);
         _game.getCursor().setPalette(_palette);

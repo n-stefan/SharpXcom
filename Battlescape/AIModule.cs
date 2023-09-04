@@ -139,4 +139,7 @@ internal class AIModule
 	    _escapeTUs = 0;
 	    _ambushTUs = 0;
     }
+
+    internal BattleUnit getTarget() =>
+	    _aggroTarget;
 }

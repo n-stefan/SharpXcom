@@ -56,6 +56,9 @@ internal class Position
     public static Position operator -(Position a, Position b) =>
         new(a.x - b.x, a.y - b.y, a.z - b.z);
 
+    public static Position operator *(Position a, Position b) =>
+        new(a.x * b.x, a.y * b.y, a.z * b.z);
+
     public static Position operator /(Position a, Position b) =>
         new(a.x / b.x, a.y / b.y, a.z / b.z);
 

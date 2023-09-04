@@ -262,13 +262,13 @@ internal class Mod
     static int DOOR_OPEN;
     static int SLIDING_DOOR_OPEN;
     internal static int SLIDING_DOOR_CLOSE;
-    static int SMALL_EXPLOSION;
-    static int LARGE_EXPLOSION;
-    static int EXPLOSION_OFFSET;
+    internal static int SMALL_EXPLOSION;
+    internal static int LARGE_EXPLOSION;
+    internal static int EXPLOSION_OFFSET;
     static int SMOKE_OFFSET;
     static int UNDERWATER_SMOKE_OFFSET;
     internal static int ITEM_DROP;
-    static int ITEM_THROW;
+    internal static int ITEM_THROW;
     static int ITEM_RELOAD;
     static int WALK_OFFSET;
     static int FLYING_SOUND;
@@ -284,8 +284,8 @@ internal class Mod
     static int[] WINDOW_POPUP = new int[3];
     internal static int[] FIRE_DAMAGE_RANGE = new int[2];
     internal static int[] DIFFICULTY_COEFFICIENT = new int[5];
-    static string DEBRIEF_MUSIC_GOOD;
-    static string DEBRIEF_MUSIC_BAD;
+    internal static string DEBRIEF_MUSIC_GOOD;
+    internal static string DEBRIEF_MUSIC_BAD;
 
     Music _muteMusic;
     Sound _muteSound;
@@ -3368,4 +3368,60 @@ internal class Mod
 
 	    return save;
     }
+
+    /**
+     * Returns the smallest facility's radar range.
+     * @return The minimum range.
+     */
+    internal int getMinRadarRange()
+    {
+        int minRadarRange = 0;
+
+        {
+            foreach (var i in _facilitiesIndex)
+            {
+                RuleBaseFacility f = getBaseFacility(i);
+                if (f == null) continue;
+
+                int radarRange = f.getRadarRange();
+                if (radarRange > 0 && (minRadarRange == 0 || minRadarRange > radarRange))
+                {
+                    minRadarRange = radarRange;
+                }
+            }
+        }
+
+        return minRadarRange;
+    }
+
+    /**
+     * Returns the data for the specified video cutscene.
+     * @param id Video id.
+     * @return A pointer to the data for the specified video.
+     */
+    internal RuleVideo getVideo(string id, bool error = false) =>
+	    getRule(id, "Video", _videos, error);
+
+    /**
+     * Returns the list of all ufos
+     * provided by the mod.
+     * @return List of ufos.
+     */
+    internal List<string> getUfosList() =>
+	    _ufosIndex;
+
+    /**
+     * Returns the list of all countries
+     * provided by the mod.
+     * @return List of countries.
+     */
+    internal List<string> getCountriesList() =>
+	    _countriesIndex;
+
+    /**
+     * Gets the amount of alien fuel to recover.
+     * @return the amount to recover.
+     */
+    internal int getAlienFuelQuantity() =>
+        _alienFuel.Value;
 }

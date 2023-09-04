@@ -129,4 +129,21 @@ internal class CraftsState : State
             _game.pushState(new CraftInfoState(_base, _lstCrafts.getSelectedRow()));
         }
     }
+
+    /**
+     * The soldier names can change
+     * after going into other screens.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    _lstCrafts.clearList();
+	    foreach (var i in _base.getCrafts())
+	    {
+		    string ss = $"{i.getNumWeapons()}/{i.getRules().getWeapons()}";
+		    string ss2 = i.getNumSoldiers().ToString();
+		    string ss3 = i.getNumVehicles().ToString();
+		    _lstCrafts.addRow(5, i.getName(_game.getLanguage()), tr(i.getStatus()), ss, ss2, ss3);
+	    }
+    }
 }

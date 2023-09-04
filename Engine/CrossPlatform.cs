@@ -593,4 +593,26 @@ internal class CrossPlatform
             SDL_FlashWindow(window, SDL_FlashOperation.SDL_FLASH_BRIEFLY);
         }
 	}
+
+	/**
+	 * Gets the last modified date of a file.
+	 * @param path Full path to file.
+	 * @return The timestamp in integral format.
+	 */
+	internal static long getDateModified(string path) =>
+		File.GetLastWriteTime(path).Ticks;
+
+	/**
+	 * Converts a date/time into a human-readable string
+	 * using the ISO 8601 standard.
+	 * @param time Value in timestamp format.
+	 * @return String pair with date and time.
+	 */
+	internal static KeyValuePair<string, string> timeToString(long time)
+	{
+		var timeinfo = new DateTime(time, DateTimeKind.Local);
+		var localDate = timeinfo.ToString("yyyy-MM-dd");
+		var localTime = timeinfo.ToString("HH:mm");
+		return KeyValuePair.Create(localDate, localTime);
+	}
 }

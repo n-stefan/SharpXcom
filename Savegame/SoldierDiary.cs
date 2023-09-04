@@ -125,6 +125,16 @@ internal class SoldierCommendations
      */
     internal string getDecorationLevelName(int skipCounter) =>
         $"STR_AWARD_{_decorationLevel - skipCounter}";
+
+	/**
+	 * Add a level of decoration to the commendation.
+	 * Sets isNew to true.
+	 */
+	internal void addDecoration()
+	{
+		_decorationLevel++;
+		_isNew = true;
+	}
 }
 
 internal class SoldierDiary
@@ -590,4 +600,663 @@ internal class SoldierDiary
 	    // TODO: Unhardcode this
 	    _commendations.Add(new SoldierCommendations("STR_MEDAL_ORIGINAL8_NAME", "NoNoun"));
     }
+
+	/**
+	 * Manage the soldier's commendations.
+	 * Award new ones, if deserved.
+	 * @return bool Has a commendation been awarded?
+	 */
+	internal bool manageCommendations(Mod.Mod mod, List<MissionStatistics> missionStatistics)
+	{
+		const int BATTLE_TYPES = 13;
+		const int DAMAGE_TYPES = 11;
+		string[] battleTypeArray = { "BT_NONE", "BT_FIREARM", "BT_AMMO", "BT_MELEE", "BT_GRENADE",	"BT_PROXIMITYGRENADE", "BT_MEDIKIT", "BT_SCANNER", "BT_MINDPROBE", "BT_PSIAMP", "BT_FLARE", "BT_CORPSE", "BT_END" };
+		string[] damageTypeArray = { "DT_NONE", "DT_AP", "DT_IN", "DT_HE", "DT_LASER", "DT_PLASMA", "DT_STUN", "DT_MELEE", "DT_ACID", "DT_SMOKE", "DT_END"};
+
+		Dictionary<string, RuleCommendations> commendationsList = mod.getCommendationsList();
+		bool awardedCommendation = false;                   // This value is returned if at least one commendation was given.
+		var nextCommendationLevel = new Dictionary<string, int>();   // Noun, threshold.
+		var modularCommendations = new List<string>();      // Commendation name.
+		bool awardCommendationBool = false;                 // This value determines if a commendation will be given.
+		// Loop over all possible commendations
+
+		var i = commendationsList.GetEnumerator();
+		i.MoveNext();
+		while (i.Current.Key != null)
+		{
+			awardCommendationBool = true;
+			nextCommendationLevel.Clear();
+			nextCommendationLevel["noNoun"] = 0;
+			modularCommendations.Clear();
+			// Loop over all the soldier's commendations, see if we already have the commendation.
+			// If so, get the level and noun.
+			foreach (var j in _commendations)
+			{
+				if ( i.Current.Key == j.getType() )
+				{
+					nextCommendationLevel[j.getNoun()] = j.getDecorationLevelInt() + 1;
+				}
+			}
+			// Go through each possible criteria. Assume the medal is awarded, set to false if not.
+			// As soon as we find a medal criteria that we FAIL TO achieve, then we are not awarded a medal.
+			foreach (var j in i.Current.Value.getCriteria())
+			{
+				// Skip this medal if we have reached its max award level.
+				if ((uint)nextCommendationLevel["noNoun"] >= j.Value.Count)
+				{
+					awardCommendationBool = false;
+					break;
+				}
+				// These criteria have no nouns, so only the nextCommendationLevel["noNoun"] will ever be used.
+				else if( nextCommendationLevel.Count(x => x.Key == "noNoun") == 1 &&
+					  ( (j.Key == "totalKills" && (uint)getKillTotal() < (uint)j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalMissions" && _missionIdList.Count < (uint)j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalWins" && getWinTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalScore" && getScoreTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalStuns" && getStunTotal() < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalDaysWounded" && _daysWoundedTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalBaseDefenseMissions" && getBaseDefenseMissionTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalTerrorMissions" && getTerrorMissionTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalNightMissions" && getNightMissionTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalNightTerrorMissions" && getNightTerrorMissionTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalMonthlyService" && _monthsService < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalFellUnconcious" && _unconciousTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalShotAt10Times" && _shotAtCounter10in1Mission < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalHit5Times" && _hitCounter5in1Mission < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalFriendlyFired" && (_totalShotByFriendlyCounter < j.Value[nextCommendationLevel["noNoun"]] || _KIA != 0 || _MIA != 0)) ||
+						(j.Key == "total_lone_survivor" && _loneSurvivorTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalIronMan" && _ironManTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalImportantMissions" && getImportantMissionTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalLongDistanceHits" && _longDistanceHitCounterTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalLowAccuracyHits" && _lowAccuracyHitCounterTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalReactionFire" && getReactionFireKillTotal(mod) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalTimesWounded" && _timesWoundedTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalDaysWounded" && _daysWoundedTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalValientCrux" && getValiantCruxTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "isDead" && _KIA < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalTrapKills" && getTrapKillTotal(mod) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalAlienBaseAssaults" && getAlienBaseAssaultTotal(missionStatistics) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalAllAliensKilled" && _allAliensKilledTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalAllAliensStunned" && _allAliensStunnedTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalWoundsHealed" && _woundsHealedTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalAllUFOs" && _allUFOs < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalAllMissionTypes" && _allMissionTypes < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalStatGain" && _statGainTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalRevives" && _revivedUnitTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalSoldierRevives" && _revivedSoldierTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalHostileRevives" && _revivedHostileTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalNeutralRevives" && _revivedNeutralTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalWholeMedikit" && _wholeMedikitTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalBraveryGain" && _braveryGainTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "bestOfRank" && _bestOfRank < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "bestSoldier" && (int)_bestSoldier < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "isMIA" && _MIA < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalMartyrKills" && _martyrKillsTotal < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalPostMortemKills" && _postMortemKills < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "globeTrotter" && Convert.ToInt32(_globeTrotter) < j.Value[nextCommendationLevel["noNoun"]]) ||
+						(j.Key == "totalSlaveKills" && _slaveKillsTotal < j.Value[nextCommendationLevel["noNoun"]]) ) )
+				{
+					awardCommendationBool = false;
+					break;
+				}
+				// Medals with the following criteria are unique because they need a noun.
+				// And because they loop over a map<> (this allows for maximum moddability).
+				else if (j.Key == "totalKillsWithAWeapon" || j.Key == "totalMissionsInARegion" || j.Key == "totalKillsByRace" || j.Key == "totalKillsByRank")
+				{
+					var tempTotal = new Dictionary<string, int>();
+					if (j.Key == "totalKillsWithAWeapon")
+						tempTotal = getWeaponTotal();
+					else if (j.Key == "totalMissionsInARegion")
+						tempTotal = getRegionTotal(missionStatistics);
+					else if (j.Key == "totalKillsByRace")
+						tempTotal = getAlienRaceTotal();
+					else if (j.Key == "totalKillsByRank")
+						tempTotal = getAlienRankTotal();
+					// Loop over the temporary map.
+					// Match nouns and decoration levels.
+					foreach (var k in tempTotal)
+					{
+						int criteria = -1;
+						string noun = k.Key;
+						// If there is no matching noun, get the first award criteria.
+						if (nextCommendationLevel.Count(x => x.Key == noun) == 0)
+							criteria = j.Value.First();
+						// Otherwise, get the criteria that reflects the soldier's commendation level.
+						else if ((uint)nextCommendationLevel[noun] != j.Value.Count)
+							criteria = j.Value[nextCommendationLevel[noun]];
+
+						// If a criteria was set AND the stat's count exceeds the criteria.
+						if (criteria != -1 && k.Value >= criteria)
+						{
+							modularCommendations.Add(noun);
+						}
+					}
+					// If it is still empty, we did not get a commendation.
+					if (!modularCommendations.Any())
+					{
+						awardCommendationBool = false;
+						break;
+					}
+				}
+				// Medals that are based on _how_ a kill was achieved are found here.
+				else if (j.Key == "killsWithCriteriaCareer" || j.Key == "killsWithCriteriaMission" || j.Key == "killsWithCriteriaTurn")
+				{
+					// Fetch the kill criteria list.
+					if (i.Current.Value.getKillCriteria() == null)
+						break;
+					List<List<KeyValuePair<int, List<string>>>> _killCriteriaList = i.Current.Value.getKillCriteria();
+
+					int totalKillGroups = 0; // holds the total number of kill groups which satisfy one of the OR criteria blocks
+					bool enoughForNextCommendation = false;
+
+					// Loop over the OR vectors.
+					// if OR criteria are not disjunctive (e.g. "kill 1 enemy" or "kill 1 enemy"), each one will be counted and added to totals - avoid that if you want good statistics
+					for (var orCriteria = 0; orCriteria < _killCriteriaList.Count; ++orCriteria)
+					{
+						// prepare counters
+						var referenceBlockCounters = new List<int>(orCriteria); //referenceBlockCounters.assign(orCriteria.Count, 0);
+						int referenceTotalCounters = 0;
+						for (var andCriteria = 0; andCriteria < _killCriteriaList[orCriteria].Count; ++andCriteria)
+						{
+							int index = andCriteria - orCriteria;
+							referenceBlockCounters[index] = _killCriteriaList[orCriteria][andCriteria].Key;
+							referenceTotalCounters += _killCriteriaList[orCriteria][andCriteria].Key;
+						}
+						var currentBlockCounters = new List<int>();
+						if (j.Key == "killsWithCriteriaCareer") {
+							currentBlockCounters = referenceBlockCounters;
+						}
+						int currentTotalCounters = referenceTotalCounters;
+						int lastTimeSpan = -1;
+						bool skipThisTimeSpan = false;
+						// Loop over the KILLS, seeking to fulfill all criteria from entire AND block within the specified time span (career/mission/turn)
+						foreach (var singleKill in _killList)
+						{
+							int thisTimeSpan = -1;
+							if (j.Key == "killsWithCriteriaMission")
+							{
+								thisTimeSpan = singleKill.mission;
+							}
+							else if (j.Key == "killsWithCriteriaTurn")
+							{
+								thisTimeSpan = singleKill.turn;
+							}
+							if (thisTimeSpan != lastTimeSpan)
+							{
+								// next time span, reset counters
+								lastTimeSpan = thisTimeSpan;
+								skipThisTimeSpan = false;
+								currentBlockCounters = referenceBlockCounters;
+								currentTotalCounters = referenceTotalCounters;
+							}
+							// same time span, we're skipping the rest of it if we already fulfilled criteria
+							else if (skipThisTimeSpan)
+							{
+								continue;
+							}
+
+							bool andCriteriaMet = false;
+
+							// Loop over the AND vectors.
+							for (var andCriteria = 0; andCriteria < _killCriteriaList[orCriteria].Count; ++andCriteria)
+							{
+								bool foundMatch = true;
+
+								// Loop over the DETAILs of one AND vector.
+								foreach (var detail in _killCriteriaList[orCriteria][andCriteria].Value)
+								{
+									int battleType = 0;
+									for (; battleType != BATTLE_TYPES; ++battleType)
+									{
+										if (detail == battleTypeArray[battleType])
+										{
+											break;
+										}
+									}
+
+									int damageType = 0;
+									for (; damageType != DAMAGE_TYPES; ++damageType)
+									{
+										if (detail == damageTypeArray[damageType])
+										{
+											break;
+										}
+									}
+
+									// See if we find _no_ matches with any criteria. If so, break and try the next kill.
+									RuleItem weapon = mod.getItem(singleKill.weapon);
+									RuleItem weaponAmmo = mod.getItem(singleKill.weaponAmmo);
+									if (weapon == null || weaponAmmo == null ||
+										(singleKill.rank != detail && singleKill.race != detail &&
+										 singleKill.weapon != detail && singleKill.weaponAmmo != detail &&
+										 singleKill.getUnitStatusString() != detail && singleKill.getUnitFactionString() != detail &&
+										 singleKill.getUnitSideString() != detail && singleKill.getUnitBodyPartString() != detail &&
+										 (int)weaponAmmo.getDamageType() != damageType && (int)weapon.getBattleType() != battleType))
+									{
+										foundMatch = false;
+										break;
+									}
+								} /// End of DETAIL loop.
+
+								if (foundMatch)
+								{
+									int index = andCriteria - orCriteria;
+									// some current block counters might go into negatives, this is used to tally career kills correctly
+									// currentTotalCounters will always ensure we're counting in proper batches
+									if (currentBlockCounters[index]-- > 0 && --currentTotalCounters <= 0)
+									{
+										// we just counted all counters in a block to zero, this certainly means that the entire block criteria is fulfilled
+										andCriteriaMet = true;
+										break;
+									}
+								}
+							} /// End of AND loop.
+
+							if (andCriteriaMet)
+							{
+								// early exit if we got enough, no reason to continue iterations
+								if (++totalKillGroups >= j.Value[nextCommendationLevel["noNoun"]])
+								{
+									enoughForNextCommendation = true;
+									break;
+								}
+							
+								// "killsWithCriteriaTurn" and "killsWithCriteriaMission" are "peak achivements", they are counted once per their respective time span if criteria are fulfilled
+								// so if we got them, we're skipping the rest of this time span to avoid counting more than once
+								// e.g. 20 kills in a mission will not be counted as "10 kills in a mission" criteria twice
+								// "killsWithCriteriaCareer" are totals, so they are never skipped this way
+								if (j.Key == "killsWithCriteriaTurn" || j.Key == "killsWithCriteriaMission")
+								{
+									skipThisTimeSpan = true;
+								}
+								// for career kills we'll ADD reference counters to the current values and recalculate current total
+								// this is used to count instances of full criteria blocks, e.g. if rules state that a career commendation must be awarded for 2 kills of alien leaders
+								// and 1 kill of  alien commander, then we must ensure there's 2 leader kills + 1 commander kill for each instance of criteria fulfilled
+								else if (j.Key == "killsWithCriteriaCareer")
+								{
+									currentTotalCounters = 0;
+									for (int k = 0; k < currentBlockCounters.Count; k++)
+									{
+										currentBlockCounters[k] += referenceBlockCounters[k];
+										currentTotalCounters += Math.Max(currentBlockCounters[k], 0);
+									}
+								}
+							}
+						} /// End of KILLs loop.
+
+						if (enoughForNextCommendation)
+							break; // stop iterating here too, we've got enough
+
+					} /// End of OR loop.
+
+					if (!enoughForNextCommendation)
+						awardCommendationBool = false;
+
+				}
+			}
+			if (awardCommendationBool)
+			{
+				// If we do not have modular medals, but are awarded a different medal,
+				// its noun will be "noNoun".
+				if (!modularCommendations.Any())
+				{
+					modularCommendations.Add("noNoun");
+				}
+				foreach (var j in modularCommendations)
+				{
+					bool newCommendation = true;
+					foreach (var k in _commendations)
+					{
+						if ( k.getType() == i.Current.Key && k.getNoun() == j)
+						{
+							k.addDecoration();
+							newCommendation = false;
+							break;
+						}
+					}
+					if (newCommendation)
+					{
+						_commendations.Add(new SoldierCommendations(i.Current.Key, j));
+					}
+				}
+				awardedCommendation = true;
+			}
+			else
+			{
+				i.MoveNext();
+			}
+		}
+		return awardedCommendation;
+	}
+
+	/**
+	 *  Get the total of base defense missions.
+	 *  @param Mission Statistics
+	 */
+	int getBaseDefenseMissionTotal(List<MissionStatistics> missionStatistics)
+	{
+		int baseDefenseMissionTotal = 0;
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id)
+				{
+					if (i.success && i.isBaseDefense())
+					{
+						baseDefenseMissionTotal++;
+					}
+				}
+			}
+		}
+
+		return baseDefenseMissionTotal;
+	}
+
+	/**
+	 *  Get the total of terror missions.
+	 *  @param Mission Statistics
+	 */
+	int getTerrorMissionTotal(List<MissionStatistics> missionStatistics)
+	{
+		/// Not a UFO, not the base, not the alien base or colony
+		int terrorMissionTotal = 0;
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id)
+				{
+					if (i.success && !i.isBaseDefense() && !i.isUfoMission() && !i.isAlienBase())
+					{
+						terrorMissionTotal++;
+					}
+				}
+			}
+		}
+
+		return terrorMissionTotal;
+	}
+
+	/**
+	 *  Get the total of night missions.
+	 *  @param Mission Statistics
+	 */
+	int getNightMissionTotal(List<MissionStatistics> missionStatistics)
+	{
+		int nightMissionTotal = 0;
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id)
+				{
+					if (i.success && i.isDarkness() && !i.isBaseDefense() && !i.isAlienBase())
+					{
+						nightMissionTotal++;
+					}
+				}
+			}
+		}
+
+		return nightMissionTotal;
+	}
+
+	/**
+	 *  Get the total of night terror missions.
+	 *  @param Mission Statistics
+	 */
+	int getNightTerrorMissionTotal(List<MissionStatistics> missionStatistics)
+	{
+		int nightTerrorMissionTotal = 0;
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id)
+				{
+					if (i.success && i.isDarkness() && !i.isBaseDefense() && !i.isUfoMission() && !i.isAlienBase())
+					{
+						nightTerrorMissionTotal++;
+					}
+				}
+			}
+		}
+
+		return nightTerrorMissionTotal;
+	}
+
+	/**
+	 *  Get the total of important missions.
+	 *  @param Mission Statistics
+	 */
+	int getImportantMissionTotal(List<MissionStatistics> missionStatistics)
+	{
+		int importantMissionTotal = 0;
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id)
+				{
+					if (i.success && i.type != "STR_UFO_CRASH_RECOVERY")
+					{
+						importantMissionTotal++;
+					}
+				}
+			}
+		}
+
+		return importantMissionTotal;
+	}
+
+    /**
+	 *  Get reaction kill total.
+	 */
+    int getReactionFireKillTotal(Mod.Mod mod)
+    {
+        int reactionFireKillTotal = 0;
+
+        foreach (var i in _killList)
+        {
+            RuleItem item = mod.getItem(i.weapon);
+            if (i.hostileTurn() && item != null && item.getBattleType() != BattleType.BT_GRENADE && item.getBattleType() != BattleType.BT_PROXIMITYGRENADE)
+            {
+                reactionFireKillTotal++;
+            }
+        }
+
+        return reactionFireKillTotal;
+    }
+
+	/**
+	 *  Get the Valient Crux total.
+	 *  @param Mission Statistics
+	 */
+	int getValiantCruxTotal(List<MissionStatistics> missionStatistics)
+	{
+		int valiantCruxTotal = 0;
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id && i.valiantCrux)
+				{
+					valiantCruxTotal++;
+				}
+			}
+		}
+
+		return valiantCruxTotal;
+	}
+
+	/**
+	 *  Get trap kills total.
+	 */
+	int getTrapKillTotal(Mod.Mod mod)
+	{
+		int trapKillTotal = 0;
+
+		foreach (var i in _killList)
+		{
+			RuleItem item = mod.getItem(i.weapon);
+			if (i.hostileTurn() && (item == null || item.getBattleType() == BattleType.BT_GRENADE || item.getBattleType() == BattleType.BT_PROXIMITYGRENADE))
+			{
+				trapKillTotal++;
+			}
+		}
+
+		return trapKillTotal;
+	}
+
+	/**
+	 *  Get the total of alien base assaults.
+	 *  @param Mission Statistics
+	 */
+	int getAlienBaseAssaultTotal(List<MissionStatistics> missionStatistics)
+	{
+		int alienBaseAssaultTotal = 0;
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id)
+				{
+					if (i.success && i.isAlienBase())
+					{
+						alienBaseAssaultTotal++;
+					}
+				}
+			}
+		}
+
+		return alienBaseAssaultTotal;
+	}
+
+	/**
+	 * Award post-humous kills commendation.
+	 */
+	internal void awardPostMortemKill(int kills) =>
+		_postMortemKills = kills;
+
+	/**
+	 * Award post-humous best-of commendation.
+	 */
+	internal void awardBestOfRank(int score) =>
+		_bestOfRank = score;
+
+	/**
+	 * Award post-humous best-of commendation.
+	 */
+	internal void awardBestOverall(int score) =>
+		_bestSoldier = score;
+
+	/**
+	 * Update soldier diary statistics.
+	 * @param unitStatistics BattleUnitStatistics to get stats from.
+	 * @param missionStatistics MissionStatistics to get stats from.
+	 */
+	internal void updateDiary(BattleUnitStatistics unitStatistics, List<MissionStatistics> allMissionStatistics, Mod.Mod rules)
+	{
+		if (!allMissionStatistics.Any()) return;
+		MissionStatistics missionStatistics = allMissionStatistics.Last();
+		List<BattleUnitKills> unitKills = unitStatistics.kills;
+		foreach (var kill in unitKills)
+		{
+			kill.makeTurnUnique();
+			_killList.Add(kill);
+		}
+		unitKills.Clear();
+		if (missionStatistics.success)
+		{
+			if (unitStatistics.loneSurvivor)
+				_loneSurvivorTotal++;
+			if (unitStatistics.ironMan)
+				_ironManTotal++;
+			if (unitStatistics.nikeCross)
+				_allAliensKilledTotal++;
+			if (unitStatistics.mercyCross)
+				_allAliensStunnedTotal++;
+		}
+		_daysWoundedTotal += unitStatistics.daysWounded;
+		if (unitStatistics.daysWounded != 0)
+			_timesWoundedTotal++;
+
+		if (unitStatistics.wasUnconcious)
+			_unconciousTotal++;
+		_shotAtCounterTotal += unitStatistics.shotAtCounter;
+		_shotAtCounter10in1Mission += (unitStatistics.shotAtCounter)/10;
+		_hitCounterTotal += unitStatistics.hitCounter;
+		_hitCounter5in1Mission += (unitStatistics.hitCounter)/5;
+		_totalShotByFriendlyCounter += unitStatistics.shotByFriendlyCounter;
+		_totalShotFriendlyCounter += unitStatistics.shotFriendlyCounter;
+		_longDistanceHitCounterTotal += unitStatistics.longDistanceHitCounter;
+		_lowAccuracyHitCounterTotal += unitStatistics.lowAccuracyHitCounter;
+		_shotsFiredCounterTotal += unitStatistics.shotsFiredCounter;
+		_shotsLandedCounterTotal += unitStatistics.shotsLandedCounter;
+		if (unitStatistics.KIA)
+			_KIA++;
+		if (unitStatistics.MIA)
+			_MIA++;
+		_woundsHealedTotal += unitStatistics.woundsHealed;
+		if (getUFOTotal(allMissionStatistics).Count >= rules.getUfosList().Count)
+			_allUFOs = 1;
+		if ((getUFOTotal(allMissionStatistics).Count + getTypeTotal(allMissionStatistics).Count) == (rules.getUfosList().Count + rules.getDeploymentsList().Count - 2))
+			_allMissionTypes = 1;
+		if (getCountryTotal(allMissionStatistics).Count == rules.getCountriesList().Count)
+			_globeTrotter = true;
+		_martyrKillsTotal += unitStatistics.martyr;
+		_slaveKillsTotal += unitStatistics.slaveKills;
+
+		// Stat change long hand calculation
+		_statGainTotal = 0; // Reset.
+		_statGainTotal += unitStatistics.delta.tu;
+		_statGainTotal += unitStatistics.delta.stamina;
+		_statGainTotal += unitStatistics.delta.health;
+		_statGainTotal += unitStatistics.delta.bravery / 10; // Normalize
+		_statGainTotal += unitStatistics.delta.reactions;
+		_statGainTotal += unitStatistics.delta.firing;
+		_statGainTotal += unitStatistics.delta.throwing;
+		_statGainTotal += unitStatistics.delta.strength;
+		_statGainTotal += unitStatistics.delta.psiStrength;
+		_statGainTotal += unitStatistics.delta.melee;
+		_statGainTotal += unitStatistics.delta.psiSkill;
+
+		_braveryGainTotal = unitStatistics.delta.bravery;
+		_revivedUnitTotal += (unitStatistics.revivedSoldier + unitStatistics.revivedHostile + unitStatistics.revivedNeutral);
+		_revivedSoldierTotal += unitStatistics.revivedSoldier;
+		_revivedNeutralTotal += unitStatistics.revivedNeutral;
+		_revivedHostileTotal += unitStatistics.revivedHostile;
+		_wholeMedikitTotal += Math.Min( Math.Min(unitStatistics.woundsHealed, unitStatistics.appliedStimulant), unitStatistics.appliedPainKill);
+		_missionIdList.Add(missionStatistics.id);
+	}
+
+	/**
+	 *  Get a map of the amount of missions done in each country.
+	 *  @param MissionStatistics
+	 */
+	Dictionary<string, int> getCountryTotal(List<MissionStatistics> missionStatistics)
+	{
+		var countryTotal = new Dictionary<string, int>();
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id)
+				{
+					countryTotal[i.country]++;
+				}
+			}
+		}
+
+		return countryTotal;
+	}
 }

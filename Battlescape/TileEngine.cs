@@ -81,7 +81,7 @@ internal class TileEngine
 	 * @param newItem Bool whether this is a new item.
 	 * @param removeItem Bool whether to remove the item from the owner.
 	 */
-	internal void itemDrop(Tile t, BattleItem item, Mod.Mod mod, bool newItem, bool removeItem)
+	internal void itemDrop(Tile t, BattleItem item, Mod.Mod mod, bool newItem = false, bool removeItem = false)
 	{
 		// don't spawn anything outside of bounds
 		if (t == null)
@@ -571,7 +571,7 @@ internal class TileEngine
      * @param potentialUnit is a hypothetical unit to draw a virtual line of fire for AI. if left blank, this function behaves normally.
      * @return True if the unit can be targetted.
      */
-    bool canTargetUnit(Position originVoxel, Tile tile, Position scanVoxel, BattleUnit excludeUnit, bool rememberObstacles, BattleUnit potentialUnit = null)
+    internal bool canTargetUnit(Position originVoxel, Tile tile, Position scanVoxel, BattleUnit excludeUnit, bool rememberObstacles, BattleUnit potentialUnit = null)
     {
         Position targetVoxel = new Position((tile.getPosition().x * 16) + 7, (tile.getPosition().y * 16) + 8, tile.getPosition().z * 24);
         var _trajectory = new List<Position>();
@@ -677,7 +677,7 @@ internal class TileEngine
      * @param excludeAllBut [Optional] The only unit to be considered for ray hits.
      * @return the objectnumber(0-3) or unit(4) or out of map (5) or -1(hit nothing).
      */
-    int calculateLine(Position origin, Position target, bool storeTrajectory, List<Position> trajectory, BattleUnit excludeUnit, bool doVoxelCheck = true, bool onlyVisible = false, BattleUnit excludeAllBut = null)
+    internal int calculateLine(Position origin, Position target, bool storeTrajectory, List<Position> trajectory, BattleUnit excludeUnit, bool doVoxelCheck = true, bool onlyVisible = false, BattleUnit excludeAllBut = null)
     {
         int x, x0, x1, delta_x, step_x;
         int y, y0, y1, delta_y, step_y;
@@ -1222,7 +1222,7 @@ internal class TileEngine
      * @param excludeAllBut If set, the only unit to be considered for ray hits.
      * @return The objectnumber(0-3) or unit(4) or out of map (5) or -1 (hit nothing).
      */
-    VoxelType voxelCheck(Position voxel, BattleUnit excludeUnit, bool excludeAllUnits, bool onlyVisible, BattleUnit excludeAllBut)
+    VoxelType voxelCheck(Position voxel, BattleUnit excludeUnit, bool excludeAllUnits = false, bool onlyVisible = false, BattleUnit excludeAllBut = null)
     {
         if (voxel.x < 0 || voxel.y < 0 || voxel.z < 0) //preliminary out of map
         {
@@ -1900,5 +1900,469 @@ internal class TileEngine
         if (tile != null && tile.getMapData(TilePart.O_WESTWALL) != null && tile.getMapData(TilePart.O_WESTWALL).getBlock(ItemDamageType.DT_NONE) == 0) return 6;
 
         return -1;
+    }
+
+    /**
+     * Calculates the distance squared between a unit and a point position.
+     * @param unit The unit.
+     * @param pos The point position.
+     * @param considerZ Whether to consider the z coordinate.
+     * @return Distance squared.
+     */
+    internal int distanceUnitToPositionSq(BattleUnit unit, Position pos, bool considerZ)
+    {
+	    int x = unit.getPosition().x - pos.x;
+	    int y = unit.getPosition().y - pos.y;
+	    int z = considerZ ? (unit.getPosition().z - pos.z) : 0;
+	    if (unit.getArmor().getSize() > 1)
+	    {
+		    if (unit.getPosition().x < pos.x)
+			    x++;
+		    if (unit.getPosition().y < pos.y)
+			    y++;
+	    }
+	    return x*x + y*y + z*z;
+    }
+
+    /**
+     * Gets the origin voxel of a certain action.
+     * @param action Battle action.
+     * @param tile Pointer to the action tile.
+     * @return origin position.
+     */
+    internal Position getOriginVoxel(BattleAction action, Tile tile)
+    {
+	    int[] dirYshift = {1, 1, 8, 15,15,15,8, 1};
+	    int[] dirXshift = {8, 14,15,15,8, 1, 1, 1};
+	    if (tile == null)
+	    {
+		    tile = action.actor.getTile();
+	    }
+
+	    Position origin = tile.getPosition();
+	    Tile tileAbove = _save.getTile(origin + new Position(0,0,1));
+	    Position originVoxel = new Position(origin.x*16, origin.y*16, origin.z*24);
+
+	    // take into account soldier height and terrain level if the projectile is launched from a soldier
+	    if (action.actor.getPosition() == origin || action.type != BattleActionType.BA_LAUNCH)
+	    {
+		    // calculate offset of the starting point of the projectile
+		    originVoxel.z += -tile.getTerrainLevel();
+
+		    originVoxel.z += action.actor.getHeight() + action.actor.getFloatHeight();
+
+		    if (action.type == BattleActionType.BA_THROW)
+		    {
+			    originVoxel.z -= 3;
+		    }
+		    else
+		    {
+			    originVoxel.z -= 4;
+		    }
+
+		    if (originVoxel.z >= (origin.z + 1)*24)
+		    {
+			    if (tileAbove != null && tileAbove.hasNoFloor(null))
+			    {
+				    origin.z++;
+			    }
+			    else
+			    {
+				    while (originVoxel.z >= (origin.z + 1)*24)
+				    {
+					    originVoxel.z--;
+				    }
+				    originVoxel.z -= 4;
+			    }
+		    }
+		    int direction = getDirectionTo(origin, action.target);
+		    originVoxel.x += dirXshift[direction]*action.actor.getArmor().getSize();
+		    originVoxel.y += dirYshift[direction]*action.actor.getArmor().getSize();
+	    }
+	    else
+	    {
+		    // don't take into account soldier height and terrain level if the projectile is not launched from a soldier(from a waypoint)
+		    originVoxel.x += 8;
+		    originVoxel.y += 8;
+		    originVoxel.z += 16;
+	    }
+	    return originVoxel;
+    }
+
+    static int[] sliceObjectSpiral = {8,8, 8,6, 10,6, 10,8, 10,10, 8,10, 6,10, 6,8, 6,6, //first circle
+        8,4, 10,4, 12,4, 12,6, 12,8, 12,10, 12,12, 10,12, 8,12, 6,12, 4,12, 4,10, 4,8, 4,6, 4,4, 6,4, //second circle
+        8,1, 12,1, 15,1, 15,4, 15,8, 15,12, 15,15, 12,15, 8,15, 4,15, 1,15, 1,12, 1,8, 1,4, 1,1, 4,1}; //third circle
+    static int[] westWallSpiral = {0,7, 0,9, 0,6, 0,11, 0,4, 0,13, 0,2};
+    static int[] northWallSpiral = {7,0, 9,0, 6,0, 11,0, 4,0, 13,0, 2,0};
+    /**
+     * Checks for a tile part available for targeting and what particular voxel.
+     * @param originVoxel Voxel of trace origin (gun's barrel).
+     * @param tile The tile to check for.
+     * @param part Tile part to check for.
+     * @param scanVoxel Is returned coordinate of hit.
+     * @param excludeUnit Is self (not to hit self).
+     * @param rememberObstacles Remember obstacles for no LOF indicator?
+     * @return True if the tile can be targetted.
+     */
+    internal bool canTargetTile(Position originVoxel, Tile tile, int part, Position scanVoxel, BattleUnit excludeUnit, bool rememberObstacles)
+    {
+	    Position targetVoxel = new Position((tile.getPosition().x * 16), (tile.getPosition().y * 16), tile.getPosition().z * 24);
+	    var _trajectory = new List<Position>();
+
+	    int[] spiralArray;
+	    int spiralCount;
+
+	    int minZ = 0, maxZ = 0;
+	    bool minZfound = false, maxZfound = false;
+	    bool dummy = false;
+
+	    if (part == (int)TilePart.O_OBJECT)
+	    {
+		    spiralArray = sliceObjectSpiral;
+		    spiralCount = 41;
+	    }
+	    else
+	    if (part == (int)TilePart.O_NORTHWALL)
+	    {
+		    spiralArray = northWallSpiral;
+		    spiralCount = 7;
+	    }
+	    else
+	    if (part == (int)TilePart.O_WESTWALL)
+	    {
+		    spiralArray = westWallSpiral;
+		    spiralCount = 7;
+	    }
+	    else if (part == (int)TilePart.O_FLOOR)
+	    {
+		    spiralArray = sliceObjectSpiral;
+		    spiralCount = 41;
+		    minZfound = true; minZ=0;
+		    maxZfound = true; maxZ=0;
+	    }
+	    else if (part == MapData.O_DUMMY) // used only for no line of fire indicator
+	    {
+		    spiralArray = sliceObjectSpiral;
+		    spiralCount = 41;
+		    minZfound = true; minZ = 12;
+		    maxZfound = true; maxZ = 12;
+	    }
+	    else
+	    {
+		    return false;
+	    }
+	    voxelCheckFlush();
+    // find out height range
+
+	    if (!minZfound)
+	    {
+		    for (int j = 1; j < 12; ++j)
+		    {
+			    if (minZfound) break;
+			    for (int i = 0; i < spiralCount; ++i)
+			    {
+				    int tX = spiralArray[i*2];
+				    int tY = spiralArray[i*2+1];
+				    if (voxelCheck(new Position(targetVoxel.x + tX, targetVoxel.y + tY, targetVoxel.z + j*2),null,true) == (VoxelType)part) //bingo
+				    {
+					    if (!minZfound)
+					    {
+						    minZ = j*2;
+						    minZfound = true;
+						    break;
+					    }
+				    }
+			    }
+		    }
+	    }
+
+	    if (!minZfound)
+	    {
+		    if (rememberObstacles)
+		    {
+			    // dummy attempt (only to highlight obstacles)
+			    minZfound = true;
+			    minZ = 10;
+			    dummy = true;
+		    }
+		    else
+		    {
+			    return false;//empty object!!!
+		    }
+	    }
+
+	    if (!maxZfound)
+	    {
+		    for (int j = 10; j >= 0; --j)
+		    {
+			    if (maxZfound) break;
+			    for (int i = 0; i < spiralCount; ++i)
+			    {
+				    int tX = spiralArray[i*2];
+				    int tY = spiralArray[i*2+1];
+				    if (voxelCheck(new Position(targetVoxel.x + tX, targetVoxel.y + tY, targetVoxel.z + j*2),null,true) == (VoxelType)part) //bingo
+				    {
+					    if (!maxZfound)
+					    {
+						    maxZ = j*2;
+						    maxZfound = true;
+						    break;
+					    }
+				    }
+			    }
+		    }
+	    }
+
+	    if (!maxZfound)
+	    {
+		    if (rememberObstacles)
+		    {
+			    // dummy attempt (only to highlight obstacles)
+			    maxZfound = true;
+			    maxZ = 10;
+			    dummy = true;
+		    }
+		    else
+		    {
+			    return false;//it's impossible to get there
+		    }
+	    }
+
+	    if (minZ > maxZ) minZ = maxZ;
+	    int rangeZ = maxZ - minZ;
+	    if (rangeZ>10) rangeZ = 10; //as above, clamping height range to prevent buffer overflow
+	    int centerZ = (maxZ + minZ)/2;
+
+	    for (int j = 0; j <= rangeZ; ++j)
+	    {
+		    scanVoxel.z = targetVoxel.z + centerZ + heightFromCenter[j];
+		    for (int i = 0; i < spiralCount; ++i)
+		    {
+			    scanVoxel.x = targetVoxel.x + spiralArray[i*2];
+			    scanVoxel.y = targetVoxel.y + spiralArray[i*2+1];
+			    _trajectory.Clear();
+			    int test = calculateLine(originVoxel, scanVoxel, false, _trajectory, excludeUnit, true);
+			    if (test == part && !dummy) //bingo
+			    {
+				    if (_trajectory[0].x/16 == scanVoxel.x/16 &&
+                        _trajectory[0].y/16 == scanVoxel.y/16 &&
+                        _trajectory[0].z/24 == scanVoxel.z/24)
+				    {
+					    return true;
+				    }
+			    }
+			    if (rememberObstacles && _trajectory.Count>0)
+			    {
+				    Tile tileObstacle = _save.getTile(new Position(_trajectory[0].x / 16, _trajectory[0].y / 16, _trajectory[0].z / 24));
+				    if (tileObstacle != null) tileObstacle.setObstacle(test);
+			    }
+		    }
+	    }
+	    return false;
+    }
+
+    /**
+     * Returns the direction from origin to target.
+     * @param origin The origin point of the action.
+     * @param target The target point of the action.
+     * @return direction.
+     */
+    int getDirectionTo(Position origin, Position target)
+    {
+	    double ox = target.x - origin.x;
+	    double oy = target.y - origin.y;
+	    double angle = Math.Atan2(ox, -oy);
+	    // divide the pie in 4 angles each at 1/8th before each quarter
+	    double[] pie = {(M_PI_4 * 4.0) - M_PI_4 / 2.0, (M_PI_4 * 3.0) - M_PI_4 / 2.0, (M_PI_4 * 2.0) - M_PI_4 / 2.0, (M_PI_4 * 1.0) - M_PI_4 / 2.0};
+	    int dir = 0;
+
+	    if (angle > pie[0] || angle < -pie[0])
+	    {
+		    dir = 4;
+	    }
+	    else if (angle > pie[1])
+	    {
+		    dir = 3;
+	    }
+	    else if (angle > pie[2])
+	    {
+		    dir = 2;
+	    }
+	    else if (angle > pie[3])
+	    {
+		    dir = 1;
+	    }
+	    else if (angle < -pie[1])
+	    {
+		    dir = 5;
+	    }
+	    else if (angle < -pie[2])
+	    {
+		    dir = 6;
+	    }
+	    else if (angle < -pie[3])
+	    {
+		    dir = 7;
+	    }
+	    else if (angle < pie[0])
+	    {
+		    dir = 0;
+	    }
+	    return dir;
+    }
+
+    /**
+     * Validates a throw action.
+     * @param action The action to validate.
+     * @param originVoxel The origin point of the action.
+     * @param targetVoxel The target point of the action.
+     * @param curve The curvature of the throw.
+     * @param voxelType The type of voxel at which this parabola terminates.
+     * @return Validity of action.
+     */
+    internal bool validateThrow(BattleAction action, Position originVoxel, Position targetVoxel, ref double curve, ref int voxelType, bool forced)
+    {
+	    bool foundCurve = false;
+	    double curvature = 0.5;
+	    if (action.type == BattleActionType.BA_THROW)
+	    {
+		    curvature = Math.Max(0.48, 1.73 / Math.Sqrt(Math.Sqrt((double)(action.actor.getBaseStats().strength) / (double)(action.weapon.getRules().getWeight()))) + (action.actor.isKneeled()? 0.1 : 0.0));
+	    }
+	    else
+	    {
+		    // arcing projectile weapons assume a fixed strength and weight.(70 and 10 respectively)
+		    // curvature should be approximately 1.06358350461 at this point.
+		    curvature = 1.73 / Math.Sqrt(Math.Sqrt(70.0 / 10.0)) + (action.actor.isKneeled()? 0.1 : 0.0);
+	    }
+
+	    Tile targetTile = _save.getTile(action.target);
+	    Position targetPos = (targetVoxel / new Position(16, 16, 24));
+	    // object blocking - can't throw here
+	    if (action.type == BattleActionType.BA_THROW
+		    && targetTile != null
+		    && targetTile.getMapData(TilePart.O_OBJECT) != null
+		    && targetTile.getMapData(TilePart.O_OBJECT).getTUCost(MovementType.MT_WALK) == 255
+		    && !(targetTile.isBigWall()
+		    && (targetTile.getMapData(TilePart.O_OBJECT).getBigWall()<1
+		    || targetTile.getMapData(TilePart.O_OBJECT).getBigWall()>3)))
+	    {
+		    return false;
+	    }
+	    // out of range - can't throw here
+	    if (ProjectileFlyBState.validThrowRange(action, originVoxel, targetTile) == false)
+	    {
+		    return false;
+	    }
+
+	    var trajectory = new List<Position>(16*20);
+	    // thows should be around 10 tiles far, make one allocation that fit 99% cases with some margin
+	    // we try 8 different curvatures to try and reach our goal.
+	    int test = (int)VoxelType.V_OUTOFBOUNDS;
+	    while (!foundCurve && curvature < 5.0)
+	    {
+		    trajectory.Clear();
+		    test = calculateParabola(originVoxel, targetVoxel, true, trajectory, action.actor, curvature, new Position(0,0,0));
+		    //position that item hit
+		    Position hitPos = (trajectory.Last() + new Position(0,0,1)) / new Position(16, 16, 24);
+		    //position where item will land
+		    Position tilePos = Projectile.getPositionFromEnd(trajectory, Projectile.ItemDropVoxelOffset) / new Position(16, 16, 24);
+		    if (forced || (test != (int)VoxelType.V_OUTOFBOUNDS && tilePos == targetPos))
+		    {
+			    if (voxelType != 0)
+			    {
+				    voxelType = test;
+			    }
+			    foundCurve = true;
+		    }
+		    else
+		    {
+			    curvature += 0.5;
+			    if (test != (int)VoxelType.V_OUTOFBOUNDS && action.actor.getFaction() == UnitFaction.FACTION_PLAYER) //obstacle indicator is only for player
+			    {
+				    Tile hitTile = _save.getTile(hitPos);
+				    if (hitTile != null)
+				    {
+					    hitTile.setObstacle(test);
+				    }
+			    }
+		    }
+	    }
+	    if (curvature >= 5.0)
+	    {
+		    return false;
+	    }
+	    if (curve != 0.0)
+	    {
+		    curve = curvature;
+	    }
+
+	    return true;
+    }
+
+    /**
+     * Calculates a parabola trajectory, used for throwing items.
+     * @param origin Origin in voxelspace.
+     * @param target Target in voxelspace.
+     * @param storeTrajectory True will store the whole trajectory - otherwise it just stores the last position.
+     * @param trajectory A vector of positions in which the trajectory is stored.
+     * @param excludeUnit Makes sure the trajectory does not hit the shooter itself.
+     * @param curvature How high the parabola goes: 1.0 is almost straight throw, 3.0 is a very high throw, to throw over a fence for example.
+     * @param delta Is the deviation of the angles it should take into account, 0,0,0 is perfection.
+     * @return The objectnumber(0-3) or unit(4) or out of map (5) or -1(hit nothing).
+     */
+    internal int calculateParabola(Position origin, Position target, bool storeTrajectory, List<Position> trajectory, BattleUnit excludeUnit, double curvature, Position delta)
+    {
+	    double ro = Math.Sqrt((double)((target.x - origin.x) * (target.x - origin.x) + (target.y - origin.y) * (target.y - origin.y) + (target.z - origin.z) * (target.z - origin.z)));
+
+	    if (AreSame(ro, 0.0)) return (int)VoxelType.V_EMPTY;//just in case
+
+	    double fi = Math.Acos((double)(target.z - origin.z) / ro);
+	    double te = Math.Atan2((double)(target.y - origin.y), (double)(target.x - origin.x));
+
+	    te += (delta.x / ro) / 2 * M_PI; //horizontal magic value
+	    fi += ((delta.z + delta.y) / ro) / 14 * M_PI * curvature; //another magic value (vertical), to make it in line with fire spread
+
+	    double zA = Math.Sqrt(ro)*curvature;
+	    double zK = 4.0 * zA / ro / ro;
+
+	    int x = origin.x;
+	    int y = origin.y;
+	    int z = origin.z;
+	    int i = 8;
+	    int result = (int)VoxelType.V_EMPTY;
+	    Position lastPosition = new Position(x,y,z);
+	    Position nextPosition = lastPosition;
+
+	    if (storeTrajectory && trajectory != null)
+	    {
+		    //initla value for small hack to glue `calculateLine` into one continuous arc
+		    trajectory.Add(lastPosition);
+	    }
+	    while (z > 0)
+	    {
+		    x = (int)((double)origin.x + (double)i * Math.Cos(te) * Math.Sin(fi));
+		    y = (int)((double)origin.y + (double)i * Math.Sin(te) * Math.Sin(fi));
+		    z = (int)((double)origin.z + (double)i * Math.Cos(fi) - zK * ((double)i - ro / 2.0) * ((double)i - ro / 2.0) + zA);
+		    //passes through this point?
+		    nextPosition = new Position(x,y,z);
+
+		    if (storeTrajectory && trajectory != null)
+		    {
+			    //remove end point of previus trajectory part, becasue next one will add this point again
+			    trajectory.RemoveAt(trajectory.Count - 1);
+		    }
+		    result = calculateLine(lastPosition, nextPosition, storeTrajectory, storeTrajectory ? trajectory : null, excludeUnit);
+		    if (result != (int)VoxelType.V_EMPTY)
+		    {
+			    if (!storeTrajectory && trajectory != null)
+			    {
+				    result = calculateLine(lastPosition, nextPosition, false, trajectory, excludeUnit); //pick the INSIDE position of impact
+			    }
+			    break;
+		    }
+		    lastPosition = nextPosition;
+		    ++i;
+	    }
+	    return result;
     }
 }

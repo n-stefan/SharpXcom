@@ -592,4 +592,31 @@ internal class Soldier
 			_recentlyPromoted = true;
 		}
 	}
+
+	/**
+	 * Add a mission to the counter.
+	 */
+	internal void addMissionCount() =>
+		_missions++;
+
+	/**
+	 * Add a kill to the counter.
+	 */
+	internal void addKillCount(int count) =>
+		_kills += count;
+
+	/**
+	 * Changes the amount of time until the soldier is healed.
+	 * @param recovery Number of days.
+	 */
+	internal void setWoundRecovery(int recovery)
+	{
+		_recovery = recovery;
+
+		// dismiss from craft
+		if (_recovery > 0)
+		{
+			_craft = null;
+		}
+	}
 }

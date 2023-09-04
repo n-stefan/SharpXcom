@@ -200,4 +200,180 @@ internal class CraftInfoState : State
             _edtCraft.setText(_craft.getName(_game.getLanguage()));
         }
     }
+
+    /**
+     * The craft info can change
+     * after going into other screens.
+     */
+    protected override void init()
+    {
+	    base.init();
+
+	    _craft = _base.getCrafts()[(int)_craftId];
+
+	    _edtCraft.setText(_craft.getName(_game.getLanguage()));
+
+	    _sprite.clear();
+	    SurfaceSet texture = _game.getMod().getSurfaceSet("BASEBITS.PCK");
+	    texture.getFrame(_craft.getRules().getSprite() + 33).setX(0);
+	    texture.getFrame(_craft.getRules().getSprite() + 33).setY(0);
+	    texture.getFrame(_craft.getRules().getSprite() + 33).blit(_sprite);
+
+	    var firlsLine = new StringBuilder();
+	    firlsLine.Append(tr("STR_DAMAGE_UC_").arg(Unicode.formatPercentage(_craft.getDamagePercentage())));
+	    if (_craft.getStatus() == "STR_REPAIRS" && _craft.getDamage() > 0)
+	    {
+		    int damageHours = (int)Math.Ceiling((double)_craft.getDamage() / _craft.getRules().getRepairRate());
+		    firlsLine.Append(formatTime(damageHours));
+	    }
+	    _txtDamage.setText(firlsLine.ToString());
+
+	    var secondLine = new StringBuilder();
+	    secondLine.Append(tr("STR_FUEL").arg(Unicode.formatPercentage(_craft.getFuelPercentage())));
+	    if (_craft.getStatus() == "STR_REFUELLING" && _craft.getRules().getMaxFuel() - _craft.getFuel() > 0)
+	    {
+		    int fuelHours = (int)Math.Ceiling((double)(_craft.getRules().getMaxFuel() - _craft.getFuel()) / _craft.getRules().getRefuelRate() / 2.0);
+		    secondLine.Append(formatTime(fuelHours));
+	    }
+	    _txtFuel.setText(secondLine.ToString());
+
+	    if (_craft.getRules().getSoldiers() > 0)
+	    {
+		    _crew.clear();
+		    _equip.clear();
+
+		    Surface frame1 = texture.getFrame(38);
+		    frame1.setY(0);
+            int x = 0;
+            for (int i = 0; i < _craft.getNumSoldiers(); ++i, x += 10)
+		    {
+			    frame1.setX(x);
+			    frame1.blit(_crew);
+		    }
+
+		    Surface frame2 = texture.getFrame(40);
+		    frame2.setY(0);
+		    x = 0;
+		    for (int i = 0; i < _craft.getNumVehicles(); ++i, x += 10)
+		    {
+			    frame2.setX(x);
+			    frame2.blit(_equip);
+		    }
+		    Surface frame3 = texture.getFrame(39);
+		    for (int i = 0; i < _craft.getNumEquipment(); i += 4, x += 10)
+		    {
+			    frame3.setX(x);
+			    frame3.blit(_equip);
+		    }
+	    }
+	    else
+	    {
+		    _crew.setVisible(false);
+		    _equip.setVisible(false);
+		    _btnCrew.setVisible(false);
+		    _btnEquip.setVisible(false);
+		    _btnArmor.setVisible(false);
+	    }
+
+	    if (_craft.getRules().getWeapons() > 0)
+	    {
+		    CraftWeapon w1 = _craft.getWeapons()[0];
+
+		    _weapon1.clear();
+		    if (w1 != null)
+		    {
+			    Surface frame = texture.getFrame(w1.getRules().getSprite() + 48);
+			    frame.setX(0);
+			    frame.setY(0);
+			    frame.blit(_weapon1);
+
+			    var leftWeaponLine = new StringBuilder();
+			    leftWeaponLine.Append($"{Unicode.TOK_COLOR_FLIP}{tr(w1.getRules().getType())}");
+			    _txtW1Name.setText(leftWeaponLine.ToString());
+			    leftWeaponLine.Clear();
+			    leftWeaponLine.Append($"{tr("STR_AMMO_").arg(w1.getAmmo())}\n{Unicode.TOK_COLOR_FLIP}");
+			    leftWeaponLine.Append(tr("STR_MAX").arg(w1.getRules().getAmmoMax()));
+			    if (_craft.getStatus() == "STR_REARMING" && w1.getAmmo() < w1.getRules().getAmmoMax())
+			    {
+				    int rearmHours = (int)Math.Ceiling((double)(w1.getRules().getAmmoMax() - w1.getAmmo()) / w1.getRules().getRearmRate());
+				    leftWeaponLine.Append(formatTime(rearmHours));
+			    }
+			    _txtW1Ammo.setText(leftWeaponLine.ToString());
+		    }
+		    else
+		    {
+			    _txtW1Name.setText(string.Empty);
+			    _txtW1Ammo.setText(string.Empty);
+		    }
+	    }
+	    else
+	    {
+		    _weapon1.setVisible(false);
+		    _btnW1.setVisible(false);
+		    _txtW1Name.setVisible(false);
+		    _txtW1Ammo.setVisible(false);
+	    }
+
+	    if (_craft.getRules().getWeapons() > 1)
+	    {
+		    CraftWeapon w2 = _craft.getWeapons()[1];
+
+		    _weapon2.clear();
+            if (w2 != null)
+		    {
+			    Surface frame = texture.getFrame(w2.getRules().getSprite() + 48);
+			    frame.setX(0);
+			    frame.setY(0);
+			    frame.blit(_weapon2);
+
+			    var rightWeaponLine = new StringBuilder();
+			    rightWeaponLine.Append($"{Unicode.TOK_COLOR_FLIP}{tr(w2.getRules().getType())}");
+			    _txtW2Name.setText(rightWeaponLine.ToString());
+			    rightWeaponLine.Clear();
+			    rightWeaponLine.Append($"{tr("STR_AMMO_").arg(w2.getAmmo())}\n{Unicode.TOK_COLOR_FLIP}");
+			    rightWeaponLine.Append(tr("STR_MAX").arg(w2.getRules().getAmmoMax()));
+			    if (_craft.getStatus() == "STR_REARMING" && w2.getAmmo() < w2.getRules().getAmmoMax())
+			    {
+				    int rearmHours = (int)Math.Ceiling((double)(w2.getRules().getAmmoMax() - w2.getAmmo()) / w2.getRules().getRearmRate());
+				    rightWeaponLine.Append(formatTime(rearmHours));
+			    }
+			    _txtW2Ammo.setText(rightWeaponLine.ToString());
+		    }
+		    else
+		    {
+			    _txtW2Name.setText(string.Empty);
+			    _txtW2Ammo.setText(string.Empty);
+		    }
+	    }
+	    else
+	    {
+		    _weapon2.setVisible(false);
+		    _btnW2.setVisible(false);
+		    _txtW2Name.setVisible(false);
+		    _txtW2Ammo.setVisible(false);
+	    }
+    }
+
+    /**
+     * Turns an amount of time into a
+     * day/hour string.
+     * @param total Amount in hours.
+     */
+    string formatTime(int total)
+    {
+	    var ss = new StringBuilder();
+	    int days = total / 24;
+	    int hours = total % 24;
+	    ss.Append("\n(");
+	    if (days > 0)
+	    {
+		    ss.Append($"{tr("STR_DAY", (uint)days)}/");
+	    }
+	    if (hours > 0)
+	    {
+		    ss.Append(tr("STR_HOUR", (uint)hours));
+	    }
+	    ss.Append(")");
+	    return ss.ToString();
+    }
 }

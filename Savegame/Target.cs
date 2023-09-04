@@ -231,7 +231,7 @@ internal class Target
      * Returns the name on the globe for the target.
      * @return String ID.
      */
-    string getMarkerName() =>
+    internal string getMarkerName() =>
 	    getType() + "_";
 
 	/// Gets the distance to another target.
@@ -251,4 +251,11 @@ internal class Target
 		    return 0.0;
 	    return Math.Acos(Math.Cos(_lat) * Math.Cos(lat) * Math.Cos(lon - _lon) + Math.Sin(_lat) * Math.Sin(lat));
     }
+
+    /**
+     * Returns the marker ID on the globe for the target.
+     * @return Marker ID.
+     */
+    internal int getMarkerId() =>
+	    _id;
 }

@@ -696,4 +696,10 @@ internal class Tile
      */
     internal void addOverlap() =>
 	    ++_overlaps;
+
+    /**
+     * resets obstacle flag for all parts of the tile.
+     */
+    internal void resetObstacle() =>
+	    _obstacle = 0;
 }

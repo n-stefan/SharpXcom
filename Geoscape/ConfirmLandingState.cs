@@ -150,4 +150,15 @@ internal class ConfirmLandingState : State
         _craft.returnToBase();
         _game.popState();
     }
+
+    /*
+     * Make sure we aren't returning to base.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    Base b = (Base)_craft.getDestination();
+	    if (b == _craft.getBase())
+		    _game.popState();
+    }
 }

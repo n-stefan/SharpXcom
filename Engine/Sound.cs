@@ -115,4 +115,19 @@ internal class Sound
             Mix_HaltChannel(3);
         }
     }
+
+    /**
+     * Plays the contained sound effect repeatedly on the reserved ambience channel.
+     */
+    internal void loop()
+    {
+	    if (!Options.mute && _sound.abuf != nint.Zero && Mix_Playing(3) == 0)
+	    {
+		    int chan = Mix_PlayChannel(3, _sound.abuf, -1);
+		    if (chan == -1)
+		    {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
+		    }
+	    }
+    }
 }

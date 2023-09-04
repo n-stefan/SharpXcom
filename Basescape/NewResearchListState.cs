@@ -88,4 +88,51 @@ internal class NewResearchListState : State
      */
     void onSelectProject(Action _) =>
         _game.pushState(new ResearchInfoState(_base, _projects[(int)_lstResearch.getSelectedRow()]));
+
+    /**
+     * Initializes the screen (fills the list).
+     */
+    protected override void init()
+    {
+	    base.init();
+	    fillProjectList();
+    }
+
+    /**
+     * Fills the list with possible ResearchProjects.
+     */
+    void fillProjectList()
+    {
+	    _projects.Clear();
+	    _lstResearch.clearList();
+	    // Note: this is the *only* place where this method is called with considerDebugMode = true
+	    _game.getSavedGame().getAvailableResearchProjects(_projects, _game.getMod() , _base, true);
+	    var it = 0;
+	    while (it < _projects.Count)
+	    {
+		    // EXPLANATION
+		    // -----------
+		    // Projects with "requires" can only be discovered/researched indirectly
+		    //  - this is because we can't reliably determine if they are unlocked or not
+		    // Example:
+		    //  - Alien Origins + Alien Leader => ALIEN_LEADER_PLUS is discovered
+		    //  - Alien Leader + Alien Origins => ALIEN_LEADER_PLUS is NOT discovered (you need to research another alien leader/commander)
+		    // If we wanted to allow also direct research of projects with "requires",
+		    // we would need to implement a slightly more complicated unlocking algorithm
+		    // and more importantly, we would need to remember the list of unlocked topics
+		    // in the save file (currently this is not done, the list is calculated on-the-fly).
+		    // Summary:
+		    //  - it would be possible to remove this condition, but more refactoring would be needed
+		    //  - for now, handling "requires" via zero-cost helpers (e.g. STR_LEADER_PLUS)... is enough
+		    if (!_projects[it].getRequirements().Any())
+		    {
+			    _lstResearch.addRow(1, tr(_projects[it].getName()));
+			    ++it;
+		    }
+		    else
+		    {
+			    _projects.RemoveAt(it);
+		    }
+	    }
+    }
 }

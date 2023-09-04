@@ -134,4 +134,18 @@ internal class ItemContainer
 		}
 		return total;
 	}
+
+	/**
+	 * Returns the total quantity of the items in the container.
+	 * @return Total item quantity.
+	 */
+	internal int getTotalQuantity()
+	{
+		int total = 0;
+		foreach (var i in _qty)
+		{
+			total += i.Value;
+		}
+		return total;
+	}
 }

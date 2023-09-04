@@ -187,4 +187,14 @@ internal class ManufactureState : State
         _txtAllocated.setText(tr("STR_ENGINEERS_ALLOCATED").arg(_base.getAllocatedEngineers()));
         _txtSpace.setText(tr("STR_WORKSHOP_SPACE_AVAILABLE").arg(_base.getFreeWorkshops()));
     }
+
+    /**
+     * Updates the production list
+     * after going to other screens.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    fillProductionList();
+    }
 }

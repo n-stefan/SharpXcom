@@ -46,6 +46,8 @@ internal class BattlescapeState : State
     bool _isMouseScrolling, _isMouseScrolled;
     bool _autosave;
     bool _firstInit;
+	BattlescapeButton _btnReserveNone, _btnReserveSnap, _btnReserveAimed, _btnReserveAuto, _btnReserveKneel, _btnZeroTUs;
+	Text _txtDebug, _txtTooltip;
 
     //TODO: ctor, dtor
 
@@ -437,5 +439,74 @@ internal class BattlescapeState : State
             _battleGame.getCurrentAction().actor = unit;
             _battleGame.setupCursor();
         }
+    }
+
+    /**
+     * Initializes the battlescapestate.
+     */
+    protected override void init()
+    {
+	    if (_save.getAmbientSound() != -1)
+	    {
+		    _game.getMod().getSoundByDepth((uint)_save.getDepth(), (uint)_save.getAmbientSound()).loop();
+		    _game.setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
+	    }
+
+	    base.init();
+	    _animTimer.start();
+	    _gameTimer.start();
+	    _map.setFocus(true);
+	    _map.cacheUnits();
+	    _map.draw();
+	    _battleGame.init();
+	    updateSoldierInfo();
+
+	    switch (_save.getTUReserved())
+	    {
+	        case BattleActionType.BA_SNAPSHOT:
+		        _reserve = _btnReserveSnap;
+		        break;
+	        case BattleActionType.BA_AIMEDSHOT:
+		        _reserve = _btnReserveAimed;
+		        break;
+	        case BattleActionType.BA_AUTOSHOT:
+		        _reserve = _btnReserveAuto;
+		        break;
+	        default:
+		        _reserve = _btnReserveNone;
+		        break;
+	    }
+	    if (_firstInit)
+	    {
+		    if (!playableUnitSelected())
+		    {
+			    selectNextPlayerUnit();
+		    }
+		    if (playableUnitSelected())
+		    {
+			    _battleGame.setupCursor();
+			    _map.getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+		    }
+		    _firstInit = false;
+		    _btnReserveNone.setGroup(_reserve);
+		    _btnReserveSnap.setGroup(_reserve);
+		    _btnReserveAimed.setGroup(_reserve);
+		    _btnReserveAuto.setGroup(_reserve);
+	    }
+	    _txtTooltip.setText(string.Empty);
+	    _btnReserveKneel.toggle(_save.getKneelReserved());
+	    _battleGame.setKneelReserved(_save.getKneelReserved());
+	    if (_autosave)
+	    {
+		    _autosave = false;
+		    if (_game.getSavedGame().isIronman())
+		    {
+			    _game.pushState(new SaveGameState(OptionsOrigin.OPT_BATTLESCAPE, SaveType.SAVE_IRONMAN, _palette));
+		    }
+		    else if (Options.autosave)
+		    {
+			    _game.pushState(new SaveGameState(OptionsOrigin.OPT_BATTLESCAPE, SaveType.SAVE_AUTO_BATTLESCAPE, _palette));
+		    }
+	    }
     }
 }

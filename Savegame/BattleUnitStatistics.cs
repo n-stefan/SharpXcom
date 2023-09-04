@@ -25,32 +25,32 @@ namespace SharpXcom.Savegame;
 struct BattleUnitStatistics
 {
     // Variables
-    internal bool wasUnconcious;                  ///< Tracks if the soldier fell unconcious
-	int shotAtCounter;                   ///< Tracks how many times the unit was shot at
-	int hitCounter;                      ///< Tracks how many times the unit was hit
-	int shotByFriendlyCounter;           ///< Tracks how many times the unit was hit by a friendly
-	int shotFriendlyCounter;             ///< Tracks how many times the unit was hit a friendly
-	bool loneSurvivor;                   ///< Tracks if the soldier was the only survivor
-	bool ironMan;                        ///< Tracks if the soldier was the only soldier on the mission
-	int longDistanceHitCounter;          ///< Tracks how many long distance shots were landed
-	int lowAccuracyHitCounter;           ///< Tracks how many times the unit landed a low probability shot
-	int shotsFiredCounter;               ///< Tracks how many times a unit has shot
-	int shotsLandedCounter;              ///< Tracks how many times a unit has hit his target
-	internal List<BattleUnitKills> kills;         ///< Tracks kills
-	int daysWounded;                     ///< Tracks how many days the unit was wounded for
-	internal bool KIA;                            ///< Tracks if the soldier was killed in battle
-	bool nikeCross;                      ///< Tracks if a soldier killed every alien or killed and stunned every alien
-	bool mercyCross;                     ///< Tracks if a soldier stunned every alien
-	int woundsHealed;                    ///< Tracks how many times a fatal wound was healed by this unit
-	UnitStats delta;                     ///< Tracks the increase in unit stats (is not saved, only used during debriefing)
-	int appliedStimulant;                ///< Tracks how many times this soldier applied stimulant
-	int appliedPainKill;                 ///< Tracks how many times this soldier applied pain killers
-	int revivedSoldier;                  ///< Tracks how many times this soldier revived another soldier
-	int revivedHostile;                  ///< Tracks how many times this soldier revived another hostile
-	int revivedNeutral;                  ///< Tracks how many times this soldier revived another civilian
-	bool MIA;                            ///< Tracks if the soldier was left behind :(
-	int martyr;                          ///< Tracks how many kills the soldier landed on the turn of his death
-	internal int slaveKills;                      ///< Tracks how many kills the soldier landed thanks to a mind controlled unit.
+    internal bool wasUnconcious;         ///< Tracks if the soldier fell unconcious
+	internal int shotAtCounter;          ///< Tracks how many times the unit was shot at
+	internal int hitCounter;             ///< Tracks how many times the unit was hit
+	internal int shotByFriendlyCounter;  ///< Tracks how many times the unit was hit by a friendly
+	internal int shotFriendlyCounter;    ///< Tracks how many times the unit was hit a friendly
+	internal bool loneSurvivor;          ///< Tracks if the soldier was the only survivor
+	internal bool ironMan;               ///< Tracks if the soldier was the only soldier on the mission
+	internal int longDistanceHitCounter; ///< Tracks how many long distance shots were landed
+	internal int lowAccuracyHitCounter;  ///< Tracks how many times the unit landed a low probability shot
+	internal int shotsFiredCounter;      ///< Tracks how many times a unit has shot
+	internal int shotsLandedCounter;     ///< Tracks how many times a unit has hit his target
+	internal List<BattleUnitKills> kills;///< Tracks kills
+	internal int daysWounded;            ///< Tracks how many days the unit was wounded for
+	internal bool KIA;                   ///< Tracks if the soldier was killed in battle
+	internal bool nikeCross;             ///< Tracks if a soldier killed every alien or killed and stunned every alien
+	internal bool mercyCross;            ///< Tracks if a soldier stunned every alien
+	internal int woundsHealed;           ///< Tracks how many times a fatal wound was healed by this unit
+	internal UnitStats delta;            ///< Tracks the increase in unit stats (is not saved, only used during debriefing)
+	internal int appliedStimulant;       ///< Tracks how many times this soldier applied stimulant
+	internal int appliedPainKill;        ///< Tracks how many times this soldier applied pain killers
+	internal int revivedSoldier;         ///< Tracks how many times this soldier revived another soldier
+	internal int revivedHostile;         ///< Tracks how many times this soldier revived another hostile
+	internal int revivedNeutral;         ///< Tracks how many times this soldier revived another civilian
+	internal bool MIA;                   ///< Tracks if the soldier was left behind :(
+	internal int martyr;                 ///< Tracks how many kills the soldier landed on the turn of his death
+	internal int slaveKills;             ///< Tracks how many kills the soldier landed thanks to a mind controlled unit.
 
     public BattleUnitStatistics()
     {
@@ -126,6 +126,17 @@ struct BattleUnitStatistics
         if (martyr != 0) node.Add("martyr", martyr.ToString());
 		if (slaveKills != 0) node.Add("slaveKills", slaveKills.ToString());
 		return node;
+	}
+
+	/// Friendly fire check
+	internal bool hasFriendlyFired()
+	{
+		foreach (var i in kills)
+		{
+			if (i.faction == UnitFaction.FACTION_PLAYER)
+				return true;
+		}
+		return false;
 	}
 }
 
@@ -339,4 +350,70 @@ record struct BattleUnitKills
             return $"{lang.getString(race)} {lang.getString(rank)}";
 		}
 	}
+
+	/// Convert victim Status to string.
+	internal string getUnitStatusString()
+	{
+		switch (status)
+		{
+		    case UnitStatus.STATUS_DEAD:        return "STATUS_DEAD";
+		    case UnitStatus.STATUS_UNCONSCIOUS: return "STATUS_UNCONSCIOUS";
+		    case UnitStatus.STATUS_PANICKING:   return "STATUS_PANICKING";
+		    case UnitStatus.STATUS_TURNING:     return "STATUS_TURNING";
+		    default:                            return "status error";
+		}
+	}
+
+	/// Convert victim Faction to string.
+	internal string getUnitFactionString()
+	{
+		switch (faction)
+		{
+		    case UnitFaction.FACTION_PLAYER:    return "FACTION_PLAYER";
+		    case UnitFaction.FACTION_HOSTILE:   return "FACTION_HOSTILE";
+		    case UnitFaction.FACTION_NEUTRAL:   return "FACTION_NEUTRAL";
+		    default:                            return "faction error";
+		}
+	}
+
+	/// Convert victim Side to string.
+	internal string getUnitSideString()
+	{
+		switch (side)
+		{
+		    case UnitSide.SIDE_FRONT:           return "SIDE_FRONT";
+		    case UnitSide.SIDE_LEFT:            return "SIDE_LEFT";
+		    case UnitSide.SIDE_RIGHT:           return "SIDE_RIGHT";
+		    case UnitSide.SIDE_REAR:            return "SIDE_REAR";
+		    case UnitSide.SIDE_UNDER:           return "SIDE_UNDER";
+		    default:                            return "side error";
+		}
+	}
+
+	/// Convert victim Body part to string.
+	internal string getUnitBodyPartString()
+	{
+		switch (bodypart)
+		{
+		    case UnitBodyPart.BODYPART_HEAD:        return "BODYPART_HEAD";
+		    case UnitBodyPart.BODYPART_TORSO:       return "BODYPART_TORSO";
+		    case UnitBodyPart.BODYPART_RIGHTARM:    return "BODYPART_RIGHTARM";
+		    case UnitBodyPart.BODYPART_LEFTARM:     return "BODYPART_LEFTARM";
+		    case UnitBodyPart.BODYPART_RIGHTLEG:    return "BODYPART_RIGHTLEG";
+		    case UnitBodyPart.BODYPART_LEFTLEG:     return "BODYPART_LEFTLEG";
+		    default:                                return "body part error";
+		}
+	}
+
+	/// Check to see if turn was on HOSTILE side
+	internal bool hostileTurn()
+	{
+		if ((turn - 1) % 3 == 0) return true;
+		return false;
+	}
+
+	// Functions
+	/// Make turn unique across all kills
+	internal int makeTurnUnique() =>
+		turn += mission * 300; // Maintains divisibility by 3 as well
 }

@@ -597,4 +597,17 @@ internal class CraftEquipmentState : State
         _txtAvailable.setText(tr("STR_SPACE_AVAILABLE").arg(c.getSpaceAvailable()));
         _txtUsed.setText(tr("STR_SPACE_USED").arg(c.getSpaceUsed()));
     }
+
+    /**
+     * Resets the savegame when coming back from the inventory.
+     */
+    protected override void init()
+    {
+	    base.init();
+
+	    _game.getSavedGame().setBattleGame(null);
+
+	    Craft c = _base.getCrafts()[(int)_craft];
+	    c.setInBattlescape(false);
+    }
 }

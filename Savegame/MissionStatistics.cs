@@ -26,17 +26,17 @@ internal struct MissionStatistics
 {
     // Variables
     internal int id;
-    int markerId;
+    internal int markerId;
     internal GameTime time;
     internal string region, country, type, ufo;
     internal bool success;
     internal int score;
     internal string alienRace;
-    int daylight;
-    bool valiantCrux;
-    int lootValue;
-    string markerName;
-    string rating;
+    internal int daylight;
+    internal bool valiantCrux;
+    internal int lootValue;
+    internal string markerName;
+    internal string rating;
     internal Dictionary<int, int> injuryList;
 
     public MissionStatistics()

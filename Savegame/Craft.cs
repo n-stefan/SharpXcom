@@ -915,4 +915,27 @@ internal class Craft : MovingTarget
      */
     internal int getDamage() =>
 	    _damage;
+
+    /**
+     * Returns the amount of equipment currently
+     * equipped on this craft.
+     * @return Number of items.
+     */
+    internal int getNumEquipment() =>
+	    _items.getTotalQuantity();
+
+    /**
+     * Returns the craft's battlescape status.
+     * @return Is the craft currently in battle?
+     */
+    internal bool isInBattlescape() =>
+	    _inBattlescape;
+
+    /**
+     * Changes whether the craft has just done a ground mission,
+     * and is forced to return to base.
+     * @param mission True if it's returning, false otherwise.
+     */
+    internal void setMissionComplete(bool mission) =>
+	    _mission = mission;
 }

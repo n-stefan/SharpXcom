@@ -2284,4 +2284,91 @@ internal class GeoscapeState : State
      */
     internal Globe getGlobe() =>
 	    _globe;
+
+    /**
+     * Updates the timer display and resets the palette
+     * since it's bound to change on other screens.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    timeDisplay();
+
+	    _globe.onMouseClick(globeClick);
+	    _globe.onMouseOver(null);
+	    _globe.rotateStop();
+	    _globe.setFocus(true);
+	    _globe.draw();
+
+	    // Pop up save screen if it's a new ironman game
+	    if (_game.getSavedGame().isIronman() && string.IsNullOrEmpty(_game.getSavedGame().getName()))
+	    {
+		    popup(new ListSaveState(OptionsOrigin.OPT_GEOSCAPE));
+	    }
+
+	    // Set music if it's not already playing
+	    if (!_dogfights.Any() && !_dogfightStartTimer.isRunning())
+	    {
+		    if (_game.getSavedGame().getMonthsPassed() == -1)
+		    {
+			    _game.getMod().playMusic("GMGEO", 1);
+		    }
+		    else
+		    {
+			    _game.getMod().playMusic("GMGEO");
+		    }
+	    }
+	    else
+	    {
+		    _game.getMod().playMusic("GMINTER");
+	    }
+	    _globe.setNewBaseHover(false);
+
+		    // run once
+	    if (_game.getSavedGame().getMonthsPassed() == -1 &&
+		    // as long as there's a base
+		    _game.getSavedGame().getBases().Any() &&
+		    // and it has a name (THIS prevents it from running prior to the base being placed.)
+		    !string.IsNullOrEmpty(_game.getSavedGame().getBases().First().getName()))
+	    {
+		    _game.getSavedGame().addMonth();
+		    determineAlienMissions();
+		    _game.getSavedGame().setFunds(_game.getSavedGame().getFunds() - (_game.getSavedGame().getBaseMaintenance() - _game.getSavedGame().getBases().First().getPersonnelMaintenance()));
+	    }
+    }
+
+    /**
+     * Processes any left-clicks on globe markers,
+     * or right-clicks to scroll the globe.
+     * @param action Pointer to an action.
+     */
+    void globeClick(Action action)
+    {
+	    int mouseX = (int)Math.Floor(action.getAbsoluteXMouse()), mouseY = (int)Math.Floor(action.getAbsoluteYMouse());
+
+	    // Clicking markers on the globe
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+	    {
+		    List<Target> v = _globe.getTargets(mouseX, mouseY, false);
+		    if (v.Any())
+		    {
+			    _game.pushState(new MultipleTargetsState(v, null, this));
+		    }
+	    }
+
+	    if (_game.getSavedGame().getDebugMode())
+	    {
+		    double lon, lat;
+		    int texture, shade;
+		    _globe.cartToPolar((short)mouseX, (short)mouseY, out lon, out lat);
+		    double lonDeg = lon / M_PI * 180, latDeg = lat / M_PI * 180;
+		    _globe.getPolygonTextureAndShade(lon, lat, out texture, out shade);
+		    var ss = new StringBuilder();
+		    ss.Append($"rad: {lon}, {lat}{Environment.NewLine}");
+		    ss.Append($"deg: {lonDeg}, {latDeg}{Environment.NewLine}");
+		    ss.Append($"texture: {texture}, shade: {shade}{Environment.NewLine}");
+
+		    _txtDebug.setText(ss.ToString());
+	    }
+    }
 }

@@ -50,6 +50,8 @@ enum MovementType { MT_WALK, MT_FLY, MT_SLIDE, MT_FLOAT, MT_SINK };
  */
 internal class MapData
 {
+	internal const int O_DUMMY = 999;
+
     MapDataSet _dataset;
     SpecialTileType _specialType;
     bool _isUfoDoor, _stopLOS, _isNoFloor, _isGravLift, _isDoor, _blockFire, _blockSmoke, _baseModule;

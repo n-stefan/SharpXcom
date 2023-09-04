@@ -223,7 +223,7 @@ internal class SoldierDiaryOverviewState : State
      *  Clears all the variables and reinitializes the list of medals for the soldier.
      *
      */
-    void init()
+    protected override void init()
     {
         base.init();
         if (!_list.Any())

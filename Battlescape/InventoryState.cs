@@ -849,7 +849,7 @@ internal class InventoryState : State
     /**
      * Updates all soldier stats when the soldier changes.
      */
-    void init()
+    protected override void init()
     {
         base.init();
         BattleUnit unit = _battleGame.getSelectedUnit();

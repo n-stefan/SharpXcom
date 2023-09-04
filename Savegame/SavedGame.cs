@@ -44,8 +44,16 @@ struct SaveInfo
     internal long timestamp;
     internal string isoDate, isoTime;
     internal string details;
-    List<string> mods;
+    internal List<string> mods;
     internal bool reserved;
+}
+
+struct PromotionInfo
+{
+	internal int totalCommanders;
+	internal int totalColonels;
+	internal int totalCaptains;
+	internal int totalSergeants;
 }
 
 /**
@@ -1186,4 +1194,347 @@ internal class SavedGame
      */
     internal List<RuleResearch> getDiscoveredResearch() =>
 	    _discovered;
+
+    /**
+     * Handles the higher promotions (not the rookie-squaddie ones).
+     * @param participants a list of soldiers that were actually present at the battle.
+     * @return Whether or not some promotions happened - to show the promotions screen.
+     */
+    internal bool handlePromotions(List<Soldier> participants)
+    {
+	    int soldiersPromoted = 0;
+	    Soldier highestRanked = null;
+	    var soldierData = new PromotionInfo();
+	    var soldiers = new List<Soldier>();
+	    foreach (var i in _bases)
+	    {
+		    foreach (var j in i.getSoldiers())
+		    {
+			    soldiers.Add(j);
+			    processSoldier(j, ref soldierData);
+		    }
+		    foreach (var j in i.getTransfers())
+		    {
+			    if (j.getType() == TransferType.TRANSFER_SOLDIER)
+			    {
+				    soldiers.Add(j.getSoldier());
+				    processSoldier(j.getSoldier(), ref soldierData);
+			    }
+		    }
+	    }
+
+	    int totalSoldiers = soldiers.Count;
+
+	    if (soldierData.totalCommanders == 0)
+	    {
+		    if (totalSoldiers >= 30)
+		    {
+			    highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_COLONEL);
+			    if (highestRanked != null)
+			    {
+				    // only promote one colonel to commander
+				    highestRanked.promoteRank();
+				    soldiersPromoted++;
+				    soldierData.totalCommanders++;
+				    soldierData.totalColonels--;
+			    }
+		    }
+	    }
+
+	    if ((totalSoldiers / 23) > soldierData.totalColonels)
+	    {
+		    while ((totalSoldiers / 23) > soldierData.totalColonels)
+		    {
+			    highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_CAPTAIN);
+			    if (highestRanked != null)
+			    {
+				    highestRanked.promoteRank();
+				    soldiersPromoted++;
+				    soldierData.totalColonels++;
+				    soldierData.totalCaptains--;
+			    }
+			    else
+			    {
+				    break;
+			    }
+		    }
+	    }
+
+	    if ((totalSoldiers / 11) > soldierData.totalCaptains)
+	    {
+		    while ((totalSoldiers / 11) > soldierData.totalCaptains)
+		    {
+			    highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_SERGEANT);
+			    if (highestRanked != null)
+			    {
+				    highestRanked.promoteRank();
+				    soldiersPromoted++;
+				    soldierData.totalCaptains++;
+				    soldierData.totalSergeants--;
+			    }
+			    else
+			    {
+				    break;
+			    }
+		    }
+	    }
+
+	    if ((totalSoldiers / 5) > soldierData.totalSergeants)
+	    {
+		    while ((totalSoldiers / 5) > soldierData.totalSergeants)
+		    {
+			    highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_SQUADDIE);
+			    if (highestRanked != null)
+			    {
+				    highestRanked.promoteRank();
+				    soldiersPromoted++;
+				    soldierData.totalSergeants++;
+			    }
+			    else
+			    {
+				    break;
+			    }
+		    }
+	    }
+
+	    return (soldiersPromoted > 0);
+    }
+
+    /**
+     * Checks how many soldiers of a rank exist and which one has the highest score.
+     * @param soldiers full list of live soldiers.
+     * @param participants list of participants on this mission.
+     * @param rank Rank to inspect.
+     * @return the highest ranked soldier
+     */
+    Soldier inspectSoldiers(List<Soldier> soldiers, List<Soldier> participants, SoldierRank rank)
+    {
+	    int highestScore = 0;
+	    Soldier highestRanked = null;
+	    foreach (var i in soldiers)
+	    {
+		    if (i.getRank() == rank)
+		    {
+			    int score = getSoldierScore(i);
+			    if (score > highestScore && (!Options.fieldPromotions || participants.Contains(i)))
+			    {
+				    highestScore = score;
+				    highestRanked = i;
+			    }
+		    }
+	    }
+	    return highestRanked;
+    }
+
+    /**
+     * Evaluate the score of a soldier based on all of his stats, missions and kills.
+     * @param soldier the soldier to get a score for.
+     * @return this soldier's score.
+     */
+    int getSoldierScore(Soldier soldier)
+    {
+	    UnitStats s = soldier.getCurrentStats();
+	    int v1 = 2 * s.health + 2 * s.stamina + 4 * s.reactions + 4 * s.bravery;
+	    int v2 = v1 + 3*( s.tu + 2*( s.firing ) );
+	    int v3 = v2 + s.melee + s.throwing + s.strength;
+	    if (s.psiSkill > 0) v3 += s.psiStrength + 2 * s.psiSkill;
+	    return v3 + 10 * ( soldier.getMissions() + soldier.getKills() );
+    }
+
+    /**
+     * Processes a soldier, and adds their rank to the promotions data array.
+     * @param soldier the soldier to process.
+     * @param soldierData the data array to put their info into.
+     */
+    void processSoldier(Soldier soldier, ref PromotionInfo soldierData)
+    {
+	    switch (soldier.getRank())
+	    {
+	        case SoldierRank.RANK_COMMANDER:
+		        soldierData.totalCommanders++;
+		        break;
+	        case SoldierRank.RANK_COLONEL:
+		        soldierData.totalColonels++;
+		        break;
+	        case SoldierRank.RANK_CAPTAIN:
+		        soldierData.totalCaptains++;
+		        break;
+	        case SoldierRank.RANK_SERGEANT:
+		        soldierData.totalSergeants++;
+		        break;
+	        default:
+		        break;
+	    }
+    }
+
+    /**
+     * Gets the current debug mode.
+     * @return Debug mode.
+     */
+    internal bool getDebugMode() =>
+	    _debug;
+
+    /**
+     * Gets all the info of the saves found in the user folder.
+     * @param lang Loaded language.
+     * @param autoquick Include autosaves and quicksaves.
+     * @return List of saves info.
+     */
+    internal static List<SaveInfo> getList(Language lang, bool autoquick)
+    {
+	    var info = new List<SaveInfo>();
+	    string curMaster = Options.getActiveMaster();
+	    List<string> saves = CrossPlatform.getFolderContents(Options.getMasterUserFolder(), "sav");
+
+	    if (autoquick)
+	    {
+		    List<string> asaves = CrossPlatform.getFolderContents(Options.getMasterUserFolder(), "asav");
+		    saves.InsertRange(0, asaves);
+	    }
+	    foreach (var i in saves)
+	    {
+		    try
+		    {
+			    SaveInfo saveInfo = getSaveInfo(i, lang);
+			    if (!_isCurrentGameType(saveInfo, curMaster))
+			    {
+				    continue;
+			    }
+			    info.Add(saveInfo);
+		    }
+		    catch (YamlException e)
+		    {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {i}: {e.Message}");
+			    continue;
+		    }
+		    catch (Exception e)
+		    {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {i}: {e.Message}");
+			    continue;
+		    }
+	    }
+
+	    return info;
+    }
+
+    static bool _isCurrentGameType(SaveInfo saveInfo, string curMaster)
+    {
+	    bool matchMasterMod = false;
+	    if (!saveInfo.mods.Any())
+	    {
+		    // if no mods listed in the savegame, this is an old-style
+		    // savegame.  assume "xcom1" as the game type.
+		    matchMasterMod = (curMaster == "xcom1");
+	    }
+	    else
+	    {
+		    foreach (var i in saveInfo.mods)
+		    {
+			    string name = sanitizeModName(i);
+			    if (name == curMaster)
+			    {
+				    matchMasterMod = true;
+				    break;
+			    }
+		    }
+	    }
+
+	    if (!matchMasterMod)
+	    {
+            Console.WriteLine($"{Log(SeverityLevel.LOG_DEBUG)} skipping save from inactive master: {saveInfo.fileName}");
+	    }
+
+	    return matchMasterMod;
+    }
+
+    /**
+     * Removes version number from a mod name, if any.
+     * @param name Mod id from a savegame.
+     * @return Sanitized mod name.
+     */
+    static string sanitizeModName(string name)
+    {
+	    int versionInfoBreakPoint = name.IndexOf(" ver: ");
+	    if (versionInfoBreakPoint == -1)
+	    {
+		    return name;
+	    }
+	    else
+	    {
+		    return name.Substring(0, versionInfoBreakPoint);
+	    }
+    }
+
+    /**
+     * Gets the info of a specific save file.
+     * @param file Save filename.
+     * @param lang Loaded language.
+     */
+    static SaveInfo getSaveInfo(string file, Language lang)
+    {
+	    var fullname = Options.getMasterUserFolder() + file;
+        using var input = new StreamReader(fullname);
+        var yaml = new YamlStream();
+        yaml.Load(input);
+        var doc = yaml.Documents[0].RootNode;
+	    SaveInfo save;
+
+	    save.fileName = file;
+
+	    if (save.fileName == QUICKSAVE)
+	    {
+		    save.displayName = lang.getString("STR_QUICK_SAVE_SLOT");
+		    save.reserved = true;
+	    }
+	    else if (save.fileName == AUTOSAVE_GEOSCAPE)
+	    {
+		    save.displayName = lang.getString("STR_AUTO_SAVE_GEOSCAPE_SLOT");
+		    save.reserved = true;
+	    }
+	    else if (save.fileName == AUTOSAVE_BATTLESCAPE)
+	    {
+		    save.displayName = lang.getString("STR_AUTO_SAVE_BATTLESCAPE_SLOT");
+		    save.reserved = true;
+	    }
+	    else
+	    {
+		    if (doc["name"] != null)
+		    {
+			    save.displayName = doc["name"].ToString();
+		    }
+		    else
+		    {
+			    save.displayName = Unicode.convPathToUtf8(CrossPlatform.noExt(file));
+		    }
+		    save.reserved = false;
+	    }
+
+	    save.timestamp = CrossPlatform.getDateModified(fullname);
+	    KeyValuePair<string, string> str = CrossPlatform.timeToString(save.timestamp);
+	    save.isoDate = str.Key;
+	    save.isoTime = str.Value;
+        save.mods = ((YamlSequenceNode)doc["mods"]).Children.Select(x => x.ToString()).ToList();
+
+	    var details = new StringBuilder();
+	    if (doc["turn"] != null)
+	    {
+		    details.Append($"{lang.getString("STR_BATTLESCAPE")}: {lang.getString(doc["mission"].ToString())}, ");
+		    details.Append(lang.getString("STR_TURN").arg(int.Parse(doc["turn"].ToString())));
+	    }
+	    else
+	    {
+		    GameTime time = new GameTime(6, 1, 1, 1999, 12, 0, 0);
+		    time.load(doc["time"]);
+		    details.Append($"{lang.getString("STR_GEOSCAPE")}: ");
+		    details.Append($"{time.getDayString(lang)} {lang.getString(time.getMonthString())} {time.getYear()}, ");
+		    details.Append($"{time.getHour()}:{time.getMinute():D2}");
+	    }
+	    if (bool.Parse(doc["ironman"].ToString()))
+	    {
+		    details.Append($" ({lang.getString("STR_IRONMAN")})");
+	    }
+	    save.details = details.ToString();
+
+	    return save;
+    }
 }

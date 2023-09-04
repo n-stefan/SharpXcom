@@ -234,7 +234,7 @@ internal class Base : Target
      * for maintaining the personnel in the base.
      * @return Maintenance costs.
      */
-    int getPersonnelMaintenance()
+    internal int getPersonnelMaintenance()
     {
 	    int total = 0;
 	    foreach (var i in _transfers)
@@ -652,7 +652,7 @@ internal class Base : Target
      * @param checkCombatReadiness does what it says on the tin.
      * @return Number of soldiers.
      */
-    internal int getAvailableSoldiers(bool checkCombatReadiness)
+    internal int getAvailableSoldiers(bool checkCombatReadiness = false)
     {
 	    int total = 0;
 	    foreach (var i in _soldiers)
@@ -1222,6 +1222,271 @@ internal class Base : Target
 		    {
 			    total++;
 		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total defense value of all
+     * the facilities in the base.
+     * @return Defense value.
+     */
+    internal int getDefenseValue()
+    {
+	    int total = 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getBuildTime() == 0)
+		    {
+			    total += i.getRules().getDefenseValue();
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of short range
+     * detection facilities in the base.
+     * @return Defense value.
+     */
+    internal int getShortRangeDetection()
+    {
+	    int total = 0;
+	    int minRadarRange = _mod.getMinRadarRange();
+
+	    if (minRadarRange == 0) return 0;
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getRules().getRadarRange() == minRadarRange && i.getBuildTime() == 0)
+		    {
+			    total++;
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the total amount of long range
+     * detection facilities in the base.
+     * @return Defense value.
+     */
+    internal int getLongRangeDetection()
+    {
+	    int total = 0;
+	    int minRadarRange = _mod.getMinRadarRange();
+
+	    foreach (var i in _facilities)
+	    {
+		    if (i.getRules().getRadarRange() > minRadarRange && i.getBuildTime() == 0)
+		    {
+			    total++;
+		    }
+	    }
+	    return total;
+    }
+
+    /**
+     * Returns the base's battlescape status.
+     * @return Is the craft on the battlescape?
+     */
+    internal bool isInBattlescape() =>
+	    _inBattlescape;
+
+    /**
+     * Destroys all disconnected facilities in the base.
+     */
+    internal void destroyDisconnectedFacilities()
+    {
+	    List<BaseFacility> disFacs = getDisconnectedFacilities(null);
+	    for (var i = disFacs.Count - 1; i >= 0; i--)
+	    {
+		    destroyFacility(disFacs[i]);
+	    }
+    }
+
+    /**
+     * Removes a base module, and deals with the ramifications thereof.
+     * @param facility An iterator reference to the facility to destroy and remove.
+     */
+    internal void destroyFacility(BaseFacility facility)
+    {
+	    if (facility.getRules().getCrafts() > 0)
+	    {
+		    // hangar destruction - destroy crafts and any production of crafts
+		    // if this will mean there is no hangar to contain it
+		    if (facility.getCraft() != null)
+		    {
+			    // remove all soldiers
+			    if (facility.getCraft().getNumSoldiers() != 0)
+			    {
+				    foreach (var i in _soldiers)
+				    {
+					    if (i.getCraft() == facility.getCraft())
+					    {
+						    i.setCraft(null);
+					    }
+				    }
+			    }
+			    // remove all items
+			    while (facility.getCraft().getItems().getContents().Any())
+			    {
+                    KeyValuePair<string, int> i = facility.getCraft().getItems().getContents().First();
+				    _items.addItem(i.Key, i.Value);
+				    facility.getCraft().getItems().removeItem(i.Key, i.Value);
+			    }
+			    foreach (var i in _crafts)
+			    {
+				    if (i == facility.getCraft())
+				    {
+					    _crafts.Remove(i);
+					    break;
+				    }
+			    }
+		    }
+		    else
+		    {
+			    bool remove = true;
+			    // no craft - check productions.
+			    foreach (var i in _productions)
+			    {
+				    if (getAvailableHangars() - getUsedHangars() - facility.getRules().getCrafts() < 0 && i.getRules().getCategory() == "STR_CRAFT")
+				    {
+					    _engineers += i.getAssignedEngineers();
+					    _productions.Remove(i);
+					    remove = false;
+					    break;
+				    }
+			    }
+			    if (remove && _transfers.Any())
+			    {
+				    foreach (var i in _transfers)
+				    {
+					    if (i.getType() == TransferType.TRANSFER_CRAFT)
+					    {
+						    i.setCraft(null);
+						    _transfers.Remove(i);
+						    break;
+					    }
+				    }
+			    }
+		    }
+	    }
+	    if (facility.getRules().getPsiLaboratories() > 0)
+	    {
+		    // psi lab destruction: remove any soldiers over the maximum allowable from psi training.
+		    int toRemove = facility.getRules().getPsiLaboratories() - getFreePsiLabs();
+		    for (var i = 0; i < _soldiers.Count && toRemove > 0; ++i)
+		    {
+			    if (_soldiers[i].isInPsiTraining())
+			    {
+				    _soldiers[i].setPsiTraining(false);
+				    --toRemove;
+			    }
+		    }
+	    }
+	    if (facility.getRules().getLaboratories() != 0)
+	    {
+		    // lab destruction: enforce lab space limits. take scientists off projects until
+		    // it all evens out. research is not cancelled.
+		    int toRemove = facility.getRules().getLaboratories() - getFreeLaboratories();
+		    for (var i = 0; i < _research.Count && toRemove > 0;)
+		    {
+			    if (_research[i].getAssigned() >= toRemove)
+			    {
+				    _research[i].setAssigned(_research[i].getAssigned() - toRemove);
+				    _scientists += toRemove;
+				    break;
+			    }
+			    else
+			    {
+				    toRemove -= _research[i].getAssigned();
+				    _scientists += _research[i].getAssigned();
+				    _research[i].setAssigned(0);
+				    ++i;
+			    }
+		    }
+	    }
+	    if (facility.getRules().getWorkshops() != 0)
+	    {
+		    // workshop destruction: similar to lab destruction, but we'll lay off engineers instead
+		    // in this case, however, production IS cancelled, as it takes up space in the workshop.
+		    int toRemove = facility.getRules().getWorkshops() - getFreeWorkshops();
+		    for (var i = 0; i < _productions.Count && toRemove > 0;)
+		    {
+			    if (_productions[i].getAssignedEngineers() > toRemove)
+			    {
+				    _productions[i].setAssignedEngineers(_productions[i].getAssignedEngineers() - toRemove);
+				    _engineers += toRemove;
+				    break;
+			    }
+			    else
+			    {
+				    toRemove -= _productions[i].getAssignedEngineers();
+				    _engineers += _productions[i].getAssignedEngineers();
+				    _productions.RemoveAt(i);
+			    }
+		    }
+	    }
+	    if (facility.getRules().getStorage() != 0)
+	    {
+		    // we won't destroy the items physically AT the base,
+		    // but any items in transit will end up at the dead letter office.
+		    if (storesOverfull(facility.getRules().getStorage()) && _transfers.Any())
+		    {
+			    for (var i = 0; i < _transfers.Count;)
+			    {
+				    if (_transfers[i].getType() == TransferType.TRANSFER_ITEM)
+				    {
+					    _transfers.RemoveAt(i);
+				    }
+				    else
+				    {
+					    ++i;
+				    }
+			    }
+		    }
+	    }
+	    if (facility.getRules().getPersonnel() != 0)
+	    {
+		    // as above, we won't actually fire people, but we'll block any new ones coming in.
+		    if ((getAvailableQuarters() - getUsedQuarters()) - facility.getRules().getPersonnel() < 0 && _transfers.Any())
+		    {
+			    for (var i = 0; i < _transfers.Count;)
+			    {
+				    // let soldiers arrive, but block workers.
+				    if (_transfers[i].getType() == TransferType.TRANSFER_ENGINEER || _transfers[i].getType() == TransferType.TRANSFER_SCIENTIST)
+				    {
+					    _transfers.RemoveAt(i);
+				    }
+				    else
+				    {
+					    ++i;
+				    }
+			    }
+		    }
+	    }
+	    //facility = null;
+	    _facilities.Remove(facility);
+    }
+
+    /**
+     * Return psilab space not in use
+     * @return psilab space not in use
+     */
+    int getFreePsiLabs() =>
+	    getAvailablePsiLabs() - getUsedPsiLabs();
+
+    /**
+     * Returns the amount of scientists currently in use.
+     * @return Amount of scientists.
+     */
+    internal int getAllocatedScientists()
+    {
+	    int total = 0;
+	    List<ResearchProject> research = getResearch();
+	    foreach (var itResearch in research)
+	    {
+		    total += itResearch.getAssigned();
 	    }
 	    return total;
     }

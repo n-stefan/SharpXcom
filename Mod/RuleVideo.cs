@@ -95,4 +95,19 @@ internal class RuleVideo : IRule
 		slide.transitionSeconds = int.Parse(node["transitionSeconds"].ToString());
 		slide.align = node["captionAlign"] != null ? (TextHAlign)int.Parse(node["captionAlign"].ToString()) : TextHAlign.ALIGN_LEFT;
 	}
+
+	internal List<string> getVideos() =>
+		_videos;
+
+	internal List<SlideshowSlide> getSlides() =>
+		_slides;
+
+	internal List<string> getAudioTracks() =>
+		_audioTracks;
+
+	internal bool useUfoAudioSequence() =>
+		_useUfoAudioSequence;
+
+	internal SlideshowHeader getSlideshowHeader() =>
+		_slideshowHeader;
 }

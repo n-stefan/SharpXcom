@@ -583,4 +583,186 @@ internal class RuleItem : IListOrder, IRule
      */
     internal int getAccuracyAimed() =>
 	    _accuracyAimed;
+
+    /**
+     * Gets the associated special type of this item.
+     * note that type 14 is the alien brain, and types
+     * 0 and 1 are "regular tile" and "starting point"
+     * so try not to use those ones.
+     * @return special type.
+     */
+    internal int getSpecialType() =>
+	    _specialType;
+
+    /**
+     * Returns the item's recovery points.
+     * This is used during the battlescape debriefing score calculation.
+     * @return The recovery points.
+     */
+    internal int getRecoveryPoints() =>
+	    _recoveryPoints;
+
+    /**
+     * Is strength applied to the damage of this weapon?
+     * @return If we should apply strength.
+     */
+    internal bool isStrengthApplied() =>
+	    _strengthApplied;
+
+    /**
+     * Returns the item's max explosion radius. Small explosions don't have a restriction.
+     * Larger explosions are restricted using a formula, with a maximum of radius 10 no matter how large the explosion is.
+     * @return The radius.
+     */
+    internal int getExplosionRadius()
+    {
+	    int radius = 0;
+
+	    if (_blastRadius == -1)
+	    {
+		    // heavy explosions, incendiary, smoke or stun bombs create AOE explosions
+		    // all the rest hits one point:
+		    // AP, melee (stun or AP), laser, plasma, acid
+		    if (_damageType == ItemDamageType.DT_IN)
+		    {
+			    radius = (_power / 30) + 1;
+		    }
+		    else if (_damageType == ItemDamageType.DT_HE || _damageType == ItemDamageType.DT_STUN || _damageType == ItemDamageType.DT_SMOKE)
+		    {
+			    radius = _power / 20;
+		    }
+		    // cap the formula to 11
+		    if (radius > 11)
+		    {
+			    radius = 11;
+		    }
+	    }
+	    else
+	    {
+		    // unless a blast radius is actually defined.
+		    radius = _blastRadius;
+	    }
+
+	    return radius;
+    }
+
+    /**
+     * Gets the item's hit animation.
+     * @return The hit animation id.
+     */
+    internal int getHitAnimation() =>
+	    _hitAnimation;
+
+    /**
+     * Gets the speed at which this bullet explodes.
+     * @return The speed.
+     */
+    internal int getExplosionSpeed() =>
+	    _explosionSpeed;
+
+    /**
+     * Gets the item's hit sound.
+     * @return The hit sound id.
+     */
+    internal int getHitSound() =>
+	    _hitSound;
+
+    /**
+     * What is the starting frame offset in hit.pck to use for the animation?
+     * @return the starting frame offset in hit.pck to use for the animation.
+     */
+    internal int getMeleeAnimation() =>
+	    _meleeAnimation;
+
+    /**
+     * What sound does this weapon make when you swing this at someone?
+     * @return The weapon's melee attack sound.
+     */
+    internal int getMeleeAttackSound() =>
+	    _meleeSound;
+
+    /**
+     * Gets the maximum range of this weapon
+     * @return The maximum range.
+     */
+    internal int getMaxRange() =>
+	    _maxRange;
+
+    /**
+     * Gets the maximum range of this weapon squared
+     * @return The maximum range squared.
+     */
+    internal int getMaxRangeSq() =>
+	    _maxRange * _maxRange;
+
+    /**
+     * Returns if this weapon should arc its shots.
+     * @return True if this weapon should arc its shots.
+     */
+    internal bool getArcingShot() =>
+	    _arcingShot;
+
+    /**
+     * Gets the item's fire sound.
+     * @return The fire sound id.
+     */
+    internal int getFireSound() =>
+	    _fireSound;
+
+    /**
+     * Returns whether this item is held with two hands.
+     * @return True if it is two-handed.
+     */
+    internal bool isTwoHanded() =>
+	    _twoHanded;
+
+    /**
+     * Gets the item's accuracy for melee attacks.
+     * @return The melee accuracy.
+     */
+    internal int getAccuracyMelee() =>
+	    _accuracyMelee;
+
+    /**
+     * Is skill applied to the accuracy of this weapon?
+     * this only applies to melee weapons.
+     * @return If we should apply skill.
+     */
+    internal bool isSkillApplied() =>
+	    _skillApplied;
+
+    /**
+     * Gets the accuracy dropoff value of this weapon.
+     * @return The per-tile dropoff.
+     */
+    internal int getDropoff() =>
+	    _dropoff;
+
+    /**
+     * Gets the maximum effective range of this weapon for Snap Shot.
+     * @return The maximum range.
+     */
+    internal int getSnapRange() =>
+	    _snapRange;
+
+    /**
+     * Gets the maximum effective range of this weapon for Auto Shot.
+     * @return The maximum range.
+     */
+    internal int getAutoRange() =>
+	    _autoRange;
+
+    /**
+     * Gets the maximum effective range of this weapon when using Aimed Shot.
+     * @return The maximum range.
+     */
+    internal int getAimRange() =>
+	    _aimRange;
+
+    /**
+     * Gets the minimum effective range of this weapon.
+     * @return The minimum effective range.
+     */
+    internal int getMinRange() =>
+	    _minRange;
 }

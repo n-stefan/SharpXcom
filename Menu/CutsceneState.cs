@@ -34,4 +34,56 @@ internal class CutsceneState : State
         _cutsceneId = cutsceneId;
 
     ~CutsceneState() { }
+
+	protected override void init()
+	{
+		base.init();
+
+		// pop self off stack and replace with actual player state
+		_game.popState();
+
+		if (_cutsceneId == WIN_GAME || _cutsceneId == LOSE_GAME)
+		{
+			if (_game.getSavedGame().getMonthsPassed() > -1)
+			{
+				_game.setState(new StatisticsState());
+			}
+			else
+			{
+				_game.setSavedGame(null);
+				_game.setState(new GoToMainMenuState());
+			}
+		}
+
+		RuleVideo videoRule = _game.getMod().getVideo(_cutsceneId);
+		if (videoRule == null)
+		{
+			return;
+		}
+
+		bool fmv = false, slide = false;
+		if (videoRule.getVideos().Any())
+		{
+			string file = FileMap.getFilePath(videoRule.getVideos().First());
+			fmv = CrossPlatform.fileExists(file);
+		}
+		if (videoRule.getSlides().Any())
+		{
+			string file = FileMap.getFilePath(videoRule.getSlides().First().imagePath);
+			slide = CrossPlatform.fileExists(file);
+		}
+
+		if (fmv && (!slide || Options.preferredVideo == VideoFormat.VIDEO_FMV))
+		{
+			_game.pushState(new VideoState(videoRule.getVideos(), videoRule.getAudioTracks(), videoRule.useUfoAudioSequence()));
+		}
+		else if (slide && (!fmv || Options.preferredVideo == VideoFormat.VIDEO_SLIDE))
+		{
+			_game.pushState(new SlideshowState(videoRule.getSlideshowHeader(), videoRule.getSlides()));
+		}
+		else
+		{
+            Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} cutscene definition empty: {_cutsceneId}");
+		}
+	}
 }

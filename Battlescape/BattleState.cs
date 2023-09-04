@@ -33,7 +33,7 @@ internal class BattleState
      * @param parent Pointer to the parent state.
      * @param action Struct containing info about the action.
      */
-    BattleState(BattlescapeGame parent, BattleAction action)
+    protected BattleState(BattlescapeGame parent, BattleAction action)
     {
         _parent = parent;
         _action = action;
@@ -66,4 +66,11 @@ internal class BattleState
      * Start the current BattleState.
      */
     protected virtual void init() { }
+
+    /**
+     * Gets the action result. Returns error messages or an empty string when everything went fine.
+     * @return Error or empty string when everything is fine.
+     */
+    internal BattleAction getAction() =>
+	    _action;
 }

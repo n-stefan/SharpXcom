@@ -311,4 +311,28 @@ internal class ListGamesState : State
             row++;
         }
     }
+
+    /**
+     * Refreshes the saves list.
+     */
+    protected override void init()
+    {
+	    base.init();
+
+	    if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
+	    {
+		    applyBattlescapeTheme();
+	    }
+
+	    try
+	    {
+		    _saves = SavedGame.getList(_game.getLanguage(), _autoquick);
+		    _lstSaves.clearList();
+		    sortList(Options.saveOrder);
+	    }
+	    catch (Exception e)
+	    {
+            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {e.Message}");
+	    }
+    }
 }

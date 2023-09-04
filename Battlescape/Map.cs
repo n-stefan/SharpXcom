@@ -65,6 +65,7 @@ internal class Map : InteractiveSurface
     Timer _scrollMouseTimer, _scrollKeyTimer, _obstacleTimer;
     Text _txtAccuracy;
     List<Position> _waypoints;
+	List<Explosion> _explosions;
 
     /**
      * Sets up a map with the specified size and position.
@@ -187,7 +188,7 @@ internal class Map : InteractiveSurface
     /**
      * Disables obstacle markers.
      */
-    void disableObstacles()
+    internal void disableObstacles()
     {
         _showObstacles = false;
         if (_obstacleTimer != null)
@@ -246,4 +247,165 @@ internal class Map : InteractiveSurface
      */
     internal Projectile getProjectile() =>
 	    _projectile;
+
+    /**
+     * Checks all units for if they need to be redrawn.
+     */
+    internal void cacheUnits()
+    {
+	    foreach (var i in _save.getUnits())
+	    {
+		    cacheUnit(i);
+	    }
+    }
+
+    /**
+     * Check if a certain unit needs to be redrawn.
+     * @param unit Pointer to battleUnit.
+     */
+    internal void cacheUnit(BattleUnit unit)
+    {
+	    UnitSprite unitSprite = new UnitSprite(_spriteWidth * 2, _spriteHeight, 0, 0, _save.getDepth() != 0);
+	    unitSprite.setPalette(this.getPaletteColors());
+	    int numOfParts = unit.getArmor().getSize() * unit.getArmor().getSize();
+
+	    if (unit.isCacheInvalid())
+	    {
+		    // 1 or 4 iterations, depending on unit size
+		    for (int i = 0; i < numOfParts; i++)
+		    {
+			    Surface cache = unit.getCache(i);
+			    if (cache == null) // no cache created yet
+			    {
+				    cache = new Surface(_spriteWidth * 2, _spriteHeight);
+				    cache.setPalette(this.getPaletteColors());
+			    }
+
+			    unitSprite.setBattleUnit(unit, i);
+			    unitSprite.setSurfaces(_game.getMod().getSurfaceSet(unit.getArmor().getSpriteSheet()),
+									    _game.getMod().getSurfaceSet("HANDOB.PCK"),
+									    _game.getMod().getSurfaceSet("HANDOB2.PCK"));
+			    unitSprite.setAnimationFrame(_animFrame);
+			    cache.clear();
+			    unitSprite.blit(cache);
+			    unit.setCache(cache, i);
+		    }
+	    }
+	    unitSprite = null;
+    }
+
+    /**
+     * Set the "explosion flash" bool.
+     * @param flash should the screen be rendered in EGA this frame?
+     */
+    internal void setBlastFlash(bool flash) =>
+	    _flashScreen = flash;
+
+    /**
+     * Gets a list of explosion sprites on the map.
+     * @return A list of explosion sprites.
+     */
+    internal List<Explosion> getExplosions() =>
+	    _explosions;
+
+    /**
+     * Returns the angle(left/right balance) of a sound effect,
+     * based off a map position.
+     * @param pos the map position to calculate the sound angle from.
+     * @return the angle of the sound (280 to 440).
+     */
+    internal int getSoundAngle(Position pos)
+    {
+	    int midPoint = getWidth() / 2;
+	    Position relativePosition;
+
+	    _camera.convertMapToScreen(pos, out relativePosition);
+	    // cap the position to the screen edges relative to the center,
+	    // negative values indicating a left-shift, and positive values shifting to the right.
+	    relativePosition.x = Math.Clamp((relativePosition.x + _camera.getMapOffset().x) - midPoint, -midPoint, midPoint);
+
+	    // convert the relative distance to a relative increment of an 80 degree angle
+	    // we use +- 80 instead of +- 90, so as not to go ALL the way left or right
+	    // which would effectively mute the sound out of one speaker.
+	    // since Mix_SetPosition uses modulo 360, we can't feed it a negative number, so add 360 instead.
+	    return (int)(360 + (relativePosition.x / (midPoint / 80.0)));
+    }
+
+    /**
+     * Initializes the map.
+     */
+    void init()
+    {
+	    // load the tiny arrow into a surface
+	    int f = Palette.blockOffset(1); // yellow
+	    int b = 15; // black
+	    int[] pixels = { 0, 0, b, b, b, b, b, 0, 0,
+					     0, 0, b, f, f, f, b, 0, 0,
+					     0, 0, b, f, f, f, b, 0, 0,
+					     b, b, b, f, f, f, b, b, b,
+					     b, f, f, f, f, f, f, f, b,
+					     0, b, f, f, f, f, f, b, 0,
+					     0, 0, b, f, f, f, b, 0, 0,
+					     0, 0, 0, b, f, b, 0, 0, 0,
+					     0, 0, 0, 0, b, 0, 0, 0, 0 };
+
+	    _arrow = new Surface(9, 9);
+	    _arrow.setPalette(this.getPaletteColors());
+	    _arrow.@lock();
+	    for (int y = 0; y < 9;++y)
+		    for (int x = 0; x < 9; ++x)
+			    _arrow.setPixel(x, y, (byte)pixels[x+(y*9)]);
+	    _arrow.unlock();
+
+	    _projectile = null;
+	    if (_save.getDepth() == 0)
+	    {
+		    _projectileSet = _game.getMod().getSurfaceSet("Projectiles");
+	    }
+	    else
+	    {
+		    _projectileSet = _game.getMod().getSurfaceSet("UnderwaterProjectiles");
+	    }
+    }
+
+    /**
+     * Resets obstacle markers.
+     */
+    internal void resetObstacles()
+    {
+	    for (int z = 0; z < _save.getMapSizeZ(); z++)
+		    for (int y = 0; y < _save.getMapSizeY(); y++)
+			    for (int x = 0; x < _save.getMapSizeX(); x++)
+			    {
+				    Tile tile = _save.getTile(new Position(x, y, z));
+				    if (tile != null) tile.resetObstacle();
+			    }
+	    _showObstacles = false;
+    }
+
+    /**
+     * Enables obstacle markers.
+     */
+    internal void enableObstacles()
+    {
+	    _showObstacles = true;
+	    if (_obstacleTimer != null)
+	    {
+		    _obstacleTimer.stop();
+		    _obstacleTimer.start();
+	    }
+    }
+
+    /**
+     * Puts a projectile sprite on the map.
+     * @param projectile Projectile to place.
+     */
+    internal void setProjectile(Projectile projectile)
+    {
+	    _projectile = projectile;
+	    if (projectile != null && Options.battleSmoothCamera)
+	    {
+		    _launch = true;
+	    }
+    }
 }

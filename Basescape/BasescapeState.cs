@@ -442,4 +442,32 @@ internal class BasescapeState : State
             _game.getSavedGame().setSelectedBase(0);
         }
     }
+
+    /**
+     * The player can change the selected base
+     * or change info on other screens.
+     */
+    protected override void init()
+    {
+	    base.init();
+
+	    setBase(_base);
+	    _view.setBase(_base);
+	    _mini.draw();
+	    _edtBase.setText(_base.getName());
+
+	    // Get area
+	    foreach (var i in _game.getSavedGame().getRegions())
+	    {
+		    if (i.getRules().insideRegion(_base.getLongitude(), _base.getLatitude()))
+		    {
+			    _txtLocation.setText(tr(i.getRules().getType()));
+			    break;
+		    }
+	    }
+
+	    _txtFunds.setText(tr("STR_FUNDS").arg(Unicode.formatFunding(_game.getSavedGame().getFunds())));
+
+	    _btnNewBase.setVisible(_game.getSavedGame().getBases().Count < MiniBaseView.MAX_BASES);
+    }
 }

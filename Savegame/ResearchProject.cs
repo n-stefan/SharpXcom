@@ -25,6 +25,11 @@ namespace SharpXcom.Savegame;
  */
 internal class ResearchProject
 {
+    const float PROGRESS_LIMIT_UNKNOWN = 0.333f;
+    const float PROGRESS_LIMIT_POOR = 0.07f;
+    const float PROGRESS_LIMIT_AVERAGE = 0.13f;
+    const float PROGRESS_LIMIT_GOOD = 0.25f;
+
     RuleResearch _project;
     int _assigned;
     int _spent;
@@ -107,4 +112,39 @@ internal class ResearchProject
      */
     internal bool isFinished() =>
         _spent >= getCost();
+
+    /**
+     * Return a string describing Research progress.
+     * @return a string describing Research progress.
+     */
+    internal string getResearchProgress()
+    {
+	    float progress = (float)getSpent() / getRules().getCost();
+	    if (getAssigned() == 0)
+	    {
+		    return "STR_NONE";
+	    }
+	    else if (progress <= PROGRESS_LIMIT_UNKNOWN)
+	    {
+		    return "STR_UNKNOWN";
+	    }
+	    else
+	    {
+		    float rating = (float)getAssigned();
+		    rating /= getRules().getCost();
+		    if (rating <= PROGRESS_LIMIT_POOR)
+		    {
+			    return "STR_POOR";
+		    }
+		    else if (rating <= PROGRESS_LIMIT_AVERAGE)
+		    {
+			    return "STR_AVERAGE";
+		    }
+		    else if (rating <= PROGRESS_LIMIT_GOOD)
+		    {
+			    return "STR_GOOD";
+		    }
+		    return "STR_EXCELLENT";
+	    }
+    }
 }
