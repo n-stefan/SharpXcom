@@ -146,4 +146,20 @@ internal class MultipleTargetsState : State
             _game.pushState(new ConfirmDestinationState(_craft, target));
         }
     }
+
+    /**
+     * Resets the palette and ignores the window
+     * if there's only one target.
+     */
+    protected override void init()
+    {
+	    if (_targets.Count == 1)
+	    {
+		    popupTarget(_targets.First());
+	    }
+	    else
+	    {
+		    base.init();
+	    }
+    }
 }

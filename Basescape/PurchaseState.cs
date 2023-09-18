@@ -668,4 +668,15 @@ internal class PurchaseState : State
         ss5.Append($":{_base.getAvailableStores()}");
         _txtSpaceUsed.setText(tr("STR_SPACE_USED").arg(ss5));
     }
+
+    /**
+    * Runs the arrow timers.
+    */
+    protected override void think()
+    {
+	    base.think();
+
+	    _timerInc.think(this, null);
+	    _timerDec.think(this, null);
+    }
 }

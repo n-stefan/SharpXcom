@@ -42,6 +42,8 @@ internal class adlplayer
     static struc_adlib_channels[] adlib_channels = new struc_adlib_channels[12];
     static int adl_gv_polyphony_level = 0;
     static bool adl_gv_music_playing = false;
+    static int adl_gv_tmp_music_volume = 127;
+    static bool adl_gv_want_fade = false;
 
     //MAIN FUNCTION - instantly stops music
     internal static void func_mute()
@@ -237,5 +239,18 @@ internal class adlplayer
         //#define calcFNum() ((dbOriginalFreq+(dbOriginalFreq/FREQ_OFFSET)) / (50000.0 * pow(2, iNewBlock - 20)))
         static double calcFNum(double dbOriginalFreq, byte iNewBlock) =>
             ((dbOriginalFreq + (dbOriginalFreq / FREQ_OFFSET)) / (49716.0 / Math.Pow(2.0f, 20 - iNewBlock)));
+    }
+
+    //MAIN FUNCTION - initialize fade procedure
+    internal static void func_fade()
+    {
+	    if (adl_gv_tmp_music_volume == 0)
+	    {
+		    func_mute();
+	    }
+	    else
+	    {
+		    adl_gv_want_fade = true;
+	    }
     }
 }

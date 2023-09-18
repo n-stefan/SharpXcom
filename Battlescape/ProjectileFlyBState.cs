@@ -46,7 +46,7 @@ internal class ProjectileFlyBState : BattleState
         _targetFloor = false;
     }
 
-    ProjectileFlyBState(BattlescapeGame parent, BattleAction action) : base(parent, action)
+    internal ProjectileFlyBState(BattlescapeGame parent, BattleAction action) : base(parent, action)
     {
         _unit = null;
         _ammo = null;
@@ -503,5 +503,288 @@ internal class ProjectileFlyBState : BattleState
 				break;
 		}
 		return dist;
+	}
+
+	/**
+	 * Animates the projectile (moves to the next point in its trajectory).
+	 * If the animation is finished the projectile sprite is removed from the map,
+	 * and this state is finished.
+	 */
+	protected override void think()
+	{
+		_parent.getSave().getBattleState().clearMouseScrollingState();
+		/* TODO refactoring : store the projectile in this state, instead of getting it from the map each time? */
+		if (_parent.getMap().getProjectile() == null)
+		{
+			Tile t = _parent.getSave().getTile(_action.actor.getPosition());
+			Tile bt = _parent.getSave().getTile(_action.actor.getPosition() + new Position(0,0,-1));
+			bool hasFloor = t != null && !t.hasNoFloor(bt);
+			bool unitCanFly = _action.actor.getMovementType() == MovementType.MT_FLY;
+
+			if (_action.type == BattleActionType.BA_AUTOSHOT
+				&& _action.autoShotCounter < _action.weapon.getRules().getAutoShots()
+				&& !_action.actor.isOut()
+				&& _ammo.getAmmoQuantity() != 0
+				&& (hasFloor || unitCanFly))
+			{
+				createNewProjectile();
+				if (_action.cameraPosition.z != -1)
+				{
+					_parent.getMap().getCamera().setMapOffset(_action.cameraPosition);
+					_parent.getMap().invalidate();
+				}
+			}
+			else
+			{
+				if (_action.cameraPosition.z != -1 && _action.waypoints.Count <= 1)
+				{
+					_parent.getMap().getCamera().setMapOffset(_action.cameraPosition);
+					_parent.getMap().invalidate();
+				}
+				if (!_parent.getSave().getUnitsFalling() && _parent.getPanicHandled())
+				{
+					_parent.getTileEngine().checkReactionFire(_unit);
+				}
+				if (!_unit.isOut())
+				{
+					_unit.abortTurn();
+				}
+				if (_parent.getSave().getSide() == UnitFaction.FACTION_PLAYER || _parent.getSave().getDebugMode())
+				{
+					_parent.setupCursor();
+				}
+				_parent.convertInfected();
+				_parent.popState();
+			}
+		}
+		else
+		{
+			if (_action.type != BattleActionType.BA_THROW && _ammo != null && _ammo.getRules().getShotgunPellets() != 0)
+			{
+				// shotgun pellets move to their terminal location instantly as fast as possible
+				_parent.getMap().getProjectile().skipTrajectory();
+			}
+			if (!_parent.getMap().getProjectile().move())
+			{
+				// impact !
+				if (_action.type == BattleActionType.BA_THROW)
+				{
+					_parent.getMap().resetCameraSmoothing();
+					Position pos = _parent.getMap().getProjectile().getPosition(Projectile.ItemDropVoxelOffset);
+					pos.x /= 16;
+					pos.y /= 16;
+					pos.z /= 24;
+					if (pos.y > _parent.getSave().getMapSizeY())
+					{
+						pos.y--;
+					}
+					if (pos.x > _parent.getSave().getMapSizeX())
+					{
+						pos.x--;
+					}
+					BattleItem item = _parent.getMap().getProjectile().getItem();
+					_parent.getMod().getSoundByDepth((uint)_parent.getDepth(), (uint)Mod.Mod.ITEM_DROP).play(-1, _parent.getMap().getSoundAngle(pos));
+
+					if (Options.battleInstantGrenade && item.getRules().getBattleType() == BattleType.BT_GRENADE && item.getFuseTimer() == 0)
+					{
+						// it's a hot grenade to explode immediately
+						_parent.statePushFront(new ExplosionBState(_parent, _parent.getMap().getProjectile().getPosition(Projectile.ItemDropVoxelOffset), item, _action.actor));
+					}
+					else
+					{
+						_parent.dropItem(pos, item);
+						if (_unit.getFaction() != UnitFaction.FACTION_PLAYER && _projectileItem.getRules().getBattleType() == BattleType.BT_GRENADE)
+						{
+							_parent.getTileEngine().setDangerZone(pos, item.getRules().getExplosionRadius(), _action.actor);
+						}
+					}
+				}
+				else if (_action.type == BattleActionType.BA_LAUNCH && _action.waypoints.Count > 1 && _projectileImpact == VoxelType.V_EMPTY)
+				{
+					_origin = _action.waypoints.First();
+					_action.waypoints.RemoveAt(0);
+					_action.target = _action.waypoints.First();
+					// launch the next projectile in the waypoint cascade
+					ProjectileFlyBState nextWaypoint = new ProjectileFlyBState(_parent, _action, _origin);
+					nextWaypoint.setOriginVoxel(_parent.getMap().getProjectile().getPosition(-1));
+					if (_origin == _action.target)
+					{
+						nextWaypoint.targetFloor();
+					}
+					_parent.statePushNext(nextWaypoint);
+
+				}
+				else
+				{
+					if (_parent.getSave().getTile(_action.target).getUnit() != null)
+					{
+						_parent.getSave().getTile(_action.target).getUnit().getStatistics().shotAtCounter++; // Only counts for guns, not throws or launches
+					}
+
+					_parent.getMap().resetCameraSmoothing();
+					if (_ammo != null && _action.type == BattleActionType.BA_LAUNCH && _ammo.spendBullet() == false)
+					{
+						_parent.getSave().removeItem(_ammo);
+						_action.weapon.setAmmoItem(null);
+					}
+
+					if (_projectileImpact != VoxelType.V_OUTOFBOUNDS)
+					{
+						int offset = 0;
+						// explosions impact not inside the voxel but two steps back (projectiles generally move 2 voxels at a time)
+						if (_ammo != null && _ammo.getRules().getExplosionRadius() != 0 && _projectileImpact != VoxelType.V_UNIT)
+						{
+							offset = -2;
+						}
+
+						_parent.statePushFront(new ExplosionBState(_parent, _parent.getMap().getProjectile().getPosition(offset), _ammo, _action.actor, null, (_action.type != BattleActionType.BA_AUTOSHOT || _action.autoShotCounter == _action.weapon.getRules().getAutoShots() || _action.weapon.getAmmoItem() == null)));
+
+						if (_projectileImpact == VoxelType.V_UNIT)
+						{
+							projectileHitUnit(_parent.getMap().getProjectile().getPosition(offset));
+						}
+
+						int firingXP = _unit.getFiringXP();
+						// special shotgun behaviour: trace extra projectile paths, and add bullet hits at their termination points.
+						if (_ammo != null && _ammo.getRules().getShotgunPellets() != 0)
+						{
+							int i = 1;
+							while (i != _ammo.getRules().getShotgunPellets())
+							{
+								// create a projectile
+								Projectile proj = new Projectile(_parent.getMod(), _parent.getSave(), _action, _origin, _targetVoxel, _ammo);
+								// let it trace to the point where it hits
+								int secondaryImpact = proj.calculateTrajectory(Math.Max(0.0, (_unit.getFiringAccuracy(_action.type, _action.weapon) / 100.0) - i * 5.0));
+								if (secondaryImpact != (int)VoxelType.V_EMPTY)
+								{
+									// as above: skip the shot to the end of it's path
+									proj.skipTrajectory();
+									// insert an explosion and hit
+									if (secondaryImpact != (int)VoxelType.V_OUTOFBOUNDS)
+									{
+										if (secondaryImpact == (int)VoxelType.V_UNIT)
+										{
+											projectileHitUnit(proj.getPosition(offset));
+										}
+										Explosion explosion = new Explosion(proj.getPosition(offset), _ammo.getRules().getHitAnimation());
+										_parent.getMap().getExplosions().Add(explosion);
+										if (_ammo.getRules().getExplosionRadius() != 0)
+										{
+											_parent.getTileEngine().explode(proj.getPosition(offset), _ammo.getRules().getPower(), _ammo.getRules().getDamageType(), _ammo.getRules().getExplosionRadius(), _unit);
+										}
+										else
+										{
+											_parent.getSave().getTileEngine().hit(proj.getPosition(offset), _ammo.getRules().getPower(), _ammo.getRules().getDamageType(), _unit);
+										}
+									}
+								}
+								++i;
+								proj = null;
+							}
+						}
+
+						if (_unit.getFiringXP() > firingXP + 1)
+						{
+							_unit.nerfFiringXP(firingXP + 1);
+						}
+					}
+					else if (_action.type != BattleActionType.BA_AUTOSHOT || _action.autoShotCounter == _action.weapon.getRules().getAutoShots() || _action.weapon.getAmmoItem() == null)
+					{
+						_unit.aim(false);
+						_unit.setCache(null);
+						_parent.getMap().cacheUnits();
+					}
+				}
+
+				_parent.getMap().setProjectile(null);
+			}
+		}
+	}
+
+	/**
+	 * Set the origin voxel, used for the blaster launcher.
+	 * @param pos the origin voxel.
+	 */
+	void setOriginVoxel(Position pos) =>
+		_originVoxel = pos;
+
+	/**
+	 * Set the boolean flag to angle a blaster bomb towards the floor.
+	 */
+	void targetFloor() =>
+		_targetFloor = true;
+
+	void projectileHitUnit(Position pos)
+	{
+		BattleUnit victim = _parent.getSave().getTile(pos / new Position(16,16,24)).getUnit();
+		BattleUnit targetVictim = _parent.getSave().getTile(_action.target).getUnit(); // Who we were aiming at (not necessarily who we hit)
+		if (victim != null && !victim.isOut())
+		{
+			victim.getStatistics().hitCounter++;
+			if (_unit.getOriginalFaction() == UnitFaction.FACTION_PLAYER && victim.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
+			{
+				victim.getStatistics().shotByFriendlyCounter++;
+				_unit.getStatistics().shotFriendlyCounter++;
+			}
+			if (victim == targetVictim) // Hit our target
+			{
+				int distanceSq = _parent.getTileEngine().distanceUnitToPositionSq(_action.actor, victim.getPosition(), false);
+				int distance = (int)Math.Ceiling(Math.Sqrt((float)distanceSq));
+				int accuracy = _unit.getFiringAccuracy(_action.type, _action.weapon);
+				// code from Map.drawTerrain(), where the crosshair accuracy is calculated
+				if (Options.battleUFOExtenderAccuracy)
+				{
+					RuleItem weapon = _action.weapon.getRules();
+					int upperLimit =  weapon.getAimRange();
+					int lowerLimit =  weapon.getMinRange();
+					if (_action.type == BattleActionType.BA_AUTOSHOT)
+					{
+						upperLimit =  weapon.getAutoRange();
+					}
+					else if (_action.type == BattleActionType.BA_SNAPSHOT)
+					{
+						upperLimit =  weapon.getSnapRange();
+					}
+					if (distance > upperLimit)
+					{
+						accuracy -= (distance - upperLimit) * weapon.getDropoff();
+					}
+					else if (distance < lowerLimit)
+					{
+						accuracy -= (lowerLimit - distance) * weapon.getDropoff();
+					}
+					if (accuracy < 0)
+					{
+						accuracy = 0;	
+					}
+				}
+			
+				_unit.getStatistics().shotsLandedCounter++;			
+				if (distance > 30)
+				{
+					_unit.getStatistics().longDistanceHitCounter++;
+				}
+				if (accuracy < distance)
+				{
+					_unit.getStatistics().lowAccuracyHitCounter++;
+				}
+			}
+			if (victim.getFaction() == UnitFaction.FACTION_HOSTILE)
+			{
+				AIModule ai = victim.getAIModule();
+				if (ai != null)
+				{
+					ai.setWasHitBy(_unit);
+					_unit.setTurnsSinceSpotted(0);
+				}
+			}
+			// Record the last unit to hit our victim. If a victim dies without warning*, this unit gets the credit.
+			// *Because the unit died in a fire or bled out.
+			victim.setMurdererId(_unit.getId());
+			if (_action.weapon != null)
+				victim.setMurdererWeapon(_action.weapon.getRules().getName());
+			if (_ammo != null)
+				victim.setMurdererWeaponAmmo(_ammo.getRules().getName());
+		}
 	}
 }

@@ -196,4 +196,14 @@ internal class UnitDieBState : BattleState
             }
         }
     }
+
+    protected override void init()
+    {
+	    // check for presence of battlestate to ensure that we're not pre-battle
+	    // check for the unit's tile to make sure we're not trying to kill a dead guy
+	    if (_parent.getSave().getBattleState() != null && _unit.getTile() == null)
+	    {
+		    _parent.popState();
+	    }
+    }
 }

@@ -597,4 +597,16 @@ internal class ManufactureInfoState : State
 
 	    return (int)((saleValue - item.getManufactureCost()) * itemsPerMonth);
     }
+
+    /**
+     * Runs state functionality every cycle (used to update the timer).
+     */
+    protected override void think()
+    {
+	    base.think();
+	    _timerMoreEngineer.think(this, null);
+	    _timerLessEngineer.think(this, null);
+	    _timerMoreUnit.think(this, null);
+	    _timerLessUnit.think(this, null);
+    }
 }

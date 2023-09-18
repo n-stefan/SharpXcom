@@ -221,4 +221,47 @@ internal class OptionsAdvancedState : OptionsBaseState
             return null;
         }
     }
+
+    /**
+     * Fills the settings list based on category.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    _lstOptions.clearList();
+	    _lstOptions.addRow(2, tr("STR_GENERAL"), string.Empty);
+	    _lstOptions.setCellColor(0, 0, _colorGroup);
+	    addSettings(_settingsGeneral);
+	    _lstOptions.addRow(2, string.Empty, string.Empty);
+	    _lstOptions.addRow(2, tr("STR_GEOSCAPE"), string.Empty);
+	    _lstOptions.setCellColor((uint)(_settingsGeneral.Count + 2), 0, _colorGroup);
+	    addSettings(_settingsGeo);
+	    _lstOptions.addRow(2, string.Empty, string.Empty);
+	    _lstOptions.addRow(2, tr("STR_BATTLESCAPE"), string.Empty);
+	    _lstOptions.setCellColor((uint)(_settingsGeneral.Count + 2 + _settingsGeo.Count + 2), 0, _colorGroup);
+	    addSettings(_settingsBattle);
+    }
+
+    /**
+     * Adds a bunch of settings to the list.
+     * @param settings List of settings.
+     */
+    void addSettings(List<OptionInfo> settings)
+    {
+	    foreach (var i in settings)
+	    {
+		    string name = tr(i.description());
+		    string value = null;
+		    if (i.type() == OptionType.OPTION_BOOL)
+		    {
+			    value = i.asBool() ? tr("STR_YES") : tr("STR_NO");
+		    }
+		    else if (i.type() == OptionType.OPTION_INT)
+		    {
+			    string ss = i.asInt().ToString();
+			    value = ss;
+		    }
+		    _lstOptions.addRow(2, name, value);
+	    }
+    }
 }

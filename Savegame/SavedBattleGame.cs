@@ -1595,4 +1595,64 @@ internal class SavedBattleGame
 	    newUnit.dontReselect();
 	    return newUnit;
     }
+
+    /**
+     * Returns whether there are any units falling in the battlescape.
+     * @return True if there are any units falling in the battlescape.
+     */
+    internal bool getUnitsFalling() =>
+	    _unitsFalling;
+
+    /**
+     * Toggles the switch that says "there are units falling, start the fall state".
+     * @param fall True if there are any units falling in the battlescape.
+     */
+    internal void setUnitsFalling(bool fall) =>
+	    _unitsFalling = fall;
+
+    /**
+     * Resets all unit hit state flags.
+     */
+    internal void resetUnitHitStates()
+    {
+	    foreach (var i in _units)
+	    {
+		    i.resetHitState();
+	    }
+    }
+
+    /**
+     * get a pointer to the geoscape save
+     * @return a pointer to the geoscape save.
+     */
+    internal SavedGame getGeoscapeSave() =>
+	    _battleState.getGame().getSavedGame();
+
+    /**
+     * Checks if an item can be used in the current battlescape conditions.
+     * @return True if it's usable, False otherwise.
+     */
+    internal bool isItemUsable(BattleItem item) =>
+	    string.IsNullOrEmpty(getItemUsable(item));
+
+    /**
+     * Checks if an item can be used in the current battlescape conditions.
+     * @return Error string if it can't be used, "" otherwise.
+     */
+    string getItemUsable(BattleItem item)
+    {
+	    if (_depth == 0 &&
+		    (item.getRules().isWaterOnly() ||
+		    (item.getAmmoItem() != null && item.getAmmoItem().getRules().isWaterOnly())))
+	    {
+		    return "STR_UNDERWATER_EQUIPMENT";
+	    }
+	    if (_depth != 0 &&
+		    (item.getRules().isLandOnly() ||
+		    (item.getAmmoItem() != null && item.getAmmoItem().getRules().isLandOnly())))
+	    {
+		    return "STR_LAND_EQUIPMENT";
+	    }
+	    return string.Empty;
+    }
 }

@@ -332,4 +332,10 @@ internal class BaseView : InteractiveSurface
 	    && facility.getBuildTime() + neighbor.getRules().getBuildTime() < neighbor.getBuildTime())
 		    neighbor.setBuildTime(facility.getBuildTime() + neighbor.getRules().getBuildTime());
     }
+
+    /**
+     * Keeps the animation timers running.
+     */
+    protected override void think() =>
+	    _timer.think(null, this);
 }

@@ -212,4 +212,41 @@ internal class OptionsControlsState : OptionsBaseState
 	    }
 	    return new string(str);
     }
+
+    /**
+     * Fills the controls list based on category.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    _lstControls.clearList();
+	    _lstControls.addRow(2, tr("STR_GENERAL"), string.Empty);
+	    _lstControls.setCellColor(0, 0, _colorGroup);
+	    addControls(_controlsGeneral);
+	    _lstControls.addRow(2, string.Empty, string.Empty);
+	    _lstControls.addRow(2, tr("STR_GEOSCAPE"), string.Empty);
+	    _lstControls.setCellColor((uint)(_controlsGeneral.Count + 2), 0, _colorGroup);
+	    addControls(_controlsGeo);
+	    _lstControls.addRow(2, string.Empty, string.Empty);
+	    _lstControls.addRow(2, tr("STR_BATTLESCAPE"), string.Empty);
+	    _lstControls.setCellColor((uint)(_controlsGeneral.Count + 2 + _controlsGeo.Count + 2), 0, _colorGroup);
+	    addControls(_controlsBattle);
+    }
+
+    /**
+     * Adds a bunch of controls to the list.
+     * @param keys List of controls.
+     */
+    void addControls(List<OptionInfo> keys)
+    {
+	    foreach (var i in keys)
+	    {
+		    string name = tr(i.description());
+		    SDL_Keycode key = i.asKey();
+		    string keyName = ucWords(SDL_GetKeyName(key));
+		    if (key == SDL_Keycode.SDLK_UNKNOWN)
+			    keyName = string.Empty;
+		    _lstControls.addRow(2, name, keyName);
+	    }
+    }
 }

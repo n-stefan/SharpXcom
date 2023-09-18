@@ -259,8 +259,8 @@ internal class Mod
     internal static int UFOPAEDIA_CURSOR;
     internal static int GRAPHS_CURSOR;
     internal static int BATTLESCAPE_CURSOR;
-    static int DOOR_OPEN;
-    static int SLIDING_DOOR_OPEN;
+    internal static int DOOR_OPEN;
+    internal static int SLIDING_DOOR_OPEN;
     internal static int SLIDING_DOOR_CLOSE;
     internal static int SMALL_EXPLOSION;
     internal static int LARGE_EXPLOSION;
@@ -639,7 +639,7 @@ internal class Mod
      * @param name Name of the music.
      * @return Pointer to the music.
      */
-    Music getMusic(string name, bool error = true)
+    internal Music getMusic(string name, bool error = true)
     {
 	    if (Options.mute)
 	    {
@@ -3424,4 +3424,12 @@ internal class Mod
      */
     internal int getAlienFuelQuantity() =>
         _alienFuel.Value;
+
+	/// Gets first turn when AI can use Blaster launcher.
+	internal int getTurnAIUseBlaster() =>
+        _turnAIUseBlaster;
+
+	/// Gets first turn when AI can use grenade.
+	internal int getTurnAIUseGrenade() =>
+        _turnAIUseGrenade;
 }

@@ -201,4 +201,18 @@ internal class Camera
 
     internal void stopMouseScrolling() =>
 	    _scrollMouseTimer.stop();
+
+    /**
+     * Sets the map offset.
+     * @param pos The map offset.
+     */
+    internal void setMapOffset(Position pos) =>
+	    _mapOffset = pos;
+
+    /**
+     * Gets the displayed level.
+     * @return The displayed layer.
+     */
+    internal int getViewLevel() =>
+	    _mapOffset.z;
 }

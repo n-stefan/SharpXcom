@@ -287,4 +287,16 @@ internal class OptionsBaseState : State
             _txtTooltip.setText(string.Empty);
         }
     }
+
+    /**
+     * Initializes UI colors according to origin.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
+	    {
+		    applyBattlescapeTheme();
+	    }
+    }
 }

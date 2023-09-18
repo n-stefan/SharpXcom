@@ -772,4 +772,14 @@ internal class Pathfinding
             _movementType = MovementType.MT_WALK;
         }
     }
+
+    /**
+     * Checks whether a path is ready and gives the first direction.
+     * @return Direction where the unit needs to go next, -1 if it's the end of the path.
+     */
+    internal int getStartDirection()
+    {
+	    if (!_path.Any()) return -1;
+	    return _path.Last();
+    }
 }

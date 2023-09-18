@@ -32,7 +32,7 @@ internal class MeleeAttackBState : BattleState
     /**
      * Sets up a MeleeAttackBState.
      */
-    MeleeAttackBState(BattlescapeGame parent, BattleAction action) : base(parent, action)
+    internal MeleeAttackBState(BattlescapeGame parent, BattleAction action) : base(parent, action)
     {
         _unit = null;
         _target = null;
@@ -150,5 +150,127 @@ internal class MeleeAttackBState : BattleState
 
 		// make an explosion animation
 		_parent.statePushFront(new ExplosionBState(_parent, _voxel, _action.weapon, _action.actor, null, true, true));
+	}
+
+	/**
+	 * Performs all the overall functions of the state, this code runs AFTER the explosion state pops.
+	 */
+	protected override void think()
+	{
+		_parent.getSave().getBattleState().clearMouseScrollingState();
+
+		// if the unit burns floortiles, burn floortiles
+		if (_unit.getSpecialAbility() == (int)SpecialAbility.SPECAB_BURNFLOOR || _unit.getSpecialAbility() == (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE)
+		{
+			_parent.getSave().getTile(_action.target).ignite(15);
+		}
+		// Determine if the attack was successful
+		// we do this here instead of letting the explosionBState take care of damage and casualty checking
+		// this is because unlike regular bullet hits or explosions, melee attacks can MISS.
+		// we also do it at this point instead of in performMeleeAttack because we want the scream to come AFTER the hit sound
+		resolveHit();
+			// aliens
+		if (_unit.getFaction() != UnitFaction.FACTION_PLAYER &&
+			// not performing a reaction attack
+			_unit.getFaction() == _parent.getSave().getSide() &&
+			// with enough TU for a second attack (*2 because they'll get charged for the initial attack when this state pops.)
+			_unit.getTimeUnits() >= _unit.getActionTUs(BattleActionType.BA_HIT, _action.weapon) * 2 &&
+			// whose target is still alive or at least conscious
+			_target != null && _target.getHealth() > 0 &&
+			_target.getHealth() > _target.getStunlevel() &&
+			// and we still have ammo to make the attack
+			_weapon.getAmmoItem() != null)
+		{
+			// spend the TUs immediately
+			_unit.spendTimeUnits(_unit.getActionTUs(BattleActionType.BA_HIT, _weapon));
+			performMeleeAttack();
+		}
+		else
+		{
+			if (_action.cameraPosition.z != -1)
+			{
+				_parent.getMap().getCamera().setMapOffset(_action.cameraPosition);
+				_parent.getMap().invalidate();
+			}
+	//		melee doesn't trigger a reaction, remove comments to enable.
+	//		if (!_parent.getSave().getUnitsFalling())
+	//		{
+	//			_parent.getTileEngine().checkReactionFire(_unit);
+	//		}
+
+			if (_unit.getFaction() == _parent.getSave().getSide()) // not a reaction attack
+			{
+				_parent.getCurrentAction().type = BattleActionType.BA_NONE; // do this to restore cursor
+			}
+
+			if (_parent.getSave().getSide() == UnitFaction.FACTION_PLAYER || _parent.getSave().getDebugMode())
+			{
+				_parent.setupCursor();
+			}
+			_parent.convertInfected();
+			_parent.popState();
+		}
+	}
+
+	/**
+	 * Determines if the melee attack hit, and performs all the applicable duties.
+	 */
+	void resolveHit()
+	{
+		if (RNG.percent(_unit.getFiringAccuracy(BattleActionType.BA_HIT, _weapon)))
+		{
+			// Give soldiers XP
+			if (_unit.getGeoscapeSoldier() != null &&
+				_target != null && _target.getOriginalFaction() == UnitFaction.FACTION_HOSTILE)
+			{
+				_unit.addMeleeExp();
+			}
+
+			// check if this unit turns others into zombies
+			if (_weapon.getRules().getBattleType() == BattleType.BT_MELEE
+				&& _ammo != null
+				&& !string.IsNullOrEmpty(_ammo.getRules().getZombieUnit())
+				&& _target != null
+				&& (_target.getGeoscapeSoldier() != null || _target.getUnitRules().getRace() == "STR_CIVILIAN")
+				&& string.IsNullOrEmpty(_target.getSpawnUnit()))
+			{
+				// converts the victim to a zombie on death
+				_target.setRespawn(true);
+				_target.setSpawnUnit(_ammo.getRules().getZombieUnit());
+			}
+
+			// assume rifle butt to begin with.
+			ItemDamageType type = ItemDamageType.DT_STUN;
+			int power = _weapon.getRules().getMeleePower();
+			// override it as needed.
+			if (_weapon.getRules().getBattleType() == BattleType.BT_MELEE && _ammo != null)
+			{
+				type = _ammo.getRules().getDamageType();;
+				power = _ammo.getRules().getPower();
+			}
+
+			// since melee aliens don't use a conventional weapon type, we use their strength instead.
+			if (_weapon.getRules().isStrengthApplied())
+			{
+				power += _unit.getBaseStats().strength;
+			}
+			// make some noise to signal the hit.
+			if (_weapon.getRules().getMeleeHitSound() != -1)
+			{
+				_parent.getMod().getSoundByDepth((uint)_parent.getDepth(), (uint)_action.weapon.getRules().getMeleeHitSound()).play(-1, _parent.getMap().getSoundAngle(_action.target));
+			}
+
+			// offset the damage voxel ever so slightly so that the target knows which side the attack came from
+			Position difference = _unit.getPosition() - _action.target;
+			// large units may cause it to offset too much, so we'll clamp the values.
+			difference.x = Math.Clamp(difference.x, -1, 1);
+			difference.y = Math.Clamp(difference.y, -1, 1);
+
+			Position damagePosition = _voxel + difference;
+			// damage the unit.
+			_parent.getSave().getTileEngine().hit(damagePosition, power, type, _unit);
+			// now check for new casualties
+			_parent.checkForCasualties(_ammo, _unit);
+		}
 	}
 }

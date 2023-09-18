@@ -765,4 +765,46 @@ internal class RuleItem : IListOrder, IRule
      */
     internal int getMinRange() =>
 	    _minRange;
+
+    /**
+     * Gets the amount of auto shots fired by this weapon.
+     * @return The shots.
+     */
+    internal int getAutoShots() =>
+	    _autoShots;
+
+    /**
+     * Can this item only be used underwater?
+     * @return if this is an underwater weapon or not.
+     */
+    internal bool isWaterOnly() =>
+	    _underwaterOnly;
+
+    /**
+    * Can this item only be used on land?
+    * @return if this is a land weapon or not.
+    */
+    internal bool isLandOnly() =>
+	    _landOnly;
+
+    /**
+     * What sound does this weapon make when you punch someone in the face with it?
+     * @return The weapon's melee hit sound.
+     */
+    internal int getMeleeHitSound() =>
+	    _meleeHitSound;
+
+    /**
+     * Gets the unit that the victim is morphed into when attacked.
+     * @return The weapon's zombie unit.
+     */
+    internal string getZombieUnit() =>
+	    _zombieUnit;
+
+    /**
+     * How much damage does this weapon do when you punch someone in the face with it?
+     * @return The weapon's melee power.
+     */
+    internal int getMeleePower() =>
+	    _meleePower;
 }

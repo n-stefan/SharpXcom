@@ -413,4 +413,16 @@ internal class MonthlyReportState : State
 	    }
 	    return ss;
     }
+
+    /**
+     * Make sure the game is over.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    if (_gameOver)
+	    {
+		    _game.getSavedGame().setEnding(GameEnding.END_LOSE);
+	    }
+    }
 }

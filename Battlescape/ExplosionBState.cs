@@ -172,4 +172,35 @@ internal class ExplosionBState : BattleState
 			}
 		}
 	}
+
+	/**
+	 * Animates explosion sprites. If their animation is finished remove them from the list.
+	 * If the list is empty, this state is finished and the actual calculations take place.
+	 */
+	protected override void think()
+	{
+		if (!_parent.getMap().getBlastFlash())
+		{
+			var explosions = _parent.getMap().getExplosions();
+			if (!explosions.Any())
+				explode();
+
+			for (var i = 0; i < explosions.Count;)
+			{
+				if (!explosions[i].animate())
+				{
+					explosions.RemoveAt(i);
+					if (!explosions.Any())
+					{
+						explode();
+						return;
+					}
+				}
+				else
+				{
+					++i;
+				}
+			}
+		}
+	}
 }

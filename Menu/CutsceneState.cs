@@ -86,4 +86,21 @@ internal class CutsceneState : State
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} cutscene definition empty: {_cutsceneId}");
 		}
 	}
+
+	internal static bool initDisplay()
+	{
+		bool letterboxed = Options.keepAspectRatio;
+		Options.keepAspectRatio = true;
+		Options.baseXResolution = Screen.ORIGINAL_WIDTH;
+		Options.baseYResolution = Screen.ORIGINAL_HEIGHT;
+		_game.getScreen().resetDisplay(false);
+		return letterboxed;
+	}
+
+	internal static void resetDisplay(bool wasLetterboxed)
+	{
+		Options.keepAspectRatio = wasLetterboxed;
+		Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
+		_game.getScreen().resetDisplay(false);
+	}
 }

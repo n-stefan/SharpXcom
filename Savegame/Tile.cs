@@ -702,4 +702,49 @@ internal class Tile
      */
     internal void resetObstacle() =>
 	    _obstacle = 0;
+
+    /**
+     * Open a door on this tile.
+     * @param part
+     * @param unit
+     * @param reserve
+     * @return a value: 0(normal door), 1(ufo door) or -1 if no door opened or 3 if ufo door(=animated) is still opening 4 if not enough TUs
+     */
+    internal int openDoor(TilePart part, BattleUnit unit = null, BattleActionType reserve = BattleActionType.BA_NONE)
+    {
+	    if (_objects[(int)part] == null) return -1;
+
+	    if (_objects[(int)part].isDoor())
+	    {
+		    if (unit != null && unit.getArmor().getSize() > 1) // don't allow double-wide units to open swinging doors due to engine limitations
+			    return -1;
+		    if (unit != null && unit.getTimeUnits() < _objects[(int)part].getTUCost(unit.getMovementType()) + unit.getActionTUs(reserve, unit.getMainHandWeapon(false)))
+			    return 4;
+		    if (_unit != null && _unit != unit && _unit.getPosition() != getPosition())
+			    return -1;
+		    setMapData(_objects[(int)part].getDataset().getObject((uint)_objects[(int)part].getAltMCD()), _objects[(int)part].getAltMCD(), _mapDataSetID[(int)part],
+				       _objects[(int)part].getDataset().getObject((uint)_objects[(int)part].getAltMCD()).getObjectType());
+		    setMapData(null, -1, -1, part);
+		    return 0;
+	    }
+	    if (_objects[(int)part].isUFODoor() && _currentFrame[(int)part] == 0) // ufo door part 0 - door is closed
+	    {
+		    if (unit != null && unit.getTimeUnits() < _objects[(int)part].getTUCost(unit.getMovementType()) + unit.getActionTUs(reserve, unit.getMainHandWeapon(false)))
+			    return 4;
+		    _currentFrame[(int)part] = 1; // start opening door
+		    return 1;
+	    }
+	    if (_objects[(int)part].isUFODoor() && _currentFrame[(int)part] != 7) // ufo door != part 7 - door is still opening
+	    {
+		    return 3;
+	    }
+	    return -1;
+    }
+
+    /**
+     * get the danger flag on this tile.
+     * @return the danger flag for this tile.
+     */
+    internal bool getDangerous() =>
+	    _danger;
 }

@@ -682,4 +682,15 @@ internal class SellState : State
             }
         }
     }
+
+    /**
+     * Runs the arrow timers.
+     */
+    protected override void think()
+    {
+	    base.think();
+
+	    _timerInc.think(this, null);
+	    _timerDec.think(this, null);
+    }
 }

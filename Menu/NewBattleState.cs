@@ -519,4 +519,18 @@ internal class NewBattleState : State
 		_game.setSavedGame(save);
 		cbxMissionChange(null);
 	}
+
+	/**
+	 * Resets the menu music and savegame
+	 * when coming back from the battlescape.
+	 */
+	protected override void init()
+	{
+		base.init();
+
+		if (_craft == null)
+		{
+			load();
+		}
+	}
 }

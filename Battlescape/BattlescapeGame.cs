@@ -32,10 +32,10 @@ struct BattleAction
     internal bool targeting;
     int value;
     internal string result;
-    bool strafe, run;
+    internal bool strafe, run;
     int diff;
     internal int autoShotCounter;
-    Position cameraPosition;
+    internal Position cameraPosition;
     bool desperate; // ignoring newly-spotted units
     int finalFacing;
     bool finalAction;
@@ -242,7 +242,7 @@ internal class BattlescapeGame
      * @param justChecking True to suppress error messages, false otherwise.
      * @return bool Whether or not we got enough time units.
      */
-    internal bool checkReservedTU(BattleUnit bu, int tu, bool justChecking)
+    internal bool checkReservedTU(BattleUnit bu, int tu, bool justChecking = false)
     {
         BattleActionType effectiveTuReserved = _save.getTUReserved(); // avoid changing _tuReserved in this method
 
@@ -331,7 +331,7 @@ internal class BattlescapeGame
      * @param hiddenExplosion Set to true for the explosions of UFO Power sources at start of battlescape.
      * @param terrainExplosion Set to true for the explosions of terrain.
      */
-    void checkForCasualties(BattleItem murderweapon, BattleUnit origMurderer, bool hiddenExplosion = false, bool terrainExplosion = false)
+    internal void checkForCasualties(BattleItem murderweapon, BattleUnit origMurderer, bool hiddenExplosion = false, bool terrainExplosion = false)
     {
         // If the victim was killed by the murderer's death explosion, fetch who killed the murderer and make HIM the murderer!
         if (origMurderer != null && origMurderer.getGeoscapeSoldier() == null && (origMurderer.getUnitRules().getSpecialAbility() == (int)SpecialAbility.SPECAB_EXPLODEONDEATH || origMurderer.getUnitRules().getSpecialAbility() == (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE)
@@ -584,7 +584,7 @@ internal class BattlescapeGame
      * Pushes a state as the next state after the current one.
      * @param bs Battlestate.
      */
-    void statePushNext(BattleState bs)
+    internal void statePushNext(BattleState bs)
     {
         if (!_states.Any())
         {
@@ -697,7 +697,7 @@ internal class BattlescapeGame
      * Pushes a state to the back.
      * @param bs Battlestate.
      */
-    void statePushBack(BattleState bs)
+    internal void statePushBack(BattleState bs)
     {
         if (!_states.Any())
         {
@@ -1184,5 +1184,177 @@ internal class BattlescapeGame
     {
 	    _states.Insert(0, bs);
 	    bs.init();
+    }
+
+    /**
+     * Gets the pathfinding.
+     * @return pathfinding.
+     */
+    internal Pathfinding getPathfinding() =>
+	    _save.getPathfinding();
+
+    /**
+     * Checks for units panicking or falling and so on.
+     */
+    internal void think()
+    {
+	    // nothing is happening - see if we need some alien AI or units panicking or what have you
+	    if (!_states.Any())
+	    {
+		    if (_save.getUnitsFalling())
+		    {
+			    statePushFront(new UnitFallBState(this));
+			    _save.setUnitsFalling(false);
+			    return;
+		    }
+		    // it's a non player side (ALIENS or CIVILIANS)
+		    if (_save.getSide() != UnitFaction.FACTION_PLAYER)
+		    {
+			    _save.resetUnitHitStates();
+			    if (!_debugPlay)
+			    {
+				    if (_save.getSelectedUnit() != null)
+				    {
+					    if (!handlePanickingUnit(_save.getSelectedUnit()))
+						    handleAI(_save.getSelectedUnit());
+				    }
+				    else
+				    {
+					    if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
+					    {
+						    if (!_save.getDebugMode())
+						    {
+							    _endTurnRequested = true;
+							    statePushBack(null); // end AI turn
+						    }
+						    else
+						    {
+							    _save.selectNextPlayerUnit();
+							    _debugPlay = true;
+						    }
+					    }
+				    }
+			    }
+		    }
+		    else
+		    {
+			    // it's a player side && we have not handled all panicking units
+			    if (!_playerPanicHandled)
+			    {
+				    _playerPanicHandled = handlePanickingPlayer();
+				    _save.getBattleState().updateSoldierInfo();
+			    }
+		    }
+	    }
+    }
+
+    /**
+     * Picks the first soldier that is panicking.
+     * @return True when all panicking is over.
+     */
+    bool handlePanickingPlayer()
+    {
+	    foreach (var j in _save.getUnits())
+	    {
+		    if (j.getFaction() == UnitFaction.FACTION_PLAYER && j.getOriginalFaction() == UnitFaction.FACTION_PLAYER && handlePanickingUnit(j))
+			    return false;
+	    }
+	    return true;
+    }
+
+    /**
+     * Common function for handling panicking units.
+     * @return False when unit not in panicking mode.
+     */
+    bool handlePanickingUnit(BattleUnit unit)
+    {
+	    UnitStatus status = unit.getStatus();
+	    if (status != UnitStatus.STATUS_PANICKING && status != UnitStatus.STATUS_BERSERK) return false;
+	    _save.setSelectedUnit(unit);
+	    _parentState.getMap().setCursorType(CursorType.CT_NONE);
+
+	    // show a little infobox with the name of the unit and "... is panicking"
+	    Game game = _parentState.getGame();
+	    if (unit.getVisible() || !Options.noAlienPanicMessages)
+	    {
+		    getMap().getCamera().centerOnPosition(unit.getPosition());
+		    if (status == UnitStatus.STATUS_PANICKING)
+		    {
+			    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_PANICKED", (uint)unit.getGender()).arg(unit.getName(game.getLanguage()))));
+		    }
+		    else
+		    {
+			    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_GONE_BERSERK", (uint)unit.getGender()).arg(unit.getName(game.getLanguage()))));
+		    }
+	    }
+
+	    int flee = RNG.generate(0,100);
+	    BattleAction ba = default;
+	    ba.actor = unit;
+	    if (status == UnitStatus.STATUS_PANICKING && flee <= 50) // 1/2 chance to freeze and 1/2 chance try to flee, STATUS_BERSERK is handled in the panic state.
+	    {
+		    BattleItem item = unit.getItem("STR_RIGHT_HAND");
+		    if (item != null)
+		    {
+			    dropItem(unit.getPosition(), item, false, true);
+		    }
+		    item = unit.getItem("STR_LEFT_HAND");
+		    if (item != null)
+		    {
+			    dropItem(unit.getPosition(), item, false, true);
+		    }
+		    unit.setCache(null);
+		    // let's try a few times to get a tile to run to.
+		    for (int i= 0; i < 20; i++)
+		    {
+			    ba.target = new Position(unit.getPosition().x + RNG.generate(-5,5), unit.getPosition().y + RNG.generate(-5,5), unit.getPosition().z);
+
+			    if (i >= 10 && ba.target.z > 0) // if we've had more than our fair share of failures, try going down.
+			    {
+				    ba.target.z--;
+				    if (i >= 15 && ba.target.z > 0) // still failing? try further down.
+				    {
+					    ba.target.z--;
+				    }
+			    }
+			    if (_save.getTile(ba.target) != null) // sanity check the tile.
+			    {
+				    _save.getPathfinding().calculate(ba.actor, ba.target);
+				    if (_save.getPathfinding().getStartDirection() != -1) // sanity check the path.
+				    {
+					    statePushBack(new UnitWalkBState(this, ba));
+					    break;
+				    }
+			    }
+		    }
+	    }
+	    // Time units can only be reset after everything else occurs
+	    statePushBack(new UnitPanicBState(this, ba.actor));
+	    unit.moraleChange(+15);
+
+	    return true;
+    }
+
+    internal bool convertInfected()
+    {
+	    bool retVal = false;
+        var units = _save.getUnits();
+	    for (var i = 0; i < units.Count; i++)
+	    {
+		    if (units[i].getHealth() > 0 && units[i].getHealth() >= units[i].getStunlevel() && units[i].getRespawn())
+		    {
+			    retVal = true;
+			    units[i].setRespawn(false);
+			    if (Options.battleNotifyDeath && units[i].getFaction() == UnitFaction.FACTION_PLAYER)
+			    {
+				    Game game = _parentState.getGame();
+				    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_BEEN_KILLED", (uint)units[i].getGender()).arg(units[i].getName(game.getLanguage()))));
+			    }
+
+			    convertUnit(i);
+			    i = 0;
+		    }
+	    }
+	    return retVal;
     }
 }

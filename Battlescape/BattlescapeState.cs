@@ -509,4 +509,35 @@ internal class BattlescapeState : State
 		    }
 	    }
     }
+
+	static bool popped = false;
+    /**
+     * Runs the timers and handles popups.
+     */
+    protected override void think()
+    {
+	    if (_gameTimer.isRunning())
+	    {
+		    if (!_popups.Any())
+		    {
+			    base.think();
+			    _battleGame.think();
+			    _animTimer.think(this, null);
+			    _gameTimer.think(this, null);
+			    if (popped)
+			    {
+				    _battleGame.handleNonTargetAction();
+				    popped = false;
+			    }
+		    }
+		    else
+		    {
+			    // Handle popups
+			    _game.pushState(_popups.First());
+			    _popups.Remove(_popups.First());
+			    popped = true;
+			    return;
+		    }
+	    }
+    }
 }

@@ -277,4 +277,13 @@ internal class SelectDestinationState : State
             _game.pushState(new ConfirmCydoniaState(_craft));
         }
     }
+
+    /**
+     * Stop the globe movement.
+     */
+    protected override void init()
+    {
+	    base.init();
+	    _globe.rotateStop();
+    }
 }

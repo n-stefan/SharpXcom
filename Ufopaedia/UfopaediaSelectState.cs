@@ -102,4 +102,10 @@ internal class UfopaediaSelectState : State
             _lstSelection.addRow(1, tr(it.title));
         }
     }
+
+	/**
+	 * Initializes the state.
+	 */
+	protected override void init() =>
+		base.init();
 }

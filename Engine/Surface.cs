@@ -549,7 +549,7 @@ internal class Surface
      * Runs any code the surface needs to keep updating every
      * game cycle, like animations and other real-time elements.
      */
-    internal virtual void think() { }
+    protected virtual void think() { }
 
     /**
      * Returns the cropping rectangle for this surface.

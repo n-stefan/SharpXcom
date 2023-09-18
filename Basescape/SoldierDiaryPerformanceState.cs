@@ -467,4 +467,19 @@ internal class SoldierDiaryPerformanceState : State
             vectorIterator++;
         }
     }
+
+    /**
+     * Runs state functionality every cycle.
+     * Used to update sprite vector
+     */
+    protected override void think()
+    {
+	    base.think();
+
+	    if ((uint)_lastScrollPos != _lstCommendations.getScroll())
+	    {
+		    drawSprites();
+		    _lastScrollPos = (int)_lstCommendations.getScroll();
+	    }
+    }
 }

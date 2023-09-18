@@ -54,4 +54,29 @@ internal class Explosion
      * Deletes the Explosion.
      */
     ~Explosion() { }
+
+    /**
+     * Animates the explosion further.
+     * @return false If the animation is finished.
+     */
+    internal bool animate()
+    {
+	    if (_frameDelay > 0)
+	    {
+		    _frameDelay--;
+		    return true;
+	    }
+
+	    _currentFrame++;
+	    if ((_hit && _currentFrame == _startFrame + HIT_FRAMES) ||
+		    (_big && _currentFrame == _startFrame + EXPLODE_FRAMES) ||
+		    (!_big && !_hit && _currentFrame == _startFrame + BULLET_FRAMES))
+	    {
+		    return false;
+	    }
+	    else
+	    {
+		    return true;
+	    }
+    }
 }

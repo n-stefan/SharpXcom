@@ -183,7 +183,7 @@ internal class StartState : State
     /**
      * Reset and reload data.
      */
-    void init()
+    protected override void init()
     {
         base.init();
 

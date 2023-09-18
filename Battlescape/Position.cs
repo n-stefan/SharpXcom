@@ -43,7 +43,7 @@ internal class Position
     }
 
     /// Copy constructor.
-    Position(Position pos)
+    internal Position(Position pos)
     {
         x = pos.x;
         y = pos.y;

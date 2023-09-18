@@ -142,4 +142,123 @@ internal class AIModule
 
     internal BattleUnit getTarget() =>
 	    _aggroTarget;
+
+    /*
+     * sets the "was hit" flag to true.
+     */
+    internal void setWasHitBy(BattleUnit attacker)
+    {
+	    if (attacker.getFaction() != _unit.getFaction() && !getWasHitBy(attacker.getId()))
+		    _wasHitBy.Add(attacker.getId());
+    }
+
+    /*
+     * Gets whether the unit was hit.
+     * @return if it was hit.
+     */
+    internal bool getWasHitBy(int attacker) =>
+	    _wasHitBy.Contains(attacker);
+
+    /**
+     * Decides if it worth our while to create an explosion here.
+     * @param targetPos The target's position.
+     * @param attackingUnit The attacking unit.
+     * @param radius How big the explosion will be.
+     * @param diff Game difficulty.
+     * @param grenade Is the explosion coming from a grenade?
+     * @return True if it is worthwhile creating an explosion in the target position.
+     */
+    internal bool explosiveEfficacy(Position targetPos, BattleUnit attackingUnit, int radius, int diff, bool grenade = false)
+    {
+	    // i hate the player and i want him dead, but i don't want to piss him off.
+	    Mod.Mod mod = _save.getBattleState().getGame().getMod();
+	    if ((!grenade && _save.getTurn() < mod.getTurnAIUseBlaster()) ||
+		     (grenade && _save.getTurn() < mod.getTurnAIUseGrenade()))
+	    {
+		    return false;
+	    }
+
+	    Tile targetTile = _save.getTile(targetPos);
+
+	    // don't throw grenades at flying enemies.
+	    if (grenade && targetPos.z > 0 && targetTile.hasNoFloor(_save.getTile(targetPos - new Position(0,0,1))))
+	    {
+		    return false;
+	    }
+
+	    if (diff == -1)
+	    {
+		    diff = _save.getBattleState().getGame().getSavedGame().getDifficultyCoefficient();
+	    }
+	    int distance = _save.getTileEngine().distance(attackingUnit.getPosition(), targetPos);
+	    int injurylevel = attackingUnit.getBaseStats().health - attackingUnit.getHealth();
+	    int desperation = (100 - attackingUnit.getMorale()) / 10;
+	    int enemiesAffected = 0;
+	    // if we're below 1/3 health, let's assume things are dire, and increase desperation.
+	    if (injurylevel > (attackingUnit.getBaseStats().health / 3) * 2)
+		    desperation += 3;
+
+	    int efficacy = desperation;
+
+	    // don't go kamikaze unless we're already doomed.
+	    if (Math.Abs(attackingUnit.getPosition().z - targetPos.z) <= Options.battleExplosionHeight && distance <= radius)
+	    {
+		    efficacy -= 4;
+	    }
+
+	    // allow difficulty to have its influence
+	    efficacy += diff/2;
+
+	    // account for the unit we're targetting
+	    BattleUnit target = targetTile.getUnit();
+	    if (target != null && !targetTile.getDangerous())
+	    {
+		    ++enemiesAffected;
+		    ++efficacy;
+	    }
+
+	    foreach (var i in _save.getUnits())
+	    {
+			    // don't grenade dead guys
+		    if (!i.isOut() &&
+			    // don't count ourself twice
+			    i != attackingUnit &&
+			    // don't count the target twice
+			    i != target &&
+			    // don't count units that probably won't be affected cause they're out of range
+			    Math.Abs(i.getPosition().z - targetPos.z) <= Options.battleExplosionHeight &&
+			    _save.getTileEngine().distance(i.getPosition(), targetPos) <= radius)
+		    {
+				    // don't count people who were already grenaded this turn
+			    if (i.getTile().getDangerous() ||
+				    // don't count units we don't know about
+				    (i.getFaction() == _targetFaction && i.getTurnsSinceSpotted() > _intelligence))
+				    continue;
+
+			    // trace a line from the grenade origin to the unit we're checking against
+			    Position voxelPosA = new Position ((targetPos.x * 16)+8, (targetPos.y * 16)+8, (targetPos.z * 24)+12);
+			    Position voxelPosB = new Position ((i.getPosition().x * 16)+8, (i.getPosition().y * 16)+8, (i.getPosition().z * 24)+12);
+			    var traj = new List<Position>();
+			    int collidesWith = _save.getTileEngine().calculateLine(voxelPosA, voxelPosB, false, traj, target, true, false, i);
+
+			    if (collidesWith == (int)VoxelType.V_UNIT && traj.First() / new Position(16,16,24) == i.getPosition())
+			    {
+				    if (i.getFaction() == _targetFaction)
+				    {
+					    ++enemiesAffected;
+					    ++efficacy;
+				    }
+				    else if (i.getFaction() == attackingUnit.getFaction() || (attackingUnit.getFaction() == UnitFaction.FACTION_NEUTRAL && i.getFaction() == UnitFaction.FACTION_PLAYER))
+					    efficacy -= 2; // friendlies count double
+			    }
+		    }
+	    }
+	    // don't throw grenades at single targets, unless morale is in the danger zone
+	    // or we're halfway towards panicking while bleeding to death.
+	    if (grenade && desperation < 6 && enemiesAffected < 2)
+	    {
+		    return false;
+	    }
+	    return (efficacy > 0 || enemiesAffected >= 10);
+    }
 }

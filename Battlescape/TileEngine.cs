@@ -2365,4 +2365,624 @@ internal class TileEngine
 	    }
 	    return result;
     }
+
+    /**
+     * Opens a door (if any) by rightclick, or by walking through it. The unit has to face in the right direction.
+     * @param unit Unit.
+     * @param rClick Whether the player right clicked.
+     * @param dir Direction.
+     * @return -1 there is no door, you can walk through;
+     *		  0 normal door opened, make a squeaky sound and you can walk through;
+     *		  1 ufo door is starting to open, make a whoosh sound, don't walk through;
+     *		  3 ufo door is still opening, don't walk through it yet. (have patience, futuristic technology...)
+     *		  4 not enough TUs
+     *		  5 would contravene fire reserve
+     */
+    internal int unitOpensDoor(BattleUnit unit, bool rClick = false, int dir = -1)
+    {
+	    int door = -1;
+	    int TUCost = 0;
+	    int size = unit.getArmor().getSize();
+	    int z = unit.getTile().getTerrainLevel() < -12 ? 1 : 0; // if we're standing on stairs, check the tile above instead.
+	    if (dir == -1)
+	    {
+		    dir = unit.getDirection();
+	    }
+	    Tile tile;
+	    for (int x = 0; x < size && door == -1; x++)
+	    {
+		    for (int y = 0; y < size && door == -1; y++)
+		    {
+			    var checkPositions = new List<KeyValuePair<Position, TilePart>>();
+			    tile = _save.getTile(unit.getPosition() + new Position(x,y,z));
+			    if (tile == null) continue;
+
+			    switch (dir)
+			    {
+			    case 0: // north
+				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
+				    if (x != 0)
+				    {
+					    checkPositions.Add(KeyValuePair.Create(new Position(0, -1, 0), TilePart.O_WESTWALL)); // one tile north
+				    }
+				    break;
+			    case 1: // north east
+				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
+				    checkPositions.Add(KeyValuePair.Create(new Position(1, -1, 0), TilePart.O_WESTWALL)); // one tile north-east
+				    if (rClick)
+				    {
+					    checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
+					    checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_NORTHWALL)); // one tile east
+				    }
+				    break;
+			    case 2: // east
+				    checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
+				    break;
+			    case 3: // south-east
+				    if (y == 0)
+					    checkPositions.Add(KeyValuePair.Create(new Position(1, 1, 0), TilePart.O_WESTWALL)); // one tile south-east
+				    if (x == 0)
+					    checkPositions.Add(KeyValuePair.Create(new Position(1, 1, 0), TilePart.O_NORTHWALL)); // one tile south-east
+				    if (rClick)
+				    {
+					    checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
+					    checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
+				    }
+				    break;
+			    case 4: // south
+				    checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
+				    break;
+			    case 5: // south-west
+				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
+				    checkPositions.Add(KeyValuePair.Create(new Position(-1, 1, 0), TilePart.O_NORTHWALL)); // one tile south-west
+				    if (rClick)
+				    {
+					    checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_WESTWALL)); // one tile south
+					    checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
+				    }
+				    break;
+			    case 6: // west
+				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
+				    if (y != 0)
+				    {
+					    checkPositions.Add(KeyValuePair.Create(new Position(-1, 0, 0), TilePart.O_NORTHWALL)); // one tile west
+				    }
+				    break;
+			    case 7: // north-west
+				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
+				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
+				    if (x != 0)
+				    {
+					    checkPositions.Add(KeyValuePair.Create(new Position(-1, -1, 0), TilePart.O_WESTWALL)); // one tile north
+				    }
+				    if (y != 0)
+				    {
+					    checkPositions.Add(KeyValuePair.Create(new Position(-1, -1, 0), TilePart.O_NORTHWALL)); // one tile north
+				    }
+				    if (rClick)
+				    {
+					    checkPositions.Add(KeyValuePair.Create(new Position(0, -1, 0), TilePart.O_WESTWALL)); // one tile north
+					    checkPositions.Add(KeyValuePair.Create(new Position(-1, 0, 0), TilePart.O_NORTHWALL)); // one tile west
+				    }
+				    break;
+			    default:
+				    break;
+			    }
+
+			    TilePart part = TilePart.O_FLOOR;
+			    for (var i = 0; i < checkPositions.Count && door == -1; ++i)
+			    {
+				    tile = _save.getTile(unit.getPosition() + new Position(x,y,z) + checkPositions[i].Key);
+				    if (tile != null)
+				    {
+					    door = tile.openDoor(checkPositions[i].Value, unit, _save.getBattleGame().getReservedAction());
+					    if (door != -1)
+					    {
+						    part = checkPositions[i].Value;
+						    if (door == 1)
+						    {
+							    checkAdjacentDoors(unit.getPosition() + new Position(x,y,z) + checkPositions[i].Key, checkPositions[i].Value);
+						    }
+					    }
+				    }
+			    }
+			    if (door == 0 && rClick)
+			    {
+				    if (part == TilePart.O_WESTWALL)
+				    {
+					    part = TilePart.O_NORTHWALL;
+				    }
+				    else
+				    {
+					    part = TilePart.O_WESTWALL;
+				    }
+				    TUCost = tile.getTUCost((int)part, unit.getMovementType());
+			    }
+			    else if (door == 1 || door == 4)
+			    {
+				    TUCost = tile.getTUCost((int)part, unit.getMovementType());
+			    }
+		    }
+	    }
+
+	    if (TUCost != 0)
+	    {
+		    if (_save.getBattleGame().checkReservedTU(unit, TUCost))
+		    {
+			    if (unit.spendTimeUnits(TUCost))
+			    {
+				    calculateFOV(unit.getPosition());
+				    // look from the other side (may be need check reaction fire?)
+				    List<BattleUnit> vunits = unit.getVisibleUnits();
+				    foreach (var i in vunits)
+				    {
+                        calculateFOV(i);
+				    }
+			    }
+			    else return 4;
+		    }
+		    else return 5;
+	    }
+
+	    return door;
+    }
+
+    /**
+     * Opens any doors connected to this part at this position,
+     * Keeps processing til it hits a non-ufo-door.
+     * @param pos The starting position
+     * @param part The part to open, defines which direction to check.
+     */
+    void checkAdjacentDoors(Position pos, TilePart part)
+    {
+	    Position offset;
+	    bool westSide = (part == TilePart.O_WESTWALL);
+	    for (int i = 1;; ++i)
+	    {
+		    offset = westSide ? new Position(0,i,0):new Position(i,0,0);
+		    Tile tile = _save.getTile(pos + offset);
+		    if (tile != null && tile.getMapData(part) != null && tile.getMapData(part).isUFODoor())
+		    {
+			    tile.openDoor(part);
+		    }
+		    else break;
+	    }
+	    for (int i = -1;; --i)
+	    {
+		    offset = westSide ? new Position(0,i,0):new Position(i,0,0);
+		    Tile tile = _save.getTile(pos + offset);
+		    if (tile != null && tile.getMapData(part) != null && tile.getMapData(part).isUFODoor())
+		    {
+			    tile.openDoor(part);
+		    }
+		    else break;
+	    }
+    }
+
+    /**
+     * Checks if a sniper from the opposing faction sees this unit. The unit with the highest reaction score will be compared with the current unit's reaction score.
+     * If it's higher, a shot is fired when enough time units, a weapon and ammo are available.
+     * @param unit The unit to check reaction fire upon.
+     * @return True if reaction fire took place.
+     */
+    internal bool checkReactionFire(BattleUnit unit)
+    {
+	    // reaction fire only triggered when the actioning unit is of the currently playing side, and is still on the map (alive)
+	    if (unit.getFaction() != _save.getSide() || unit.getTile() == null)
+	    {
+		    return false;
+	    }
+
+	    List<KeyValuePair<BattleUnit, int> > spotters = getSpottingUnits(unit);
+	    bool result = false;
+
+	    // not mind controlled, or controlled by the player
+	    if (unit.getFaction() == unit.getOriginalFaction()
+		    || unit.getFaction() != UnitFaction.FACTION_HOSTILE)
+	    {
+		    // get the first man up to bat.
+		    int attackType;
+		    BattleUnit reactor = getReactor(spotters, out attackType, unit);
+		    // start iterating through the possible reactors until the current unit is the one with the highest score.
+		    while (reactor != unit)
+		    {
+			    if (!tryReaction(reactor, unit, attackType))
+			    {
+				    // can't make a reaction snapshot for whatever reason, boot this guy from the vector.
+				    foreach (var i in spotters)
+				    {
+					    if (i.Key == reactor)
+					    {
+						    spotters.Remove(i);
+						    break;
+					    }
+				    }
+				    // avoid setting result to true, but carry on, just cause one unit can't react doesn't mean the rest of the units in the vector (if any) can't
+				    reactor = getReactor(spotters, out attackType, unit);
+				    continue;
+			    }
+			    // nice shot, kid. don't get cocky.
+			    reactor = getReactor(spotters, out attackType, unit);
+			    result = true;
+		    }
+	    }
+	    return result;
+    }
+
+    /**
+     * mark a region of the map as "dangerous" for a turn.
+     * @param pos is the epicenter of the explosion.
+     * @param radius how far to spread out.
+     * @param unit the unit that is triggering this action.
+     */
+    internal void setDangerZone(Position pos, int radius, BattleUnit unit)
+    {
+	    Tile tile = _save.getTile(pos);
+	    if (tile == null)
+	    {
+		    return;
+	    }
+	    // set the epicenter as dangerous
+	    tile.setDangerous(true);
+	    Position originVoxel = (pos * new Position(16,16,24)) + new Position(8,8,12 + -tile.getTerrainLevel());
+	    Position targetVoxel;
+	    for (int x = -radius; x != radius; ++x)
+	    {
+		    for (int y = -radius; y != radius; ++y)
+		    {
+			    // we can skip the epicenter
+			    if (x != 0 || y != 0)
+			    {
+				    // make sure we're within the radius
+				    if ((x*x)+(y*y) <= (radius*radius))
+				    {
+					    tile = _save.getTile(pos + new Position(x,y,0));
+					    if (tile != null)
+					    {
+						    targetVoxel = ((pos + new Position(x,y,0)) * new Position(16,16,24)) + new Position(8,8,12 + -tile.getTerrainLevel());
+						    var trajectory = new List<Position>();
+						    // we'll trace a line here, ignoring all units, to check if the explosion will reach this point
+						    // granted this won't properly account for explosions tearing through walls, but then we can't really
+						    // know that kind of information before the fact, so let's have the AI assume that the wall (or tree)
+						    // is enough to protect them.
+						    if (calculateLine(originVoxel, targetVoxel, false, trajectory, unit, true, false, unit) == (int)VoxelType.V_EMPTY)
+						    {
+							    if (trajectory.Count != 0 && (trajectory.Last() / new Position(16,16,24)) == pos + new Position(x,y,0))
+							    {
+								    tile.setDangerous(true);
+							    }
+						    }
+					    }
+				    }
+			    }
+		    }
+	    }
+    }
+
+    /**
+     * Gets the unit with the highest reaction score from the spotter vector.
+     * @param spotters The vector of spotting units.
+     * @param unit The unit to check scores against.
+     * @return The unit with the highest reactions.
+     */
+    BattleUnit getReactor(List<KeyValuePair<BattleUnit, int>> spotters, out int attackType, BattleUnit unit)
+    {
+        attackType = 0;
+        int bestScore = -1;
+	    BattleUnit bu = null;
+	    foreach (var i in spotters)
+	    {
+		    if (!i.Key.isOut() &&
+		    !i.Key.getRespawn() &&
+		    determineReactionType(i.Key, unit) != (int)BattleActionType.BA_NONE &&
+		    i.Key.getReactionScore() > bestScore)
+		    {
+			    bestScore = (int)i.Key.getReactionScore();
+			    bu = i.Key;
+			    attackType = i.Value;
+		    }
+	    }
+	    if (unit.getReactionScore() <= bestScore)
+	    {
+		    if (bu.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
+		    {
+			    bu.addReactionExp();
+		    }
+	    }
+	    else
+	    {
+		    bu = unit;
+		    attackType = (int)BattleActionType.BA_NONE;
+	    }
+	    return bu;
+    }
+
+    /**
+     * Creates a vector of units that can spot this unit.
+     * @param unit The unit to check for spotters of.
+     * @return A vector of units that can see this unit.
+     */
+    List<KeyValuePair<BattleUnit, int> > getSpottingUnits(BattleUnit unit)
+    {
+	    var spotters = new List<KeyValuePair<BattleUnit, int>>();
+	    Tile tile = unit.getTile();
+
+	    // no reaction on civilian turn.
+	    if (_save.getSide() != UnitFaction.FACTION_NEUTRAL)
+	    {
+		    foreach (var i in _save.getUnits())
+		    {
+				    // not dead/unconscious
+			    if (!i.isOut() &&
+				    // not dying
+				    i.getHealth() != 0 &&
+				    // not about to pass out
+				    i.getStunlevel() < i.getHealth() &&
+				    // not a friend
+				    i.getFaction() != _save.getSide() &&
+				    // not a civilian
+				    i.getFaction() != UnitFaction.FACTION_NEUTRAL &&
+				    // closer than 20 tiles
+				    distanceSq(unit.getPosition(), i.getPosition()) <= MAX_VIEW_DISTANCE_SQR)
+			    {
+				    BattleAction falseAction = default;
+				    falseAction.type = BattleActionType.BA_SNAPSHOT;
+				    falseAction.actor = i;
+				    falseAction.target = unit.getPosition();
+				    Position originVoxel = getOriginVoxel(falseAction, null);
+				    var targetVoxel = new Position();
+				    AIModule ai = i.getAIModule();
+
+				    // Inquisitor's note regarding 'gotHit' variable
+				    // in vanilla, the 'hitState' flag is the only part of this equation that comes into play.
+				    // any time a unit takes damage, this flag is set, then it would be reset by a call to
+				    // a function analogous to SavedBattleGame.resetUnitHitStates(), any time:
+				    // 1: a unit was selected by being clicked on.
+				    // 2: either "next unit" button was pressed.
+				    // 3: the inventory screen was accessed. (i didn't look too far into this one, it's possible it's only called in the pre-mission equip screen)
+				    // 4: the same place where we call it, immediately before every move the AI makes.
+				    // this flag is responsible for units turning around to respond to hits, and is in keeping with the details listed on http://www.ufopaedia.org/index.php/Reaction_fire_triggers
+				    // we've gone for a slightly different implementation: AI units keep a list of which units have hit them and don't forget until the end of the player's turn.
+				    // this method is in keeping with the spirit of the original feature, but much less exploitable by players.
+				    // the hitState flag in our implementation allows player units to turn and react as they did in the original, (which is far less cumbersome than giving them all an AI module)
+				    // we don't extend the same "enhanced aggressor memory" courtesy to players, because in the original, they could only turn and react to damage immediately after it happened.
+				    // this is because as much as we want the player's soldiers dead, we don't want them to feel like we're being unfair about it.
+
+				    bool gotHit = (ai != null && ai.getWasHitBy(unit.getId())) || (ai == null && i.getHitState());
+
+					    // can actually see the target Tile, or we got hit
+				    if ((i.checkViewSector(unit.getPosition()) || gotHit) &&
+					    // can actually target the unit
+					    canTargetUnit(originVoxel, tile, targetVoxel, i, false) &&
+					    // can actually see the unit
+					    visible(i, tile))
+				    {
+					    if (i.getFaction() == UnitFaction.FACTION_PLAYER)
+					    {
+						    unit.setVisible(true);
+					    }
+					    i.addToVisibleUnits(unit);
+					    int attackType = determineReactionType(i, unit);
+					    if (attackType != (int)BattleActionType.BA_NONE)
+					    {
+						    spotters.Add(KeyValuePair.Create(i, attackType));
+					    }
+				    }
+			    }
+		    }
+	    }
+	    return spotters;
+    }
+
+    /**
+     * Checks the validity of a snap shot performed here.
+     * @param unit The unit to check sight from.
+     * @param target The unit to check sight TO.
+     * @return True if the target is valid.
+     */
+    int determineReactionType(BattleUnit unit, BattleUnit target)
+    {
+	    // prioritize melee
+	    BattleItem meleeWeapon = unit.getMeleeWeapon();
+	    if (meleeWeapon != null &&
+		    // has a melee weapon and is in melee range
+		    validMeleeRange(unit, target, unit.getDirection()) &&
+		    unit.getActionTUs(BattleActionType.BA_HIT, meleeWeapon) > 0 &&
+		    unit.getTimeUnits() > unit.getActionTUs(BattleActionType.BA_HIT, meleeWeapon) &&
+		    (unit.getOriginalFaction() != UnitFaction.FACTION_PLAYER ||
+		    _save.getGeoscapeSave().isResearched(meleeWeapon.getRules().getRequirements())) &&
+		    _save.isItemUsable(meleeWeapon))
+	    {
+		    return (int)BattleActionType.BA_HIT;
+	    }
+
+	    BattleItem weapon = unit.getMainHandWeapon(unit.getFaction() != UnitFaction.FACTION_PLAYER);
+	    // has a weapon
+	    if (weapon != null &&
+		    // has a gun capable of snap shot with ammo
+		    (weapon.getRules().getBattleType() != BattleType.BT_MELEE &&
+		    weapon.getRules().getTUSnap() != 0 &&
+		    // Note: distance calculation isn't precise for 2x2 units here, but changing it would likely require also changing the targeting of 2x2 units
+		    distanceSq(unit.getPosition(), target.getPosition(), false) < weapon.getRules().getMaxRangeSq() &&
+		    weapon.getAmmoItem() != null &&
+		    unit.getActionTUs(BattleActionType.BA_SNAPSHOT, weapon) > 0 &&
+		    unit.getTimeUnits() > unit.getActionTUs(BattleActionType.BA_SNAPSHOT, weapon)) &&
+		    (unit.getOriginalFaction() != UnitFaction.FACTION_PLAYER ||
+		    _save.getGeoscapeSave().isResearched(weapon.getRules().getRequirements())) &&
+		    _save.isItemUsable(weapon))
+	    {
+		    return (int)BattleActionType.BA_SNAPSHOT;
+	    }
+
+	    return (int)BattleActionType.BA_NONE;
+    }
+
+    /**
+     * Validates the melee range between two units.
+     * @param attacker The attacking unit.
+     * @param target The unit we want to attack.
+     * @param dir Direction to check.
+     * @return True when the range is valid.
+     */
+    bool validMeleeRange(BattleUnit attacker, BattleUnit target, int dir) =>
+	    validMeleeRange(attacker.getPosition(), dir, attacker, target, out _);
+
+    /**
+     * Validates the melee range between a tile and a unit.
+     * @param pos Position to check from.
+     * @param direction Direction to check.
+     * @param attacker The attacking unit.
+     * @param target The unit we want to attack, 0 for any unit.
+     * @param dest Destination position.
+     * @return True when the range is valid.
+     */
+    bool validMeleeRange(Position pos, int direction, BattleUnit attacker, BattleUnit target, out Position dest, bool preferEnemy = true)
+    {
+        dest = null;
+	    if (direction < 0 || direction > 7)
+	    {
+		    return false;
+	    }
+	    var potentialTargets = new List<BattleUnit>();
+	    BattleUnit chosenTarget = null;
+	    Position p;
+	    int size = attacker.getArmor().getSize() - 1;
+	    Pathfinding.directionToVector(direction, out p);
+	    for (int x = 0; x <= size; ++x)
+	    {
+		    for (int y = 0; y <= size; ++y)
+		    {
+			    Tile origin = _save.getTile(new Position(pos + new Position(x, y, 0)));
+			    Tile targetTile = _save.getTile(new Position(pos + new Position(x, y, 0) + p));
+			    Tile aboveTargetTile = _save.getTile(new Position(pos + new Position(x, y, 1) + p));
+			    Tile belowTargetTile = _save.getTile(new Position(pos + new Position(x, y, -1) + p));
+
+			    if (targetTile != null && origin != null)
+			    {
+				    if (origin.getTerrainLevel() <= -16 && aboveTargetTile != null && !aboveTargetTile.hasNoFloor(targetTile))
+				    {
+					    targetTile = aboveTargetTile;
+				    }
+				    else if (belowTargetTile != null && targetTile.hasNoFloor(belowTargetTile) && targetTile.getUnit() == null && belowTargetTile.getTerrainLevel() <= -16)
+				    {
+					    targetTile = belowTargetTile;
+				    }
+				    if (targetTile.getUnit() != null)
+				    {
+					    if (target == null || targetTile.getUnit() == target)
+					    {
+						    Position originVoxel = new Position(origin.getPosition() * new Position(16,16,24))
+							    + new Position(8,8,attacker.getHeight() + attacker.getFloatHeight() - 4 -origin.getTerrainLevel());
+						    var targetVoxel = new Position();
+						    if (canTargetUnit(originVoxel, targetTile, targetVoxel, attacker, false))
+						    {
+							    if (dest != null)
+							    {
+								    dest = targetTile.getPosition();
+							    }
+							    if (target != null)
+							    {
+								    return true;
+							    }
+							    else
+							    {
+								    potentialTargets.Add(targetTile.getUnit());
+							    }
+						    }
+					    }
+				    }
+			    }
+		    }
+	    }
+
+	    foreach (var i in potentialTargets)
+	    {
+		    // if there's actually something THERE, we'll chalk this up as a success.
+		    if (chosenTarget == null)
+		    {
+			    chosenTarget = i;
+		    }
+		    // but if there's a target of a different faction, we'll prioritize them.
+		    else if ((preferEnemy && i.getFaction() != attacker.getFaction())
+		    // or, if we're using a medikit, prioritize whichever friend is wounded the most.
+		    || (!preferEnemy && i.getFaction() == attacker.getFaction() &&
+		    i.getFatalWounds() > chosenTarget.getFatalWounds()))
+		    {
+			    chosenTarget = i;
+		    }
+	    }
+
+	    if (dest != null && chosenTarget != null)
+	    {
+		    dest = chosenTarget.getPosition();
+	    }
+
+	    return chosenTarget != null;
+    }
+
+    /**
+     * Attempts to perform a reaction snap shot.
+     * @param unit The unit to check sight from.
+     * @param target The unit to check sight TO.
+     * @return True if the action should (theoretically) succeed.
+     */
+    bool tryReaction(BattleUnit unit, BattleUnit target, int attackType)
+    {
+	    var action = new BattleAction();
+	    action.cameraPosition = _save.getBattleState().getMap().getCamera().getMapOffset();
+	    action.actor = unit;
+	    if (attackType == (int)BattleActionType.BA_HIT)
+	    {
+		    action.weapon = unit.getMeleeWeapon();
+	    }
+	    else
+	    {
+		    action.weapon = unit.getMainHandWeapon(unit.getFaction() != UnitFaction.FACTION_PLAYER);
+	    }
+	    if (action.weapon == null)
+	    {
+		    return false;
+	    }
+	    action.type = (BattleActionType)(attackType);
+	    action.target = target.getPosition();
+	    action.TU = unit.getActionTUs(action.type, action.weapon);
+
+	    if (action.weapon.getAmmoItem() != null && action.weapon.getAmmoItem().getAmmoQuantity() != 0 && unit.getTimeUnits() >= action.TU)
+	    {
+		    action.targeting = true;
+
+		    // hostile units will go into an "aggro" state when they react.
+		    if (unit.getFaction() == UnitFaction.FACTION_HOSTILE)
+		    {
+			    AIModule ai = unit.getAIModule();
+			    if (ai == null)
+			    {
+				    // should not happen, but just in case...
+				    ai = new AIModule(_save, unit, null);
+				    unit.setAIModule(ai);
+			    }
+
+			    if (action.type != BattleActionType.BA_HIT && action.weapon.getAmmoItem().getRules().getExplosionRadius() != 0 &&
+				    ai.explosiveEfficacy(action.target, unit, action.weapon.getAmmoItem().getRules().getExplosionRadius(), -1) == false)
+			    {
+				    action.targeting = false;
+			    }
+		    }
+
+		    if (action.targeting && unit.spendTimeUnits(action.TU))
+		    {
+			    action.TU = 0;
+			    if (action.type == BattleActionType.BA_HIT)
+			    {
+				    _save.getBattleGame().statePushBack(new MeleeAttackBState(_save.getBattleGame(), action));
+			    }
+			    else
+			    {
+				    _save.getBattleGame().statePushBack(new ProjectileFlyBState(_save.getBattleGame(), action));
+			    }
+			    return true;
+		    }
+	    }
+	    return false;
+    }
 }

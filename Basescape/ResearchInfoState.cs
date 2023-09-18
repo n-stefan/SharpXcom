@@ -329,4 +329,15 @@ internal class ResearchInfoState : State
         _txtAvailableSpace.setText(tr("STR_LABORATORY_SPACE_AVAILABLE_UC").arg(_base.getFreeLaboratories()));
         _txtAllocatedScientist.setText(tr("STR_SCIENTISTS_ALLOCATED").arg(_project.getAssigned()));
     }
+
+    /**
+     * Runs state functionality every cycle (used to update the timer).
+     */
+    protected override void think()
+    {
+	    base.think();
+
+	    _timerLess.think(this, null);
+	    _timerMore.think(this, null);
+    }
 }

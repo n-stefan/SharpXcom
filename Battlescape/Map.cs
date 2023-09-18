@@ -408,4 +408,27 @@ internal class Map : InteractiveSurface
 		    _launch = true;
 	    }
     }
+
+    /**
+     * Checks if the screen is still being rendered in EGA.
+     * @return if we are still in EGA mode.
+     */
+    internal bool getBlastFlash() =>
+	    _flashScreen;
+
+    /**
+     * Keeps the animation timers running.
+     */
+    protected override void think()
+    {
+	    _scrollMouseTimer.think(null, this);
+	    _scrollKeyTimer.think(null, this);
+	    _obstacleTimer.think(null, this);
+    }
+
+    /**
+     * Reset the camera smoothing bool.
+     */
+    internal void resetCameraSmoothing() =>
+	    _smoothingEngaged = false;
 }

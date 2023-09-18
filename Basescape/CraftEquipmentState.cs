@@ -610,4 +610,15 @@ internal class CraftEquipmentState : State
 	    Craft c = _base.getCrafts()[(int)_craft];
 	    c.setInBattlescape(false);
     }
+
+    /**
+     * Runs the arrow timers.
+     */
+    protected override void think()
+    {
+	    base.think();
+
+	    _timerLeft.think(this, null);
+	    _timerRight.think(this, null);
+    }
 }

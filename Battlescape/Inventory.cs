@@ -507,4 +507,13 @@ internal class Inventory : InteractiveSurface
             stackLayer = null;
         }
     }
+
+    /**
+     * Handles timers.
+     */
+    protected override void think()
+    {
+	    _warning.think();
+	    _animTimer.think(null, this);
+    }
 }

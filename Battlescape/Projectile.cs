@@ -122,7 +122,7 @@ internal class Projectile
      * Returns 0 when there is no item thrown.
      * @return Pointer to BattleItem.
      */
-    BattleItem getItem()
+    internal BattleItem getItem()
     {
         if (_action.type == BattleActionType.BA_THROW)
             return _action.weapon;
@@ -470,5 +470,43 @@ internal class Projectile
 			return trajectory[0];
 		else
 			return trajectory[trajectory.Count - 1];
+	}
+
+	/**
+	 * Gets the current position in voxel space.
+	 * @param offset Offset.
+	 * @return Position in voxel space.
+	 */
+	internal Position getPosition(int offset) =>
+		getPositionFromStart(_trajectory, (int)_position + offset);
+
+	/**
+	 * Skips to the end of the trajectory.
+	 */
+	internal void skipTrajectory()
+	{
+		while (move());
+	}
+
+	/**
+	 * Moves further in the trajectory.
+	 * @return false if the trajectory is finished - no new position exists in the trajectory.
+	 */
+	internal bool move()
+	{
+		for (int i = 0; i < _speed; ++i)
+		{
+			_position++;
+			if (_position == _trajectory.Count)
+			{
+				_position--;
+				return false;
+			}
+			if (_save.getDepth() > 0 && _vaporColor != -1 && _action.type != BattleActionType.BA_THROW && RNG.percent(_vaporProbability))
+			{
+				addVaporCloud();
+			}
+		}
+		return true;
 	}
 }

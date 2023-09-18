@@ -160,4 +160,15 @@ internal class NextTurnState : State
             }
         }
     }
+
+    /**
+     * Keeps the timer running.
+     */
+    protected override void think()
+    {
+	    if (_timer != null)
+	    {
+		    _timer.think(this, null);
+	    }
+    }
 }

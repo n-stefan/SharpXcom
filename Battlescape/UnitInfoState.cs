@@ -516,7 +516,7 @@ internal class UnitInfoState : State
 	 * Updates unit info which can change
 	 * after going into other screens.
 	 */
-	void init()
+	protected override void init()
 	{
 		base.init();
 		var ss = new StringBuilder();

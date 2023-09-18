@@ -73,4 +73,10 @@ internal class BattleState
      */
     internal BattleAction getAction() =>
 	    _action;
+
+    /**
+     * Runs any code the state needs to keep updating every
+     * game cycle.
+     */
+    protected virtual void think() { }
 }

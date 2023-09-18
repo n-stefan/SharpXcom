@@ -2432,4 +2432,165 @@ internal class BattleUnit
 	    }
 	    return Math.Max(10, 25 * _health / getBaseStats().health + 75 + -10 * wounds);
     }
+
+    /**
+     * reset the unit hit state.
+     */
+    internal void resetHitState() =>
+	    _hitByAnything = false;
+
+    /**
+     * Gets the soldier's gender.
+     */
+    internal SoldierGender getGender() =>
+	    _gender;
+
+    /**
+     * Gets this unit's respawn flag.
+     */
+    internal bool getRespawn() =>
+	    _respawn;
+
+    /**
+     * Sets this unit to respawn (or not).
+     * @param respawn whether it should respawn.
+     */
+    internal void setRespawn(bool respawn) =>
+	    _respawn = respawn;
+
+    /**
+     * Get the unit's total firing xp for this mission.
+     */
+    internal int getFiringXP() =>
+	    _expFiring;
+
+    /**
+     * Set the murderer's weapon.
+     * @param string murderer's weapon.
+     */
+    internal void setMurdererWeapon(string weapon) =>
+	    _murdererWeapon = weapon;
+
+    /**
+     * Set the murderer's weapon's ammo.
+     * @param string murderer weapon ammo.
+     */
+    internal void setMurdererWeaponAmmo(string weaponAmmo) =>
+	    _murdererWeaponAmmo = weaponAmmo;
+
+    /**
+     * Artificially alter a unit's firing xp. (used for shotguns)
+     */
+    internal void nerfFiringXP(int newXP) =>
+	    _expFiring = newXP;
+
+    /**
+     * Little formula to calculate reaction score.
+     * @return Reaction score.
+     */
+    internal double getReactionScore()
+    {
+	    //(Reactions Stat) x (Current Time Units / Max TUs)
+	    double score = ((double)getBaseStats().reactions * (double)getTimeUnits()) / (double)getBaseStats().tu;
+	    return score;
+    }
+
+    /**
+     * Adds one to the reaction exp counter.
+     */
+    internal void addReactionExp() =>
+	    _expReactions++;
+
+    /**
+     * Was this unit just hit?
+     */
+    internal bool getHitState() =>
+	    _hitByAnything;
+
+    /**
+     * this function checks if a tile is visible, using maths.
+     * @param pos the position to check against
+     * @return what the maths decide
+     */
+    internal bool checkViewSector(Position pos)
+    {
+	    int deltaX = pos.x - _pos.x;
+	    int deltaY = _pos.y - pos.y;
+
+	    switch (_direction)
+	    {
+		    case 0:
+			    if ( (deltaX + deltaY >= 0) && (deltaY - deltaX >= 0) )
+				    return true;
+			    break;
+		    case 1:
+			    if ( (deltaX >= 0) && (deltaY >= 0) )
+				    return true;
+			    break;
+		    case 2:
+			    if ( (deltaX + deltaY >= 0) && (deltaY - deltaX <= 0) )
+				    return true;
+			    break;
+		    case 3:
+			    if ( (deltaY <= 0) && (deltaX >= 0) )
+				    return true;
+			    break;
+		    case 4:
+			    if ( (deltaX + deltaY <= 0) && (deltaY - deltaX <= 0) )
+				    return true;
+			    break;
+		    case 5:
+			    if ( (deltaX <= 0) && (deltaY <= 0) )
+				    return true;
+			    break;
+		    case 6:
+			    if ( (deltaX + deltaY <= 0) && (deltaY - deltaX >= 0) )
+				    return true;
+			    break;
+		    case 7:
+			    if ( (deltaY >= 0) && (deltaX <= 0) )
+				    return true;
+			    break;
+		    default:
+			    return false;
+	    }
+	    return false;
+    }
+
+    /**
+     * Get the name of any melee weapon we may be carrying, or a built in one.
+     * @return the name .
+     */
+    internal BattleItem getMeleeWeapon()
+    {
+	    BattleItem melee = getItem("STR_RIGHT_HAND");
+	    if (melee != null && melee.getRules().getBattleType() == BattleType.BT_MELEE)
+	    {
+		    return melee;
+	    }
+	    melee = getItem("STR_LEFT_HAND");
+	    if (melee != null && melee.getRules().getBattleType() == BattleType.BT_MELEE)
+	    {
+		    return melee;
+	    }
+	    melee = getSpecialWeapon(BattleType.BT_MELEE);
+	    if (melee != null)
+	    {
+		    return melee;
+	    }
+	    return null;
+    }
+
+    /**
+     * Adds one to the melee exp counter.
+     */
+    internal void addMeleeExp() =>
+	    _expMelee++;
+
+    /**
+     * Set the unit that is spawned when this one dies.
+     * @param spawnUnit unit.
+     */
+    internal void setSpawnUnit(string spawnUnit) =>
+	    _spawnUnit = spawnUnit;
 }
