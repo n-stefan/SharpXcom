@@ -99,7 +99,7 @@ internal class CatFile : BinaryReader
             }
             else
             {
-                _size[i] += (uint)(namesize + 1);
+                _size[i] = (uint)(_size[i] + namesize + 1);
             }
         }
 

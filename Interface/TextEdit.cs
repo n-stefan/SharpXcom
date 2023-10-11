@@ -189,4 +189,10 @@ internal class TextEdit : InteractiveSurface
      */
     internal void setWordWrap(bool wrap) =>
         _text.setWordWrap(wrap);
+
+    /**
+     * Keeps the animation timers running.
+     */
+    protected override void think() =>
+	    _timer.think(null, this);
 }

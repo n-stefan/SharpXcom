@@ -146,7 +146,7 @@ internal class Timer
                     {
                         _state();
                     }
-                    _frameSkipStart += (uint)_interval;
+                    _frameSkipStart = (uint)(_frameSkipStart + _interval);
                     // breaking here after one iteration effectively returns this function to its old functionality:
                     if (game == null || !_frameSkipping || !game.isState(state)) break; // if game isn't set, we can't verify *state
                 }

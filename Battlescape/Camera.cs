@@ -215,4 +215,79 @@ internal class Camera
      */
     internal int getViewLevel() =>
 	    _mapOffset.z;
+
+    /**
+     * Converts voxel coordinates X,Y,Z to screen positions X, Y.
+     * @param voxelPos X,Y,Z coordinates of the voxel.
+     * @param screenPos Screen position.
+     */
+    internal void convertVoxelToScreen(Position voxelPos, out Position screenPos)
+    {
+	    Position mapPosition = new Position(voxelPos.x / 16, voxelPos.y / 16, voxelPos.z / 24);
+	    convertMapToScreen(mapPosition, out screenPos);
+	    double dx = voxelPos.x - (mapPosition.x * 16);
+	    double dy = voxelPos.y - (mapPosition.y * 16);
+	    double dz = voxelPos.z - (mapPosition.z * 24);
+	    screenPos.x += (int)(dx - dy) + (_spriteWidth/2);
+	    screenPos.y += (int)(((_spriteHeight / 2.0)) + (dx / 2.0) + (dy / 2.0) - dz);
+	    screenPos.x += _mapOffset.x;
+	    screenPos.y += _mapOffset.y;
+    }
+
+    /**
+     * Checks if map coordinates X,Y,Z are on screen.
+     * @param mapPos Coordinates to check.
+     * @param unitWalking True to offset coordinates for a unit walking.
+     * @param unitSize size of unit (0 - single, 1 - 2x2, etc, used for walking only
+     * @param boundary True if it's for caching calculation
+     * @return True if the map coordinates are on screen.
+     */
+    internal bool isOnScreen(Position mapPos, bool unitWalking, int unitSize, bool boundary)
+    {
+	    Position screenPos;
+	    convertMapToScreen(mapPos, out screenPos);
+	    int posx = _spriteWidth/2, posy = _spriteHeight - _spriteWidth/4;
+	    int sizex = _spriteWidth/2, sizey = _spriteHeight/2;
+	    if (unitSize > 0)
+	    {
+		    posy -= _spriteWidth /4;
+		    sizex = _spriteWidth*unitSize;
+		    sizey = _spriteWidth*unitSize/2;
+	    }
+	    screenPos.x += _mapOffset.x + posx;
+	    screenPos.y += _mapOffset.y + posy;
+	    if (unitWalking)
+	    {
+    /* pretty hardcoded hack to handle overlapping by icons
+    (they are always in the center at the bottom of the screen)
+    Free positioned icons would require more complex workaround.
+    __________
+    |________|
+    ||      ||
+    || ____ ||
+    ||_|XX|_||
+    |________|
+     */
+		    if (boundary) //to make sprite updates even being slightly outside of screen
+		    {
+			    sizex += _spriteWidth;
+			    sizey += _spriteWidth/2;
+		    }
+		    if ( screenPos.x < 0 - sizex
+			    || screenPos.x >= _screenWidth + sizex
+			    || screenPos.y < 0 - sizey
+			    || screenPos.y >= _screenHeight + sizey ) return false; //totally outside
+		    int side = ( _screenWidth - _map.getIconWidth() ) / 2;
+		    if ( (screenPos.y < (_screenHeight - _map.getIconHeight()) + sizey) ) return true; //above icons
+		    if ( (side > 1) && ( (screenPos.x < side + sizex) || (screenPos.x >= (_screenWidth - side - sizex)) ) ) return true; //at sides (if there are any)
+		    return false;
+	    }
+	    else
+	    {
+		    return screenPos.x >= 0
+			    && screenPos.x <= _screenWidth - 10
+			    && screenPos.y >= 0
+			    && screenPos.y <= _screenHeight - 10;
+	    }
+    }
 }

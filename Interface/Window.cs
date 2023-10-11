@@ -165,4 +165,18 @@ internal class Window : Surface
      */
     internal void setDY(int dy) =>
         _dy = dy;
+
+    /**
+     * Keeps the animation timers running.
+     */
+    protected override void think()
+    {
+	    if (_hidden && _popupStep < 1.0)
+	    {
+		    _state.hideAll();
+		    setHidden(false);
+	    }
+
+	    _timer.think(null, this);
+    }
 }

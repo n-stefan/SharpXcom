@@ -967,4 +967,13 @@ internal class Globe : InteractiveSurface
 
     internal void setNewBaseHover(bool hover) =>
         _hover = hover;
+
+    /**
+     * Keeps the animation timers running.
+     */
+    protected override void think()
+    {
+	    _blinkTimer.think(null, this);
+	    _rotTimer.think(null, this);
+    }
 }

@@ -509,4 +509,24 @@ internal class Projectile
 		}
 		return true;
 	}
+
+	/**
+	 * adds a cloud of vapor at the projectile's current position.
+	 */
+	void addVaporCloud()
+	{
+		Tile tile = _save.getTile(_trajectory[(int)_position] / new Position(16,16,24));
+		if (tile != null)
+		{
+			Position tilePos, voxelPos;
+			_save.getBattleGame().getMap().getCamera().convertMapToScreen(_trajectory[(int)_position] / new Position(16,16,24), out tilePos);
+			tilePos += _save.getBattleGame().getMap().getCamera().getMapOffset();
+			_save.getBattleGame().getMap().getCamera().convertVoxelToScreen(_trajectory[(int)_position], out voxelPos);
+			for (int i = 0; i != _vaporDensity; ++i)
+			{
+				Particle particle = new Particle(voxelPos.x - tilePos.x + RNG.seedless(0, 4) - 2, voxelPos.y - tilePos.y + RNG.seedless(0, 4) - 2, RNG.seedless(48, 224), (byte)_vaporColor, (byte)RNG.seedless(32, 44));
+				tile.addParticle(particle);
+			}
+		}
+	}
 }

@@ -369,8 +369,8 @@ internal abstract class State
      */
     protected virtual void think()
     {
-        foreach (var surface in _surfaces)
-            surface.think();
+        foreach (var i in _surfaces)
+            i.think();
     }
 
     /**
@@ -494,4 +494,13 @@ internal abstract class State
      */
     protected LocalizedText tr(string id, uint n) =>
 	    _game.getLanguage().getString(id, n);
+
+    /**
+     * Hides all the Surface child elements on display.
+     */
+    internal void hideAll()
+    {
+	    foreach (var i in _surfaces)
+		    i.setHidden(true);
+    }
 }

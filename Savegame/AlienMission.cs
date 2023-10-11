@@ -814,7 +814,7 @@ internal class AlienMission
 				if (_nextWave != _rule.getWaveCount())
 				{
 					// Delay next wave
-					_spawnCountdown += (uint)(30 * (RNG.generate(0, 400) + 48));
+					_spawnCountdown = (uint)(_spawnCountdown + 30 * (RNG.generate(0, 400) + 48));
 				}
 				break;
 		}

@@ -382,12 +382,12 @@ internal class TextList : InteractiveSurface
                 {
                     if (_align[i] != TextHAlign.ALIGN_RIGHT)
                     {
-                        w += (uint)(_font.getChar('.').getCrop().w + _font.getSpacing());
+                        w = (uint)(w + _font.getChar('.').getCrop().w + _font.getSpacing());
                         buf += '.';
                     }
                     if (_align[i] != TextHAlign.ALIGN_LEFT)
                     {
-                        w += (uint)(_font.getChar('.').getCrop().w + _font.getSpacing());
+                        w = (uint)(w + _font.getChar('.').getCrop().w + _font.getSpacing());
                         buf.Insert(0, ".");
                     }
                 }
@@ -401,7 +401,7 @@ internal class TextList : InteractiveSurface
             }
             else
             {
-                rowX += (int)_columns[i];
+                rowX = (int)(rowX + _columns[i]);
             }
         }
 
@@ -763,4 +763,23 @@ internal class TextList : InteractiveSurface
      */
     internal int getRowY(uint row) =>
 	    getY() + _texts[(int)row][0].getY();
+
+    /**
+     * Passes ticks to arrow buttons.
+     */
+    protected override void think()
+    {
+	    base.think();
+	    _up.think();
+	    _down.think();
+	    _scrollbar.think();
+	    foreach (var i in _arrowLeft)
+	    {
+		    i.think();
+	    }
+	    foreach (var i in _arrowRight)
+	    {
+		    i.think();
+	    }
+    }
 }

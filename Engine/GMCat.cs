@@ -271,7 +271,7 @@ internal class GMCatFile : CatFile
 			for (int i=0; ; ) {
                 byte c = data[0]; data = data[1..];
 				left--;
-                ndelta += (uint)(c & 0x7F);
+                ndelta = (uint)(ndelta + c & 0x7F);
 				if ((c & 0x80) == 0)
 					break;
 				if ((++i == 4) || left == 0)

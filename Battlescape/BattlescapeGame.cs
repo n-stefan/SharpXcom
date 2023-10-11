@@ -30,16 +30,16 @@ struct BattleAction
     internal List<Position> waypoints;
     internal int TU;
     internal bool targeting;
-    int value;
+    internal int value;
     internal string result;
     internal bool strafe, run;
-    int diff;
+    internal int diff;
     internal int autoShotCounter;
     internal Position cameraPosition;
-    bool desperate; // ignoring newly-spotted units
-    int finalFacing;
-    bool finalAction;
-    int number; // first action of turn, second, etc.?
+    internal bool desperate; // ignoring newly-spotted units
+    internal int finalFacing;
+    internal bool finalAction;
+    internal int number; // first action of turn, second, etc.?
 
     public BattleAction()
     {
@@ -1351,10 +1351,607 @@ internal class BattlescapeGame
 				    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_BEEN_KILLED", (uint)units[i].getGender()).arg(units[i].getName(game.getLanguage()))));
 			    }
 
-			    convertUnit(i);
+			    convertUnit(units[i]);
 			    i = 0;
 		    }
 	    }
 	    return retVal;
+    }
+
+    /**
+     * Handles the result of non target actions, like priming a grenade.
+     */
+    internal void handleNonTargetAction()
+    {
+	    if (!_currentAction.targeting)
+	    {
+		    _currentAction.cameraPosition = new Position(0,0,-1);
+		    if (!string.IsNullOrEmpty(_currentAction.result))
+		    {
+			    _parentState.warning(_currentAction.result);
+			    _currentAction.result = string.Empty;
+		    }
+		    else if (_currentAction.type == BattleActionType.BA_PRIME && _currentAction.value > -1)
+		    {
+			    if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
+			    {
+				    _parentState.warning("STR_GRENADE_IS_ACTIVATED");
+				    _currentAction.weapon.setFuseTimer(_currentAction.value);
+			    }
+			    else
+			    {
+				    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
+			    }
+		    }
+		    else if (_currentAction.type == BattleActionType.BA_USE)
+		    {
+			    _save.reviveUnconsciousUnits();
+		    }
+		    else if (_currentAction.type == BattleActionType.BA_HIT)
+		    {
+			    if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
+			    {
+				    statePushBack(new MeleeAttackBState(this, _currentAction));
+			    }
+			    else
+			    {
+				    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
+			    }
+		    }
+		    if (_currentAction.type != BattleActionType.BA_HIT) // don't clear the action type if we're meleeing, let the melee action state take care of that
+		    {
+			    _currentAction.type = BattleActionType.BA_NONE;
+		    }
+		    _parentState.updateSoldierInfo();
+	    }
+
+	    setupCursor();
+    }
+
+    /**
+     * Converts a unit into a unit of another type.
+     * @param unit The unit to convert.
+     * @return Pointer to the new unit.
+     */
+    internal BattleUnit convertUnit(BattleUnit unit)
+    {
+	    getSave().getBattleState().showPsiButton(false);
+	    BattleUnit newUnit = getSave().convertUnit(unit, _parentState.getGame().getSavedGame(), getMod());
+	    getMap().cacheUnit(newUnit);
+	    return newUnit;
+    }
+
+    /**
+     * Handles the processing of the AI states of a unit.
+     * @param unit Pointer to a unit.
+     */
+    void handleAI(BattleUnit unit)
+    {
+	    var ss = new StringBuilder();
+
+	    if (unit.getTimeUnits() <= 5)
+	    {
+		    unit.dontReselect();
+	    }
+	    if (_AIActionCounter >= 2 || !unit.reselectAllowed())
+	    {
+		    if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
+		    {
+			    if (!_save.getDebugMode())
+			    {
+				    _endTurnRequested = true;
+				    statePushBack(null); // end AI turn
+			    }
+			    else
+			    {
+				    _save.selectNextPlayerUnit();
+				    _debugPlay = true;
+			    }
+		    }
+		    if (_save.getSelectedUnit() != null)
+		    {
+			    _parentState.updateSoldierInfo();
+			    getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+			    if (_save.getSelectedUnit().getId() <= unit.getId())
+			    {
+				    _AISecondMove = true;
+			    }
+		    }
+		    _AIActionCounter = 0;
+		    return;
+	    }
+
+	    unit.setVisible(false);
+
+	    _save.getTileEngine().calculateFOV(unit.getPosition()); // might need this populate _visibleUnit for a newly-created alien
+		    // it might also help chryssalids realize they've zombified someone and need to move on
+		    // it should also hide units when they've killed the guy spotting them
+		    // it's also for good luck
+
+	    AIModule ai = unit.getAIModule();
+	    if (ai == null)
+	    {
+		    // for some reason the unit had no AI routine assigned..
+		    unit.setAIModule(new AIModule(_save, unit, null));
+		    ai = unit.getAIModule();
+	    }
+	    _AIActionCounter++;
+	    if (_AIActionCounter == 1)
+	    {
+		    _playedAggroSound = false;
+		    unit.setHiding(false);
+            if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} #{unit.getId()}--{unit.getType()}"); }
+        }
+
+	    var action = new BattleAction();
+	    action.actor = unit;
+	    action.number = _AIActionCounter;
+	    unit.think(ref action);
+
+	    if (action.type == BattleActionType.BA_RETHINK)
+	    {
+		    _parentState.debug("Rethink");
+		    unit.think(ref action);
+	    }
+
+	    _AIActionCounter = action.number;
+	    BattleItem weapon = unit.getMainHandWeapon();
+	    if (weapon == null || weapon.getAmmoItem() == null)
+	    {
+		    if (unit.getOriginalFaction() == UnitFaction.FACTION_HOSTILE && !unit.getVisibleUnits().Any())
+		    {
+			    findItem(ref action);
+		    }
+	    }
+
+	    if (unit.getCharging() != null)
+	    {
+		    if (unit.getAggroSound() != -1 && !_playedAggroSound)
+		    {
+			    getMod().getSoundByDepth((uint)_save.getDepth(), (uint)unit.getAggroSound()).play(-1, getMap().getSoundAngle(unit.getPosition()));
+			    _playedAggroSound = true;
+		    }
+	    }
+	    if (action.type == BattleActionType.BA_WALK)
+	    {
+		    ss.Append($"Walking to {action.target}");
+		    _parentState.debug(ss.ToString());
+
+		    if (_save.getTile(action.target) != null)
+		    {
+			    _save.getPathfinding().calculate(action.actor, action.target);//, _save.getTile(action.target).getUnit());
+		    }
+		    if (_save.getPathfinding().getStartDirection() != -1)
+		    {
+			    statePushBack(new UnitWalkBState(this, action));
+		    }
+	    }
+
+	    if (action.type == BattleActionType.BA_SNAPSHOT || action.type == BattleActionType.BA_AUTOSHOT || action.type == BattleActionType.BA_AIMEDSHOT || action.type == BattleActionType.BA_THROW || action.type == BattleActionType.BA_HIT || action.type == BattleActionType.BA_MINDCONTROL || action.type == BattleActionType.BA_PANIC || action.type == BattleActionType.BA_LAUNCH)
+	    {
+		    ss.Clear();
+		    ss.Append($"Attack type={action.type} target={action.target} weapon={action.weapon.getRules().getName()}");
+		    _parentState.debug(ss.ToString());
+		    action.TU = unit.getActionTUs(action.type, action.weapon);
+		    if (action.type == BattleActionType.BA_MINDCONTROL || action.type == BattleActionType.BA_PANIC)
+		    {
+			    statePushBack(new PsiAttackBState(this, action));
+		    }
+		    else
+		    {
+			    statePushBack(new UnitTurnBState(this, action));
+			    if (action.type == BattleActionType.BA_HIT)
+			    {
+				    action.weapon = unit.getMeleeWeapon();
+				    statePushBack(new MeleeAttackBState(this, action));
+			    }
+			    else
+			    {
+				    statePushBack(new ProjectileFlyBState(this, action));
+			    }
+		    }
+	    }
+
+	    if (action.type == BattleActionType.BA_NONE)
+	    {
+		    _parentState.debug("Idle");
+		    _AIActionCounter = 0;
+		    if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
+		    {
+			    if (!_save.getDebugMode())
+			    {
+				    _endTurnRequested = true;
+				    statePushBack(null); // end AI turn
+			    }
+			    else
+			    {
+				    _save.selectNextPlayerUnit();
+				    _debugPlay = true;
+			    }
+		    }
+		    if (_save.getSelectedUnit() != null)
+		    {
+			    _parentState.updateSoldierInfo();
+			    getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+			    if (_save.getSelectedUnit().getId() <= unit.getId())
+			    {
+				    _AISecondMove = true;
+			    }
+		    }
+	    }
+    }
+
+    /**
+     * Tries to find an item and pick it up if possible.
+     */
+    void findItem(ref BattleAction action)
+    {
+	    // terrorists don't have hands.
+	    if (action.actor.getRankString() != "STR_LIVE_TERRORIST")
+	    {
+		    // pick the best available item
+		    BattleItem targetItem = surveyItems(action);
+		    // make sure it's worth taking
+		    if (targetItem != null && worthTaking(targetItem, action))
+		    {
+			    // if we're already standing on it...
+			    if (targetItem.getTile().getPosition() == action.actor.getPosition())
+			    {
+				    // try to pick it up
+				    if (takeItemFromGround(targetItem, action) == 0)
+				    {
+					    // if it isn't loaded or it is ammo
+					    if (targetItem.getAmmoItem() == null)
+					    {
+						    // try to load our weapon
+						    action.actor.checkAmmo();
+					    }
+				    }
+			    }
+			    else if (targetItem.getTile().getUnit() == null || targetItem.getTile().getUnit().isOut())
+			    {
+				    // if we're not standing on it, we should try to get to it.
+				    action.target = targetItem.getTile().getPosition();
+				    action.type = BattleActionType.BA_WALK;
+			    }
+		    }
+	    }
+    }
+
+    /**
+     * Picks the item up from the ground.
+     *
+     * At this point we've decided it's worth our while to grab this item, so we try to do just that.
+     * First we check to make sure we have time units, then that we have space (using horrifying logic)
+     * then we attempt to actually recover the item.
+     * @param item The item to attempt to take.
+     * @param action A pointer to the action being performed.
+     * @return 0 if successful, 1 for no TUs, 2 for not enough room, 3 for "won't fit" and -1 for "something went horribly wrong".
+     */
+    int takeItemFromGround(BattleItem item, BattleAction action)
+    {
+	    const int success = 0;
+	    const int notEnoughTimeUnits = 1;
+	    const int notEnoughSpace = 2;
+	    const int couldNotFit = 3;
+	    int freeSlots = 25;
+
+	    // make sure we have time units
+	    if (action.actor.getTimeUnits() < 6)
+	    {
+		    return notEnoughTimeUnits;
+	    }
+	    else
+	    {
+		    // check to make sure we have enough space by checking all the sizes of items in our inventory
+		    foreach (var i in action.actor.getInventory())
+		    {
+			    freeSlots -= i.getRules().getInventoryHeight() * i.getRules().getInventoryWidth();
+		    }
+		    if (freeSlots < item.getRules().getInventoryHeight() * item.getRules().getInventoryWidth())
+		    {
+			    return notEnoughSpace;
+		    }
+		    else
+		    {
+			    // check that the item will fit in our inventory, and if so, take it
+			    if (takeItem(item, action))
+			    {
+				    action.actor.spendTimeUnits(6);
+				    item.getTile().removeItem(item);
+				    return success;
+			    }
+			    else
+			    {
+				    return couldNotFit;
+			    }
+		    }
+	    }
+    }
+
+    /**
+     * Tries to fit an item into the unit's inventory, return false if you can't.
+     * @param item The item to attempt to take.
+     * @param action A pointer to the action being performed.
+     * @return Whether or not the item was successfully retrieved.
+     */
+    bool takeItem(BattleItem item, BattleAction action)
+    {
+	    bool placed = false;
+	    Mod.Mod mod = _parentState.getGame().getMod();
+	    switch (item.getRules().getBattleType())
+	    {
+	        case BattleType.BT_AMMO:
+		        // find equipped weapons that can be loaded with this ammo
+		        if (action.actor.getItem("STR_RIGHT_HAND") != null && action.actor.getItem("STR_RIGHT_HAND").getAmmoItem() == null)
+		        {
+			        if (action.actor.getItem("STR_RIGHT_HAND").setAmmoItem(item) == 0)
+			        {
+				        placed = true;
+			        }
+		        }
+		        else
+		        {
+			        for (int i = 0; i != 4; ++i)
+			        {
+				        if (action.actor.getItem("STR_BELT", i) == null)
+				        {
+					        item.moveToOwner(action.actor);
+					        item.setSlot(mod.getInventory("STR_BELT", true));
+					        item.setSlotX(i);
+					        placed = true;
+					        break;
+				        }
+			        }
+		        }
+		        break;
+	        case BattleType.BT_GRENADE:
+	        case BattleType.BT_PROXIMITYGRENADE:
+		        for (int i = 0; i != 4; ++i)
+		        {
+			        if (action.actor.getItem("STR_BELT", i) == null)
+			        {
+				        item.moveToOwner(action.actor);
+				        item.setSlot(mod.getInventory("STR_BELT", true));
+				        item.setSlotX(i);
+				        placed = true;
+				        break;
+			        }
+		        }
+		        break;
+	        case BattleType.BT_FIREARM:
+	        case BattleType.BT_MELEE:
+		        if (action.actor.getItem("STR_RIGHT_HAND") == null)
+		        {
+			        item.moveToOwner(action.actor);
+			        item.setSlot(mod.getInventory("STR_RIGHT_HAND", true));
+			        placed = true;
+		        }
+		        break;
+	        case BattleType.BT_MEDIKIT:
+	        case BattleType.BT_SCANNER:
+		        if (action.actor.getItem("STR_BACK_PACK") == null)
+		        {
+			        item.moveToOwner(action.actor);
+			        item.setSlot(mod.getInventory("STR_BACK_PACK", true));
+			        placed = true;
+		        }
+		        break;
+	        case BattleType.BT_MINDPROBE:
+		        if (action.actor.getItem("STR_LEFT_HAND") == null)
+		        {
+			        item.moveToOwner(action.actor);
+			        item.setSlot(mod.getInventory("STR_LEFT_HAND", true));
+			        placed = true;
+		        }
+		        break;
+	        default: break;
+	    }
+	    return placed;
+    }
+
+    /**
+     * Assesses whether this item is worth trying to pick up, taking into account how many units we see,
+     * whether or not the Weapon has ammo, and if we have ammo FOR it,
+     * or, if it's ammo, checks if we have the weapon to go with it,
+     * assesses the attraction value of the item and compares it with the distance to the object,
+     * then returns false anyway.
+     * @param item The item to attempt to take.
+     * @param action A pointer to the action being performed.
+     * @return false.
+     */
+    bool worthTaking(BattleItem item, BattleAction action)
+    {
+	    int worthToTake = 0;
+        var inventory = action.actor.getInventory();
+        var compatibleAmmo = item.getRules().getCompatibleAmmo();
+
+	    // don't even think about making a move for that gun if you can see a target, for some reason
+	    // (maybe this should check for enemies spotting the tile the item is on?)
+	    if (!action.actor.getVisibleUnits().Any())
+	    {
+		    // retrieve an insignificantly low value from the ruleset.
+		    worthToTake = item.getRules().getAttraction();
+
+		    // it's always going to be worth while to try and take a blaster launcher, apparently
+		    if (item.getRules().getWaypoints() == 0 && item.getRules().getBattleType() != BattleType.BT_AMMO)
+		    {
+			    // we only want weapons that HAVE ammo, or weapons that we have ammo FOR
+			    bool ammoFound = true;
+			    if (item.getAmmoItem() == null)
+			    {
+				    ammoFound = false;
+				    for (var i = 0; i < inventory.Count && !ammoFound; ++i)
+				    {
+					    if (inventory[i].getRules().getBattleType() == BattleType.BT_AMMO)
+					    {
+						    for (var j = 0; j < compatibleAmmo.Count && !ammoFound; ++j)
+						    {
+							    if (inventory[i].getRules().getName() == compatibleAmmo[j])
+							    {
+								    ammoFound = true;
+								    break;
+							    }
+						    }
+					    }
+				    }
+			    }
+			    if (!ammoFound)
+			    {
+				    return false;
+			    }
+		    }
+
+		    if (item.getRules().getBattleType() == BattleType.BT_AMMO)
+		    {
+			    // similar to the above, but this time we're checking if the ammo is suitable for a weapon we have.
+			    bool weaponFound = false;
+			    for (var i = 0; i < inventory.Count && !weaponFound; ++i)
+			    {
+				    if (inventory[i].getRules().getBattleType() == BattleType.BT_FIREARM)
+				    {
+                        var ammo = inventory[i].getRules().getCompatibleAmmo();
+					    for (var j = 0; j < ammo.Count && !weaponFound; ++j)
+					    {
+						    if (inventory[i].getRules().getName() == ammo[j])
+						    {
+							    weaponFound = true;
+							    break;
+						    }
+					    }
+				    }
+			    }
+			    if (!weaponFound)
+			    {
+				    return false;
+			    }
+		    }
+	    }
+
+	    if (worthToTake != 0)
+	    {
+		    // use bad logic to determine if we'll have room for the item
+		    int freeSlots = 25;
+		    foreach (var i in inventory)
+		    {
+			    freeSlots -= i.getRules().getInventoryHeight() * i.getRules().getInventoryWidth();
+		    }
+		    int size = item.getRules().getInventoryHeight() * item.getRules().getInventoryWidth();
+		    if (freeSlots < size)
+		    {
+			    return false;
+		    }
+	    }
+
+	    // return false for any item that we aren't standing directly on top of with an attraction value less than 6 (aka always)
+	    return (worthToTake - (_save.getTileEngine().distance(action.actor.getPosition(), item.getTile().getPosition())*2)) > 5;
+    }
+
+    /**
+     * Searches through items on the map that were dropped on an alien turn, then picks the most "attractive" one.
+     * @param action A pointer to the action being performed.
+     * @return The item to attempt to take.
+     */
+    BattleItem surveyItems(BattleAction action)
+    {
+	    var droppedItems = new List<BattleItem>();
+
+	    // first fill a vector with items on the ground that were dropped on the alien turn, and have an attraction value.
+	    foreach (var i in _save.getItems())
+	    {
+		    if (i.getSlot() != null && i.getSlot().getId() == "STR_GROUND" && i.getTile() != null && i.getTurnFlag() && i.getRules().getAttraction() != 0)
+		    {
+			    droppedItems.Add(i);
+		    }
+	    }
+
+	    BattleItem targetItem = null;
+	    int maxWorth = 0;
+
+	    // now select the most suitable candidate depending on attractiveness and distance
+	    // (are we still talking about items?)
+	    foreach (var i in droppedItems)
+	    {
+		    int currentWorth = i.getRules().getAttraction() / ((_save.getTileEngine().distance(action.actor.getPosition(), i.getTile().getPosition()) * 2)+1);
+		    if (currentWorth > maxWorth)
+		    {
+			    maxWorth = currentWorth;
+			    targetItem = i;
+		    }
+	    }
+
+	    return targetItem;
+    }
+
+    /**
+     * Checks if a unit has moved next to a proximity grenade.
+     * Checks one tile around the unit in every direction.
+     * For a large unit we check every tile it occupies.
+     * @param unit Pointer to a unit.
+     * @return True if a proximity grenade was triggered.
+     */
+    internal bool checkForProximityGrenades(BattleUnit unit)
+    {
+	    int size = unit.getArmor().getSize() - 1;
+	    for (int x = size; x >= 0; x--)
+	    {
+		    for (int y = size; y >= 0; y--)
+		    {
+			    for (int tx = -1; tx < 2; tx++)
+			    {
+				    for (int ty = -1; ty < 2; ty++)
+				    {
+					    Tile t = _save.getTile(unit.getPosition() + new Position(x,y,0) + new Position(tx,ty,0));
+					    if (t != null)
+					    {
+						    foreach (var i in t.getInventory())
+						    {
+							    if (i.getRules().getBattleType() == BattleType.BT_PROXIMITYGRENADE && i.getFuseTimer() == 0)
+							    {
+								    var p = new Position();
+								    p.x = t.getPosition().x*16 + 8;
+								    p.y = t.getPosition().y*16 + 8;
+								    p.z = t.getPosition().z*24 + t.getTerrainLevel();
+								    statePushNext(new ExplosionBState(this, p, i, i.getPreviousOwner()));
+								    getSave().removeItem(i);
+								    unit.setCache(null);
+								    getMap().cacheUnit(unit);
+								    return true;
+							    }
+						    }
+					    }
+				    }
+			    }
+		    }
+	    }
+	    return false;
+    }
+
+    /**
+     * Toggles the Kneel/Standup status of the unit.
+     * @param bu Pointer to a unit.
+     * @return If the action succeeded.
+     */
+    internal bool kneel(BattleUnit bu)
+    {
+	    int tu = bu.isKneeled()?8:4;
+	    if (bu.getType() == "SOLDIER" && !bu.isFloating() && ((!bu.isKneeled() && _save.getKneelReserved()) || checkReservedTU(bu, tu)))
+	    {
+		    if (bu.spendTimeUnits(tu))
+		    {
+			    bu.kneel(!bu.isKneeled());
+			    // kneeling or standing up can reveal new terrain or units. I guess.
+			    getTileEngine().calculateFOV(bu);
+			    getMap().cacheUnits();
+			    _parentState.updateSoldierInfo();
+			    getTileEngine().checkReactionFire(bu);
+			    return true;
+		    }
+		    else
+		    {
+			    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
+		    }
+	    }
+	    return false;
     }
 }

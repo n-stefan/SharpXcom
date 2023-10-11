@@ -22,8 +22,8 @@ namespace SharpXcom.Battlescape;
 struct OpenSetEntry
 {
     internal int _cost;
-    PathfindingNode _node;
-};
+    internal PathfindingNode _node;
+}
 
 /**
  * Helper class to compare entries through pointers.
@@ -52,4 +52,57 @@ internal class PathfindingOpenSet
      */
     ~PathfindingOpenSet() =>
         _queue.Clear();
+
+	/**
+	 * Places the node in the set.
+	 * If the node was already in the set, the previous entry is discarded.
+	 * It is the caller's responsibility to never re-add a node with a worse cost.
+	 * @param node A pointer to the node to add.
+	 */
+	internal void push(PathfindingNode node)
+	{
+		OpenSetEntry entry = new OpenSetEntry();
+		entry._node = node;
+		entry._cost = node.getTUCost(false) + node.getTUGuess();
+		if (node._openentry != null)
+			node._openentry.Value._node = 0;
+		node._openentry = entry;
+		_queue.Enqueue(entry, new EntryCompare());
+	}
+
+	/**
+	 * Gets the node with the least cost.
+	 * After this call, the node is no longer in the set. It is an error to call this when the set is empty.
+	 * @return A pointer to the node which had the least cost.
+	 */
+	internal PathfindingNode pop()
+	{
+		Debug.Assert(!empty());
+		OpenSetEntry entry = _queue.Peek();
+		PathfindingNode nd = entry._node;
+		_queue.Dequeue();
+		entry = default;
+		nd._openentry = null;
+
+		// Discarded entries might be visible now.
+		removeDiscarded();
+		return nd;
+	}
+
+	/// Is the set empty?
+	internal bool empty() =>
+		_queue.Count == 0;
+
+	/**
+	 * Keeps removing all discarded entries that have come to the top of the queue.
+	 */
+	void removeDiscarded()
+	{
+		while (_queue.Count != 0 && _queue.Peek()._node == null)
+		{
+			OpenSetEntry entry = _queue.Peek();
+			_queue.Dequeue();
+			entry = default;
+		}
+	}
 }

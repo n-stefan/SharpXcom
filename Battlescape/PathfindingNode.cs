@@ -32,7 +32,7 @@ internal class PathfindingNode
     /// Approximate cost to reach goal position.
     int _tuGuess;
     // Invasive field needed by PathfindingOpenSet
-    OpenSetEntry _openentry;
+    internal OpenSetEntry? _openentry;
 
     /**
      * Sets up a PathfindingNode.
@@ -46,11 +46,108 @@ internal class PathfindingNode
         _prevNode = null;
         _prevDir = 0;
         _tuGuess = 0;
-        _openentry = default;
+        _openentry = null;
     }
 
     /**
      * Deletes the PathfindingNode.
      */
     ~PathfindingNode() { }
+
+    /**
+     * Gets the TU cost.
+     * @param missile Is this a missile?
+     * @return The TU cost.
+     */
+    internal int getTUCost(bool missile)
+    {
+	    if (missile)
+		    return 0;
+	    else
+		    return _tuCost;
+    }
+
+    /**
+     * Gets the previous node.
+     * @return Pointer to the previous node.
+     */
+    internal PathfindingNode getPrevNode() =>
+	    _prevNode;
+
+    /**
+     * Gets the previous walking direction for how we got on this node.
+     * @return Previous vector.
+     */
+    internal int getPrevDir() =>
+	    _prevDir;
+
+    /**
+     * Gets the node position.
+     * @return Node position.
+     */
+    internal Position getPosition() =>
+	    _pos;
+
+    /**
+     * Gets the checked status of this node.
+     * @return True, if this node was checked.
+     */
+    internal bool isChecked() =>
+	    _checked;
+
+	/// Marks the node as checked.
+	internal void setChecked() =>
+        _checked = true;
+
+    /**
+     * Connects the node. This will connect the node to the previous node along the path to @a target
+     * and update the pathfinding information.
+     * @param tuCost The total cost of the path so far.
+     * @param prevNode The previous node along the path.
+     * @param prevDir The direction FROM the previous node.
+     * @param target The target position (used to update our guess cost).
+     */
+    internal void connect(int tuCost, PathfindingNode prevNode, int prevDir, Position target)
+    {
+	    _tuCost = tuCost;
+	    _prevNode = prevNode;
+	    _prevDir = prevDir;
+	    if (!inOpenSet()) // Otherwise we have this already.
+	    {
+		    Position d = target - _pos;
+		    d *= d;
+		    _tuGuess = (int)(4 * Math.Sqrt((double)(d.x + d.y + d.z)));
+	    }
+    }
+
+	/// Is this node already in a PathfindingOpenSet?
+	internal bool inOpenSet() =>
+        _openentry != null;
+
+    /**
+     * Resets the node.
+     */
+    internal void reset()
+    {
+	    _checked = false;
+	    _openentry = null;
+    }
+
+	/// Gets the approximate cost to reach the target position.
+	internal int getTUGuess() =>
+        _tuGuess;
+
+    /**
+     * Connects the node. This will connect the node to the previous node along the path.
+     * @param tuCost The total cost of the path so far.
+     * @param prevNode The previous node along the path.
+     * @param prevDir The direction FROM the previous node.
+     */
+    internal void connect(int tuCost, PathfindingNode prevNode, int prevDir)
+    {
+	    _tuCost = tuCost;
+	    _prevNode = prevNode;
+	    _prevDir = prevDir;
+	    _tuGuess = 0;
+    }
 }

@@ -235,4 +235,18 @@ internal class RuleSoldier : IRule
      */
     internal int getBuyCost() =>
 	    _costBuy;
+
+    /**
+     * Gets the death sounds for male soldiers.
+     * @return List of sound IDs.
+     */
+    internal List<int> getMaleDeathSounds() =>
+	    _deathSoundMale;
+
+    /**
+     * Gets the death sounds for female soldiers.
+     * @return List of sound IDs.
+     */
+    internal List<int> getFemaleDeathSounds() =>
+	    _deathSoundFemale;
 }

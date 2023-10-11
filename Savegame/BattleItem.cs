@@ -481,4 +481,12 @@ internal class BattleItem
 	    else
 		    return true;
     }
+
+    /**
+     * Gets the "dropped on non-player turn" flag. This is to determine whether or not
+     * aliens should attempt to pick this item up, as items dropped by the player may be "honey traps".
+     * @return True if the aliens dropped the item.
+     */
+    internal bool getTurnFlag() =>
+	    _droppedOnAlienTurn;
 }

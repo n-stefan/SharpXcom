@@ -134,4 +134,14 @@ internal class OptionsConfirmState : State
             btnNoClick(null);
         }
     }
+
+    /**
+     * Runs the countdown timer.
+     */
+    protected override void think()
+    {
+	    base.think();
+
+	    _timer.think(this, null);
+    }
 }

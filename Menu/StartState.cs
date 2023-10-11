@@ -235,7 +235,7 @@ internal class StartState : State
     /**
      * If the loading fails, it shows an error, otherwise moves on to the game.
      */
-    void think()
+    protected override void think()
     {
         base.think();
         _timer.think(this, null);

@@ -483,7 +483,7 @@ internal class fmopl
     static void OPL_STATUS_RESET(FM_OPL OPL, int flag)
     {
         /* reset status flag */
-        OPL.status &= (byte)~flag;
+        OPL.status = (byte)(OPL.status & ~flag);
         if ((OPL.status & 0x80) != 0)
         {
             if (!((OPL.status & OPL.statusmask) != 0))
@@ -508,7 +508,7 @@ internal class fmopl
             rate = OPL.freqbase;                       /* frequency rate */
             if (i < 60) rate *= 1.0 + (i & 3) * 0.25;       /* b0-1 : x1 , x1.25 , x1.5 , x1.75 */
             rate *= 1 << ((i >> 2) - 1);                        /* b2-5 : shift bit */
-            rate *= (double)(EG_ENT << ENV_BITS);
+            rate = (double)(rate * (EG_ENT << ENV_BITS));
             OPL.AR_TABLE[i] = (int)(rate / ARRATE);
             OPL.DR_TABLE[i] = (int)(rate / DRRATE);
         }
@@ -1005,7 +1005,7 @@ internal class fmopl
     static void OPL_STATUS_SET(FM_OPL OPL, int flag)
     {
         /* set status flag */
-        OPL.status |= (byte)flag;
+        OPL.status = (byte)(OPL.status | flag);
         if (!((OPL.status & 0x80) != 0))
         {
             if ((OPL.status & OPL.statusmask) != 0)

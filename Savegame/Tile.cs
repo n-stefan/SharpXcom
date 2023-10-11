@@ -411,8 +411,8 @@ internal class Tile
 	    serializeInt(ref buffer, serializationKey._fire, _fire);
 
         byte boolFields = (byte)((_discovered[0] ? 1 : 0) + (_discovered[1] ? 2 : 0) + (_discovered[2] ? 4 : 0));
-	    boolFields |= (byte)(isUfoDoorOpen(TilePart.O_WESTWALL) ? 8 : 0); // west
-	    boolFields |= (byte)(isUfoDoorOpen(TilePart.O_NORTHWALL) ? 0x10 : 0); // north?
+	    boolFields = (byte)(boolFields | (isUfoDoorOpen(TilePart.O_WESTWALL) ? 8 : 0)); // west
+	    boolFields = (byte)(boolFields | (isUfoDoorOpen(TilePart.O_NORTHWALL) ? 0x10 : 0)); // north?
         serializeInt(ref buffer, serializationKey.boolFields, boolFields);
     }
 
@@ -747,4 +747,59 @@ internal class Tile
      */
     internal bool getDangerous() =>
 	    _danger;
+
+    /**
+     * damage terrain - check against armor
+     * @param part Part to check.
+     * @param power Power of the damage.
+     * @param type the objective type for this mission we are checking against.
+     * @return bool Return true objective was destroyed
+     */
+    internal bool damage(TilePart part, int power, SpecialTileType type)
+    {
+	    bool objective = false;
+	    if (power >= _objects[(int)part].getArmor())
+		    objective = destroy(part, type);
+	    return objective;
+    }
+
+    /**
+     * Get explosive on this tile.
+     * @return explosive
+     */
+    internal int getExplosiveType() =>
+	    _explosiveType;
+
+    /**
+     * Get the tile visible flag.
+     * @return visibility
+     */
+    internal int getVisible() =>
+	    _visible;
+
+    /**
+     * adds a particle to this tile's internal storage buffer.
+     * @param particle the particle to add.
+     */
+    internal void addParticle(Particle particle) =>
+	    _particles.Add(particle);
+
+    /**
+     * Gets the tile's footstep sound.
+     * @param tileBelow
+     * @return sound ID
+     */
+    internal int getFootstepSound(Tile tileBelow)
+    {
+	    int sound = -1;
+
+	    if (_objects[(int)TilePart.O_FLOOR] != null)
+		    sound = _objects[(int)TilePart.O_FLOOR].getFootstepSound();
+	    if (_objects[(int)TilePart.O_OBJECT] != null && _objects[(int)TilePart.O_OBJECT].getBigWall() <= 1 && _objects[(int)TilePart.O_OBJECT].getFootstepSound() > -1)
+		    sound = _objects[(int)TilePart.O_OBJECT].getFootstepSound();
+	    if (_objects[(int)TilePart.O_FLOOR] == null && _objects[(int)TilePart.O_OBJECT] == null && tileBelow != null && tileBelow.getTerrainLevel() == -24)
+		    sound = tileBelow.getMapData(TilePart.O_OBJECT).getFootstepSound();
+
+	    return sound;
+    }
 }

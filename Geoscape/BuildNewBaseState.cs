@@ -335,4 +335,14 @@ internal class BuildNewBaseState : State
 	    _mousey = (int)Math.Floor(action.getAbsoluteYMouse());
 	    if (!_hoverTimer.isRunning()) _hoverTimer.start();
     }
+
+    /**
+     * Runs the globe rotation timer.
+     */
+    protected override void think()
+    {
+	    base.think();
+	    _globe.think();
+	    _hoverTimer.think(this, null);
+    }
 }

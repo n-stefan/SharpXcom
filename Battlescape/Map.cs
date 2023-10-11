@@ -431,4 +431,16 @@ internal class Map : InteractiveSurface
      */
     internal void resetCameraSmoothing() =>
 	    _smoothingEngaged = false;
+
+    /**
+     * Get the icon height.
+     */
+    internal int getIconHeight() =>
+	    _iconHeight;
+
+    /**
+     * Get the icon width.
+     */
+    internal int getIconWidth() =>
+	    _iconWidth;
 }

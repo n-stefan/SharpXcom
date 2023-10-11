@@ -279,11 +279,11 @@ internal class OptionsBattlescapeState : OptionsBaseState
         int mode = (int)PathPreview.PATH_NONE;
         if (_btnArrows.getPressed())
         {
-            mode |= (int)PathPreview.PATH_ARROWS;
+            mode = (int)(mode | (int)PathPreview.PATH_ARROWS);
         }
         if (_btnTuCost.getPressed())
         {
-            mode |= (int)PathPreview.PATH_TU_COST;
+            mode = (int)(mode | (int)PathPreview.PATH_TU_COST);
         }
         Options.battleNewPreviewPath = (PathPreview)mode;
     }

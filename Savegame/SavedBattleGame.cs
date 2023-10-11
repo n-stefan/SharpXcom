@@ -209,7 +209,7 @@ internal class SavedBattleGame
 	 * @return A unique index.
 	 */
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    int getTileIndex(Position pos) =>
+    internal int getTileIndex(Position pos) =>
         pos.z * _mapsize_y * _mapsize_x + pos.y * _mapsize_x + pos.x;
 
     /**
@@ -1492,7 +1492,7 @@ internal class SavedBattleGame
      * all directions around the tile are searched for a free tile to place the unit in.
      * If no free tile is found the unit stays unconscious.
      */
-    void reviveUnconsciousUnits()
+    internal void reviveUnconsciousUnits()
     {
 	    foreach (var i in getUnits())
 	    {
@@ -1655,4 +1655,104 @@ internal class SavedBattleGame
 	    }
 	    return string.Empty;
     }
+
+    /**
+     * is the AI allowed to cheat?
+     * @return true if cheating.
+     */
+    internal bool isCheating() =>
+	    _cheating;
+
+    /**
+     * @return the tilesearch vector for use in AI functions.
+     */
+    internal List<Position> getTileSearch() =>
+	    _tileSearch;
+
+    /**
+     * Finds a fitting node where a unit can patrol to.
+     * @param scout Is the unit scouting?
+     * @param unit Pointer to the unit (to get its position).
+     * @param fromNode Pointer to the node the unit is at.
+     * @return Pointer to the chosen node.
+     */
+    internal Node getPatrolNode(bool scout, BattleUnit unit, Node fromNode)
+    {
+	    var compliantNodes = new List<Node>();
+	    Node preferred = null;
+
+	    if (fromNode == null)
+	    {
+		    if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} This alien got lost. :("); }
+		    fromNode = getNodes()[RNG.generate(0, getNodes().Count - 1)];
+		    while (fromNode.isDummy())
+		    {
+			    fromNode = getNodes()[RNG.generate(0, getNodes().Count - 1)];
+		    }
+	    }
+
+	    // scouts roam all over while all others shuffle around to adjacent nodes at most:
+	    int end = scout ? getNodes().Count : fromNode.getNodeLinks().Count;
+
+	    for (int i = 0; i < end; ++i)
+	    {
+		    if (!scout && fromNode.getNodeLinks()[i] < 1) continue;
+
+		    Node n = getNodes()[scout ? i : fromNode.getNodeLinks()[i]];
+		    if ( !n.isDummy()																				        // don't consider dummy nodes.
+			    && (n.getFlags() > 0 || n.getRank() > 0 || scout)											        // for non-scouts we find a node with a desirability above 0
+			    && (!((n.getType() & Node.TYPE_SMALL) != 0) || unit.getArmor().getSize() == 1)					    // the small unit bit is not set or the unit is small
+			    && (!((n.getType() & Node.TYPE_FLYING) != 0) || unit.getMovementType() == MovementType.MT_FLY)		// the flying unit bit is not set or the unit can fly
+			    && !n.isAllocated()																		            // check if not allocated
+			        && !((n.getType() & Node.TYPE_DANGEROUS) != 0)													// don't go there if an alien got shot there; stupid behavior like that
+			    && setUnitPosition(unit, n.getPosition(), true)											            // check if not already occupied
+			    && getTile(n.getPosition()) != null && getTile(n.getPosition()).getFire() == 0						// you are not a firefighter; do not patrol into fire
+			    && (unit.getFaction() != UnitFaction.FACTION_HOSTILE || !getTile(n.getPosition()).getDangerous())	// aliens don't run into a grenade blast
+			            && (!scout || n != fromNode)																// scouts push forward
+			    && n.getPosition().x > 0 && n.getPosition().y > 0)
+		    {
+			    if (preferred == null
+				    || (unit.getRankInt() >=0 &&
+					    (int)preferred.getRank() == Node.nodeRank[unit.getRankInt(), 0] &&
+					    preferred.getFlags() < n.getFlags())
+				    || preferred.getFlags() < n.getFlags())
+			    {
+				    preferred = n;
+			    }
+			    compliantNodes.Add(n);
+		    }
+	    }
+
+	    if (!compliantNodes.Any())
+	    {
+		    if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} {(scout ? "Scout " : "Guard")} found on patrol node! XXX XXX XXX"); }
+		    if (unit.getArmor().getSize() > 1 && !scout)
+		    {
+			    return getPatrolNode(true, unit, fromNode); // move dammit
+		    }
+		    else
+			    return null;
+	    }
+
+	    if (scout)
+	    {
+		    // scout picks a random destination:
+		    return compliantNodes[RNG.generate(0, compliantNodes.Count - 1)];
+	    }
+	    else
+	    {
+		    if (preferred == null) return null;
+
+		    // non-scout patrols to highest value unoccupied node that's not fromNode
+		    if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Choosing node flagged {preferred.getFlags()}"); }
+		    return preferred;
+	    }
+    }
+
+    /**
+     * Gets all units in the battlescape that are falling.
+     * @return The falling units in the battlescape.
+     */
+    internal List<BattleUnit> getFallingUnits() =>
+	    _fallingUnits;
 }

@@ -64,7 +64,7 @@ internal class UfopaediaStartState : State
         int y = 50;
         uint numButtons = Math.Min((uint)_cats.Count, CAT_MAX_BUTTONS);
         if (numButtons > CAT_MIN_BUTTONS)
-            y -= (int)(13 * (numButtons - CAT_MIN_BUTTONS));
+            y = (int)(y - 13 * (numButtons - CAT_MIN_BUTTONS));
 
         _btnScrollUp = new ArrowButton(ArrowShape.ARROW_BIG_UP, 13, 14, 270, y);
         add(_btnScrollUp, "button1", "ufopaedia");
@@ -210,4 +210,13 @@ internal class UfopaediaStartState : State
             _btnSections[i].setText(tr(_cats[_offset + i]));
         }
     }
+
+	/**
+	 * Run timers.
+	 */
+	protected override void think()
+	{
+		base.think();
+		_timerScroll.think(this, null);
+	}
 }

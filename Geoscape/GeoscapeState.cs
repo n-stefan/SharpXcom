@@ -2371,4 +2371,42 @@ internal class GeoscapeState : State
 		    _txtDebug.setText(ss.ToString());
 	    }
     }
+
+    /**
+     * Runs the game timer and handles popups.
+     */
+    protected override void think()
+    {
+	    base.think();
+
+	    _zoomInEffectTimer.think(this, null);
+	    _zoomOutEffectTimer.think(this, null);
+	    _dogfightStartTimer.think(this, null);
+
+	    if (!_popups.Any() && !_dogfights.Any() && (!_zoomInEffectTimer.isRunning() || _zoomInEffectDone) && (!_zoomOutEffectTimer.isRunning() || _zoomOutEffectDone))
+	    {
+		    // Handle timers
+		    _gameTimer.think(this, null);
+	    }
+	    else
+	    {
+		    if (_dogfights.Any() || _minimizedDogfights != 0)
+		    {
+			    // If all dogfights are minimized rotate the globe, etc.
+			    if (_dogfights.Count == _minimizedDogfights)
+			    {
+				    _pause = false;
+				    _gameTimer.think(this, null);
+			    }
+			    _dogfightTimer.think(this, null);
+		    }
+		    if (_popups.Any())
+		    {
+			    // Handle popups
+			    _globe.rotateStop();
+			    _game.pushState(_popups.First());
+                _popups.RemoveAt(0);
+		    }
+	    }
+    }
 }

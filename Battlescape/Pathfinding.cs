@@ -196,7 +196,7 @@ internal class Pathfinding
 	 * @param missile Is this a guided missile?
 	 * @return TU cost or 255 if movement is impossible.
 	 */
-    int getTUCost(Position startPosition, int direction, out Position endPosition, BattleUnit unit, BattleUnit target, bool missile)
+    internal int getTUCost(Position startPosition, int direction, out Position endPosition, BattleUnit unit, BattleUnit target, bool missile)
     {
         _unit = unit;
         directionToVector(direction, out endPosition);
@@ -782,4 +782,489 @@ internal class Pathfinding
 	    if (!_path.Any()) return -1;
 	    return _path.Last();
     }
+
+    /**
+     * Calculates the shortest path.
+     * @param unit Unit taking the path.
+     * @param endPosition The position we want to reach.
+     * @param target Target of the path.
+     * @param maxTUCost Maximum time units the path can cost.
+     */
+    internal void calculate(BattleUnit unit, Position endPosition, BattleUnit target = null, int maxTUCost = 1000)
+    {
+	    _totalTUCost = 0;
+	    _path.Clear();
+	    // i'm DONE with these out of bounds errors.
+	    if (endPosition.x > _save.getMapSizeX() - unit.getArmor().getSize() || endPosition.y > _save.getMapSizeY() - unit.getArmor().getSize() || endPosition.x < 0 || endPosition.y < 0) return;
+
+	    bool sneak = Options.sneakyAI && unit.getFaction() == UnitFaction.FACTION_HOSTILE;
+
+	    Position startPosition = unit.getPosition();
+	    _movementType = unit.getMovementType();
+	    if (target != null && maxTUCost == -1)  // pathfinding for missile
+	    {
+		    _movementType = MovementType.MT_FLY;
+		    maxTUCost = 10000;
+	    }
+	    _unit = unit;
+
+	    Tile destinationTile = _save.getTile(endPosition);
+
+	    // check if destination is not blocked
+	    if (isBlocked(destinationTile, (int)TilePart.O_FLOOR, target) || isBlocked(destinationTile, (int)TilePart.O_OBJECT, target)) return;
+
+	    // the following check avoids that the unit walks behind the stairs if we click behind the stairs to make it go up the stairs.
+	    // it only works if the unit is on one of the 2 tiles on the stairs, or on the tile right in front of the stairs.
+	    if (isOnStairs(startPosition, endPosition))
+	    {
+		    endPosition.z++;
+		    destinationTile = _save.getTile(endPosition);
+	    }
+	    while (endPosition.z != _save.getMapSizeZ() && destinationTile.getTerrainLevel() == -24)
+	    {
+		    endPosition.z++;
+		    destinationTile = _save.getTile(endPosition);
+	    }
+	    // make sure we didn't just try to adjust the Z of our destination outside the map
+	    // this occurs in rare circumstances where an object has terrainLevel -24 on the top floor
+	    // and is considered passable terrain for whatever reason (usually bigwall type objects)
+	    if (endPosition.z == _save.getMapSizeZ())
+	    {
+		    return; // Icarus is a bad role model for XCom soldiers.
+	    }
+	    // check if we have floor, else lower destination (for non flying units only, because otherwise they never reached this place)
+	    while (canFallDown(destinationTile, _unit.getArmor().getSize()) && _movementType != MovementType.MT_FLY)
+	    {
+		    endPosition.z--;
+		    destinationTile = _save.getTile(endPosition);
+	    }
+	    // check if destination is not blocked
+	    if (isBlocked(destinationTile, (int)TilePart.O_FLOOR, target) || isBlocked(destinationTile, (int)TilePart.O_OBJECT, target)) return;
+	    int size = unit.getArmor().getSize()-1;
+	    if (size >= 1)
+	    {
+		    int its = 0;
+		    int[] dir = {4,2,3};
+		    for (int x = 0; x <= size; x += size)
+		    {
+			    for (int y = 0; y <= size; y += size)
+			    {
+				    if (x != 0 || y != 0)
+				    {
+					    Tile checkTile = _save.getTile(endPosition + new Position(x, y, 0));
+					    if ((isBlocked(destinationTile, checkTile, dir[its], unit) &&
+						    isBlocked(destinationTile, checkTile, dir[its], target))||
+						    (checkTile.getUnit() != null &&
+						    checkTile.getUnit() != unit &&
+						    checkTile.getUnit().getVisible() &&
+						    checkTile.getUnit() != target))
+						    return;
+					    if (x != 0 && y != 0)
+					    {
+						    if ((checkTile.getMapData(TilePart.O_NORTHWALL) != null && checkTile.getMapData(TilePart.O_NORTHWALL).isDoor()) ||
+							    (checkTile.getMapData(TilePart.O_WESTWALL) != null && checkTile.getMapData(TilePart.O_WESTWALL).isDoor()))
+							    return;
+					    }
+					    ++its;
+				    }
+			    }
+		    }
+	    }
+	    // Strafing move allowed only to adjacent squares on same z. "Same z" rule mainly to simplify walking render.
+	    _strafeMove = Options.strafe && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0 && (startPosition.z == endPosition.z) &&
+							    (Math.Abs(startPosition.x - endPosition.x) <= 1) && (Math.Abs(startPosition.y - endPosition.y) <= 1);
+
+	    // look for a possible fast and accurate bresenham path and skip A*
+	    if (startPosition.z == endPosition.z && bresenhamPath(startPosition, endPosition, target, sneak))
+	    {
+		    _path.Reverse(); //paths are stored in reverse order
+		    return;
+	    }
+	    else
+	    {
+		    abortPath(); // if bresenham failed, we shouldn't keep the path it was attempting, in case A* fails too.
+	    }
+	    // Now try through A*.
+	    if (!aStarPath(startPosition, endPosition, target, sneak, maxTUCost))
+	    {
+		    abortPath();
+	    }
+    }
+
+    /**
+     * Determines whether the unit is going up a stairs.
+     * @param startPosition The position to start from.
+     * @param endPosition The position we wanna reach.
+     * @return True if the unit is going up a stairs.
+     */
+    bool isOnStairs(Position startPosition, Position endPosition)
+    {
+	    //condition 1 : endposition has to the south a terrainlevel -16 object (upper part of the stairs)
+	    if (_save.getTile(endPosition + new Position(0, 1, 0)) != null && _save.getTile(endPosition + new Position(0, 1, 0)).getTerrainLevel() == -16)
+	    {
+		    // condition 2 : one position further to the south there has to be a terrainlevel -8 object (lower part of the stairs)
+		    if (_save.getTile(endPosition + new Position(0, 2, 0)) != null && _save.getTile(endPosition + new Position(0, 2, 0)).getTerrainLevel() != -8)
+		    {
+			    return false;
+		    }
+
+		    // condition 3 : the start position has to be on either of the 3 tiles to the south of the endposition
+		    if (startPosition == endPosition + new Position(0, 1, 0) || startPosition == endPosition + new Position(0, 2, 0) || startPosition == endPosition + new Position(0, 3, 0))
+		    {
+			    return true;
+		    }
+	    }
+
+	    // same for the east-west oriented stairs.
+	    if (_save.getTile(endPosition + new Position(1, 0, 0)) != null && _save.getTile(endPosition + new Position(1, 0, 0)).getTerrainLevel() == -16)
+	    {
+		    if (_save.getTile(endPosition + new Position(2, 0, 0)) != null && _save.getTile(endPosition + new Position(2, 0, 0)).getTerrainLevel() != -8)
+		    {
+			    return false;
+		    }
+		    if (startPosition == endPosition + new Position(1, 0, 0) || startPosition == endPosition + new Position(2, 0, 0) || startPosition == endPosition + new Position(3, 0, 0))
+		    {
+			    return true;
+		    }
+	    }
+
+	    //TFTD stairs 1 : endposition has to the south a terrainlevel -18 object (upper part of the stairs)
+	    if (_save.getTile(endPosition + new Position(0, 1, 0)) != null && _save.getTile(endPosition + new Position(0, 1, 0)).getTerrainLevel() == -18)
+	    {
+		    // condition 2 : one position further to the south there has to be a terrainlevel -8 object (lower part of the stairs)
+		    if (_save.getTile(endPosition + new Position(0, 2, 0)) != null && _save.getTile(endPosition + new Position(0, 2, 0)).getTerrainLevel() != -12)
+		    {
+			    return false;
+		    }
+
+		    // condition 3 : the start position has to be on either of the 3 tiles to the south of the endposition
+		    if (startPosition == endPosition + new Position(0, 1, 0) || startPosition == endPosition + new Position(0, 2, 0) || startPosition == endPosition + new Position(0, 3, 0))
+		    {
+			    return true;
+		    }
+	    }
+
+	    // same for the east-west oriented stairs.
+	    if (_save.getTile(endPosition + new Position(1, 0, 0)) != null && _save.getTile(endPosition + new Position(1, 0, 0)).getTerrainLevel() == -18)
+	    {
+		    if (_save.getTile(endPosition + new Position(2, 0, 0)) != null && _save.getTile(endPosition + new Position(2, 0, 0)).getTerrainLevel() != -12)
+		    {
+			    return false;
+		    }
+		    if (startPosition == endPosition + new Position(1, 0, 0) || startPosition == endPosition + new Position(2, 0, 0) || startPosition == endPosition + new Position(3, 0, 0))
+		    {
+			    return true;
+		    }
+	    }
+	    return false;
+    }
+
+    /**
+     * Aborts the current path. Clears the path vector.
+     */
+    internal void abortPath()
+    {
+	    _totalTUCost = 0;
+	    _path.Clear();
+    }
+
+    /**
+     * Calculates the shortest path using a simple A-Star algorithm.
+     * The unit information and movement type must have already been set.
+     * The path information is set only if a valid path is found.
+     * @param startPosition The position to start from.
+     * @param endPosition The position we want to reach.
+     * @param target Target of the path.
+     * @param sneak Is the unit sneaking?
+     * @param maxTUCost Maximum time units the path can cost.
+     * @return True if a path exists, false otherwise.
+     */
+    bool aStarPath(Position startPosition, Position endPosition, BattleUnit target, bool sneak, int maxTUCost)
+    {
+	    // reset every node, so we have to check them all
+	    foreach (var it in _nodes)
+		    it.reset();
+
+	    // start position is the first one in our "open" list
+	    PathfindingNode start = getNode(startPosition);
+	    start.connect(0, null, 0, endPosition);
+	    var openList = new PathfindingOpenSet();
+	    openList.push(start);
+	    bool missile = (target != null && maxTUCost == 10000);
+	    // if the open list is empty, we've reached the end
+	    while (!openList.empty())
+	    {
+		    PathfindingNode currentNode = openList.pop();
+		    Position currentPos = currentNode.getPosition();
+		    currentNode.setChecked();
+		    if (currentPos == endPosition) // We found our target.
+		    {
+			    _path.Clear();
+			    PathfindingNode pf = currentNode;
+			    while (pf.getPrevNode() != null)
+			    {
+				    _path.Add(pf.getPrevDir());
+				    pf = pf.getPrevNode();
+			    }
+			    return true;
+		    }
+
+		    // Try all reachable neighbours.
+		    for (int direction = 0; direction < 10; direction++)
+		    {
+			    Position nextPos;
+			    int tuCost = getTUCost(currentPos, direction, out nextPos, _unit, target, missile);
+			    if (tuCost >= 255) // Skip unreachable / blocked
+				    continue;
+			    if (sneak && _save.getTile(nextPos).getVisible() != 0) tuCost *= 2; // avoid being seen
+			    PathfindingNode nextNode = getNode(nextPos);
+			    if (nextNode.isChecked()) // Our algorithm means this node is already at minimum cost.
+				    continue;
+			    _totalTUCost = currentNode.getTUCost(missile) + tuCost;
+			    // If this node is unvisited or has only been visited from inferior paths...
+			    if ((!nextNode.inOpenSet() || nextNode.getTUCost(missile) > _totalTUCost) && _totalTUCost <= maxTUCost)
+			    {
+				    nextNode.connect(_totalTUCost, currentNode, direction, endPosition);
+				    openList.push(nextNode);
+			    }
+		    }
+	    }
+	    // Unable to reach the target
+	    return false;
+    }
+
+    /**
+     * Gets the Node on a given position on the map.
+     * @param pos Position.
+     * @return Pointer to node.
+     */
+    PathfindingNode getNode(Position pos) =>
+	    _nodes[_save.getTileIndex(pos)];
+
+    /**
+     * Calculates the shortest path using Brensenham path algorithm.
+     * @note This only works in the X/Y plane.
+     * @param origin The position to start from.
+     * @param target The position we want to reach.
+     * @param targetUnit Target of the path.
+     * @param sneak Is the unit sneaking?
+     * @param maxTUCost Maximum time units the path can cost.
+     * @return True if a path exists, false otherwise.
+     */
+    bool bresenhamPath(Position origin, Position target, BattleUnit targetUnit, bool sneak = false, int maxTUCost = 1000)
+    {
+	    int[] xd = {0, 1, 1, 1, 0, -1, -1, -1};
+	    int[] yd = {-1, -1, 0, 1, 1, 1, 0, -1};
+
+	    int x, x0, x1, delta_x, step_x;
+	    int y, y0, y1, delta_y, step_y;
+	    int z, z0, z1, delta_z, step_z;
+	    int swap_xy, swap_xz;
+	    int drift_xy, drift_xz;
+	    int cx, cy, cz;
+	    Position lastPoint = new Position(origin);
+	    int dir;
+	    int lastTUCost = -1;
+	    Position nextPoint;
+	    _totalTUCost = 0;
+
+	    //start and end points
+	    x0 = origin.x;	 x1 = target.x;
+	    y0 = origin.y;	 y1 = target.y;
+	    z0 = origin.z;	 z1 = target.z;
+
+	    //'steep' xy Line, make longest delta x plane
+	    swap_xy = Convert.ToInt32(Math.Abs(y1 - y0) > Math.Abs(x1 - x0));
+	    if (swap_xy != 0)
+	    {
+            (y0, x0) = (x0, y0);
+            (y1, x1) = (x1, y1);
+	    }
+
+	    //do same for xz
+	    swap_xz = Convert.ToInt32(Math.Abs(z1 - z0) > Math.Abs(x1 - x0));
+	    if (swap_xz != 0)
+	    {
+            (z0, x0) = (x0, z0);
+            (z1, x1) = (x1, z1);
+	    }
+
+	    //delta is Length in each plane
+	    delta_x = Math.Abs(x1 - x0);
+	    delta_y = Math.Abs(y1 - y0);
+	    delta_z = Math.Abs(z1 - z0);
+
+	    //drift controls when to step in 'shallow' planes
+	    //starting value keeps Line centred
+	    drift_xy  = (delta_x / 2);
+	    drift_xz  = (delta_x / 2);
+
+	    //direction of line
+	    step_x = 1;  if (x0 > x1) {  step_x = -1; }
+	    step_y = 1;  if (y0 > y1) {  step_y = -1; }
+	    step_z = 1;  if (z0 > z1) {  step_z = -1; }
+
+	    //starting point
+	    y = y0;
+	    z = z0;
+
+	    //step through longest delta (which we have swapped to x)
+	    for (x = x0; x != (x1+step_x); x += step_x)
+	    {
+		    //copy position
+		    cx = x;	cy = y;	cz = z;
+
+            //unswap (in reverse)
+            if (swap_xz != 0) (cz, cx) = (cx, cz);
+            if (swap_xy != 0) (cy, cx) = (cx, cy);
+
+		    if (x != x0 || y != y0 || z != z0)
+		    {
+			    Position realNextPoint = new Position(cx, cy, cz);
+			    nextPoint = realNextPoint;
+			    // get direction
+			    for (dir = 0; dir < 8; ++dir)
+			    {
+				    if (xd[dir] == cx-lastPoint.x && yd[dir] == cy-lastPoint.y) break;
+			    }
+			    int tuCost = getTUCost(lastPoint, dir, out nextPoint, _unit, targetUnit, (targetUnit != null && maxTUCost == 10000));
+
+			    if (sneak && _save.getTile(nextPoint).getVisible() != 0) return false;
+
+                // delete the following
+                bool isDiagonal = (dir & 1) != 0;
+			    int lastTUCostDiagonal = lastTUCost + lastTUCost / 2;
+			    int tuCostDiagonal = tuCost + tuCost / 2;
+			    if (nextPoint == realNextPoint && tuCost < 255 && (tuCost == lastTUCost || (isDiagonal && tuCost == lastTUCostDiagonal) || (!isDiagonal && tuCostDiagonal == lastTUCost) || lastTUCost == -1)
+				    && !isBlocked(_save.getTile(lastPoint), _save.getTile(nextPoint), dir, targetUnit))
+			    {
+				    _path.Add(dir);
+			    }
+			    else
+			    {
+				    return false;
+			    }
+			    if (targetUnit == null && tuCost != 255)
+			    {
+				    lastTUCost = tuCost;
+				    _totalTUCost += tuCost;
+			    }
+			    lastPoint = new Position(cx, cy, cz);
+		    }
+		    //update progress in other planes
+		    drift_xy = drift_xy - delta_y;
+		    drift_xz = drift_xz - delta_z;
+
+		    //step in y plane
+		    if (drift_xy < 0)
+		    {
+			    y = y + step_y;
+			    drift_xy = drift_xy + delta_x;
+		    }
+
+		    //same in z
+		    if (drift_xz < 0)
+		    {
+			    z = z + step_z;
+			    drift_xz = drift_xz + delta_x;
+		    }
+	    }
+
+	    return true;
+    }
+
+    /**
+     * Locates all tiles reachable to @a *unit with a TU cost no more than @a tuMax.
+     * Uses Dijkstra's algorithm.
+     * @param unit Pointer to the unit.
+     * @param tuMax The maximum cost of the path to each tile.
+     * @return An array of reachable tiles, sorted in ascending order of cost. The first tile is the start location.
+     */
+    internal List<int> findReachable(BattleUnit unit, int tuMax)
+    {
+	    Position start = unit.getPosition();
+	    int energyMax = unit.getEnergy();
+	    foreach (var it in _nodes)
+	    {
+		    it.reset();
+	    }
+	    PathfindingNode startNode = getNode(start);
+	    startNode.connect(0, null, 0);
+	    var unvisited = new PathfindingOpenSet();
+	    unvisited.push(startNode);
+	    var reachable = new List<PathfindingNode>();
+	    while (!unvisited.empty())
+	    {
+		    PathfindingNode currentNode = unvisited.pop();
+		    Position currentPos = currentNode.getPosition();
+
+		    // Try all reachable neighbours.
+		    for (int direction = 0; direction < 10; direction++)
+		    {
+			    Position nextPos;
+			    int tuCost = getTUCost(currentPos, direction, out nextPos, unit, null, false);
+			    if (tuCost == 255) // Skip unreachable / blocked
+				    continue;
+			    if (currentNode.getTUCost(false) + tuCost > tuMax ||
+				    (currentNode.getTUCost(false) + tuCost) / 2 > energyMax) // Run out of TUs/Energy
+				    continue;
+			    PathfindingNode nextNode = getNode(nextPos);
+			    if (nextNode.isChecked()) // Our algorithm means this node is already at minimum cost.
+				    continue;
+			    int totalTuCost = currentNode.getTUCost(false) + tuCost;
+			    // If this node is unvisited or visited from a better path.
+			    if (!nextNode.inOpenSet() || nextNode.getTUCost(false) > totalTuCost)
+			    {
+				    nextNode.connect(totalTuCost, currentNode, direction);
+				    unvisited.push(nextNode);
+			    }
+		    }
+		    currentNode.setChecked();
+		    reachable.Add(currentNode);
+	    }
+	    reachable.Sort((a, b) => a.getTUCost(false) - b.getTUCost(false));
+	    var tiles = new List<int>(reachable.Count);
+	    foreach (var it in reachable)
+	    {
+		    tiles.Add(_save.getTileIndex(it.getPosition()));
+	    }
+	    return tiles;
+    }
+
+    /**
+     * Gets a reference to the current path.
+     * @return the actual path.
+     */
+    internal List<int> getPath() =>
+	    _path;
+
+	/// Gets _totalTUCost; finds out whether we can hike somewhere in this turn or not.
+	internal int getTotalTUCost() =>
+        _totalTUCost;
+
+    /**
+     * Makes a copy of the current path.
+     * @return a copy of the path.
+     */
+    internal List<int> copyPath() =>
+	    _path;
+
+    /**
+     * Dequeues the next path direction. Ie returns the direction and removes it from queue.
+     * @return Direction where the unit needs to go next, -1 if it's the end of the path.
+     */
+    internal int dequeuePath()
+    {
+	    if (!_path.Any()) return -1;
+	    int last_element = _path.Last();
+	    _path.RemoveAt(_path.Count - 1);
+	    return last_element;
+    }
+
+    /**
+     * Gets the strafe move setting.
+     * @return Strafe move.
+     */
+    internal bool getStrafeMove() =>
+	    _strafeMove;
 }

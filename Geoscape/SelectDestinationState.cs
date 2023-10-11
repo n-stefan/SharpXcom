@@ -286,4 +286,13 @@ internal class SelectDestinationState : State
 	    base.init();
 	    _globe.rotateStop();
     }
+
+    /**
+     * Runs the globe rotation timer.
+     */
+    protected override void think()
+    {
+	    base.think();
+	    _globe.think();
+    }
 }

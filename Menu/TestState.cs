@@ -118,4 +118,14 @@ internal class TestState : State
 	}
 
 	~TestState() { }
+
+	protected override void think()
+	{
+		base.think();
+
+		/*
+		_text->setText(tr(_i));
+		_i++;
+		*/
+	}
 }

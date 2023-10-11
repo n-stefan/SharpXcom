@@ -459,7 +459,7 @@ internal class TileEngine
      * @param tile The tile to check for
      * @return True if visible.
      */
-    bool visible(BattleUnit currentUnit, Tile tile)
+    internal bool visible(BattleUnit currentUnit, Tile tile)
     {
         // if there is no tile or no unit, we can't see it
         if (tile == null || tile.getUnit() == null)
@@ -536,7 +536,7 @@ internal class TileEngine
      * @param currentUnit The watcher.
      * @return Approximately an eyeball voxel.
      */
-    Position getSightOriginVoxel(BattleUnit currentUnit)
+    internal Position getSightOriginVoxel(BattleUnit currentUnit)
     {
         // determine the origin and target voxels for the raytrace
         Position originVoxel;
@@ -2167,7 +2167,7 @@ internal class TileEngine
      * @param target The target point of the action.
      * @return direction.
      */
-    int getDirectionTo(Position origin, Position target)
+    internal int getDirectionTo(Position origin, Position target)
     {
 	    double ox = target.x - origin.x;
 	    double oy = target.y - origin.y;
@@ -2220,7 +2220,7 @@ internal class TileEngine
      * @param voxelType The type of voxel at which this parabola terminates.
      * @return Validity of action.
      */
-    internal bool validateThrow(BattleAction action, Position originVoxel, Position targetVoxel, ref double curve, ref int voxelType, bool forced)
+    internal bool validateThrow(BattleAction action, Position originVoxel, Position targetVoxel, ref double curve /*= 0*/, ref int voxelType /*= 0*/, bool forced = false)
     {
 	    bool foundCurve = false;
 	    double curvature = 0.5;
@@ -2824,7 +2824,7 @@ internal class TileEngine
      * @param dir Direction to check.
      * @return True when the range is valid.
      */
-    bool validMeleeRange(BattleUnit attacker, BattleUnit target, int dir) =>
+    internal bool validMeleeRange(BattleUnit attacker, BattleUnit target, int dir) =>
 	    validMeleeRange(attacker.getPosition(), dir, attacker, target, out _);
 
     /**
@@ -2836,7 +2836,7 @@ internal class TileEngine
      * @param dest Destination position.
      * @return True when the range is valid.
      */
-    bool validMeleeRange(Position pos, int direction, BattleUnit attacker, BattleUnit target, out Position dest, bool preferEnemy = true)
+    internal bool validMeleeRange(Position pos, int direction, BattleUnit attacker, BattleUnit target, out Position dest, bool preferEnemy = true)
     {
         dest = null;
 	    if (direction < 0 || direction > 7)
@@ -2984,5 +2984,109 @@ internal class TileEngine
 		    }
 	    }
 	    return false;
+    }
+
+    /**
+     * Handles bullet/weapon hits.
+     *
+     * A bullet/weapon hits a voxel.
+     * @param center Center of the explosion in voxelspace.
+     * @param power Power of the explosion.
+     * @param type The damage type of the explosion.
+     * @param unit The unit that caused the explosion.
+     * @return The Unit that got hit.
+     */
+    internal BattleUnit hit(Position center, int power, ItemDamageType type, BattleUnit unit)
+    {
+	    Tile tile = _save.getTile(new Position(center.x/16, center.y/16, center.z/24));
+	    if (tile == null)
+	    {
+		    return null;
+	    }
+
+	    BattleUnit bu = tile.getUnit();
+	    int adjustedDamage = 0;
+	    voxelCheckFlush();
+	    var part = voxelCheck(center, unit);
+	    if (part >= VoxelType.V_FLOOR && part <= VoxelType.V_OBJECT)
+	    {
+		    // power 25% to 75%
+		    int rndPower = RNG.generate(power/4, (power*3)/4);
+		    if (part == VoxelType.V_OBJECT && rndPower >= tile.getMapData(TilePart.O_OBJECT).getArmor() &&
+			    _save.getMissionType() == "STR_BASE_DEFENSE" && tile.getMapData(TilePart.O_OBJECT).isBaseModule())
+		    {
+			    var moduleMap = _save.getModuleMap()[(center.x/16)/10][(center.y/16)/10];
+			    _save.getModuleMap()[(center.x/16)/10][(center.y/16)/10] = KeyValuePair.Create(moduleMap.Key, moduleMap.Value - 1);
+		    }
+		    if (tile.damage((TilePart)part, rndPower, _save.getObjectiveType()))
+		    {
+			    _save.addDestroyedObjective();
+		    }
+	    }
+	    else if (part == VoxelType.V_UNIT)
+	    {
+		    int dmgRng = type == ItemDamageType.DT_HE ? Mod.Mod.EXPLOSIVE_DAMAGE_RANGE : Mod.Mod.DAMAGE_RANGE;
+		    int min = power * (100 - dmgRng) / 100;
+		    int max = power * (100 + dmgRng) / 100;
+		    int rndPower = RNG.generate(min, max);
+		    int verticaloffset = 0;
+		    if (bu == null)
+		    {
+			    // it's possible we have a unit below the actual tile, when he stands on a stairs and sticks his head out to the next tile
+			    Tile below = _save.getTile(new Position(center.x/16, center.y/16, (center.z/24)-1));
+			    if (below != null)
+			    {
+				    BattleUnit buBelow = below.getUnit();
+				    if (buBelow != null)
+				    {
+					    bu = buBelow;
+					    verticaloffset = 24;
+				    }
+			    }
+		    }
+		    if (bu != null && bu.getHealth() != 0 && bu.getStunlevel() < bu.getHealth())
+		    {
+			    int sz = bu.getArmor().getSize() * 8;
+			    Position target = bu.getPosition() * new Position(16,16,24) + new Position(sz,sz, bu.getFloatHeight() - tile.getTerrainLevel());
+			    Position relative = (center - target) - new Position(0,0,verticaloffset);
+			    int wounds = bu.getFatalWounds();
+
+			    adjustedDamage = bu.damage(relative, rndPower, type);
+
+			    // if it's going to bleed to death and it's not a player, give credit for the kill.
+			    if (unit != null && bu.getFaction() != UnitFaction.FACTION_PLAYER && wounds < bu.getFatalWounds())
+			    {
+				    bu.killedBy(unit.getFaction());
+			    }
+			    int bravery = (110 - bu.getBaseStats().bravery) / 10;
+			    int modifier = bu.getFaction() == UnitFaction.FACTION_PLAYER ? _save.getMoraleModifier() : 100;
+			    int morale_loss = 100 * (adjustedDamage * bravery / 10) / modifier;
+
+			    bu.moraleChange(-morale_loss);
+
+			    if ((bu.getSpecialAbility() == (int)SpecialAbility.SPECAB_EXPLODEONDEATH || bu.getSpecialAbility() == (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE) && !bu.isOut() && (bu.getHealth() == 0 || bu.getStunlevel() >= bu.getHealth()))
+			    {
+				    if (type != ItemDamageType.DT_STUN && type != ItemDamageType.DT_HE && type != ItemDamageType.DT_IN && type != ItemDamageType.DT_MELEE)
+				    {
+					    Position p = new Position(bu.getPosition().x * 16, bu.getPosition().y * 16, bu.getPosition().z * 24);
+					    _save.getBattleGame().statePushNext(new ExplosionBState(_save.getBattleGame(), p, null, bu, null));
+				    }
+			    }
+
+			    if (bu.getOriginalFaction() == UnitFaction.FACTION_HOSTILE &&
+				    unit != null &&
+				    unit.getOriginalFaction() == UnitFaction.FACTION_PLAYER &&
+				    type != ItemDamageType.DT_NONE &&
+				    _save.getBattleGame().getCurrentAction().type != BattleActionType.BA_HIT)
+			    {
+				    unit.addFiringExp();
+			    }
+		    }
+	    }
+	    applyGravity(tile);
+	    calculateSunShading(); // roofs could have been destroyed
+	    calculateTerrainLighting(); // fires could have been started
+	    calculateFOV(center / new Position(16,16,24));
+	    return bu;
     }
 }

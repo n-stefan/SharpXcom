@@ -77,7 +77,7 @@ internal class BattleUnit
     bool _hitByFire, _hitByAnything;
     BattleUnit _charging;
     int _faceDirection; // used only during strafeing moves
-    Position lastCover;
+    internal Position lastCover;
 
     // static data
     string _type;
@@ -506,7 +506,7 @@ internal class BattleUnit
         return getActionTUs(actionType, item.getRules());
     }
 
-    int getActionTUs(BattleActionType actionType, RuleItem item)
+    internal int getActionTUs(BattleActionType actionType, RuleItem item)
     {
         if (item == null)
         {
@@ -619,7 +619,7 @@ internal class BattleUnit
      * @param quickest Whether to get the quickest weapon, default true
      * @return Pointer to item.
      */
-    internal BattleItem getMainHandWeapon(bool quickest)
+    internal BattleItem getMainHandWeapon(bool quickest = true)
     {
 	    BattleItem weaponRightHand = getItem("STR_RIGHT_HAND");
         BattleItem weaponLeftHand = getItem("STR_LEFT_HAND");
@@ -1360,12 +1360,12 @@ internal class BattleUnit
 	    _stats.psiSkill += adjustment.statGrowth.psiSkill * adjustment.growthMultiplier * _stats.psiSkill / 100;
 	    _stats.melee += adjustment.statGrowth.melee * adjustment.growthMultiplier * _stats.melee / 100;
 
-	    _stats.firing *= (int)adjustment.aimAndArmorMultiplier;
-	    _maxArmor[0] *= (int)adjustment.aimAndArmorMultiplier;
-	    _maxArmor[1] *= (int)adjustment.aimAndArmorMultiplier;
-	    _maxArmor[2] *= (int)adjustment.aimAndArmorMultiplier;
-	    _maxArmor[3] *= (int)adjustment.aimAndArmorMultiplier;
-	    _maxArmor[4] *= (int)adjustment.aimAndArmorMultiplier;
+	    _stats.firing = (int)(_stats.firing * adjustment.aimAndArmorMultiplier);
+	    _maxArmor[0] = (int)(_maxArmor[0] * adjustment.aimAndArmorMultiplier);
+	    _maxArmor[1] = (int)(_maxArmor[1] * adjustment.aimAndArmorMultiplier);
+	    _maxArmor[2] = (int)(_maxArmor[2] * adjustment.aimAndArmorMultiplier);
+	    _maxArmor[3] = (int)(_maxArmor[3] * adjustment.aimAndArmorMultiplier);
+	    _maxArmor[4] = (int)(_maxArmor[4] * adjustment.aimAndArmorMultiplier);
     }
 
     /**
@@ -1883,7 +1883,7 @@ internal class BattleUnit
         // suffer from fire
         if (!_hitByFire && _fire > 0)
         {
-            _health -= (int)(_armor.getDamageModifier(ItemDamageType.DT_IN) * RNG.generate(Mod.Mod.FIRE_DAMAGE_RANGE[0], Mod.Mod.FIRE_DAMAGE_RANGE[1]));
+            _health = (int)(_health - _armor.getDamageModifier(ItemDamageType.DT_IN) * RNG.generate(Mod.Mod.FIRE_DAMAGE_RANGE[0], Mod.Mod.FIRE_DAMAGE_RANGE[1]));
             _fire--;
         }
 
@@ -1923,7 +1923,7 @@ internal class BattleUnit
     /**
      * Recovers a unit's TUs and energy, taking a number of factors into consideration.
      */
-    void recoverTimeUnits()
+    internal void recoverTimeUnits()
     {
         // recover TUs
         int TURecovery = getBaseStats().tu;
@@ -2308,7 +2308,7 @@ internal class BattleUnit
      * @param point Position to look at.
      * @param turret True to turn the turret, false to turn the unit.
      */
-    internal void lookAt(Position point, bool turret)
+    internal void lookAt(Position point, bool turret = false)
     {
 	    int dir = directionTo(point);
 
@@ -2593,4 +2593,343 @@ internal class BattleUnit
      */
     internal void setSpawnUnit(string spawnUnit) =>
 	    _spawnUnit = spawnUnit;
+
+    /**
+     * Get sound to play when unit aggros.
+     * @return sound
+     */
+    internal int getAggroSound() =>
+	    _aggroSound;
+
+    /**
+     * Get the units we are charging towards.
+     * @return Charge Target
+     */
+    internal BattleUnit getCharging() =>
+	    _charging;
+
+	/// Sets this unit is in hiding for a turn (or not).
+	internal void setHiding(bool hiding) =>
+        _hidingForTurn = hiding;
+
+    /**
+     * Check if we have ammo and reload if needed (used for AI).
+     * @return Do we have ammo?
+     */
+    internal bool checkAmmo()
+    {
+	    BattleItem weapon = getItem("STR_RIGHT_HAND");
+	    if (weapon == null || weapon.getAmmoItem() != null || weapon.getRules().getBattleType() == BattleType.BT_MELEE || getTimeUnits() < 15)
+	    {
+		    weapon = getItem("STR_LEFT_HAND");
+		    if (weapon == null || weapon.getAmmoItem() != null || weapon.getRules().getBattleType() == BattleType.BT_MELEE || getTimeUnits() < 15)
+		    {
+			    return false;
+		    }
+	    }
+	    // we have a non-melee weapon with no ammo and 15 or more TUs - we might need to look for ammo then
+	    BattleItem ammo = null;
+	    bool wrong = true;
+	    foreach (var i in getInventory())
+	    {
+		    ammo = i;
+		    foreach (var c in weapon.getRules().getCompatibleAmmo())
+		    {
+			    if (c == ammo.getRules().getType())
+			    {
+				    wrong = false;
+				    break;
+			    }
+		    }
+		    if (!wrong) break;
+	    }
+
+	    if (wrong) return false; // didn't find any compatible ammo in inventory
+
+	    spendTimeUnits(15);
+	    weapon.setAmmoItem(ammo);
+	    ammo.moveToOwner(null);
+
+	    return true;
+    }
+
+    /**
+     * Let AI do their thing.
+     * @param action AI action.
+     */
+    internal void think(ref BattleAction action)
+    {
+	    checkAmmo();
+	    _currentAIState.think(ref action);
+    }
+
+    /**
+     * Set the units we are charging towards.
+     * @param chargeTarget Charge Target
+     */
+    internal void setCharging(BattleUnit chargeTarget) =>
+	    _charging = chargeTarget;
+
+    /**
+     * Get the unit's aggression.
+     * @return aggression.
+     */
+    internal int getAggression() =>
+	    _aggression;
+
+    /**
+     * Get a grenade from the belt (used for AI)
+     * @return Pointer to item.
+     */
+    internal BattleItem getGrenadeFromBelt()
+    {
+	    foreach (var i in _inventory)
+	    {
+		    if (i.getRules().getBattleType() == BattleType.BT_GRENADE)
+		    {
+			    return i;
+		    }
+	    }
+	    return null;
+    }
+
+    /**
+     * Look at a direction.
+     * @param direction Direction to look at.
+     * @param force True to reset the direction, false to animate to it.
+     */
+    internal void lookAt(int direction, bool force = false)
+    {
+	    if (!force)
+	    {
+		    if (direction < 0 || direction >= 8) return;
+		    _toDirection = direction;
+		    if (_toDirection != _direction)
+		    {
+			    _status = UnitStatus.STATUS_TURNING;
+		    }
+	    }
+	    else
+	    {
+		    _toDirection = direction;
+		    _direction = direction;
+	    }
+    }
+
+    /**
+     * Adds one to the psi skill exp counter.
+     */
+    internal void addPsiSkillExp() =>
+	    _expPsiSkill++;
+
+    /**
+     * Adds one to the psi strength exp counter.
+     */
+    internal void addPsiStrengthExp() =>
+	    _expPsiStrength++;
+
+    /**
+     * Sets the unit mind controller's id.
+     * @param int mind controller id.
+     */
+    internal void setMindControllerId(int id) =>
+	    _mindControllerID = id;
+
+    /**
+     * Mark this unit as reselectable.
+     */
+    internal void allowReselect() =>
+	    _dontReselect = false;
+
+    /**
+     * Get the unit's death sounds.
+     * @return List of sound IDs.
+     */
+    internal List<int> getDeathSounds()
+    {
+	    if (!_deathSound.Any() && _geoscapeSoldier != null)
+	    {
+		    if (_gender == SoldierGender.GENDER_MALE)
+			    return _geoscapeSoldier.getRules().getMaleDeathSounds();
+		    else
+			    return _geoscapeSoldier.getRules().getFemaleDeathSounds();
+	    }
+	    return _deathSound;
+    }
+
+    /**
+     * Gets the BattleUnit's position.
+     * @return position
+     */
+    internal Position getLastPosition() =>
+	    _lastPos;
+
+    /**
+     * Gets the walking phase for animation and sound.
+     * @return phase will always go from 0-7
+     */
+    internal int getWalkingPhase() =>
+	    _walkPhase % 8;
+
+    /**
+     * Raises a unit's stun level sufficiently so that the unit is ready to become unconscious.
+     * Used when another unit falls on top of this unit.
+     * Zombified units first convert to their spawn unit.
+     * @param battle Pointer to the battlescape game.
+     */
+    internal void knockOut(BattlescapeGame battle)
+    {
+	    if (!string.IsNullOrEmpty(_spawnUnit))
+	    {
+		    setRespawn(false);
+		    BattleUnit newUnit = battle.convertUnit(this);
+		    newUnit.knockOut(battle);
+	    }
+	    else
+	    {
+		    _stunlevel = _health;
+	    }
+    }
+
+    /**
+     * This will increment the walking phase.
+     * @param tileBelowMe Pointer to tile currently below the unit.
+     * @param cache Refresh the unit cache.
+     */
+    internal void keepWalking(Tile tileBelowMe, bool cache)
+    {
+	    int middle, end;
+	    if (_verticalDirection != 0)
+	    {
+		    middle = 4;
+		    end = 8;
+	    }
+	    else
+	    {
+		    // diagonal walking takes double the steps
+		    middle = 4 + 4 * (_direction % 2);
+		    end = 8 + 8 * (_direction % 2);
+		    if (_armor.getSize() > 1)
+		    {
+			    if (_direction < 1 || _direction > 5)
+				    middle = end;
+			    else if (_direction == 5)
+				    middle = 12;
+			    else if (_direction == 1)
+				    middle = 5;
+			    else
+				    middle = 1;
+		    }
+	    }
+	    if (!cache)
+	    {
+		    _pos = _destination;
+		    end = 2;
+	    }
+
+	    _walkPhase++;
+
+	    if (_walkPhase == middle)
+	    {
+		    // we assume we reached our destination tile
+		    // this is actually a drawing hack, so soldiers are not overlapped by floortiles
+		    _pos = _destination;
+	    }
+
+	    if (_walkPhase >= end)
+	    {
+		    if (_floating && !_tile.hasNoFloor(tileBelowMe))
+		    {
+			    _floating = false;
+		    }
+		    // we officially reached our destination tile
+		    _status = UnitStatus.STATUS_STANDING;
+		    _walkPhase = 0;
+		    _verticalDirection = 0;
+		    if (_faceDirection >= 0) {
+			    // Finish strafing move facing the correct way.
+			    _direction = _faceDirection;
+			    _faceDirection = -1;
+		    }
+
+		    // motion points calculation for the motion scanner blips
+		    if (_armor.getSize() > 1)
+		    {
+			    _motionPoints += 30;
+		    }
+		    else
+		    {
+			    // sectoids actually have less motion points
+			    // but instead of create yet another variable,
+			    // I used the height of the unit instead (logical)
+			    if (getStandHeight() > 16)
+				    _motionPoints += 4;
+			    else
+				    _motionPoints += 3;
+		    }
+	    }
+
+	    _cacheInvalid = cache;
+    }
+
+    /**
+     * Gets the BattleUnit's destination.
+     * @return destination
+     */
+    internal Position getDestination() =>
+	    _destination;
+
+    /**
+     * Gets the BattleUnit's (horizontal) face direction.
+     * Used only during strafing moves.
+     * @return face direction
+     */
+    internal int getFaceDirection() =>
+	    _faceDirection;
+
+    /**
+     * Changes the BattleUnit's (horizontal) face direction.
+     * Only used for strafing moves.
+     * @param direction new face direction
+     */
+    internal void setFaceDirection(int direction) =>
+	    _faceDirection = direction;
+
+    /**
+     * Spend energy  if it can. Return false if it can't.
+     * @param tu
+     * @return flag if it could spend the time units or not.
+     */
+    internal bool spendEnergy(int tu)
+    {
+	    int eu = tu / 2;
+
+	    if (eu <= _energy)
+	    {
+		    _energy -= eu;
+		    return true;
+	    }
+	    else
+	    {
+		    return false;
+	    }
+    }
+
+    /**
+     * Is floating? A unit is floating when there is no ground under him/her.
+     * @return true/false
+     */
+    internal bool isFloating() =>
+	    _floating;
+
+    /**
+     * Get the unit's move sound.
+     * @return id.
+     */
+    internal int getMoveSound() =>
+	    _moveSound;
+
+	/// Checks if this unit is in hiding for a turn.
+	internal bool isHiding() =>
+        _hidingForTurn;
 }

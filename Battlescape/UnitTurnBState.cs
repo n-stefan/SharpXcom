@@ -32,7 +32,7 @@ internal class UnitTurnBState : BattleState
      * @param parent Pointer to the Battlescape.
      * @param action Pointer to an action.
      */
-    UnitTurnBState(BattlescapeGame parent, BattleAction action, bool chargeTUs) : base(parent, action)
+	internal UnitTurnBState(BattlescapeGame parent, BattleAction action, bool chargeTUs = true) : base(parent, action)
     {
         _unit = null;
         _turret = false;
@@ -85,6 +85,44 @@ internal class UnitTurnBState : BattleState
 					_action.result = "STR_NOT_ENOUGH_TIME_UNITS";
 				}
 			}
+			_parent.popState();
+		}
+	}
+
+	/**
+	 * Runs state functionality every cycle.
+	 */
+	protected override void think()
+	{
+		int tu = _chargeTUs ? 1 : 0;
+
+		if (_chargeTUs && _unit.getFaction() == _parent.getSave().getSide() && _parent.getPanicHandled() && !_action.targeting && !_parent.checkReservedTU(_unit, tu))
+		{
+			_unit.abortTurn();
+			_parent.popState();
+			return;
+		}
+
+		if (_unit.spendTimeUnits(tu))
+		{
+			int unitSpotted = _unit.getUnitsSpottedThisTurn().Count;
+			_unit.turn(_turret);
+			_parent.getTileEngine().calculateFOV(_unit);
+			_unit.setCache(null);
+			_parent.getMap().cacheUnit(_unit);
+			if (_chargeTUs && _unit.getFaction() == _parent.getSave().getSide() && _parent.getPanicHandled() && _action.type == BattleActionType.BA_NONE && _unit.getUnitsSpottedThisTurn().Count > unitSpotted)
+			{
+				_unit.abortTurn();
+			}
+			if (_unit.getStatus() == UnitStatus.STATUS_STANDING)
+			{
+				_parent.popState();
+			}
+		}
+		else if (_parent.getPanicHandled())
+		{
+			_action.result = "STR_NOT_ENOUGH_TIME_UNITS";
+			_unit.abortTurn();
 			_parent.popState();
 		}
 	}

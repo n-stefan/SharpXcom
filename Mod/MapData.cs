@@ -527,4 +527,11 @@ internal class MapData
      */
     internal int getExplosiveType() =>
 	    _explosiveType;
+
+    /**
+     * Gets the index to the footstep sound.
+     * @return The sound ID.
+     */
+    internal int getFootstepSound() =>
+	    _footstepSound;
 }

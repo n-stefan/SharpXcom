@@ -495,10 +495,10 @@ internal class ProjectileFlyBState : BattleState
 			{
 				dz = Math.Max(dz, -1.0);
 				if (Math.Abs(dz)>1e-10) //rollback horizontal
-					dist -= (int)(curZ / dz);
+					dist = (int)(dist - curZ / dz);
 				break;
 			}
-			dz -= (double)(50 * weight / strength)/100;
+			dz = (double)(dz - 50 * weight / strength)/100;
 			if (dz <= -2.0) //become falling
 				break;
 		}

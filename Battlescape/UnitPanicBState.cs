@@ -48,4 +48,83 @@ internal class UnitPanicBState : BattleState
 	~UnitPanicBState() { }
 
 	protected override void init() { }
+
+	/**
+	 * Runs state functionality every cycle.
+	 * Ends the panicking when done.
+	 */
+	protected override void think()
+	{
+		if (_unit != null)
+		{
+			// berserking requires handling here, as the target selection isn't completely random
+			// and needs updating between shots.
+			if (!_unit.isOut() && _shotsFired < 10 && _berserking)
+			{
+				_shotsFired++;
+				var ba = new BattleAction();
+				ba.actor = _unit;
+				ba.weapon = _unit.getMainHandWeapon();
+				if (ba.weapon != null && (ba.weapon.getRules().getTUSnap() != 0 || ba.weapon.getRules().getTUAuto() != 0)
+					&& _parent.getSave().isItemUsable(ba.weapon))
+				{
+					// make autoshots if possible.
+					if (ba.weapon.getRules().getTUAuto() != 0)
+						ba.type = BattleActionType.BA_AUTOSHOT;
+					else
+						ba.type = BattleActionType.BA_SNAPSHOT;
+
+					ba.TU = _unit.getActionTUs(ba.type, ba.weapon);
+
+					if (_unit.getTimeUnits() >= ba.TU)
+					{
+						// if we see enemies, shoot at the closest living one.
+						if (_unit.getVisibleUnits().Any())
+						{
+							int dist = 255;
+							foreach (var i in _unit.getVisibleUnits())
+							{
+								int newDist = _parent.getTileEngine().distance(_unit.getPosition(), i.getPosition());
+								if (newDist < dist)
+								{
+									ba.target = i.getPosition();
+									dist = newDist;
+								}
+							}
+						}
+						else // otherwise shoot randomly
+						{
+							ba.target = new Position(_unit.getPosition().x + RNG.generate(-6,6), _unit.getPosition().y + RNG.generate(-6,6), _unit.getPosition().z);
+						}
+						// include the cost for facing our target
+						int turnCost = Math.Abs(_unit.getDirection() - _unit.directionTo(ba.target));
+						if (turnCost > 4)
+						{
+							turnCost = 8-turnCost;
+						}
+
+						_parent.statePushFront(new UnitTurnBState(_parent, ba, false));
+						// even if we don't have enough TUs to turn AND shoot, we still want to turn.
+						if (_unit.spendTimeUnits(ba.TU + turnCost))
+						{
+							_parent.statePushNext(new ProjectileFlyBState(_parent, ba));
+						}
+						else
+						{
+							_unit.spendTimeUnits(turnCost);
+						}
+					}
+				}
+				return;
+			}
+			if (!_unit.isOut())
+			{
+				_unit.abortTurn(); // set the unit status to standing in case it wasn't otherwise changed from berserk/panicked
+			}
+			// reset the unit's time units when all panicking is done
+			_unit.setTimeUnits(0);
+		}
+		_parent.popState();
+		_parent.setupCursor();
+	}
 }

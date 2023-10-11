@@ -32,7 +32,7 @@ internal class Particle
      * @param color the color set to use from the transparency LUTs
      * @param opacity another reference for the LUT, this one is divided by 5 for the actual offset to use.
      */
-    Particle(float xOffset, float yOffset, float density, byte color, byte opacity)
+    internal Particle(float xOffset, float yOffset, float density, byte color, byte opacity)
     {
         _xOffset = xOffset;
         _yOffset = yOffset;

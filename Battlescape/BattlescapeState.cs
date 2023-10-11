@@ -540,4 +540,16 @@ internal class BattlescapeState : State
 		    }
 	    }
     }
+
+    /**
+     * Shows a debug message in the topleft corner.
+     * @param message Debug message.
+     */
+    internal void debug(string message)
+    {
+	    if (_save.getDebugMode())
+	    {
+		    _txtDebug.setText(message);
+	    }
+    }
 }

@@ -114,4 +114,10 @@ internal class WarningMessage : Surface
      */
     internal void setTextColor(byte color) =>
         _text.setColor(color);
+
+    /**
+     * Keeps the animation timers running.
+     */
+    protected override void think() =>
+	    _timer.think(null, this);
 }

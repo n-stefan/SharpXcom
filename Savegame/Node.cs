@@ -180,4 +180,17 @@ internal class Node
      */
     internal int getSegment() =>
 	    _segment;
+
+    internal bool isTarget() =>
+	    _reserved == 5;
+
+    internal bool isAllocated() =>
+	    _allocated;
+
+	/// gets "flags" variable, which is really the patrolling desirability value
+	internal int getFlags() =>
+        _flags;
+
+    internal void allocateNode() =>
+	    _allocated = true;
 }

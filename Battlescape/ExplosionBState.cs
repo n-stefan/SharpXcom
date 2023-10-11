@@ -203,4 +203,110 @@ internal class ExplosionBState : BattleState
 			}
 		}
 	}
+
+	/**
+	 * Calculates the effects of the explosion.
+	 */
+	void explode()
+	{
+		bool terrainExplosion = false;
+		SavedBattleGame save = _parent.getSave();
+		// after the animation is done, the real explosion/hit takes place
+		if (_item != null)
+		{
+			if (_unit == null && _item.getPreviousOwner() != null)
+			{
+				_unit = _item.getPreviousOwner();
+			}
+
+			BattleUnit victim = null;
+
+			if (_areaOfEffect)
+			{
+				save.getTileEngine().explode(_center, _power, _item.getRules().getDamageType(), _item.getRules().getExplosionRadius(), _unit);
+			}
+			else if (!_cosmetic)
+			{
+				ItemDamageType type = _item.getRules().getDamageType();
+
+				victim = save.getTileEngine().hit(_center, _power, type, _unit);
+			}
+			// check if this unit turns others into zombies
+			if (!string.IsNullOrEmpty(_item.getRules().getZombieUnit())
+				&& victim != null
+				&& victim.getArmor().getSize() == 1
+				&& (victim.getGeoscapeSoldier() != null || victim.getUnitRules().getRace() == "STR_CIVILIAN")
+				&& string.IsNullOrEmpty(victim.getSpawnUnit()))
+			{
+				// converts the victim to a zombie on death
+				victim.setRespawn(true);
+				victim.setSpawnUnit(_item.getRules().getZombieUnit());
+			}
+		}
+		if (_tile != null)
+		{
+			ItemDamageType DT;
+			switch (_tile.getExplosiveType())
+			{
+				case 0:
+					DT = ItemDamageType.DT_HE;
+					break;
+				case 5:
+					DT = ItemDamageType.DT_IN;
+					break;
+				case 6:
+					DT = ItemDamageType.DT_STUN;
+					break;
+				default:
+					DT = ItemDamageType.DT_SMOKE;
+					break;
+			}
+			if (DT != ItemDamageType.DT_HE)
+			{
+				_tile.setExplosive(0,0,true);
+			}
+			save.getTileEngine().explode(_center, _power, DT, _power/10);
+			terrainExplosion = true;
+		}
+		if (_tile == null && _item == null)
+		{
+			int radius = 6;
+			// explosion not caused by terrain or an item, must be by a unit (cyberdisc)
+			if (_unit != null && (_unit.getSpecialAbility() == (int)SpecialAbility.SPECAB_EXPLODEONDEATH || _unit.getSpecialAbility() == (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE))
+			{
+				radius = _parent.getMod().getItem(_unit.getArmor().getCorpseGeoscape(), true).getExplosionRadius();
+			}
+			save.getTileEngine().explode(_center, _power, ItemDamageType.DT_HE, radius);
+			terrainExplosion = true;
+		}
+
+		if (!_cosmetic)
+		{
+			// now check for new casualties
+			_parent.checkForCasualties(_item, _unit, false, terrainExplosion);
+		}
+
+		// if this explosion was caused by a unit shooting, now it's the time to put the gun down
+		if (_unit != null && !_unit.isOut() && _lowerWeapon)
+		{
+			_unit.aim(false);
+			_unit.setCache(null);
+		}
+		_parent.getMap().cacheUnits();
+		_parent.popState();
+
+		// check for terrain explosions
+		Tile t = save.getTileEngine().checkForTerrainExplosions();
+		if (t != null)
+		{
+			Position p = new Position(t.getPosition().x * 16, t.getPosition().y * 16, t.getPosition().z * 24);
+			p += new Position(8,8,0);
+			_parent.statePushFront(new ExplosionBState(_parent, p, null, _unit, t));
+		}
+
+		if (_item != null && (_item.getRules().getBattleType() == BattleType.BT_GRENADE || _item.getRules().getBattleType() == BattleType.BT_PROXIMITYGRENADE))
+		{
+			_parent.getSave().removeItem(_item);
+		}
+	}
 }

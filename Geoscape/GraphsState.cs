@@ -379,7 +379,7 @@ internal class GraphsState : State
         if ((step + (int)offset) < 0 || offset + step + GRAPH_MAX_BUTTONS >= toggles.Count)
             return;
         // set the next offset - cheaper to do it from starters
-        offset += (uint)step;
+        offset = (uint)(offset + step);
         uint i = 0;
         var iterb = 0;
         for (var itert = (int)offset; itert < toggles.Count && i < GRAPH_MAX_BUTTONS; ++itert, ++iterb, ++i)

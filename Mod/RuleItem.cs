@@ -807,4 +807,18 @@ internal class RuleItem : IListOrder, IRule
      */
     internal int getMeleePower() =>
 	    _meleePower;
+
+    /**
+     * Gets the attraction value for this item (for AI).
+     * @return The attraction value.
+     */
+    internal int getAttraction() =>
+	    _attraction;
+
+    /**
+     * Is line of sight required for this psionic weapon to function?
+     * @return If line of sight is required.
+     */
+    internal bool isLOSRequired() =>
+	    _LOSRequired;
 }

@@ -306,4 +306,16 @@ internal class ComboBox : InteractiveSurface
      */
     internal void setText(string text) =>
 	    _button.setText(text);
+
+    /**
+     * Passes ticks to arrow buttons.
+     */
+    protected override void think()
+    {
+	    _button.think();
+	    _arrow.think();
+	    _window.think();
+	    _list.think();
+	    base.think();
+    }
 }

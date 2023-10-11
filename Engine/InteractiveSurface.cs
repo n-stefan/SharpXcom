@@ -46,7 +46,7 @@ internal class InteractiveSurface : Surface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal InteractiveSurface(int width, int height, int x, int y) : base(width, height, x, y)
+    internal InteractiveSurface(int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _buttonsPressed = 0;
         _in = null;
@@ -182,11 +182,11 @@ internal class InteractiveSurface : Surface
     {
         if (pressed)
         {
-            _buttonsPressed |= (byte)SDL_BUTTON(button);
+            _buttonsPressed = (byte)(_buttonsPressed | SDL_BUTTON(button));
         }
         else
         {
-            _buttonsPressed &= (byte)(~SDL_BUTTON(button));
+            _buttonsPressed = (byte)(_buttonsPressed & ~SDL_BUTTON(button));
         }
     }
 

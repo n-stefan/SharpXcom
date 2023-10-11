@@ -129,4 +129,83 @@ internal class LoadGameState : State
 			return;
 		}
 	}
+
+	/**
+	 * Loads the specified save.
+	 */
+	protected override void think()
+	{
+		base.think();
+		// Make sure it gets drawn properly
+		if (_firstRun < 10)
+		{
+			_firstRun++;
+		}
+		else
+		{
+			_game.popState();
+
+			// Load the game
+			SavedGame s = new SavedGame();
+			try
+			{
+				s.load(_filename, _game.getMod());
+				_game.setSavedGame(s);
+				if (_game.getSavedGame().getEnding() != GameEnding.END_NONE)
+				{
+					Options.baseXResolution = Screen.ORIGINAL_WIDTH;
+					Options.baseYResolution = Screen.ORIGINAL_HEIGHT;
+					_game.getScreen().resetDisplay(false);
+					_game.setState(new StatisticsState());
+				}
+				else
+				{
+					Options.baseXResolution = Options.baseXGeoscape;
+					Options.baseYResolution = Options.baseYGeoscape;
+					_game.getScreen().resetDisplay(false);
+					_game.setState(new GeoscapeState());
+					if (_game.getSavedGame().getSavedBattle() != null)
+					{
+						_game.getSavedGame().getSavedBattle().loadMapResources(_game.getMod());
+						Options.baseXResolution = Options.baseXBattlescape;
+						Options.baseYResolution = Options.baseYBattlescape;
+						_game.getScreen().resetDisplay(false);
+						BattlescapeState bs = new BattlescapeState();
+						_game.pushState(bs);
+						_game.getSavedGame().getSavedBattle().setBattleState(bs);
+					}
+				}
+			}
+			catch (YamlException e)
+			{
+				error(e.Message, s);
+			}
+			catch (Exception e)
+			{
+				error(e.Message, s);
+			}
+			CrossPlatform.flashWindow(_game.getScreen().getWindow());
+		}
+	}
+
+	/**
+	 * Pops up a window with an error message
+	 * and cleans up afterwards.
+	 * @param msg Error message.
+	 * @param save Pending save.
+	 */
+	void error(string msg, SavedGame save)
+	{
+        Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {msg}");
+		string error = $"{tr("STR_LOAD_UNSUCCESSFUL")}{Unicode.TOK_NL_SMALL}{Unicode.convPathToUtf8(msg)}";
+		if (_origin != OptionsOrigin.OPT_BATTLESCAPE)
+			_game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("geoscapeColor").color, "BACK01.SCR", _game.getMod().getInterface("errorMessages").getElement("geoscapePalette").color));
+		else
+			_game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("battlescapeColor").color, "TAC00.SCR", _game.getMod().getInterface("errorMessages").getElement("battlescapePalette").color));
+
+		if (_game.getSavedGame() == save)
+			_game.setSavedGame(null);
+		else
+			save = null;
+	}
 }

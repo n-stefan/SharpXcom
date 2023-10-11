@@ -97,4 +97,10 @@ internal class ArrowButton : ImageButton
         _shape = shape;
         _redraw = true;
     }
+
+    /**
+     * Keeps the scrolling timers running.
+     */
+    protected override void think() =>
+	    _timer.think(null, this);
 }

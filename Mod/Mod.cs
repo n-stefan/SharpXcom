@@ -270,8 +270,8 @@ internal class Mod
     internal static int ITEM_DROP;
     internal static int ITEM_THROW;
     static int ITEM_RELOAD;
-    static int WALK_OFFSET;
-    static int FLYING_SOUND;
+    internal static int WALK_OFFSET;
+    internal static int FLYING_SOUND;
     static int BUTTON_PRESS;
     internal static int UFO_FIRE;
     internal static int UFO_HIT;
@@ -2689,14 +2689,14 @@ internal class Mod
 	    else
 	    {
 		    int f = offset;
-		    f *= (int)multiplier;
+		    f = (int)(f * multiplier);
 		    if ((uint)f > curr.size / sizeScale)
 		    {
 			    string err = $"Error for '{parent}': offset '{offset}' exceeds mod size limit {(curr.size / multiplier / sizeScale)} in set '{set}'";
 			    throw new Exception(err);
 		    }
 		    if (f >= shared)
-			    f += (int)(curr.offset / sizeScale);
+			    f = (int)(f + curr.offset / sizeScale);
             offset = f;
 	    }
     }
