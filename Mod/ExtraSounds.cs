@@ -123,4 +123,11 @@ internal class ExtraSounds
         _sounds = ((YamlMappingNode)node["files"]).Children.ToDictionary(x => int.Parse(x.Key.ToString()), x => x.Value.ToString());
         _current = current;
 	}
+
+	/**
+	 * Gets the filename that this sound set represents.
+	 * @return The sound name.
+	 */
+	string getType() =>
+		_type;
 }

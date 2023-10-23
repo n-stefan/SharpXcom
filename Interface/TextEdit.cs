@@ -195,4 +195,20 @@ internal class TextEdit : InteractiveSurface
      */
     protected override void think() =>
 	    _timer.think(null, this);
+
+    /**
+     * Passes events to internal components.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void handle(Action action, State state)
+    {
+	    base.handle(action, state);
+	    if (_isFocused && _modal && action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN &&
+		    (action.getAbsoluteXMouse() < getX() || action.getAbsoluteXMouse() >= getX() + getWidth() ||
+		     action.getAbsoluteYMouse() < getY() || action.getAbsoluteYMouse() >= getY() + getHeight()))
+	    {
+		    setFocus(false);
+	    }
+    }
 }

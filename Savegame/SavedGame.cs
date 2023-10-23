@@ -1537,4 +1537,10 @@ internal class SavedGame
 
 	    return save;
     }
+
+    /**
+     * Toggles debug mode.
+     */
+    internal void setDebugMode() =>
+	    _debug = !_debug;
 }

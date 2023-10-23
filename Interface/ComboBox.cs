@@ -110,7 +110,7 @@ internal class ComboBox : InteractiveSurface
      * Opens/closes the combo box list.
      * @param first Is it the initialization toggle?
      */
-    void toggle(bool first)
+    void toggle(bool first = false)
     {
         _window.setVisible(!_window.getVisible());
         _list.setVisible(!_list.getVisible());
@@ -317,5 +317,32 @@ internal class ComboBox : InteractiveSurface
 	    _window.think();
 	    _list.think();
 	    base.think();
+    }
+
+    /**
+     * Passes events to internal components.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void handle(Action action, State state)
+    {
+	    _button.handle(action, state);
+	    _list.handle(action, state);
+	    base.handle(action, state);
+	    int topY = Math.Min(getY(), _window.getY());
+	    if (_window.getVisible() && action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN &&
+		    (action.getAbsoluteXMouse() < getX() || action.getAbsoluteXMouse() >= getX() + getWidth() ||
+		     action.getAbsoluteYMouse() < topY || action.getAbsoluteYMouse() >= topY + getHeight() + _window.getHeight()))
+	    {
+		    toggle();
+	    }
+	    if (_toggled)
+	    {
+		    if (_change != null)
+		    {
+			    _change(action);
+		    }
+		    _toggled = false;
+	    }
     }
 }

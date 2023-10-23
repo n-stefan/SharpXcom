@@ -35,7 +35,7 @@ internal class ScannerState : State
 	 * @param game Pointer to the core game.
 	 * @param action Pointer to an action.
 	 */
-	ScannerState(BattleAction action)
+	internal ScannerState(BattleAction action)
 	{
 		_action = action;
 
@@ -113,5 +113,18 @@ internal class ScannerState : State
 	{
 		base.think();
 		_timerAnimate.think(this, null);
+	}
+
+	/**
+	 * Closes the window on right-click.
+	 * @param action Pointer to an action.
+	 */
+	protected override void handle(Action action)
+	{
+		base.handle(action);
+		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
+		{
+			exitClick(action);
+		}
 	}
 }

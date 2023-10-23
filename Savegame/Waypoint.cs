@@ -40,4 +40,12 @@ internal class Waypoint : Target
      */
     protected override int getMarker() =>
 	    6;
+
+    /**
+     * Returns the waypoint's unique type used for
+     * savegame purposes.
+     * @return ID.
+     */
+    protected override string getType() =>
+	    "STR_WAY_POINT";
 }

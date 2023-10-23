@@ -100,21 +100,21 @@ internal class BattleItem
      * Sets the heal quantity of the item.
      * @param heal The new heal quantity.
      */
-    void setHealQuantity(int heal) =>
+    internal void setHealQuantity(int heal) =>
         _heal = heal;
 
     /**
      * Sets the pain killer quantity of the item.
      * @param pk The new pain killer quantity.
      */
-    void setPainKillerQuantity(int pk) =>
+    internal void setPainKillerQuantity(int pk) =>
         _painKiller = pk;
 
     /**
      * Sets the stimulant quantity of the item.
      * @param stimulant The new stimulant quantity.
      */
-    void setStimulantQuantity(int stimulant) =>
+    internal void setStimulantQuantity(int stimulant) =>
         _stimulant = stimulant;
 
     /**

@@ -202,7 +202,7 @@ internal class Map : InteractiveSurface
      * @param mx mouse x position.
      * @param my mouse y position.
      */
-    void setSelectorPosition(int mx, int my)
+    internal void setSelectorPosition(int mx, int my)
     {
         int oldX = _selectorX, oldY = _selectorY;
 
@@ -443,4 +443,16 @@ internal class Map : InteractiveSurface
      */
     internal int getIconWidth() =>
 	    _iconWidth;
+
+    /**
+     * Draws the rectangle selector.
+     * @param pos Pointer to a position.
+     */
+    internal void getSelectorPosition(out Position pos) =>
+        pos = new Position
+        {
+            x = _selectorX,
+            y = _selectorY,
+            z = _camera.getViewLevel()
+        };
 }

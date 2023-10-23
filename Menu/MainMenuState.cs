@@ -146,4 +146,19 @@ internal class MainMenuState : State
      */
     void btnQuitClick(Action _) =>
         _game.quit();
+
+	/**
+	 * Updates the scale.
+	 * @param dX delta of X;
+	 * @param dY delta of Y;
+	 */
+	protected override void resize(ref int dX, ref int dY)
+	{
+		dX = Options.baseXResolution;
+		dY = Options.baseYResolution;
+		Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
+		dX = Options.baseXResolution - dX;
+		dY = Options.baseYResolution - dY;
+		base.resize(ref dX, ref dY);
+	}
 }

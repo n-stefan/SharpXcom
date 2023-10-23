@@ -782,4 +782,40 @@ internal class TextList : InteractiveSurface
 		    i.think();
 	    }
     }
+
+    /**
+     * Passes events to arrow buttons.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void handle(Action action, State state)
+    {
+	    base.handle(action, state);
+	    _up.handle(action, state);
+	    _down.handle(action, state);
+	    _scrollbar.handle(action, state);
+	    if (_arrowPos != -1 && _rows.Any())
+	    {
+		    uint startArrowIdx = _rows[(int)_scroll];
+		    if (0 < _scroll && _rows[(int)_scroll] == _rows[(int)(_scroll - 1)])
+		    {
+			    // arrows for first partially-visible line of text are off-screen; don't process them
+			    ++startArrowIdx;
+		    }
+		    uint endArrowIdx = _rows[(int)_scroll] + 1;
+		    uint endRow = Math.Min((uint)_rows.Count, _scroll + _visibleRows);
+		    for (int i = (int)(_scroll + 1); i < endRow; ++i)
+		    {
+			    if (_rows[i] != _rows[i - 1])
+			    {
+				    ++endArrowIdx;
+			    }
+		    }
+		    for (int i = (int)startArrowIdx; i < endArrowIdx; ++i)
+		    {
+			    _arrowLeft[i].handle(action, state);
+			    _arrowRight[i].handle(action, state);
+		    }
+	    }
+    }
 }

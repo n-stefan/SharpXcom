@@ -976,4 +976,27 @@ internal class Globe : InteractiveSurface
 	    _blinkTimer.think(null, this);
 	    _rotTimer.think(null, this);
     }
+
+    /*
+     * Resizes the geoscape.
+     */
+    internal void resize()
+    {
+	    Surface[] surfaces = {this, _markers, _countries, _radars};
+	    int width = Options.baseXGeoscape - 64;
+	    int height = Options.baseYGeoscape;
+
+	    for (int i = 0; i < 4; ++i)
+	    {
+		    surfaces[i].setWidth(width);
+		    surfaces[i].setHeight(height);
+		    surfaces[i].invalidate();
+	    }
+	    _clipper.Wxrig = width;
+	    _clipper.Wybot = height;
+	    _cenX = (short)(width / 2);
+	    _cenY = (short)(height / 2);
+	    setupRadii(width, height);
+	    invalidate();
+    }
 }

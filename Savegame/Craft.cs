@@ -938,4 +938,12 @@ internal class Craft : MovingTarget
      */
     internal void setMissionComplete(bool mission) =>
 	    _mission = mission;
+
+    /**
+     * Returns the craft's unique type used for
+     * savegame purposes.
+     * @return ID.
+     */
+    protected override string getType() =>
+	    _rules.getType();
 }

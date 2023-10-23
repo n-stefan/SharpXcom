@@ -272,4 +272,21 @@ internal class StartState : State
                 break;
         }
     }
+
+    /**
+     * The game quits if the player presses any key when an error
+     * message is on display.
+     * @param action Pointer to an action.
+     */
+    protected override void handle(Action action)
+    {
+	    base.handle(action);
+	    if (loading == LoadingPhase.LOADING_DONE)
+	    {
+		    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+		    {
+			    _game.quit();
+		    }
+	    }
+    }
 }

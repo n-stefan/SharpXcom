@@ -70,7 +70,7 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    internal void handle(Action action, State state)
+    protected virtual void handle(Action action, State state)
     {
         if (!_visible || _hidden)
             return;

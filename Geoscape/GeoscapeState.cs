@@ -2409,4 +2409,154 @@ internal class GeoscapeState : State
 		    }
 	    }
     }
+
+    /**
+     * Handle key shortcuts.
+     * @param action Pointer to an action.
+     */
+    protected override void handle(Action action)
+    {
+	    if (_dogfights.Count == _minimizedDogfights)
+	    {
+		    base.handle(action);
+	    }
+
+	    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+	    {
+		    // "ctrl-d" - enable debug mode
+		    if (Options.debug && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_d && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+		    {
+			    _game.getSavedGame().setDebugMode();
+			    if (_game.getSavedGame().getDebugMode())
+			    {
+				    _txtDebug.setText("DEBUG MODE");
+			    }
+			    else
+			    {
+				    _txtDebug.setText(string.Empty);
+			    }
+		    }
+		    // "ctrl-c" - delete all soldier commendations
+		    if (Options.debug && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_c && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+		    {
+			    if (_game.getSavedGame().getDebugMode())
+			    {
+				    _txtDebug.setText("SOLDIER COMMENDATIONS DELETED");
+				    foreach (var i in _game.getSavedGame().getBases())
+				    {
+					    foreach (var j in i.getSoldiers())
+					    {
+						    j.getDiary().getSoldierCommendations().Clear();
+					    }
+				    }
+			    }
+			    else
+			    {
+				    _txtDebug.setText(string.Empty);
+			    }
+		    }
+		    // quick save and quick load
+		    else if (!_game.getSavedGame().isIronman())
+		    {
+			    if (action.getDetails().key.keysym.sym == Options.keyQuickSave)
+			    {
+				    popup(new SaveGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_QUICK, _palette));
+			    }
+			    else if (action.getDetails().key.keysym.sym == Options.keyQuickLoad)
+			    {
+				    popup(new LoadGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_QUICK, _palette));
+			    }
+		    }
+	    }
+	    if (_dogfights.Any())
+	    {
+		    foreach (var it in _dogfights)
+		    {
+			    it.handle(action);
+		    }
+		    _minimizedDogfights = (uint)minimizedDogfightsCount();
+	    }
+    }
+
+    /**
+     * Gets the number of minimized dogfights.
+     * @return Number of minimized dogfights.
+     */
+    int minimizedDogfightsCount()
+    {
+	    int minimizedDogfights = 0;
+	    foreach (var d in _dogfights)
+	    {
+		    if (d.isMinimized())
+		    {
+			    ++minimizedDogfights;
+		    }
+	    }
+	    return minimizedDogfights;
+    }
+
+    /**
+     * Updates the scale.
+     * @param dX delta of X;
+     * @param dY delta of Y;
+     */
+    protected override void resize(ref int dX, ref int dY)
+    {
+	    if (_game.getSavedGame().getSavedBattle() != null)
+		    return;
+	    dX = Options.baseXResolution;
+	    dY = Options.baseYResolution;
+	    int divisor = 1;
+	    double pixelRatioY = 1.0;
+
+	    if (Options.nonSquarePixelRatio)
+	    {
+		    pixelRatioY = 1.2;
+	    }
+	    switch ((ScaleType)Options.geoscapeScale)
+	    {
+	        case ScaleType.SCALE_SCREEN_DIV_3:
+		        divisor = 3;
+		        break;
+	        case ScaleType.SCALE_SCREEN_DIV_2:
+		        divisor = 2;
+		        break;
+	        case ScaleType.SCALE_SCREEN:
+		        break;
+	        default:
+		        dX = 0;
+		        dY = 0;
+		        return;
+	    }
+
+	    Options.baseXResolution = Math.Max(Screen.ORIGINAL_WIDTH, Options.displayWidth / divisor);
+	    Options.baseYResolution = Math.Max(Screen.ORIGINAL_HEIGHT, (int)(Options.displayHeight / pixelRatioY / divisor));
+
+	    dX = Options.baseXResolution - dX;
+	    dY = Options.baseYResolution - dY;
+
+	    _globe.resize();
+
+	    foreach (var i in _surfaces)
+	    {
+		    if (i != _globe)
+		    {
+			    i.setX(i.getX() + dX);
+			    i.setY(i.getY() + dY/2);
+		    }
+	    }
+
+	    _bg.setX((_globe.getWidth() - _bg.getWidth()) / 2);
+	    _bg.setY((_globe.getHeight() - _bg.getHeight()) / 2);
+
+	    int height = (Options.baseYResolution - Screen.ORIGINAL_HEIGHT) / 2 + 10;
+	    _sideTop.setHeight(height);
+	    _sideTop.setY(_sidebar.getY() - height - 1);
+	    _sideBottom.setHeight(height);
+	    _sideBottom.setY(_sidebar.getY() + _sidebar.getHeight() + 1);
+
+	    _sideLine.setHeight(Options.baseYResolution);
+	    _sideLine.setY(0);
+	    _sideLine.drawRect(0, 0, (short)_sideLine.getWidth(), (short)_sideLine.getHeight(), 15);
+    }
 }

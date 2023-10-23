@@ -295,4 +295,31 @@ internal class SelectDestinationState : State
 	    base.think();
 	    _globe.think();
     }
+
+    /**
+     * Handles the globe.
+     * @param action Pointer to an action.
+     */
+    protected override void handle(Action action)
+    {
+	    base.handle(action);
+	    _globe.handle(action, this);
+    }
+
+    /**
+     * Updates the scale.
+     * @param dX delta of X;
+     * @param dY delta of Y;
+     */
+    protected override void resize(ref int dX, ref int dY)
+    {
+	    foreach (var i in _surfaces)
+	    {
+		    i.setX(i.getX() + dX / 2);
+		    if (i != _window && i != _btnCancel && i != _txtTitle && i != _btnCydonia)
+		    {
+			    i.setY(i.getY() + dY / 2);
+		    }
+	    }
+    }
 }

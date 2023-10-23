@@ -133,4 +133,24 @@ internal class MiniMapState : State
 		base.think();
 		_timerAnimate.think(this, null);
 	}
+
+	/**
+	 * Handles mouse-wheeling.
+	 * @param action Pointer to an action.
+	 */
+	protected override void handle(Action action)
+	{
+		base.handle(action);
+		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+		{
+			if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
+			{
+				btnLevelUpClick(action);
+			}
+			else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+			{
+				btnLevelDownClick(action);
+			}
+		}
+	}
 }

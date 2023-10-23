@@ -299,4 +299,16 @@ internal class OptionsBaseState : State
 		    applyBattlescapeTheme();
 	    }
     }
+
+    /**
+     * Updates the scale.
+     * @param dX delta of X;
+     * @param dY delta of Y;
+     */
+    protected override void resize(ref int dX, ref int dY)
+    {
+	    Options.newDisplayWidth = Options.displayWidth;
+	    Options.newDisplayHeight = Options.displayHeight;
+	    base.resize(ref dX, ref dY);
+    }
 }

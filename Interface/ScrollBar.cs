@@ -93,4 +93,23 @@ internal class ScrollBar : InteractiveSurface
      */
     internal byte getColor() =>
 	    _color;
+
+    /**
+     * Automatically updates the scrollbar
+     * when the mouse moves.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void handle(Action action, State state)
+    {
+	    base.handle(action, state);
+	    if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
+	    {
+		    int cursorY = (int)(action.getAbsoluteYMouse() - getY());
+		    int y = Math.Clamp(cursorY + _offset, 0, getHeight() - _thumbRect.h + 1);
+		    double scale = (double)_list.getRows() / getHeight();
+		    int scroll = (int)Math.Round(y * scale);
+		    _list.scrollTo((uint)scroll);
+	    }
+    }
 }

@@ -290,4 +290,26 @@ internal class Camera
 			    && screenPos.y <= _screenHeight - 10;
 	    }
     }
+
+    /**
+     * Resizes the viewable window of the camera.
+     */
+    internal void resize()
+    {
+	    _screenWidth = _map.getWidth();
+	    _screenHeight = _map.getHeight();
+	    _visibleMapHeight = _map.getHeight() - _map.getIconHeight();
+    }
+
+    /**
+     * Handles jumping with given deviation.
+     * @param x X deviation.
+     * @param y Y deviation.
+     */
+    internal void jumpXY(int x, int y)
+    {
+	    _mapOffset.x += x;
+	    _mapOffset.y += y;
+	    convertScreenToMap((_screenWidth / 2), (_visibleMapHeight / 2), ref _center.x, ref _center.y);
+    }
 }

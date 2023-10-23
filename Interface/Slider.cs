@@ -150,4 +150,28 @@ internal class Slider : InteractiveSurface
      */
     internal int getValue() =>
 	    _value;
+
+    /**
+     * Automatically updates the slider
+     * when the mouse moves.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void handle(Action action, State state)
+    {
+	    base.handle(action, state);
+	    //_button.handle(action, state);
+	    if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
+	    {
+		    int cursorX = (int)action.getAbsoluteXMouse();
+		    double buttonX = Math.Clamp(cursorX + _offsetX, _minX, _maxX);
+		    double pos = (buttonX - _minX) / (_maxX - _minX);
+		    int value = _min + (int)Math.Round((_max - _min) * pos);
+		    setValue(value);
+		    if (_change != null)
+		    {
+			    _change(action);
+		    }
+	    }
+    }
 }

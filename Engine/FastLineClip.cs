@@ -25,7 +25,7 @@ namespace SharpXcom.Engine;
 internal class FastLineClip
 {
     double FC_xn, FC_yn, FC_xk, FC_yk;
-    double Wxlef, Wxrig, Wytop, Wybot;
+    internal double Wxlef, Wxrig, Wytop, Wybot;
 
     /// Creates a fastlineclip.
     internal FastLineClip(double Wxl, double Wxr, double Wyt, double Wyb)

@@ -931,4 +931,25 @@ internal class InventoryState : State
         updateStats();
         _refreshMouse();
     }
+
+    /**
+     * Takes care of any events from the core game engine.
+     * @param action Pointer to an action.
+     */
+    protected override void handle(Action action)
+    {
+	    base.handle(action);
+
+	    if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+	    {
+		    if (action.getDetails().button.button == SDL_BUTTON_X1)
+		    {
+			    btnNextClick(action);
+		    }
+		    else if (action.getDetails().button.button == SDL_BUTTON_X2)
+		    {
+			    btnPrevClick(action);
+		    }
+	    }
+    }
 }

@@ -83,4 +83,18 @@ internal class InfoboxState : State
 	 */
 	protected override void think() =>
 		_timer.think(this, null);
+
+	/**
+	 * Closes the window.
+	 * @param action Pointer to an action.
+	 */
+	protected override void handle(Action action)
+	{
+		base.handle(action);
+
+		if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+		{
+			close();
+		}
+	}
 }

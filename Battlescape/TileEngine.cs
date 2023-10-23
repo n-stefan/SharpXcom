@@ -1222,7 +1222,7 @@ internal class TileEngine
      * @param excludeAllBut If set, the only unit to be considered for ray hits.
      * @return The objectnumber(0-3) or unit(4) or out of map (5) or -1 (hit nothing).
      */
-    VoxelType voxelCheck(Position voxel, BattleUnit excludeUnit, bool excludeAllUnits = false, bool onlyVisible = false, BattleUnit excludeAllBut = null)
+    internal VoxelType voxelCheck(Position voxel, BattleUnit excludeUnit, bool excludeAllUnits = false, bool onlyVisible = false, BattleUnit excludeAllBut = null)
     {
         if (voxel.x < 0 || voxel.y < 0 || voxel.z < 0) //preliminary out of map
         {

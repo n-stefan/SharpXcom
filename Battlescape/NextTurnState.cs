@@ -171,4 +171,25 @@ internal class NextTurnState : State
 		    _timer.think(this, null);
 	    }
     }
+
+    /**
+     * Closes the window.
+     * @param action Pointer to an action.
+     */
+    protected override void handle(Action action)
+    {
+	    base.handle(action);
+
+	    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+	    {
+		    close();
+	    }
+    }
+
+    protected override void resize(ref int dX, ref int dY)
+    {
+	    base.resize(ref dX, ref dY);
+	    _bg.setX(0);
+	    _bg.setY(0);
+    }
 }

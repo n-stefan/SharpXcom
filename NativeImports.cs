@@ -8,6 +8,15 @@ internal class NativeImports
     [DllImport("SDL_gfx")]
     internal static extern int lineColor(nint dst, short x1, short y1, short x2, short y2, uint color);
 
+    [DllImport("SDL_gfx")]
+	internal static extern int lineRGBA(nint dst, short x1, short y1, short x2, short y2, byte r, byte g, byte b, byte a);
+
+    [DllImport("SDL_gfx")]
+	internal static extern int characterRGBA(nint dst, short x, short y, sbyte c, byte r, byte g, byte b, byte a);
+
+    [DllImport("SDL_gfx")]
+	internal static extern int stringRGBA(nint dst, short x, short y, string s, byte r, byte g, byte b, byte a);
+
     #endregion
 
     #region SDL2

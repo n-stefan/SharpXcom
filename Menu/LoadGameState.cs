@@ -52,7 +52,7 @@ internal class LoadGameState : State
 	 * @param type Type of auto-load being used.
 	 * @param palette Parent state palette.
 	 */
-	LoadGameState(OptionsOrigin origin, SaveType type, SDL_Color[] palette)
+	internal LoadGameState(OptionsOrigin origin, SaveType type, SDL_Color[] palette)
 	{
 		_firstRun = 0;
 		_origin = origin;

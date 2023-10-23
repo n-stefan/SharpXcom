@@ -630,4 +630,12 @@ internal class Ufo : MovingTarget
 
     internal void setShotDownByCraftId(KeyValuePair<string, int> craft) =>
 	    _shotDownByCraftId = craft;
+
+    /**
+     * Returns the UFO's unique type used for
+     * savegame purposes.
+     * @return ID.
+     */
+    protected override string getType() =>
+	    "STR_UFO";
 }

@@ -821,4 +821,32 @@ internal class RuleItem : IListOrder, IRule
      */
     internal bool isLOSRequired() =>
 	    _LOSRequired;
+
+    /**
+     * Gets the amount of fatal wound healed per usage.
+     * @return The amount of fatal wound healed.
+     */
+    internal int getWoundRecovery() =>
+	    _woundRecovery;
+
+    /**
+     * Gets the amount of health added to a wounded soldier's health.
+     * @return The amount of health to add.
+     */
+    internal int getHealthRecovery() =>
+	    _healthRecovery;
+
+    /**
+     * Gets the amount of energy added to a soldier's energy.
+     * @return The amount of energy to add.
+     */
+    internal int getEnergyRecovery() =>
+	    _energyRecovery;
+
+    /**
+     * Gets the amount of stun removed from a soldier's stun level.
+     * @return The amount of stun removed.
+     */
+    internal int getStunRecovery() =>
+	    _stunRecovery;
 }

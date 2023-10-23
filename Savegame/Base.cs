@@ -1490,4 +1490,12 @@ internal class Base : Target
 	    }
 	    return total;
     }
+
+    /**
+     * Returns the base's unique type used for
+     * savegame purposes.
+     * @return ID.
+     */
+    protected override string getType() =>
+	    "STR_BASE";
 }

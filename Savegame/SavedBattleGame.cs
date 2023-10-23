@@ -1639,7 +1639,7 @@ internal class SavedBattleGame
      * Checks if an item can be used in the current battlescape conditions.
      * @return Error string if it can't be used, "" otherwise.
      */
-    string getItemUsable(BattleItem item)
+    internal string getItemUsable(BattleItem item)
     {
 	    if (_depth == 0 &&
 		    (item.getRules().isWaterOnly() ||
@@ -1755,4 +1755,30 @@ internal class SavedBattleGame
      */
     internal List<BattleUnit> getFallingUnits() =>
 	    _fallingUnits;
+
+    /**
+     * Turns on debug mode.
+     */
+    internal void setDebugMode()
+    {
+	    for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
+	    {
+		    _tiles[i].setDiscovered(true, 2);
+	    }
+
+	    _debugMode = true;
+    }
+
+    /**
+     * Resets visibility of all the tiles on the map.
+     */
+    internal void resetTiles()
+    {
+	    for (int i = 0; i != getMapSizeXYZ(); ++i)
+	    {
+		    _tiles[i].setDiscovered(false, 0);
+		    _tiles[i].setDiscovered(false, 1);
+		    _tiles[i].setDiscovered(false, 2);
+	    }
+    }
 }

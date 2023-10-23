@@ -276,7 +276,7 @@ internal abstract class State
      * @param dX delta of X;
      * @param dY delta of Y;
      */
-    internal void resize(ref int dX, ref int dY) =>
+    protected virtual void resize(ref int dX, ref int dY) =>
         recenter(dX, dY);
 
     /**
@@ -502,5 +502,16 @@ internal abstract class State
     {
 	    foreach (var i in _surfaces)
 		    i.setHidden(true);
+    }
+
+    /**
+     * drop all the surfaces by half the screen height
+     */
+    protected void lowerAllSurfaces()
+    {
+	    foreach (var i in _surfaces)
+	    {
+		    i.setY(i.getY() + _game.getScreen().getDY() / 2);
+	    }
     }
 }

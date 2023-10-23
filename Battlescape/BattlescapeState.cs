@@ -48,6 +48,7 @@ internal class BattlescapeState : State
     bool _firstInit;
 	BattlescapeButton _btnReserveNone, _btnReserveSnap, _btnReserveAimed, _btnReserveAuto, _btnReserveKneel, _btnZeroTUs;
 	Text _txtDebug, _txtTooltip;
+	Position _cursorPosition;
 
     //TODO: ctor, dtor
 
@@ -409,7 +410,7 @@ internal class BattlescapeState : State
      * @param setReselect When true, flag the current unit first.
      * @param checkInventory When true, don't select a unit that has no inventory.
      */
-    internal void selectPreviousPlayerUnit(bool checkReselect, bool setReselect, bool checkInventory)
+    internal void selectPreviousPlayerUnit(bool checkReselect = false, bool setReselect = false, bool checkInventory = false)
     {
         if (allowButtons())
         {
@@ -552,4 +553,524 @@ internal class BattlescapeState : State
 		    _txtDebug.setText(message);
 	    }
     }
+
+    /**
+     * Takes care of any events from the core game engine.
+     * @param action Pointer to an action.
+     */
+    protected override void handle(Action action)
+    {
+	    if (!_firstInit)
+	    {
+		    if (_game.getCursor().getVisible() || ((action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONUP) && action.getDetails().button.button == SDL_BUTTON_RIGHT))
+		    {
+			    base.handle(action);
+
+			    if (Options.touchEnabled == false && _isMouseScrolling && !Options.battleDragScrollInvert)
+			    {
+				    _map.setSelectorPosition((int)((_cursorPosition.x - _game.getScreen().getCursorLeftBlackBand()) / action.getXScale()), (int)((_cursorPosition.y - _game.getScreen().getCursorTopBlackBand()) / action.getYScale()));
+			    }
+
+			    if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+			    {
+				    if (action.getDetails().button.button == SDL_BUTTON_X1)
+				    {
+					    btnNextSoldierClick(action);
+				    }
+				    else if (action.getDetails().button.button == SDL_BUTTON_X2)
+				    {
+					    btnPrevSoldierClick(action);
+				    }
+			    }
+
+			    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+			    {
+				    if (Options.debug)
+				    {
+					    // "ctrl-d" - enable debug mode
+					    if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_d && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+					    {
+						    _save.setDebugMode();
+						    debug("Debug Mode");
+					    }
+					    // "ctrl-v" - reset tile visibility
+					    else if (_save.getDebugMode() && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_v && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+					    {
+						    debug("Resetting tile visibility");
+						    _save.resetTiles();
+					    }
+					    // "ctrl-k" - kill all aliens
+					    else if (_save.getDebugMode() && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_k && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+					    {
+						    debug("Influenza bacterium dispersed");
+						    foreach (var i in _save.getUnits())
+						    {
+							    if (i.getOriginalFaction() == UnitFaction.FACTION_HOSTILE && !i.isOut())
+							    {
+								    i.damage(new Position(0,0,0), 1000, ItemDamageType.DT_AP, true);
+							    }
+							    _save.getBattleGame().checkForCasualties(null, null, true, false);
+							    _save.getBattleGame().handleState();
+						    }
+					    }
+					    // "ctrl-j" - stun all aliens
+					    else if (_save.getDebugMode() && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_j && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+					    {
+						    debug("Deploying Celine Dion album");
+						    foreach (var i in _save.getUnits())
+						    {
+							    if (i.getOriginalFaction() == UnitFaction.FACTION_HOSTILE && !i.isOut())
+							    {
+								    i.damage(new Position(0,0,0), 1000, ItemDamageType.DT_STUN, true);
+							    }
+						    }
+						    _save.getBattleGame().checkForCasualties(null, null, true, false);
+						    _save.getBattleGame().handleState();
+					    }
+					    // "ctrl-w" - warp unit
+					    else if (_save.getDebugMode() && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_w && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+					    {
+						    debug("Beam me up Scotty");
+						    BattleUnit unit = _save.getSelectedUnit();
+                            _map.getSelectorPosition(out var newPos);
+                            if (unit != null && newPos.x >= 0)
+						    {
+							    unit.getTile().setUnit(null);
+							    unit.setPosition(newPos);
+							    _save.getTile(newPos).setUnit(unit);
+							    _save.getTileEngine().calculateUnitLighting();
+							    _save.getBattleGame().handleState();
+						    }
+					    }
+					    // f11 - voxel map dump
+					    else if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_F11)
+					    {
+						    saveVoxelMap();
+					    }
+					    // f9 - ai
+					    else if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_F9 && Options.traceAI)
+					    {
+						    saveAIMap();
+					    }
+				    }
+				    // quick save and quick load
+				    if (!_game.getSavedGame().isIronman())
+				    {
+					    if (action.getDetails().key.keysym.sym == Options.keyQuickSave)
+					    {
+						    _game.pushState(new SaveGameState(OptionsOrigin.OPT_BATTLESCAPE, SaveType.SAVE_QUICK, _palette));
+					    }
+					    else if (action.getDetails().key.keysym.sym == Options.keyQuickLoad)
+					    {
+						    _game.pushState(new LoadGameState(OptionsOrigin.OPT_BATTLESCAPE, SaveType.SAVE_QUICK, _palette));
+					    }
+				    }
+
+				    // voxel view dump
+				    if (action.getDetails().key.keysym.sym == Options.keyBattleVoxelView)
+				    {
+					    saveVoxelView();
+				    }
+			    }
+		    }
+	    }
+    }
+
+    /**
+     * Selects the next soldier.
+     * @param action Pointer to an action.
+     */
+    void btnNextSoldierClick(Action _)
+    {
+	    if (allowButtons())
+	    {
+		    selectNextPlayerUnit(true, false);
+		    _map.refreshSelectorPosition();
+	    }
+    }
+
+    /**
+     * Selects next soldier.
+     * @param action Pointer to an action.
+     */
+    void btnPrevSoldierClick(Action _)
+    {
+	    if (allowButtons())
+	    {
+		    selectPreviousPlayerUnit(true);
+		    _map.refreshSelectorPosition();
+	    }
+    }
+
+	static byte[] pal =
+	    { 255,255,255, 224,224,224, 128,160,255, 255,160,128, 128,255,128, 192,0,255, 255,255,255, 255,255,255, 224,192,0, 255,64,128 };
+    /**
+     * Saves each layer of voxels on the bettlescape as a png.
+     */
+    void saveVoxelMap()
+    {
+	    string ss;
+	    var image = new List<byte>();
+
+	    Tile tile;
+
+	    for (int z = 0; z < _save.getMapSizeZ()*12; ++z)
+	    {
+		    image.Clear();
+
+		    for (int y = 0; y < _save.getMapSizeY()*16; ++y)
+		    {
+			    for (int x = 0; x < _save.getMapSizeX()*16; ++x)
+			    {
+				    int test = (int)_save.getTileEngine().voxelCheck(new Position(x,y,z*2),null,false) +1;
+				    float dist=1;
+				    if (x%16==15)
+				    {
+					    dist*=0.9f;
+				    }
+				    if (y%16==15)
+				    {
+					    dist*=0.9f;
+				    }
+
+				    if (test == (int)VoxelType.V_OUTOFBOUNDS)
+				    {
+					    tile = _save.getTile(new Position(x/16, y/16, z/12));
+					    if (tile.getUnit() != null)
+					    {
+						    if (tile.getUnit().getFaction()==UnitFaction.FACTION_NEUTRAL) test=9;
+						    else
+						    if (tile.getUnit().getFaction()==UnitFaction.FACTION_PLAYER) test=8;
+					    }
+					    else
+					    {
+						    tile = _save.getTile(new Position(x/16, y/16, z/12-1));
+						    if (tile != null && tile.getUnit() != null)
+						    {
+							    if (tile.getUnit().getFaction()==UnitFaction.FACTION_NEUTRAL) test=9;
+							    else
+							    if (tile.getUnit().getFaction()==UnitFaction.FACTION_PLAYER) test=8;
+						    }
+					    }
+				    }
+
+				    image.Add((byte)((float)pal[test*3+0]*dist));
+				    image.Add((byte)((float)pal[test*3+1]*dist));
+				    image.Add((byte)((float)pal[test*3+2]*dist));
+			    }
+		    }
+
+		    ss = $"{Options.getMasterUserFolder()}voxel{z:D2}.png";
+
+		    uint error = lodepng.encode(ss, image, _save.getMapSizeX()*16, _save.getMapSizeY()*16, LCT_RGB);
+		    if (error != 0)
+		    {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {lodepng_error_text(error)}");
+		    }
+	    }
+	    return;
+    }
+
+    /**
+     * Saves a map as used by the AI.
+     */
+    unsafe void saveAIMap()
+    {
+	    uint start = SDL_GetTicks();
+	    BattleUnit unit = _save.getSelectedUnit();
+	    if (unit == null) return;
+
+	    int w = _save.getMapSizeX();
+	    int h = _save.getMapSizeY();
+
+	    nint imgPtr = SDL_CreateRGBSurface(0, w * 8, h * 8, 24, 0xff, 0xff00, 0xff0000, 0); //SDL_AllocSurface
+        SDL_Surface img = Marshal.PtrToStructure<SDL_Surface>(imgPtr);
+        Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} unit = {unit.getId()}");
+        var span = new Span<byte>(img.pixels.ToPointer(), img.pitch * img.h);
+        span.Fill(0); //memset(img->pixels, 0, img->pitch * img->h);
+
+	    Position tilePos = unit.getPosition();
+	    SDL_Rect r;
+	    r.h = 8;
+	    r.w = 8;
+
+	    for (int y = 0; y < h; ++y)
+	    {
+		    tilePos.y = y;
+		    for (int x = 0; x < w; ++x)
+		    {
+			    tilePos.x = x;
+			    Tile t = _save.getTile(tilePos);
+
+			    if (t == null) continue;
+			    if (!t.isDiscovered(2)) continue;
+		    }
+	    }
+
+	    for (int y = 0; y < h; ++y)
+	    {
+		    tilePos.y = y;
+		    for (int x = 0; x < w; ++x)
+		    {
+			    tilePos.x = x;
+			    Tile t = _save.getTile(tilePos);
+
+			    if (t == null) continue;
+			    if (!t.isDiscovered(2)) continue;
+
+			    r.x = x * r.w;
+			    r.y = y * r.h;
+
+			    if (t.getTUCost((int)TilePart.O_FLOOR, MovementType.MT_FLY) != 255 && t.getTUCost((int)TilePart.O_OBJECT, MovementType.MT_FLY) != 255)
+			    {
+				    SDL_FillRect(img.pixels, ref r, SDL_MapRGB(img.format, 255, 0, 0x20));
+				    characterRGBA(img.pixels, (short)r.x, (short)r.y, (sbyte)'*', 0x7f, 0x7f, 0x7f, 0x7f);
+			    } else
+			    {
+				    if (t.getUnit() == null) SDL_FillRect(img.pixels, ref r, SDL_MapRGB(img.format, 0x50, 0x50, 0x50)); // gray for blocked tile
+			    }
+
+			    for (int z = tilePos.z; z >= 0; --z)
+			    {
+				    Position pos = new Position(tilePos.x, tilePos.y, z);
+				    t = _save.getTile(pos);
+				    BattleUnit wat = t.getUnit();
+				    if (wat != null)
+				    {
+					    switch(wat.getFaction())
+					    {
+					        case UnitFaction.FACTION_HOSTILE:
+						        // #4080C0 is Volutar Blue
+						        characterRGBA(img.pixels, (short)r.x, (short)r.y, (sbyte)((tilePos.z - z != 0) ? 'a' : 'A'), 0x40, 0x80, 0xC0, 0xff);
+						        break;
+					        case UnitFaction.FACTION_PLAYER:
+						        characterRGBA(img.pixels, (short)r.x, (short)r.y, (sbyte)((tilePos.z - z != 0) ? 'x' : 'X'), 255, 255, 127, 0xff);
+						        break;
+					        case UnitFaction.FACTION_NEUTRAL:
+						        characterRGBA(img.pixels, (short)r.x, (short)r.y, (sbyte)((tilePos.z - z != 0) ? 'c' : 'C'), 255, 127, 127, 0xff);
+						        break;
+					    }
+					    break;
+				    }
+				    pos.z--;
+				    if (z > 0 && !t.hasNoFloor(_save.getTile(pos))) break; // no seeing through floors
+			    }
+
+			    if (t.getMapData(TilePart.O_NORTHWALL) != null && t.getMapData(TilePart.O_NORTHWALL).getTUCost(MovementType.MT_FLY) == 255)
+			    {
+				    lineRGBA(img.pixels, (short)r.x, (short)r.y, (short)(r.x+r.w), (short)r.y, 0x50, 0x50, 0x50, 255);
+			    }
+
+			    if (t.getMapData(TilePart.O_WESTWALL) != null && t.getMapData(TilePart.O_WESTWALL).getTUCost(MovementType.MT_FLY) == 255)
+			    {
+				    lineRGBA(img.pixels, (short)r.x, (short)r.y, (short)r.x, (short)(r.y+r.h), 0x50, 0x50, 0x50, 255);
+			    }
+		    }
+	    }
+
+	    string ss;
+
+	    ss = $"z = {tilePos.z}";
+	    stringRGBA(img.pixels, 12, 12, ss, 0, 0, 0, 0x7f);
+
+	    int i = 0;
+	    do
+	    {
+		    ss = $"{Options.getMasterUserFolder()}AIExposure{i:D3}.png";
+		    i++;
+	    }
+	    while (CrossPlatform.fileExists(ss));
+
+		//unsigned error = lodepng::encode(ss.str(), (const unsigned char*)img->pixels, img->w, img->h, LCT_RGB);
+        var error = IMG_SavePNG(img.pixels, ss);
+        if (error == -1)
+	    {
+            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {SDL_GetError()}");
+	    }
+
+	    SDL_FreeSurface(img.pixels);
+
+        Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} saveAIMap() completed in {SDL_GetTicks() - start}ms.");
+    }
+
+	static byte[] pal2 =
+		//			ground		west wall	north wall		object		enem unit						xcom unit	neutr unit
+		{ 0,0,0, 224,224,224,  192,224,255,  255,224,192, 128,255,128, 192,0,255,  0,0,0, 255,255,255,  224,192,0,  255,64,128 };
+	/**
+	 * Saves a first-person voxel view of the battlescape.
+	 */
+	void saveVoxelView()
+	{
+		BattleUnit bu = _save.getSelectedUnit();
+		if (bu==null) return; //no unit selected
+		var _trajectory = new List<Position>();
+
+		double ang_x,ang_y;
+		bool black;
+		Tile tile = null;
+		string ss;
+		var image = new List<byte>();
+		int test;
+		Position originVoxel = getBattleGame().getTileEngine().getSightOriginVoxel(bu);
+
+		Position targetVoxel = new(),hitPos = new();
+		double dist = 0;
+		bool _debug = _save.getDebugMode();
+		double dir = ((double)bu.getDirection()+4)/4*M_PI;
+		image.Clear();
+		for (int y = -256+32; y < 256+32; ++y)
+		{
+			ang_y = (((double)y)/640*M_PI+M_PI/2);
+			for (int x = -256; x < 256; ++x)
+			{
+				ang_x = ((double)x/1024)*M_PI+dir;
+
+				targetVoxel.x=originVoxel.x + (int)(-Math.Sin(ang_x)*1024*Math.Sin(ang_y));
+				targetVoxel.y=originVoxel.y + (int)(Math.Cos(ang_x)*1024*Math.Sin(ang_y));
+				targetVoxel.z=originVoxel.z + (int)(Math.Cos(ang_y)*1024);
+
+				_trajectory.Clear();
+				test = _save.getTileEngine().calculateLine(originVoxel, targetVoxel, false, _trajectory, bu, true, !_debug) +1;
+				black = true;
+				if (test!=0 && test!=6)
+				{
+					tile = _save.getTile(new Position(_trajectory[0].x/16, _trajectory[0].y/16, _trajectory[0].z/24));
+					if (_debug
+						|| (tile.isDiscovered(0) && test == 2)
+						|| (tile.isDiscovered(1) && test == 3)
+						|| (tile.isDiscovered(2) && (test == 1 || test == 4))
+						|| test==5
+						)
+					{
+						if (test==5)
+						{
+							if (tile.getUnit() != null)
+							{
+								if (tile.getUnit().getFaction()==UnitFaction.FACTION_NEUTRAL) test=9;
+								else
+								if (tile.getUnit().getFaction()==UnitFaction.FACTION_PLAYER) test=8;
+							}
+							else
+							{
+								tile = _save.getTile(new Position(_trajectory[0].x/16, _trajectory[0].y/16, _trajectory[0].z/24-1));
+								if (tile != null && tile.getUnit() != null)
+								{
+									if (tile.getUnit().getFaction()==UnitFaction.FACTION_NEUTRAL) test=9;
+									else
+									if (tile.getUnit().getFaction()==UnitFaction.FACTION_PLAYER) test=8;
+								}
+							}
+						}
+						hitPos = new Position(_trajectory[0].x, _trajectory[0].y, _trajectory[0].z);
+						dist = Math.Sqrt((double)((hitPos.x-originVoxel.x)*(hitPos.x-originVoxel.x)
+							+ (hitPos.y-originVoxel.y)*(hitPos.y-originVoxel.y)
+							+ (hitPos.z-originVoxel.z)*(hitPos.z-originVoxel.z)) );
+						black = false;
+					}
+				}
+
+				if (black)
+				{
+					dist = 0;
+				}
+				else
+				{
+					if (dist>1000) dist=1000;
+					if (dist<1) dist=1;
+					dist=(1000-(Math.Log(dist))*140)/700;//140
+
+					if (hitPos.x%16==15)
+					{
+						dist*=0.9;
+					}
+					if (hitPos.y%16==15)
+					{
+						dist*=0.9;
+					}
+					if (hitPos.z%24==23)
+					{
+						dist*=0.9;
+					}
+					if (dist > 1) dist = 1;
+					if (tile != null) dist *= (16 - (double)tile.getShade())/16;
+				}
+
+				image.Add((byte)((double)(pal2[test*3+0])*dist));
+				image.Add((byte)((double)(pal2[test*3+1])*dist));
+				image.Add((byte)((double)(pal2[test*3+2])*dist));
+			}
+		}
+
+		int i = 0;
+		do
+		{
+			ss = $"{Options.getMasterUserFolder()}fpslook{i:D3}.png";
+			i++;
+		}
+		while (CrossPlatform.fileExists(ss));
+
+		uint error = lodepng.encode(ss, image, 512, 512, LCT_RGB);
+		if (error != 0)
+		{
+            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {lodepng_error_text(error)}");
+		}
+
+		return;
+	}
+
+	/**
+	 * Updates the scale.
+	 * @param dX delta of X;
+	 * @param dY delta of Y;
+	 */
+	protected override void resize(ref int dX, ref int dY)
+	{
+		dX = Options.baseXResolution;
+		dY = Options.baseYResolution;
+		int divisor = 1;
+		double pixelRatioY = 1.0;
+
+		if (Options.nonSquarePixelRatio)
+		{
+			pixelRatioY = 1.2;
+		}
+		switch ((ScaleType)Options.battlescapeScale)
+		{
+			case ScaleType.SCALE_SCREEN_DIV_3:
+				divisor = 3;
+				break;
+			case ScaleType.SCALE_SCREEN_DIV_2:
+				divisor = 2;
+				break;
+			case ScaleType.SCALE_SCREEN:
+				break;
+			default:
+				dX = 0;
+				dY = 0;
+				return;
+		}
+
+		Options.baseXResolution = Math.Max(Screen.ORIGINAL_WIDTH, Options.displayWidth / divisor);
+		Options.baseYResolution = Math.Max(Screen.ORIGINAL_HEIGHT, (int)(Options.displayHeight / pixelRatioY / divisor));
+
+		dX = Options.baseXResolution - dX;
+		dY = Options.baseYResolution - dY;
+		_map.setWidth(Options.baseXResolution);
+		_map.setHeight(Options.baseYResolution);
+		_map.getCamera().resize();
+		_map.getCamera().jumpXY(dX/2, dY/2);
+
+		foreach (var i in _surfaces)
+		{
+			if (i != _map && i != _btnPsi && i != _btnLaunch && i != _txtDebug)
+			{
+				i.setX(i.getX() + dX / 2);
+				i.setY(i.getY() + dY);
+			}
+			else if (i != _map && i != _txtDebug)
+			{
+				i.setX(i.getX() + dX);
+			}
+		}
+	}
 }

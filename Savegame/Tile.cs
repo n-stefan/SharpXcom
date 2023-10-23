@@ -802,4 +802,12 @@ internal class Tile
 
 	    return sound;
     }
+
+    /**
+     * Get the black fog of war state of this tile.
+     * @param part 0-2 westwall/northwall/content+floor
+     * @return bool True = discovered the tile.
+     */
+    internal bool isDiscovered(int part) =>
+	    _discovered[part];
 }

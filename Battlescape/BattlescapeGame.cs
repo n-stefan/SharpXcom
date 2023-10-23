@@ -1954,4 +1954,26 @@ internal class BattlescapeGame
 	    }
 	    return false;
     }
+
+    /**
+     * Gives time slice to the front state.
+     */
+    internal void handleState()
+    {
+	    if (_states.Any())
+	    {
+		    // end turn request?
+		    if (_states.First() == null)
+		    {
+			    _states.RemoveAt(0);
+			    endTurn();
+			    return;
+		    }
+		    else
+		    {
+			    _states.First().think();
+		    }
+		    getMap().invalidate(); // redraw map
+	    }
+    }
 }

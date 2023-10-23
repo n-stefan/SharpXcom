@@ -1546,7 +1546,7 @@ internal class BattleUnit
      * Normally only soldiers are affected by fatal wounds.
      * @return Is the unit affected by wounds?
      */
-    bool isWoundable() =>
+    internal bool isWoundable() =>
 	    (_type=="SOLDIER" || (Options.alienBleeding && _originalFaction != UnitFaction.FACTION_PLAYER && _armor.getSize() == 1));
 
     /**
@@ -2932,4 +2932,56 @@ internal class BattleUnit
 	/// Checks if this unit is in hiding for a turn.
 	internal bool isHiding() =>
         _hidingForTurn;
+
+    /**
+     * Heal a fatal wound of the soldier
+     * @param part the body part to heal
+     * @param woundAmount the amount of fatal wound healed
+     * @param healthAmount The amount of health to add to soldier health
+     */
+    internal void heal(int part, int woundAmount, int healthAmount)
+    {
+	    if (part < 0 || part > 5 || _fatalWounds[part] == 0)
+	    {
+		    return;
+	    }
+
+	    _fatalWounds[part] -= woundAmount;
+	    if (_fatalWounds[part] < 0)
+	    {
+		    _fatalWounds[part] = 0;
+	    }
+
+	    _health += healthAmount;
+	    if (_health > getBaseStats().health)
+	    {
+		    _health = getBaseStats().health;
+	    }
+    }
+
+    /**
+     * Restore soldier energy and reduce stun level
+     * @param energy The amount of energy to add
+     * @param s The amount of stun level to reduce
+     */
+    internal void stimulant(int energy, int s)
+    {
+	    _energy += energy;
+	    if (_energy > getBaseStats().stamina)
+		    _energy = getBaseStats().stamina;
+	    healStun(s);
+    }
+
+    /**
+     * Restore soldier morale
+     */
+    internal void painKillers()
+    {
+	    int lostHealth = getBaseStats().health - _health;
+	    if (lostHealth > _moraleRestored)
+	    {
+		    _morale = Math.Min(100, (lostHealth - _moraleRestored + _morale));
+		    _moraleRestored = lostHealth;
+	    }
+    }
 }

@@ -172,4 +172,12 @@ internal class MissionSite : Target
      */
     internal string getCity() =>
 	    _city;
+
+    /**
+     * Returns the mission's unique type used for
+     * savegame purposes.
+     * @return ID.
+     */
+    protected override string getType() =>
+        _deployment.getMarkerName();
 }

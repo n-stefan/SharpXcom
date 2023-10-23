@@ -116,4 +116,12 @@ internal class AlienBase : Target
      */
     internal void setInBattlescape(bool inbattle) =>
         _inBattlescape = inbattle;
+
+    /**
+     * Returns the alien base's unique type used for
+     * savegame purposes.
+     * @return ID.
+     */
+    protected override string getType() =>
+	    _deployment.getMarkerName();
 }

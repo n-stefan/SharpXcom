@@ -665,4 +665,28 @@ internal class UnitInfoState : State
 		_barUnderArmor.setMax(_unit.getMaxArmor(UnitSide.SIDE_UNDER));
 		_barUnderArmor.setValue(_unit.getArmor(UnitSide.SIDE_UNDER));
 	}
+
+	/**
+	 * Closes the window on right-click.
+	 * @param action Pointer to an action.
+	 */
+	protected override void handle(Action action)
+	{
+		base.handle(action);
+		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+		{
+			if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
+			{
+				exitClick(action);
+			}
+			else if (action.getDetails().button.button == SDL_BUTTON_X1)
+			{
+				if (!_mindProbe) btnNextClick(action);
+			}
+			else if (action.getDetails().button.button == SDL_BUTTON_X2)
+			{
+				if (!_mindProbe) btnPrevClick(action);
+			}
+		}
+	}
 }

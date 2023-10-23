@@ -594,7 +594,7 @@ internal class Screen
             int i = 0;
             do
             {
-                ss = $"{Options.getMasterUserFolder()}screen{i.ToString().PadLeft(3, '0')}.png";
+                ss = $"{Options.getMasterUserFolder()}screen{i:D3}.png";
                 i++;
             }
             while (CrossPlatform.fileExists(ss));
