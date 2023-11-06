@@ -76,7 +76,7 @@ internal class Map : InteractiveSurface
      * @param y Y position in pixels.
      * @param visibleMapHeight Current visible map height.
      */
-    Map(Game game, int width, int height, int x, int y, int visibleMapHeight) : base(width, height, x, y)
+    internal Map(Game game, int width, int height, int x, int y, int visibleMapHeight) : base(width, height, x, y)
     {
         _game = game;
         _arrow = null;
@@ -334,7 +334,7 @@ internal class Map : InteractiveSurface
     /**
      * Initializes the map.
      */
-    void init()
+    internal void init()
     {
 	    // load the tiny arrow into a surface
 	    int f = Palette.blockOffset(1); // yellow
@@ -455,4 +455,54 @@ internal class Map : InteractiveSurface
             y = _selectorY,
             z = _camera.getViewLevel()
         };
+
+    /**
+     * Gets the cursor type.
+     * @return cursortype.
+     */
+    internal CursorType getCursorType() =>
+	    _cursorType;
+
+    /**
+     * Sets mouse-buttons' pressed state.
+     * @param button Index of the button.
+     * @param pressed The state of the button.
+     */
+    internal void setButtonsPressed(byte button, bool pressed) =>
+	    setButtonPressed(button, pressed);
+
+    /**
+     * Handles animating tiles. 8 Frames per animation.
+     * @param redraw Redraw the battlescape?
+     */
+    internal void animate(bool redraw)
+    {
+	    _animFrame++;
+	    if (_animFrame == 8) _animFrame = 0;
+
+	    // animate tiles
+	    for (int i = 0; i < _save.getMapSizeXYZ(); ++i)
+	    {
+		    _save.getTiles()[i].animate();
+	    }
+
+	    // animate certain units (large flying units have a propulsion animation)
+	    foreach (var i in _save.getUnits())
+	    {
+		    if (_save.getDepth() > 0 && !i.getFloorAbove())
+		    {
+			    i.breathe();
+		    }
+		    if (!i.isOut())
+		    {
+			    if (i.getArmor().getConstantAnimation())
+			    {
+				    i.setCache(null);
+				    cacheUnit(i);
+			    }
+		    }
+	    }
+
+	    if (redraw) _redraw = true;
+    }
 }

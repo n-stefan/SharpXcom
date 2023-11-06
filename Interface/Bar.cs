@@ -94,4 +94,11 @@ internal class Bar : Surface
         _scale = scale;
         _redraw = true;
     }
+
+    /**
+     * Returns the color used to draw the bar.
+     * @return Color value.
+     */
+    internal byte getColor() =>
+	    _color;
 }

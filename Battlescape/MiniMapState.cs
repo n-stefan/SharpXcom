@@ -36,7 +36,7 @@ internal class MiniMapState : State
 	 * @param camera The Battlescape camera.
 	 * @param battleGame The Battlescape save.
 	 */
-	MiniMapState(Camera camera, SavedBattleGame battleGame)
+	internal MiniMapState(Camera camera, SavedBattleGame battleGame)
 	{
 		if (Options.maximizeInfoScreens)
 		{

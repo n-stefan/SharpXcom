@@ -60,4 +60,20 @@ internal class Particle
      * Cleans up a particle.
      */
     ~Particle() { }
+
+    /**
+     * Animates the particle.
+     * @return if we are done animating this particle yet.
+     */
+    internal bool animate()
+    {
+        _yOffset = (float)(_yOffset - ((320 - _density) / 256.0));
+        _opacity--;
+        _xOffset = (float)(_xOffset + (RNG.seedless(0, 1) * 2 - 1) * (0.25 + (float)RNG.seedless(0, 9) / 30));
+        if (_opacity == 0)
+        {
+            return false;
+	    }
+	    return true;
+    }
 }

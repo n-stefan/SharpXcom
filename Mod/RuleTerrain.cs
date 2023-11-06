@@ -240,4 +240,11 @@ internal class RuleTerrain : IRule
 		}
 		return null;
 	}
+
+	/**
+	 * Gets the terrain name.
+	 * @return The terrain name.
+	 */
+	internal string getName() =>
+		_name;
 }

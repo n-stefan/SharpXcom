@@ -212,7 +212,7 @@ internal class Target
      * @param lang Language to get strings from.
      * @return Full name.
      */
-    protected virtual string getName(Language lang)
+    internal virtual string getName(Language lang)
     {
 	    if (string.IsNullOrEmpty(_name))
 		    return getDefaultName(lang);

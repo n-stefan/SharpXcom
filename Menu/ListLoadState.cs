@@ -60,4 +60,35 @@ internal class ListLoadState : ListGamesState
      */
     void btnOldClick(Action _) =>
         _game.pushState(new ListLoadOriginalState(_origin));
+
+    /**
+     * Loads the selected save.
+     * @param action Pointer to an action.
+     */
+    protected override void lstSavesPress(Action action)
+    {
+	    base.lstSavesPress(action);
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+	    {
+		    bool confirm = false;
+		    SaveInfo saveInfo = _saves[(int)_lstSaves.getSelectedRow()];
+		    foreach (var i in saveInfo.mods)
+		    {
+			    string name = SavedGame.sanitizeModName(i);
+			    if (!Options.mods.Contains(KeyValuePair.Create(name, true)))
+			    {
+				    confirm = true;
+				    break;
+			    }
+		    }
+		    if (confirm)
+		    {
+			    _game.pushState(new ConfirmLoadState(_origin, saveInfo.fileName));
+		    }
+		    else
+		    {
+			    _game.pushState(new LoadGameState(_origin, saveInfo.fileName, _palette));
+		    }
+	    }
+    }
 }

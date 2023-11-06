@@ -883,7 +883,7 @@ internal class Surface
 	    {
             int end = Math.Min(_surface.w * _surface.h * getFormat(_surface).BytesPerPixel, src.Length);
             var source = MemoryExtensions.AsMemory(src, 0, end);
-            Unsafe.Copy(_surface.pixels.ToPointer(), ref source);
+            Unsafe.Copy((void*)_surface.pixels, ref source);
 	    }
 	    // Copy row by row
 	    else
@@ -895,7 +895,7 @@ internal class Surface
 			    if (begin >= src.Length)
 				    break;
                 var source = MemoryExtensions.AsMemory(src, begin, end - begin);
-                Unsafe.Copy(getRaw(0, y).ToPointer(), ref source);
+                Unsafe.Copy((void*)getRaw(0, y), ref source);
 		    }
 	    }
     }

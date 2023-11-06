@@ -110,7 +110,7 @@ internal class Music
     {
 #if !__NO_MUSIC
         nint dataPtr = Marshal.AllocHGlobal(data.Count);
-        Unsafe.Copy(dataPtr.ToPointer(), ref data);
+        Unsafe.Copy((byte*)dataPtr, ref data);
         nint rwops = SDL_RWFromConstMem(dataPtr, size);
         _music = Mix_LoadMUS_RW(rwops);
         SDL_FreeRW(rwops);

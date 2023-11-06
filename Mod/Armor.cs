@@ -393,4 +393,18 @@ internal class Armor : IRule
      */
     internal string getSpriteSheet() =>
 	    _spriteSheet;
+
+    /*
+     * Gets if armor uses constant animation.
+     * @return if it uses constant animation
+     */
+    internal bool getConstantAnimation() =>
+	    _constantAnimation;
+
+    /**
+     * Gets the drawing routine ID.
+     * @return The drawing routine ID.
+     */
+    internal int getDrawingRoutine() =>
+	    _drawingRoutine;
 }

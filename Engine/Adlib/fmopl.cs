@@ -39,7 +39,7 @@ delegate void OPL_UPDATEHANDLER(int param, int min_interval_us);
 
 /* Saving is necessary for member of the 'R' mark for suspend/resume */
 /* ---------- OPL one of slot  ---------- */
-/* struct */ class OPL_SLOT
+struct OPL_SLOT
 {
     internal int TL;       /* total level     :TL << 8            */
     internal int TLL;      /* adjusted now TL                     */
@@ -70,7 +70,7 @@ delegate void OPL_UPDATEHANDLER(int param, int min_interval_us);
 }
 
 /* ---------- OPL one of channel  ---------- */
-/* struct */ class OPL_CH
+struct OPL_CH
 {
     internal OPL_SLOT[] SLOT = new OPL_SLOT[2];
     internal byte CON;          /* connection type                     */
@@ -84,10 +84,12 @@ delegate void OPL_UPDATEHANDLER(int param, int min_interval_us);
     internal uint fc;          /* Freq. Increment base                */
     internal uint ksl_base;    /* KeyScaleLevel Base step             */
     internal byte keyon;     /* key on/off flag                     */
+
+    public OPL_CH() { }
 }
 
 /* OPL state */
-/* struct */ class FM_OPL
+record struct FM_OPL
 {
     internal byte type;         /* chip type                         */
     internal int clock;          /* master clock  (Hz)                */
@@ -139,6 +141,8 @@ delegate void OPL_UPDATEHANDLER(int param, int min_interval_us);
     internal int IRQParam;                       /* IRQ parameter  */
     internal OPL_UPDATEHANDLER UpdateHandler;    /* stream update handler   */
     internal int UpdateParam;                   /* stream update parameter */
+
+    public FM_OPL() { }
 }
 
 internal class fmopl

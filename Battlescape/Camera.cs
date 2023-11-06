@@ -24,6 +24,8 @@ namespace SharpXcom.Battlescape;
  */
 internal class Camera
 {
+	internal const int SCROLL_BORDER = 5;
+
     Timer _scrollMouseTimer, _scrollKeyTimer;
     int _spriteWidth, _spriteHeight;
     int _mapsize_x, _mapsize_y, _mapsize_z;
@@ -78,7 +80,7 @@ internal class Camera
      * @param y Y deviation.
      * @param redraw Redraw map or not.
      */
-    void scrollXY(int x, int y, bool redraw)
+    internal void scrollXY(int x, int y, bool redraw)
     {
         _mapOffset.x += x;
         _mapOffset.y += y;
@@ -311,5 +313,41 @@ internal class Camera
 	    _mapOffset.x += x;
 	    _mapOffset.y += y;
 	    convertScreenToMap((_screenWidth / 2), (_visibleMapHeight / 2), ref _center.x, ref _center.y);
+    }
+
+    /**
+     * Goes one level up.
+     */
+    internal void up()
+    {
+	    if (_mapOffset.z < _mapsize_z - 1)
+	    {
+		    _mapOffset.z++;
+		    _mapOffset.y += _spriteHeight * 3 / 5;
+		    _map.draw();
+	    }
+    }
+
+    /**
+     * Goes one level down.
+     */
+    internal void down()
+    {
+	    if (_mapOffset.z > 0)
+	    {
+		    _mapOffset.z--;
+		    _mapOffset.y -= _spriteHeight * 3 / 5;
+		    _map.draw();
+	    }
+    }
+
+    /**
+     * Toggles showing all map layers.
+     * @return New layer setting.
+     */
+    internal int toggleShowAllLayers()
+    {
+	    _showAllLayers = !_showAllLayers;
+	    return _showAllLayers?2:1;
     }
 }

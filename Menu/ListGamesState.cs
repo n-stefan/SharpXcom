@@ -192,7 +192,7 @@ internal class ListGamesState : State
      * Deletes the selected save.
      * @param action Pointer to an action.
      */
-    void lstSavesPress(Action action)
+    protected virtual void lstSavesPress(Action action)
     {
         if (action.getDetails().button.button == SDL_BUTTON_RIGHT && _lstSaves.getSelectedRow() >= _firstValidRow)
         {
@@ -297,7 +297,7 @@ internal class ListGamesState : State
      * Updates the save game list with the current list
      * of available savegames.
      */
-    void updateList()
+    protected virtual void updateList()
     {
         uint row = 0;
         byte color = _lstSaves.getSecondaryColor();
@@ -335,4 +335,7 @@ internal class ListGamesState : State
             Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {e.Message}");
 	    }
     }
+
+    protected void disableSort() =>
+	    _sortable = false;
 }

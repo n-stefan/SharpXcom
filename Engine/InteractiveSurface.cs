@@ -178,7 +178,7 @@ internal class InteractiveSurface : Surface
 	    }
     }
 
-    void setButtonPressed(byte button, bool pressed)
+    protected void setButtonPressed(byte button, bool pressed)
     {
         if (pressed)
         {
@@ -473,6 +473,14 @@ internal class InteractiveSurface : Surface
      * keyboard events if focused.
      * @param focus Is it focused?
      */
-    internal virtual void setFocus(bool focus) =>
+    protected virtual void setFocus(bool focus) =>
         _isFocused = focus;
+
+    /**
+     * Returns the surface's focus. Surfaces will only receive
+     * keyboard events if focused.
+     * @return Is it focused?
+     */
+    internal bool isFocused() =>
+	    _isFocused;
 }

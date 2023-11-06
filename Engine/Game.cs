@@ -248,7 +248,7 @@ internal class Game
         }
     }
 
-    double volumeExponent(int volume) =>
+    internal static double volumeExponent(int volume) =>
         (Math.Exp(Math.Log(VOLUME_GRADIENT + 1.0) * volume / SDL_MIX_MAXVOLUME) - 1.0) / VOLUME_GRADIENT;
 
     /**
@@ -343,7 +343,7 @@ internal class Game
 		    }
 
             // Process events
-            while (SDL_PollEvent(out _event) == 1)
+            while (SDL_PollEvent(out _event) != 0)
 		    {
                 if (CrossPlatform.isQuitShortcut(_event))
                     _event.type = SDL_EventType.SDL_QUIT;

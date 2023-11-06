@@ -35,7 +35,7 @@ internal class ActionMenuState : State
 	 * @param x Position on the x-axis.
 	 * @param y position on the y-axis.
 	 */
-	ActionMenuState(BattleAction action, int x, int y)
+	internal ActionMenuState(BattleAction action, int x, int y)
 	{
 		_action = action;
 
@@ -198,7 +198,7 @@ internal class ActionMenuState : State
 				}
 				else
 				{
-					_game.pushState(new PrimeGrenadeState(_action, false, 0));
+					_game.pushState(new PrimeGrenadeState(_action, false, null));
 				}
 			}
 			else if (_action.type == BattleActionType.BA_USE && weapon.getBattleType() == BattleType.BT_MEDIKIT)

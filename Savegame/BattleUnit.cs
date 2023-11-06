@@ -1622,18 +1622,18 @@ internal class BattleUnit
     {
 	    if (_type != "SOLDIER" && lang != null)
 	    {
-		    string ret;
+		    var ret = new StringBuilder();
 
 		    if (_type.Contains("STR_"))
-			    ret = lang.getString(_type);
+			    ret.Append(lang.getString(_type));
 		    else
-			    ret = lang.getString(_race);
+			    ret.Append(lang.getString(_race));
 
 		    if (debugAppendId)
 		    {
-			    ret = $"{ret} {_id}";
+			    ret.Append($" {_id}");
 		    }
-		    return ret;
+		    return ret.ToString();
 	    }
 
 	    return _name;
@@ -2984,4 +2984,75 @@ internal class BattleUnit
 		    _moraleRestored = lostHealth;
 	    }
     }
+
+    /**
+     * Set unit's active hand.
+     * @param hand active hand.
+     */
+    internal void setActiveHand(string hand)
+    {
+	    if (_activeHand != hand) _cacheInvalid = true;
+	    _activeHand = hand;
+    }
+
+    /**
+     * Checks if the floor above flag has been set.
+     * @return if we're under cover.
+     */
+    internal bool getFloorAbove() =>
+	    _floorAbove;
+
+    /**
+     * Decides if we should start producing bubbles, and/or updates which bubble frame we are on.
+     */
+    internal void breathe()
+    {
+	    // _breathFrame of -1 means this unit doesn't produce bubbles
+	    if (_breathFrame < 0 || isOut())
+	    {
+		    _breathing = false;
+		    return;
+	    }
+
+	    if (!_breathing || _status == UnitStatus.STATUS_WALKING)
+	    {
+		    // deviation from original: TFTD used a static 10% chance for every animation frame,
+		    // instead let's use 5%, but allow morale to affect it.
+		    _breathing = (_status != UnitStatus.STATUS_WALKING && RNG.seedless(0, 99) < (105 - _morale));
+		    _breathFrame = 0;
+	    }
+
+	    if (_breathing)
+	    {
+		    // advance the bubble frame
+		    _breathFrame++;
+
+		    // we've reached the end of the cycle, get rid of the bubbles
+		    if (_breathFrame >= 17)
+		    {
+			    _breathFrame = 0;
+			    _breathing = false;
+		    }
+	    }
+    }
+
+    /**
+     * Get the amount of fatal wound for a body part
+     * @param part The body part (in the range 0-5)
+     * @return The amount of fatal wound of a body part
+     */
+    internal int getFatalWound(int part)
+    {
+	    if (part < 0 || part > 5)
+		    return 0;
+	    return _fatalWounds[part];
+    }
+
+    /**
+     * Gets values used for recoloring sprites.
+     * @param i what value choose.
+     * @return Pairs of value, where first is color group to replace and second is new color group with shade.
+     */
+    internal List<KeyValuePair<byte, byte>> getRecolor() =>
+	    _recolor;
 }

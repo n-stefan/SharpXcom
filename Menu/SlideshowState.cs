@@ -32,7 +32,7 @@ internal class SlideshowState : State
 	List<Text>_captions;
 	Timer _transitionTimer;
 
-	SlideshowState(SlideshowHeader slideshowHeader, List<SlideshowSlide> slideshowSlides)
+	internal SlideshowState(SlideshowHeader slideshowHeader, List<SlideshowSlide> slideshowSlides)
 	{
 		_slideshowHeader = slideshowHeader;
 		_slideshowSlides = slideshowSlides;

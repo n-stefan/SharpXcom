@@ -84,7 +84,7 @@ internal class BattlescapeGame
      * @param save Pointer to the save game.
      * @param parentState Pointer to the parent battlescape state.
      */
-    BattlescapeGame(SavedBattleGame save, BattlescapeState parentState)
+    internal BattlescapeGame(SavedBattleGame save, BattlescapeState parentState)
     {
         _save = save;
         _parentState = parentState;
@@ -125,7 +125,7 @@ internal class BattlescapeGame
       * @param bForce Force the action to be cancelled.
       * @return Whether an action was cancelled or not.
       */
-    bool cancelCurrentAction(bool bForce = false)
+    internal bool cancelCurrentAction(bool bForce = false)
     {
         bool bPreviewed = Options.battleNewPreviewPath != PathPreview.PATH_NONE;
 
@@ -683,7 +683,7 @@ internal class BattlescapeGame
     /**
      * Requests the end of the turn (waits for explosions etc to really end the turn).
      */
-    void requestEndTurn()
+    internal void requestEndTurn()
     {
         cancelCurrentAction();
         if (!_endTurnRequested)
@@ -1975,5 +1975,229 @@ internal class BattlescapeGame
 		    }
 		    getMap().invalidate(); // redraw map
 	    }
+    }
+
+    /**
+     * Activates primary action (left click).
+     * @param pos Position on the map.
+     */
+    internal void primaryAction(Position pos)
+    {
+	    bool bPreviewed = Options.battleNewPreviewPath != PathPreview.PATH_NONE;
+
+	    getMap().resetObstacles();
+
+	    if (_currentAction.targeting && _save.getSelectedUnit() != null)
+	    {
+		    if (_currentAction.type == BattleActionType.BA_LAUNCH)
+		    {
+			    int maxWaypoints = _currentAction.weapon.getRules().getWaypoints();
+			    if (maxWaypoints == 0)
+			    {
+				    maxWaypoints = _currentAction.weapon.getAmmoItem().getRules().getWaypoints();
+			    }
+			    if ((int)_currentAction.waypoints.Count < maxWaypoints || maxWaypoints == -1)
+			    {
+				    _parentState.showLaunchButton(true);
+				    _currentAction.waypoints.Add(pos);
+				    getMap().getWaypoints().Add(pos);
+			    }
+		    }
+		    else if (_currentAction.type == BattleActionType.BA_USE && _currentAction.weapon.getRules().getBattleType() == BattleType.BT_MINDPROBE)
+		    {
+			    if (_save.selectUnit(pos) != null && _save.selectUnit(pos).getFaction() != _save.getSelectedUnit().getFaction() && _save.selectUnit(pos).getVisible())
+			    {
+				    if (!_currentAction.weapon.getRules().isLOSRequired() ||
+					    _currentAction.actor.getVisibleUnits().Contains(_save.selectUnit(pos)))
+				    {
+					    if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
+					    {
+						    _parentState.getGame().getMod().getSoundByDepth((uint)_save.getDepth(), (uint)_currentAction.weapon.getRules().getHitSound()).play(-1, getMap().getSoundAngle(pos));
+						    _parentState.getGame().pushState (new UnitInfoState(_save.selectUnit(pos), _parentState, false, true));
+						    cancelCurrentAction();
+					    }
+					    else
+					    {
+						    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
+					    }
+				    }
+				    else
+				    {
+					    _parentState.warning("STR_NO_LINE_OF_FIRE");
+				    }
+			    }
+		    }
+		    else if (_currentAction.type == BattleActionType.BA_PANIC || _currentAction.type == BattleActionType.BA_MINDCONTROL)
+		    {
+			    if (_save.selectUnit(pos) != null && _save.selectUnit(pos).getFaction() != _save.getSelectedUnit().getFaction() && _save.selectUnit(pos).getVisible())
+			    {
+				    _currentAction.TU = _currentAction.actor.getActionTUs(_currentAction.type, _currentAction.weapon);
+				    _currentAction.target = pos;
+				    if (!_currentAction.weapon.getRules().isLOSRequired() ||
+					    _currentAction.actor.getVisibleUnits().Contains(_save.selectUnit(pos)))
+				    {
+					    // get the sound/animation started
+					    getMap().setCursorType(CursorType.CT_NONE);
+					    _parentState.getGame().getCursor().setVisible(false);
+					    _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
+					    statePushBack(new PsiAttackBState(this, _currentAction));
+				    }
+				    else
+				    {
+					    _parentState.warning("STR_NO_LINE_OF_FIRE");
+				    }
+			    }
+		    }
+		    else if (Options.battleConfirmFireMode && (!_currentAction.waypoints.Any() || pos != _currentAction.waypoints.First()))
+		    {
+			    _currentAction.waypoints.Clear();
+			    _currentAction.waypoints.Add(pos);
+			    getMap().getWaypoints().Clear();
+			    getMap().getWaypoints().Add(pos);
+		    }
+		    else
+		    {
+			    _currentAction.target = pos;
+			    getMap().setCursorType(CursorType.CT_NONE);
+
+			    if (Options.battleConfirmFireMode)
+			    {
+				    _currentAction.waypoints.Clear();
+				    getMap().getWaypoints().Clear();
+			    }
+
+			    _parentState.getGame().getCursor().setVisible(false);
+			    _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
+			    _states.Add(new ProjectileFlyBState(this, _currentAction));
+			    statePushFront(new UnitTurnBState(this, _currentAction)); // first of all turn towards the target
+		    }
+	    }
+	    else
+	    {
+		    _currentAction.actor = _save.getSelectedUnit();
+		    BattleUnit unit = _save.selectUnit(pos);
+		    if (unit != null && unit != _save.getSelectedUnit() && (unit.getVisible() || _debugPlay))
+		    {
+		    //  -= select unit =-
+			    if (unit.getFaction() == _save.getSide())
+			    {
+				    _save.setSelectedUnit(unit);
+				    _parentState.updateSoldierInfo();
+				    cancelCurrentAction();
+				    setupCursor();
+				    _currentAction.actor = unit;
+			    }
+		    }
+		    else if (playableUnitSelected())
+		    {
+			    bool modifierPressed = (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0;
+			    if (bPreviewed &&
+				    (_currentAction.target != pos || (_save.getPathfinding().isModifierUsed() != modifierPressed)))
+			    {
+				    _save.getPathfinding().removePreview();
+			    }
+			    _currentAction.target = pos;
+			    _save.getPathfinding().calculate(_currentAction.actor, _currentAction.target);
+			    _currentAction.run = false;
+			    _currentAction.strafe = Options.strafe && modifierPressed && _save.getSelectedUnit().getArmor().getSize() == 1;
+			    if (_currentAction.strafe && _save.getPathfinding().getPath().Count > 1)
+			    {
+				    _currentAction.run = true;
+				    _currentAction.strafe = false;
+			    }
+			    if (bPreviewed && !_save.getPathfinding().previewPath() && _save.getPathfinding().getStartDirection() != -1)
+			    {
+				    _save.getPathfinding().removePreview();
+				    bPreviewed = false;
+			    }
+
+			    if (!bPreviewed && _save.getPathfinding().getStartDirection() != -1)
+			    {
+				    //  -= start walking =-
+				    getMap().setCursorType(CursorType.CT_NONE);
+				    _parentState.getGame().getCursor().setVisible(false);
+				    statePushBack(new UnitWalkBState(this, _currentAction));
+			    }
+		    }
+	    }
+    }
+
+    /**
+     * Activates secondary action (right click).
+     * @param pos Position on the map.
+     */
+    internal void secondaryAction(Position pos)
+    {
+	    //  -= turn to or open door =-
+	    _currentAction.target = pos;
+	    _currentAction.actor = _save.getSelectedUnit();
+	    _currentAction.strafe = Options.strafe && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0 && _save.getSelectedUnit().getTurretType() > -1;
+	    statePushBack(new UnitTurnBState(this, _currentAction));
+    }
+
+    /**
+     * Moves a unit up or down.
+     * @param unit The unit.
+     * @param dir Direction DIR_UP or DIR_DOWN.
+     */
+    internal void moveUpDown(BattleUnit unit, int dir)
+    {
+	    _currentAction.target = unit.getPosition();
+	    if (dir == Pathfinding.DIR_UP)
+	    {
+		    _currentAction.target.z++;
+	    }
+	    else
+	    {
+		    _currentAction.target.z--;
+	    }
+	    getMap().setCursorType(CursorType.CT_NONE);
+	    _parentState.getGame().getCursor().setVisible(false);
+	    if (_save.getSelectedUnit().isKneeled())
+	    {
+		    kneel(_save.getSelectedUnit());
+	    }
+	    _save.getPathfinding().calculate(_currentAction.actor, _currentAction.target);
+	    statePushBack(new UnitWalkBState(this, _currentAction));
+    }
+
+    /**
+     * Gets the kneel reservation setting.
+     * @return Kneel reservation setting.
+     */
+    internal bool getKneelReserved() =>
+	    _save.getKneelReserved();
+
+    /**
+     * Handler for the blaster launcher button.
+     */
+    internal void launchAction()
+    {
+	    _parentState.showLaunchButton(false);
+	    getMap().getWaypoints().Clear();
+	    _currentAction.target = _currentAction.waypoints.First();
+	    getMap().setCursorType(CursorType.CT_NONE);
+	    _parentState.getGame().getCursor().setVisible(false);
+	    _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
+	    _states.Add(new ProjectileFlyBState(this, _currentAction));
+	    statePushFront(new UnitTurnBState(this, _currentAction)); // first of all turn towards the target
+    }
+
+    /**
+     * Handler for the psi button.
+     */
+    internal void psiButtonAction()
+    {
+	    if (_currentAction.waypoints.Any()) // in case waypoints were set with a blaster launcher, avoid accidental misclick
+		    return;
+	    _currentAction.weapon = _save.getSelectedUnit().getSpecialWeapon(BattleType.BT_PSIAMP);
+	    _currentAction.targeting = true;
+	    _currentAction.type = BattleActionType.BA_PANIC;
+	    _currentAction.TU = _currentAction.weapon.getRules().getTUUse();
+	    if (!_currentAction.weapon.getRules().getFlatRate())
+	    {
+		    _currentAction.TU = (int)Math.Floor(_save.getSelectedUnit().getBaseStats().tu * _currentAction.TU / 100.0f);
+	    }
+	    setupCursor();
     }
 }

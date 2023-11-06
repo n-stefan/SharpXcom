@@ -360,7 +360,7 @@ internal class Base : Target
      * @param lang Language to get strings from (unused).
      * @return Name.
      */
-    internal string getName(Language lang = null) =>
+    internal override string getName(Language _ = null) =>
 	    _name;
 
     /**

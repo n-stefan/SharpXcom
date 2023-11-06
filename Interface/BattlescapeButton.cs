@@ -143,4 +143,16 @@ internal class BattlescapeButton : InteractiveSurface
 	    if (_group != null && _group == this)
 		    _inverted = true;
     }
+
+    /**
+     * Toggle inversion mode: click to press, click to unpress.
+     */
+    internal void allowToggleInversion() =>
+	    _toggleMode = InversionType.INVERT_TOGGLE;
+
+    /**
+     * Click inversion mode: click to press, release to unpress.
+     */
+    internal void allowClickInversion() =>
+	    _toggleMode = InversionType.INVERT_CLICK;
 }

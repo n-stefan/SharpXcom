@@ -1452,7 +1452,7 @@ internal class SavedGame
      * @param name Mod id from a savegame.
      * @return Sanitized mod name.
      */
-    static string sanitizeModName(string name)
+    internal static string sanitizeModName(string name)
     {
 	    int versionInfoBreakPoint = name.IndexOf(" ver: ");
 	    if (versionInfoBreakPoint == -1)

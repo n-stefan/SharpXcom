@@ -49,4 +49,12 @@ internal class City : Target
      */
     protected override int getMarker() =>
 	    8;
+
+    /**
+     * Returns the city's unique identifying name.
+     * @param lang Language to get strings from.
+     * @return Full name.
+     */
+    internal override string getName(Language lang) =>
+	    lang.getString(_name);
 }

@@ -810,4 +810,45 @@ internal class Tile
      */
     internal bool isDiscovered(int part) =>
 	    _discovered[part];
+
+    /**
+     * Animate the tile. This means to advance the current frame for every object.
+     * Ufo doors are a bit special, they animated only when triggered.
+     * When ufo doors are on frame 0(closed) or frame 7(open) they are not animated further.
+     */
+    internal void animate()
+    {
+	    int newframe;
+	    for (int i=0; i < 4; ++i)
+	    {
+		    if (_objects[i] != null)
+		    {
+			    if (_objects[i].isUFODoor() && (_currentFrame[i] == 0 || _currentFrame[i] == 7)) // ufo door is static
+			    {
+				    continue;
+			    }
+			    newframe = _currentFrame[i] + 1;
+			    if (_objects[i].isUFODoor() && _objects[i].getSpecialType() == SpecialTileType.START_POINT && newframe == 3)
+			    {
+				    newframe = 7;
+			    }
+			    if (newframe == 8)
+			    {
+				    newframe = 0;
+			    }
+			    _currentFrame[i] = newframe;
+		    }
+	    }
+	    for (var i = 0; i < _particles.Count;)
+	    {
+		    if (!_particles[i].animate())
+		    {
+			    _particles.RemoveAt(i);
+		    }
+		    else
+		    {
+			    ++i;
+		    }
+	    }
+    }
 }

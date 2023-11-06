@@ -1781,4 +1781,30 @@ internal class SavedBattleGame
 		    _tiles[i].setDiscovered(false, 2);
 	    }
     }
+
+    /**
+     * Get the music track for the current battle.
+     * @return the name of the music track.
+     */
+    internal string getMusic() =>
+	    _music;
+
+    /**
+     * Selects the unit at the given position on the map.
+     * @param pos Position.
+     * @return Pointer to a BattleUnit, or 0 when none is found.
+     */
+    internal BattleUnit selectUnit(Position pos)
+    {
+	    BattleUnit bu = getTile(pos).getUnit();
+
+	    if (bu != null && bu.isOut())
+	    {
+		    return null;
+	    }
+	    else
+	    {
+		    return bu;
+	    }
+    }
 }

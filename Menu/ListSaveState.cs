@@ -28,6 +28,7 @@ internal class ListSaveState : ListGamesState
     int _previousSelectedRow, _selectedRow;
     TextEdit _edtSave;
     TextButton _btnSaveGame;
+	string _selected;
 
     /**
      * Initializes all the elements in the Save Game screen.
@@ -129,5 +130,68 @@ internal class ListSaveState : ListGamesState
         {
             saveGame();
         }
+    }
+
+    /**
+     * Updates the save game list with the current list
+     * of available savegames.
+     */
+    protected override void updateList()
+    {
+	    _lstSaves.addRow(1, tr("STR_NEW_SAVED_GAME_SLOT"));
+	    if (_origin != OptionsOrigin.OPT_BATTLESCAPE)
+		    _lstSaves.setRowColor(0, _lstSaves.getSecondaryColor());
+	    base.updateList();
+    }
+
+    /**
+     * Names the selected save.
+     * @param action Pointer to an action.
+     */
+    protected override void lstSavesPress(Action action)
+    {
+	    if (action.getDetails().button.button == SDL_BUTTON_RIGHT && _edtSave.isFocused())
+	    {
+		    _edtSave.setText(string.Empty);
+		    _edtSave.setVisible(false);
+		    _edtSave.setFocus(false, false);
+		    _lstSaves.setScrolling(true);
+	    }
+	    base.lstSavesPress(action);
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+	    {
+		    _previousSelectedRow = _selectedRow;
+		    _selectedRow = (int)_lstSaves.getSelectedRow();
+
+		    switch (_previousSelectedRow)
+		    {
+			    case -1:	// first click on the savegame list
+				    break;
+			    case 0:
+				    _lstSaves.setCellText((uint)_previousSelectedRow, 0, tr("STR_NEW_SAVED_GAME_SLOT"));
+				    break;
+			    default:
+				    _lstSaves.setCellText((uint)_previousSelectedRow, 0, _selected);
+                    break;
+		    }
+
+		    _selected = _lstSaves.getCellText(_lstSaves.getSelectedRow(), 0);
+		    _lstSaves.setCellText(_lstSaves.getSelectedRow(), 0, string.Empty);
+		    if (_lstSaves.getSelectedRow() == 0)
+		    {
+			    _edtSave.setText(string.Empty);
+			    _selected = string.Empty;
+		    }
+		    else
+		    {
+			    _edtSave.setText(_selected);
+		    }
+		    _edtSave.setX(_lstSaves.getColumnX(0));
+		    _edtSave.setY(_lstSaves.getRowY((uint)_selectedRow));
+		    _edtSave.setVisible(true);
+		    _edtSave.setFocus(true, false);
+		    _lstSaves.setScrolling(false);
+		    disableSort();
+	    }
     }
 }

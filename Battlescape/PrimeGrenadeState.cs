@@ -41,7 +41,7 @@ internal class PrimeGrenadeState : State
 	 * @param inInventoryView Called from inventory?
 	 * @param grenadeInInventory Pointer to associated grenade.
 	 */
-	PrimeGrenadeState(BattleAction action, bool inInventoryView, BattleItem grenadeInInventory)
+	internal PrimeGrenadeState(BattleAction action, bool inInventoryView, BattleItem grenadeInInventory)
 	{
 		_action = action;
 		_inInventoryView = inInventoryView;

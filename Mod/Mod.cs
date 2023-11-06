@@ -269,7 +269,7 @@ internal class Mod
     static int UNDERWATER_SMOKE_OFFSET;
     internal static int ITEM_DROP;
     internal static int ITEM_THROW;
-    static int ITEM_RELOAD;
+    internal static int ITEM_RELOAD;
     internal static int WALK_OFFSET;
     internal static int FLYING_SOUND;
     static int BUTTON_PRESS;

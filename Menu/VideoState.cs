@@ -425,7 +425,7 @@ internal class VideoState : State
 				continue;
 			}
 
-			if (!flcPlayer)
+			if (flcPlayer == null)
 			{
 				flcPlayer = new FlcPlayer();
 			}
@@ -453,7 +453,7 @@ internal class VideoState : State
 			}
 		}
 
-		if (flcPlayer)
+		if (flcPlayer != null)
 		{
 			flcPlayer = null;
 		}

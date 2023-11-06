@@ -137,7 +137,7 @@ internal class TextEdit : InteractiveSurface
         _textEditConstraint = constraint;
 
     // Override the base class' method properly.
-    internal override void setFocus(bool focus) =>
+    protected override void setFocus(bool focus) =>
         setFocus(focus, true);
 
     /**

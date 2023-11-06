@@ -88,7 +88,7 @@ internal class MedikitState : State
 	 * @param targetUnit The wounded unit.
 	 * @param action The healing action.
 	 */
-	MedikitState(BattleUnit targetUnit, BattleAction action)
+	internal MedikitState(BattleUnit targetUnit, BattleAction action)
 	{
 		_targetUnit = targetUnit;
 		_action = action;

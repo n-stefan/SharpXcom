@@ -554,7 +554,7 @@ internal class SoldierInfoState : State
     {
         if (_base == null)
         {
-            _edtSoldier.setFocus(false);
+            _edtSoldier.setFocus(false, true);
         }
     }
 

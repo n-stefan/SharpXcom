@@ -252,7 +252,7 @@ internal class TextList : InteractiveSurface
      * @param scrolling True to allow scrolling, false otherwise.
      * @param scrollPos Custom X position for the scroll buttons.
      */
-    internal void setScrolling(bool scrolling, int scrollPos)
+    internal void setScrolling(bool scrolling, int scrollPos = 4)
     {
         _scrolling = scrolling;
         if (scrollPos != _scrollPos)
@@ -818,4 +818,12 @@ internal class TextList : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * Returns the X position of a specific text column in the list.
+     * @param column Column number.
+     * @return X position in pixels.
+     */
+    internal int getColumnX(uint column) =>
+	    getX() + _texts[0][(int)column].getX();
 }

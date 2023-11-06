@@ -83,7 +83,7 @@ internal class Pathfinding
      * @param bRemove Remove preview?
      * @return True, if a path is previewed.
      */
-    bool previewPath(bool bRemove)
+    internal bool previewPath(bool bRemove = false)
     {
         if (!_path.Any())
             return false;
@@ -696,7 +696,7 @@ internal class Pathfinding
 	 * @param direction Up or Down
 	 * @return bool Whether it's valid.
 	 */
-    bool validateUpDown(BattleUnit bu, Position startPosition, int direction, bool missile)
+    internal bool validateUpDown(BattleUnit bu, Position startPosition, int direction, bool missile = false)
     {
         directionToVector(direction, out var endPosition);
         endPosition += startPosition;
@@ -1267,4 +1267,18 @@ internal class Pathfinding
      */
     internal bool getStrafeMove() =>
 	    _strafeMove;
+
+    /**
+     * Checks whether a modifier key was used to enable strafing or running.
+     * @return True, if a modifier was used.
+     */
+    internal bool isModifierUsed() =>
+	    _modifierUsed;
+
+    /**
+     * Gets the path preview setting.
+     * @return True, if paths are previewed.
+     */
+    internal bool isPathPreviewed() =>
+	    _pathPreviewed;
 }

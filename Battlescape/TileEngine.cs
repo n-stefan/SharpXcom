@@ -146,12 +146,12 @@ internal class TileEngine
         {
             // only floors and objects can light up
             if (_save.getTiles()[i].getMapData(TilePart.O_FLOOR) != null
-                && _save.getTiles()[i].getMapData(TilePart.O_FLOOR).getLightSource() != null)
+                && _save.getTiles()[i].getMapData(TilePart.O_FLOOR).getLightSource() != 0)
             {
                 addLight(_save.getTiles()[i].getPosition(), _save.getTiles()[i].getMapData(TilePart.O_FLOOR).getLightSource(), layer);
             }
             if (_save.getTiles()[i].getMapData(TilePart.O_OBJECT) != null
-                && _save.getTiles()[i].getMapData(TilePart.O_OBJECT).getLightSource() != null)
+                && _save.getTiles()[i].getMapData(TilePart.O_OBJECT).getLightSource() != 0)
             {
                 addLight(_save.getTiles()[i].getPosition(), _save.getTiles()[i].getMapData(TilePart.O_OBJECT).getLightSource(), layer);
             }
@@ -550,7 +550,7 @@ internal class TileEngine
             originVoxel.y += 8;
             originVoxel.z += 1; //topmost voxel
         }
-        if (originVoxel.z >= (currentUnit.getPosition().z + 1) * 24 && (tileAbove == null || tileAbove.hasNoFloor(null) == null))
+        if (originVoxel.z >= (currentUnit.getPosition().z + 1) * 24 && (tileAbove == null || !tileAbove.hasNoFloor(null)))
         {
             while (originVoxel.z >= (currentUnit.getPosition().z + 1) * 24)
             {
@@ -746,7 +746,7 @@ internal class TileEngine
             if (swap_xz) (cz, cx) = (cx, cz);
             if (swap_xy) (cy, cx) = (cx, cy);
 
-            if (storeTrajectory != null && trajectory != null)
+            if (storeTrajectory && trajectory != null)
             {
                 trajectory.Add(new Position(cx, cy, cz));
             }
@@ -3088,5 +3088,14 @@ internal class TileEngine
 	    calculateTerrainLighting(); // fires could have been started
 	    calculateFOV(center / new Position(16,16,24));
 	    return bu;
+    }
+
+    /**
+     * Toggles personal lighting on / off.
+     */
+    internal void togglePersonalLighting()
+    {
+	    _personalLighting = !_personalLighting;
+	    calculateUnitLighting();
     }
 }

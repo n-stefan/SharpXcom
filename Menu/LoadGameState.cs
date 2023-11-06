@@ -36,7 +36,7 @@ internal class LoadGameState : State
 	 * @param filename Name of the save file without extension.
 	 * @param palette Parent state palette.
 	 */
-	LoadGameState(OptionsOrigin origin, string filename, SDL_Color[] palette)
+	internal LoadGameState(OptionsOrigin origin, string filename, SDL_Color[] palette)
 	{
 		_firstRun = 0;
 		_origin = origin;
