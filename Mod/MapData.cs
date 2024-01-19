@@ -534,4 +534,26 @@ internal class MapData
      */
     internal int getFootstepSound() =>
 	    _footstepSound;
+
+    /**
+     * Gets the sprite index.
+     * @param frameID Animation frame 0-7.
+     * @return The original sprite index.
+     */
+    internal int getSprite(int frameID) =>
+	    _sprite[frameID];
+
+    /**
+     * Gets the Y offset for drawing.
+     * @return The height in pixels.
+     */
+    internal int getYOffset() =>
+	    _yOffset;
+
+    /**
+     * Gets the SCANG.DAT index for minimap.
+     * @return The minimap index.
+     */
+    internal ushort getMiniMapIndex() =>
+	    _miniMapIndex;
 }

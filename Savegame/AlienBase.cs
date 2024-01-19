@@ -65,7 +65,7 @@ internal class AlienBase : Target
      * Returns the globe marker for the alien base.
      * @return Marker sprite, -1 if none.
      */
-    protected override int getMarker()
+    internal override int getMarker()
     {
 	    if (!_discovered)
 		    return -1;

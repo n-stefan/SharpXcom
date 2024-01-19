@@ -2284,4 +2284,11 @@ internal class BattlescapeState : State
 	 */
 	void handleState() =>
 		_battleGame.handleState();
+
+	/**
+	 * Checks if the mouse is over the icons.
+	 * @return True, if the mouse is over the icons.
+	 */
+	internal bool getMouseOverIcons() =>
+		_mouseOverIcons;
 }

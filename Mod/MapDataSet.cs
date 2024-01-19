@@ -357,4 +357,11 @@ internal class MapDataSet
      */
     internal uint getSize() =>
         (uint)_objects.Count;
+
+    /**
+     * Gets the surfaces in this dataset.
+     * @return Pointer to the surfaceset.
+     */
+    internal SurfaceSet getSurfaceset() =>
+	    _surfaceSet;
 }

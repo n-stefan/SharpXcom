@@ -516,4 +516,93 @@ internal class Inventory : InteractiveSurface
 	    _warning.think();
 	    _animTimer.think(null, this);
     }
+
+    /**
+     * Draws the inventory elements.
+     */
+    protected override void draw()
+    {
+	    drawGrid();
+	    drawItems();
+    }
+
+    /**
+     * Draws the inventory grid for item placement.
+     */
+    void drawGrid()
+    {
+	    _grid.clear();
+	    Text text = new Text(80, 9, 0, 0);
+	    text.setPalette(_grid.getPaletteColors());
+	    text.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+
+	    RuleInterface rule = _game.getMod().getInterface("inventory");
+
+	    text.setColor((byte)rule.getElement("textSlots").color);
+	    text.setHighContrast(true);
+
+	    byte color = (byte)rule.getElement("grid").color;
+
+	    foreach (var i in _game.getMod().getInventories())
+	    {
+		    // Draw grid
+		    if (i.Value.getType() == InventoryType.INV_SLOT)
+		    {
+			    foreach (var j in i.Value.getSlots())
+			    {
+				    SDL_Rect r;
+				    r.x = i.Value.getX() + RuleInventory.SLOT_W * j.x;
+				    r.y = i.Value.getY() + RuleInventory.SLOT_H * j.y;
+				    r.w = RuleInventory.SLOT_W + 1;
+				    r.h = RuleInventory.SLOT_H + 1;
+				    _grid.drawRect(ref r, color);
+				    r.x++;
+				    r.y++;
+				    r.w -= 2;
+				    r.h -= 2;
+				    _grid.drawRect(ref r, 0);
+			    }
+		    }
+		    else if (i.Value.getType() == InventoryType.INV_HAND)
+		    {
+			    SDL_Rect r;
+			    r.x = i.Value.getX();
+			    r.y = i.Value.getY();
+			    r.w = RuleInventory.HAND_W * RuleInventory.SLOT_W;
+			    r.h = RuleInventory.HAND_H * RuleInventory.SLOT_H;
+			    _grid.drawRect(ref r, color);
+			    r.x++;
+			    r.y++;
+			    r.w -= 2;
+			    r.h -= 2;
+			    _grid.drawRect(ref r, 0);
+		    }
+		    else if (i.Value.getType() == InventoryType.INV_GROUND)
+		    {
+			    for (int x = i.Value.getX(); x <= 320; x += RuleInventory.SLOT_W)
+			    {
+				    for (int y = i.Value.getY(); y <= 200; y += RuleInventory.SLOT_H)
+				    {
+					    SDL_Rect r;
+					    r.x = x;
+					    r.y = y;
+					    r.w = RuleInventory.SLOT_W + 1;
+					    r.h = RuleInventory.SLOT_H + 1;
+					    _grid.drawRect(ref r, color);
+					    r.x++;
+					    r.y++;
+					    r.w -= 2;
+					    r.h -= 2;
+					    _grid.drawRect(ref r, 0);
+				    }
+			    }
+		    }
+
+		    // Draw label
+		    text.setX(i.Value.getX());
+		    text.setY(i.Value.getY() - text.getFont().getHeight() - text.getFont().getSpacing());
+		    text.setText(_game.getLanguage().getString(i.Value.getId()));
+		    text.blit(_grid);
+	    }
+    }
 }

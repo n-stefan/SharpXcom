@@ -72,7 +72,7 @@ internal class MissionSite : Target
      * Returns the globe marker for the mission site.
      * @return Marker sprite, -1 if none.
      */
-    protected override int getMarker()
+    internal override int getMarker()
     {
 	    if (!_detected)
 		    return -1;
@@ -180,4 +180,11 @@ internal class MissionSite : Target
      */
     protected override string getType() =>
         _deployment.getMarkerName();
+
+    /**
+     * Returns the name on the globe for the mission.
+     * @return String ID.
+     */
+    internal override string getMarkerName() =>
+	    getType();
 }

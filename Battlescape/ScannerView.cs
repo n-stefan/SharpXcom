@@ -58,4 +58,43 @@ internal class ScannerView : InteractiveSurface
 		}
 		_redraw = true;
 	}
+
+	/**
+	 * Draws the ScannerView view.
+	 */
+	protected override void draw()
+	{
+		SurfaceSet set = _game.getMod().getSurfaceSet("DETBLOB.DAT");
+		Surface surface = null;
+
+		clear();
+
+		this.@lock();
+		for (int x = -9; x < 10; x++)
+		{
+			for (int y = -9; y < 10; y++)
+			{
+				for (int z = 0; z < _game.getSavedGame().getSavedBattle().getMapSizeZ(); z++)
+				{
+					Tile t = _game.getSavedGame().getSavedBattle().getTile(new Position(x,y,z) + new Position(_unit.getPosition().x, _unit.getPosition().y, 0));
+					if (t != null && t.getUnit() != null && t.getUnit().getMotionPoints() != 0)
+					{
+						int frame = (t.getUnit().getMotionPoints() / 5);
+						if (frame >= 0)
+						{
+							if (frame > 5) frame = 5;
+							surface = set.getFrame(frame + _frame);
+							surface.blitNShade(this, getX()+((9+x)*8)-4, getY()+((9+y)*8)-4, 0);
+						}
+					}
+				}
+			}
+		}
+
+		// the arrow of the direction the unit is pointed
+		surface = set.getFrame(7 + _unit.getDirection());
+
+		surface.blitNShade(this, getX()+(9*8)-4, getY()+(9*8)-4, 0);
+		this.unlock();
+	}
 }

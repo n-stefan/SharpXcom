@@ -112,7 +112,7 @@ internal class Base : Target
      * Returns the globe marker for the base.
      * @return Marker sprite, -1 if none.
      */
-    protected override int getMarker()
+    internal override int getMarker()
     {
 	    // Cheap hack to hide bases when they haven't been placed yet
 	    if (AreSame(_lon, 0.0) && AreSame(_lat, 0.0))

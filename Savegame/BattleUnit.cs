@@ -607,7 +607,7 @@ internal class BattleUnit
 	 * Get unit's active hand.
 	 * @return active hand.
 	 */
-	string getActiveHand()
+	internal string getActiveHand()
 	{
 		if (getItem(_activeHand) != null) return _activeHand;
 		if (getItem("STR_LEFT_HAND") != null) return "STR_LEFT_HAND";
@@ -779,7 +779,7 @@ internal class BattleUnit
       * Get the unit's stand height.
       * @return The unit's height in voxels, when standing up.
       */
-    int getStandHeight() =>
+    internal int getStandHeight() =>
 	    _standHeight;
 
     /**
@@ -3055,4 +3055,88 @@ internal class BattleUnit
      */
     internal List<KeyValuePair<byte, byte>> getRecolor() =>
 	    _recolor;
+
+    /**
+     * If this unit is breathing, what frame should be displayed?
+     * @return frame number.
+     */
+    internal int getBreathFrame()
+    {
+	    if (_floorAbove)
+		    return 0;
+	    return _breathFrame;
+    }
+
+    /**
+     * Sets the flag for "this unit is under cover" meaning don't draw bubbles.
+     * @param floor is there a floor.
+     */
+    internal void setFloorAbove(bool floor) =>
+	    _floorAbove = floor;
+
+    /**
+     * Gets the BattleUnit's vertical direction. This is when going up or down.
+     * @return direction
+     */
+    internal int getVerticalDirection() =>
+	    _verticalDirection;
+
+    /**
+     * Gets the walking phase for diagonal walking.
+     * @return phase this will be 0 or 8
+     */
+    internal int getDiagonalWalkingPhase() =>
+	    (_walkPhase / 8) * 8;
+
+    /**
+     * Get the unit's minimap sprite index. Used to display the unit on the minimap
+     * @return the unit minimap index
+     */
+    internal int getMiniMapSpriteIndex()
+    {
+	    //minimap sprite index:
+	    // * 0-2   : Xcom soldier
+	    // * 3-5   : Alien
+	    // * 6-8   : Civilian
+	    // * 9-11  : Item
+	    // * 12-23 : Xcom HWP
+	    // * 24-35 : Alien big terror unit(cyberdisk, ...)
+	    if (isOut())
+	    {
+		    return 9;
+	    }
+	    switch (getFaction())
+	    {
+	        case UnitFaction.FACTION_HOSTILE:
+		        if (_armor.getSize() == 1)
+			        return 3;
+		        else
+			        return 24;
+	        case UnitFaction.FACTION_NEUTRAL:
+		        if (_armor.getSize() == 1)
+			        return 6;
+		        else
+			        return 12;
+	        default:
+		        if (_armor.getSize() == 1)
+			        return 0;
+		        else
+			        return 12;
+	    }
+    }
+
+    /**
+     * Get motion points for the motion scanner. More points
+     * is a larger blip on the scanner.
+     * @return points.
+     */
+    internal int getMotionPoints() =>
+	    _motionPoints;
+
+    /**
+     * Returns the phase of the falling sequence.
+     * @return phase
+     */
+    internal int getFallingPhase() =>
+	    _fallPhase;
 }

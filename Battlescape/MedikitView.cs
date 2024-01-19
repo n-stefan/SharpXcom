@@ -24,6 +24,19 @@ namespace SharpXcom.Battlescape;
  */
 internal class MedikitView : InteractiveSurface
 {
+	/**
+	 * User interface string identifier of body parts.
+	 */
+	static string[] PARTS_STRING =
+	{
+		"STR_HEAD",
+		"STR_TORSO",
+		"STR_RIGHT_ARM",
+		"STR_LEFT_ARM",
+		"STR_RIGHT_LEG",
+		"STR_LEFT_LEG"
+	};
+
 	Game _game;
 	int _selectedPart;
 	BattleUnit _unit;
@@ -75,4 +88,40 @@ internal class MedikitView : InteractiveSurface
 	 */
 	internal int getSelectedPart() =>
 		_selectedPart;
+
+	/**
+	 * Draws the medikit view.
+	 */
+	protected override void draw()
+	{
+		SurfaceSet set = _game.getMod().getSurfaceSet("MEDIBITS.DAT");
+		int fatal_wound = _unit.getFatalWound(_selectedPart);
+		string ss, ss1;
+		int green = 0;
+		int red = 3;
+		if (_game.getMod().getInterface("medikit") != null && _game.getMod().getInterface("medikit").getElement("body") != default)
+		{
+			green = _game.getMod().getInterface("medikit").getElement("body").color;
+			red = _game.getMod().getInterface("medikit").getElement("body").color2;
+		}
+		this.@lock();
+		for (int i = 0; i < set.getTotalFrames(); i++)
+		{
+			int wound = _unit.getFatalWound(i);
+			Surface surface = set.getFrame(i);
+			int baseColor = wound != 0 ? red : green;
+			surface.blitNShade(this, getX(), getY(), 0, false, baseColor);
+		}
+		this.unlock();
+
+		_redraw = false;
+		if (_selectedPart == -1)
+		{
+			return;
+		}
+		ss = _game.getLanguage().getString(PARTS_STRING[_selectedPart]);
+		ss1 = fatal_wound.ToString();
+		_partTxt.setText(ss);
+		_woundTxt.setText(ss1);
+	}
 }

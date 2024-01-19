@@ -21,6 +21,11 @@ namespace SharpXcom.Engine;
 
 internal partial class Shader
 {
+	internal const byte ColorGroup = 15<<4;
+	internal const byte ColorShade = 15;
+	const byte ColorShadeMax = 15;
+	const byte BLACK = 15;
+
     /**
 	 * Universal blit function
 	 * @tparam ColorFunc class that contains static function `func` that get 5 arguments

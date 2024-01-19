@@ -139,6 +139,23 @@ struct CreateShadow
 
 		return (byte)Math.Clamp(temp.x, 0.0, 31.0);
 	}
+
+	internal static bool isOcean(byte dest) =>
+		Globe.OCEAN_SHADING && dest >= Globe.OCEAN_COLOR && dest < Globe.OCEAN_COLOR + 32;
+
+	internal static byte getOceanShadow(byte shadow) =>
+        (byte)(Globe.OCEAN_COLOR + shadow);
+
+	internal static byte getLandShadow(byte dest, byte shadow)
+	{
+		if (shadow == 0) return dest;
+		int s = shadow / 3;
+		int e = dest + s;
+		int d = dest & ColorGroup;
+		if (e > d + ColorShade)
+			return (byte)(d + ColorShade);
+		return (byte)e;
+	}
 }
 
 /**
@@ -998,5 +1015,242 @@ internal class Globe : InteractiveSurface
 	    _cenY = (short)(height / 2);
 	    setupRadii(width, height);
 	    invalidate();
+    }
+
+    /**
+     * Draws the whole globe, part by part.
+     */
+    protected override void draw()
+    {
+	    if (_redraw)
+	    {
+		    cachePolygons();
+	    }
+	    base.draw();
+	    drawOcean();
+	    drawLand();
+	    drawRadars();
+	    drawFlights();
+	    drawShadow();
+	    drawMarkers();
+	    drawDetail();
+    }
+
+    /**
+     * Renders the ocean, shading it according to the time of day.
+     */
+    void drawOcean()
+    {
+	    @lock();
+	    drawCircle((short)(_cenX + 1), _cenY, (short)(_radius + 20), OCEAN_COLOR);
+    //	ShaderDraw<Ocean>(ShaderSurface(this));
+	    unlock();
+    }
+
+    /**
+     * Renders the land, taking all the visible world polygons
+     * and texturing and shading them accordingly.
+     */
+    void drawLand()
+    {
+	    short[] x = new short[4], y = new short[4];
+
+	    foreach (var i in _cacheLand)
+	    {
+		    // Convert coordinates
+		    for (int j = 0; j < i.getPoints(); ++j)
+		    {
+			    x[j] = i.getX(j);
+			    y[j] = i.getY(j);
+		    }
+
+		    // Apply textures according to zoom and shade
+		    drawTexturedPolygon(x, y, i.getPoints(), _texture.getFrame((int)(i.getTexture() + _zoomTexture)), 0, 0);
+	    }
+    }
+
+    /**
+     * Draws the radar ranges of player bases on the globe.
+     */
+    void drawRadars()
+    {
+	    _radars.clear();
+
+	    // Draw craft circle instead of radar circles to avoid confusion
+	    if (_craft)
+	    {
+		    _radars.@lock();
+
+		    if (_craftRange < M_PI)
+		    {
+			    drawGlobeCircle(_craftLat, _craftLon, _craftRange, 64);
+			    drawGlobeCircle(_craftLat, _craftLon, _craftRange - 0.025, 64, 2);
+		    }
+
+		    _radars.unlock();
+		    return;
+	    }
+
+	    if (!Options.globeRadarLines)
+		    return;
+
+	    double tr, range;
+	    double lat, lon;
+	    var ranges = new List<double>();
+
+	    _radars.@lock();
+
+	    if (_hover)
+	    {
+		    List<string> facilities = _game.getMod().getBaseFacilitiesList();
+		    foreach (var i in facilities)
+		    {
+			    range = Nautical(_game.getMod().getBaseFacility(i).getRadarRange());
+			    drawGlobeCircle(_hoverLat,_hoverLon,range,48);
+			    if (Options.globeAllRadarsOnBaseBuild) ranges.Add(range);
+		    }
+	    }
+
+	    // Draw radars around bases
+	    foreach (var i in _game.getSavedGame().getBases())
+	    {
+		    lat = i.getLatitude();
+		    lon = i.getLongitude();
+		    // Cheap hack to hide bases when they haven't been placed yet
+		    if (( !(AreSame(lon, 0.0) && AreSame(lat, 0.0)) )/* &&
+			    !pointBack(i.getLongitude(), i.getLatitude())*/)
+		    {
+			    if (_hover && Options.globeAllRadarsOnBaseBuild)
+			    {
+				    for (int j=0; j<ranges.Count; j++) drawGlobeCircle(lat,lon,ranges[j],48);
+			    }
+			    else
+			    {
+				    range = 0;
+				    foreach (var j in i.getFacilities())
+				    {
+					    if (j.getBuildTime() == 0)
+					    {
+						    tr = j.getRules().getRadarRange();
+						    if (tr > range) range = tr;
+					    }
+				    }
+				    range = Nautical(range);
+
+				    if (range>0) drawGlobeCircle(lat,lon,range,48);
+			    }
+
+		    }
+
+		    foreach (var j in i.getCrafts())
+		    {
+			    if (j.getStatus() != "STR_OUT")
+				    continue;
+			    lat=j.getLatitude();
+			    lon=j.getLongitude();
+			    range = Nautical(j.getRules().getRadarRange());
+
+			    if (range>0) drawGlobeCircle(lat,lon,range,24);
+		    }
+	    }
+
+	    _radars.unlock();
+    }
+
+    /**
+     *	Draw globe range circle
+     */
+    void drawGlobeCircle(double lat, double lon, double radius, int segments, int frac = 1)
+    {
+	    double x, y, x2 = 0, y2 = 0;
+	    double lat1, lon1;
+	    double seg = M_PI / ((double)segments / 2);
+	    int i = 0;
+	    for (double az = 0; az <= M_PI*2+0.01; az+=seg) //48 circle segments
+	    {
+		    //calculating sphere-projected circle
+		    lat1 = Math.Asin(Math.Sin(lat) * Math.Cos(radius) + Math.Cos(lat) * Math.Sin(radius) * Math.Cos(az));
+		    lon1 = lon + Math.Atan2(Math.Sin(az) * Math.Sin(radius) * Math.Cos(lat), Math.Cos(radius) - Math.Sin(lat) * Math.Sin(lat1));
+		    polarToCart(lon1, lat1, out x, out y);
+		    if ( AreSame(az, 0.0) ) //first vertex is for initialization only
+		    {
+			    x2=x;
+			    y2=y;
+			    continue;
+		    }
+		    if (!pointBack(lon1,lat1) && i % frac == 0)
+			    XuLine(_radars, this, x, y, x2, y2, 6);
+		    x2=x; y2=y;
+		    i++;
+	    }
+    }
+
+    void polarToCart(double lon, double lat, out double x, out double y)
+    {
+	    // Orthographic projection
+	    x = _cenX + _radius * Math.Cos(lat) * Math.Sin(lon - _cenLon);
+	    y = _cenY + _radius * (Math.Cos(_cenLat) * Math.Sin(lat) - Math.Sin(_cenLat) * Math.Cos(lat) * Math.Cos(lon - _cenLon));
+    }
+
+    void XuLine(Surface surface, Surface src, double x1, double y1, double x2, double y2, int shade)
+    {
+	    if (_clipper.LineClip(&x1,&y1,&x2,&y2) != 1) return; //empty line
+
+	    double deltax = x2-x1, deltay = y2-y1;
+	    bool inv;
+	    short tcol;
+	    double len,x0,y0,SX,SY;
+	    if (Math.Abs((int)y2-(int)y1) > Math.Abs((int)x2-(int)x1))
+	    {
+		    len=Math.Abs((int)y2-(int)y1);
+		    inv=false;
+	    }
+	    else
+	    {
+		    len=Math.Abs((int)x2-(int)x1);
+		    inv=true;
+	    }
+
+	    if (y2<y1) {
+	    SY=-1;
+      } else if ( AreSame(deltay, 0.0) ) {
+	    SY=0;
+      } else {
+	    SY=1;
+      }
+
+	    if (x2<x1) {
+	    SX=-1;
+      } else if ( AreSame(deltax, 0.0) ) {
+	    SX=0;
+      } else {
+	    SX=1;
+      }
+
+	    x0=x1;  y0=y1;
+	    if (inv)
+		    SY=(deltay/len);
+	    else
+		    SX=(deltax/len);
+
+	    while (len>0)
+	    {
+		    tcol=src.getPixel((int)x0,(int)y0);
+		    if (tcol != 0)
+		    {
+			    if (CreateShadow.isOcean((byte)tcol))
+			    {
+				    tcol = CreateShadow.getOceanShadow((byte)(shade + 8));
+			    }
+			    else
+			    {
+				    tcol = CreateShadow.getLandShadow((byte)tcol, (byte)(shade * 3));
+			    }
+			    surface.setPixel((int)x0, (int)y0, (byte)tcol);
+		    }
+		    x0+=SX;
+		    y0+=SY;
+		    len-=1.0;
+	    }
     }
 }

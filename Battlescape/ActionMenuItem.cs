@@ -120,4 +120,15 @@ internal class ActionMenuItem : InteractiveSurface
 	 */
 	internal int getTUs() =>
 		_tu;
+
+	/**
+	 * Draws the bordered box.
+	 */
+	protected override void draw()
+	{
+		_frame.blit(this);
+		_txtDescription.blit(this);
+		_txtAcc.blit(this);
+		_txtTU.blit(this);
+	}
 }

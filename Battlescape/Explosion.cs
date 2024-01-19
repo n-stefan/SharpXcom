@@ -79,4 +79,36 @@ internal class Explosion
 		    return true;
 	    }
     }
+
+    /**
+     * Gets the current position in voxel space.
+     * @return position in voxel space.
+     */
+    internal Position getPosition() =>
+	    _position;
+
+    /**
+     * Returns flag to indicate if it is a bullet hit (false), or a real explosion (true).
+     * @return True if it is a real explosion, false if it is a bullet hit.
+     */
+    internal bool isBig() =>
+	    _big;
+
+    /**
+     * Gets the current frame in the animation.
+     * @return frame number.
+     */
+    internal int getCurrentFrame()
+    {
+	    if (_frameDelay > 0)
+		    return -1;
+	    return _currentFrame;
+    }
+
+    /**
+     * Returns flag to indicate if it is a melee or psi hit.
+     * @return True if it is a melee hit or psi hit.
+     */
+    internal bool isHit() =>
+	    _hit;
 }

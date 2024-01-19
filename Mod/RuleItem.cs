@@ -849,4 +849,11 @@ internal class RuleItem : IListOrder, IRule
      */
     internal int getStunRecovery() =>
 	    _stunRecovery;
+
+    /**
+     * Gets the reference in HANDOB.PCK for use in inventory.
+     * @return The sprite reference.
+     */
+    internal int getHandSprite() =>
+	    _handSprite;
 }

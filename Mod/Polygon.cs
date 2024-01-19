@@ -182,4 +182,20 @@ internal class Polygon
 	 */
 	internal int getTexture() =>
 		_texture;
+
+	/**
+	 * Returns the X coordinate of a given point.
+	 * @param i Point number (0-max).
+	 * @return Point's X coordinate.
+	 */
+	internal short getX(int i) =>
+		_x[i];
+
+	/**
+	 * Returns the Y coordinate of a given point.
+	 * @param i Point number (0-max).
+	 * @return Point's Y coordinate.
+	 */
+	internal short getY(int i) =>
+		_y[i];
 }

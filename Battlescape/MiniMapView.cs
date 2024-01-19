@@ -24,6 +24,8 @@ namespace SharpXcom.Battlescape;
  */
 internal class MiniMapView : InteractiveSurface
 {
+	const int CELL_WIDTH = 4;
+	const int CELL_HEIGHT = 4;
 	const int MAX_FRAME = 2;
 
 	Game _game;
@@ -103,5 +105,105 @@ internal class MiniMapView : InteractiveSurface
 			_frame = 0;
 		}
 		_redraw = true;
+	}
+
+	/**
+	 * Draws the minimap.
+	 */
+	protected override void draw()
+	{
+		int _startX = _camera.getCenterPosition().x - ((getWidth() / CELL_WIDTH) / 2);
+		int _startY = _camera.getCenterPosition().y - ((getHeight() / CELL_HEIGHT) / 2);
+
+		base.draw();
+		if (_set == null)
+		{
+			return;
+		}
+		drawRect(0, 0, (short)getWidth(), (short)getHeight(), 15);
+		this.@lock();
+		for (int lvl = 0; lvl <= _camera.getCenterPosition().z; lvl++)
+		{
+			int py = _startY;
+			for (int y = getY(); y < getHeight() + getY(); y += CELL_HEIGHT)
+			{
+				int px = _startX;
+				for (int x = getX(); x < getWidth() + getX(); x += CELL_WIDTH)
+				{
+					var p = new Position(px, py, lvl);
+					Tile t = _battleGame.getTile(p);
+					if (t == null)
+					{
+						px++;
+						continue;
+					}
+					for (var i = TilePart.O_FLOOR; i <= TilePart.O_OBJECT; i++)
+					{
+						MapData data = t.getMapData((TilePart)i);
+
+						if (data != null && data.getMiniMapIndex() != 0)
+						{
+							Surface s = _set.getFrame(data.getMiniMapIndex() + 35);
+							if (s != null)
+							{
+								int shade = 16;
+								if (t.isDiscovered(2))
+								{
+									shade = t.getShade();
+									if (shade > 7) shade = 7; //vanilla
+								}
+								s.blitNShade(this, x, y, shade);
+							}
+						}
+					}
+					// alive units
+					if (t.getUnit() != null && t.getUnit().getVisible())
+					{
+						int frame = t.getUnit().getMiniMapSpriteIndex();
+						int size = t.getUnit().getArmor().getSize();
+						frame += (t.getPosition().y - t.getUnit().getPosition().y) * size;
+						frame += t.getPosition().x - t.getUnit().getPosition().x;
+						frame += _frame * size * size;
+						Surface s = _set.getFrame(frame);
+						if (size > 1 && t.getUnit().getFaction() == UnitFaction.FACTION_NEUTRAL)
+						{
+							s.blitNShade(this, x, y, 0, false, Pathfinding.red);
+						}
+						else
+						{
+							s.blitNShade(this, x, y, 0);
+						}
+					}
+					// perhaps (at least one) item on this tile?
+					if (t.isDiscovered(2) && t.getInventory().Any())
+					{
+						int frame = 9 + _frame;
+						Surface s = _set.getFrame(frame);
+						s.blitNShade(this, x, y, 0);
+					}
+
+					px++;
+				}
+				py++;
+			}
+		}
+		this.unlock();
+		int centerX = getWidth() / 2 - 1;
+		int centerY = getHeight() / 2 - 1;
+		byte color = (byte)(1 + _frame * 3);
+		int xOffset = CELL_WIDTH / 2;
+		int yOffset = CELL_HEIGHT / 2;
+		drawLine((short)(centerX - CELL_WIDTH), (short)(centerY - CELL_HEIGHT),
+             (short)(centerX - xOffset), (short)(centerY - yOffset),
+			 color); // top left
+		drawLine((short)(centerX + xOffset), (short)(centerY - yOffset),
+             (short)(centerX + CELL_WIDTH), (short)(centerY - CELL_HEIGHT),
+			 color); // top right
+		drawLine((short)(centerX - CELL_WIDTH), (short)(centerY + CELL_HEIGHT),
+             (short)(centerX - xOffset), (short)(centerY + yOffset),
+			 color); // bottom left
+		drawLine((short)(centerX + CELL_WIDTH), (short)(centerY + CELL_HEIGHT),
+             (short)(centerX + xOffset), (short)(centerY + yOffset),
+			 color); //bottom right
 	}
 }

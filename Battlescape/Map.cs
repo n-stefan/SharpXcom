@@ -40,6 +40,7 @@ enum CursorType { CT_NONE, CT_NORMAL, CT_AIM, CT_PSI, CT_WAYPOINT, CT_THROW };
 internal class Map : InteractiveSurface
 {
     const int SCROLL_INTERVAL = 15;
+	const int BULLET_SPRITES = 35;
 
     Game _game;
     Surface _arrow;
@@ -505,4 +506,1185 @@ internal class Map : InteractiveSurface
 
 	    if (redraw) _redraw = true;
     }
+
+    /**
+     * Draws the whole map, part by part.
+     */
+    protected override void draw()
+    {
+	    if (!_redraw)
+	    {
+		    return;
+	    }
+
+	    // normally we'd call for a Surface.draw();
+	    // but we don't want to clear the background with colour 0, which is transparent (aka black)
+	    // we use colour 15 because that actually corresponds to the colour we DO want in all variations of the xcom and tftd palettes.
+	    _redraw = false;
+	    clear((uint)(Palette.blockOffset(0)+15));
+
+	    Tile t;
+
+	    _projectileInFOV = _save.getDebugMode();
+	    if (_projectile != null)
+	    {
+		    t = _save.getTile(new Position(_projectile.getPosition(0).x/16, _projectile.getPosition(0).y/16, _projectile.getPosition(0).z/24));
+		    if (_save.getSide() == UnitFaction.FACTION_PLAYER || (t != null && t.getVisible() != 0))
+		    {
+			    _projectileInFOV = true;
+		    }
+	    }
+	    _explosionInFOV = _save.getDebugMode();
+	    if (_explosions.Any())
+	    {
+		    foreach (var i in _explosions)
+		    {
+			    t = _save.getTile(new Position(i.getPosition().x/16, i.getPosition().y/16, i.getPosition().z/24));
+			    if (t != null && (i.isBig() || t.getVisible() != 0))
+			    {
+				    _explosionInFOV = true;
+				    break;
+			    }
+		    }
+	    }
+
+	    if ((_save.getSelectedUnit() != null && _save.getSelectedUnit().getVisible()) || _unitDying || _save.getSelectedUnit() == null || _save.getDebugMode() || _projectileInFOV || _explosionInFOV)
+	    {
+		    drawTerrain(this);
+	    }
+	    else
+	    {
+		    _message.blit(this);
+	    }
+    }
+
+	static int[] arrowBob = {0,1,2,1,0,1,2,1};
+	/**
+	 * Draw the terrain.
+	 * Keep this function as optimised as possible. It's big to minimise overhead of function calls.
+	 * @param surface The surface to draw on.
+	 */
+	void drawTerrain(Surface surface)
+	{
+		int frameNumber = 0;
+		Surface tmpSurface;
+		Tile tile;
+		int beginX = 0, endX = _save.getMapSizeX() - 1;
+		int beginY = 0, endY = _save.getMapSizeY() - 1;
+		int beginZ = 0, endZ = _camera.getShowAllLayers()?_save.getMapSizeZ() - 1:_camera.getViewLevel();
+		Position mapPosition, screenPosition, bulletPositionScreen;
+		int bulletLowX=16000, bulletLowY=16000, bulletLowZ=16000, bulletHighX=0, bulletHighY=0, bulletHighZ=0;
+		int dummy = 0;
+		BattleUnit unit = null;
+		int tileShade, wallShade, tileColor, obstacleShade;
+
+		NumberText _numWaypid = null;
+
+		// if we got bullet, get the highest x and y tiles to draw it on
+		if (_projectile != null && !_explosions.Any())
+		{
+			int part = _projectile.getItem() != null ? 0 : BULLET_SPRITES-1;
+			for (int i = 0; i <= part; ++i)
+			{
+				if (_projectile.getPosition(1-i).x < bulletLowX)
+					bulletLowX = _projectile.getPosition(1-i).x;
+				if (_projectile.getPosition(1-i).y < bulletLowY)
+					bulletLowY = _projectile.getPosition(1-i).y;
+				if (_projectile.getPosition(1-i).z < bulletLowZ)
+					bulletLowZ = _projectile.getPosition(1-i).z;
+				if (_projectile.getPosition(1-i).x > bulletHighX)
+					bulletHighX = _projectile.getPosition(1-i).x;
+				if (_projectile.getPosition(1-i).y > bulletHighY)
+					bulletHighY = _projectile.getPosition(1-i).y;
+				if (_projectile.getPosition(1-i).z > bulletHighZ)
+					bulletHighZ = _projectile.getPosition(1-i).z;
+			}
+			// divide by 16 to go from voxel to tile position
+			bulletLowX = bulletLowX / 16;
+			bulletLowY = bulletLowY / 16;
+			bulletLowZ = bulletLowZ / 24;
+			bulletHighX = bulletHighX / 16;
+			bulletHighY = bulletHighY / 16;
+			bulletHighZ = bulletHighZ / 24;
+
+			// if the projectile is outside the viewport - center it back on it
+			_camera.convertVoxelToScreen(_projectile.getPosition(), out bulletPositionScreen);
+
+			if (_projectileInFOV)
+			{
+				Position newCam = _camera.getMapOffset();
+				if (newCam.z != bulletHighZ) //switch level
+				{
+					newCam.z = bulletHighZ;
+					if (_projectileInFOV)
+					{
+						_camera.setMapOffset(newCam);
+						_camera.convertVoxelToScreen(_projectile.getPosition(), out bulletPositionScreen);
+					}
+				}
+				if (_smoothCamera)
+				{
+					if (_launch)
+					{
+						_launch = false;
+						if ((bulletPositionScreen.x < 1 || bulletPositionScreen.x > surface.getWidth() - 1 ||
+							bulletPositionScreen.y < 1 || bulletPositionScreen.y > _visibleMapHeight - 1))
+						{
+							_camera.centerOnPosition(new Position(bulletLowX, bulletLowY, bulletHighZ), false);
+							_camera.convertVoxelToScreen(_projectile.getPosition(), out bulletPositionScreen);
+						}
+					}
+					if (!_smoothingEngaged)
+					{
+						if (bulletPositionScreen.x < 1 || bulletPositionScreen.x > surface.getWidth() - 1 ||
+							bulletPositionScreen.y < 1 || bulletPositionScreen.y > _visibleMapHeight - 1)
+						{
+							_smoothingEngaged = true;
+						}
+					}
+					else
+					{
+						_camera.jumpXY(surface.getWidth() / 2 - bulletPositionScreen.x, _visibleMapHeight / 2 - bulletPositionScreen.y);
+					}
+				}
+				else
+				{
+					bool enough;
+					do
+					{
+						enough = true;
+						if (bulletPositionScreen.x < 0)
+						{
+							_camera.jumpXY(+surface.getWidth(), 0);
+							enough = false;
+						}
+						else if (bulletPositionScreen.x > surface.getWidth())
+						{
+							_camera.jumpXY(-surface.getWidth(), 0);
+							enough = false;
+						}
+						else if (bulletPositionScreen.y < 0)
+						{
+							_camera.jumpXY(0, +_visibleMapHeight);
+							enough = false;
+						}
+						else if (bulletPositionScreen.y > _visibleMapHeight)
+						{
+							_camera.jumpXY(0, -_visibleMapHeight);
+							enough = false;
+						}
+						_camera.convertVoxelToScreen(_projectile.getPosition(), out bulletPositionScreen);
+					}
+					while (!enough);
+				}
+			}
+		}
+
+		// get corner map coordinates to give rough boundaries in which tiles to redraw are
+		_camera.convertScreenToMap(0, 0, ref beginX, ref dummy);
+		_camera.convertScreenToMap(surface.getWidth(), 0, ref dummy, ref beginY);
+		_camera.convertScreenToMap(surface.getWidth() + _spriteWidth, surface.getHeight() + _spriteHeight, ref endX, ref dummy);
+		_camera.convertScreenToMap(0, surface.getHeight() + _spriteHeight, ref dummy, ref endY);
+		beginY -= (_camera.getViewLevel() * 2);
+		beginX -= (_camera.getViewLevel() * 2);
+		if (beginX < 0)
+			beginX = 0;
+		if (beginY < 0)
+			beginY = 0;
+
+		bool pathfinderTurnedOn = _save.getPathfinding().isPathPreviewed();
+
+		if (_waypoints.Any() || (pathfinderTurnedOn && ((_previewSetting & PathPreview.PATH_TU_COST) != 0)))
+		{
+			_numWaypid = new NumberText(15, 15, 20, 30);
+			_numWaypid.setPalette(getPaletteColors());
+			_numWaypid.setColor((byte)(pathfinderTurnedOn ? _messageColor + 1 : Palette.blockOffset(1)));
+		}
+
+		surface.@lock();
+		for (int itZ = beginZ; itZ <= endZ; itZ++)
+		{
+			bool topLayer = itZ == endZ;
+			for (int itX = beginX; itX <= endX; itX++)
+			{
+				for (int itY = beginY; itY <= endY; itY++)
+				{
+					mapPosition = new Position(itX, itY, itZ);
+					_camera.convertMapToScreen(mapPosition, out screenPosition);
+					screenPosition += _camera.getMapOffset();
+
+					// only render cells that are inside the surface
+					if (screenPosition.x > -_spriteWidth && screenPosition.x < surface.getWidth() + _spriteWidth &&
+						screenPosition.y > -_spriteHeight && screenPosition.y < surface.getHeight() + _spriteHeight )
+					{
+						tile = _save.getTile(mapPosition);
+
+						if (tile == null) continue;
+
+						if (tile.isDiscovered(2))
+						{
+							tileShade = tile.getShade();
+							obstacleShade = tileShade;
+							if (_showObstacles)
+							{
+								if (tile.isObstacle())
+								{
+									if (tileShade > 7) obstacleShade = 7;
+									if (tileShade < 2) obstacleShade = 2;
+									obstacleShade += (arrowBob[_animFrame] * 2 - 2);
+								}
+							}
+						}
+						else
+						{
+							tileShade = 16;
+							obstacleShade = 16;
+							unit = null;
+						}
+
+						tileColor = tile.getMarkerColor();
+
+						// Draw floor
+						tmpSurface = tile.getSprite((int)TilePart.O_FLOOR);
+						if (tmpSurface != null)
+						{
+							if (tile.getObstacle((int)TilePart.O_FLOOR))
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_FLOOR).getYOffset(), obstacleShade, false);
+							else
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_FLOOR).getYOffset(), tileShade, false);
+						}
+						unit = tile.getUnit();
+
+						// Draw cursor back
+						if (_cursorType != CursorType.CT_NONE && _selectorX > itX - _cursorSize && _selectorY > itY - _cursorSize && _selectorX < itX+1 && _selectorY < itY+1 && !_save.getBattleState().getMouseOverIcons())
+						{
+							if (_camera.getViewLevel() == itZ)
+							{
+								if (_cursorType != CursorType.CT_AIM)
+								{
+									if (unit != null && (unit.getVisible() || _save.getDebugMode()))
+										frameNumber = (_animFrame % 2); // yellow box
+									else
+										frameNumber = 0; // red box
+								}
+								else
+								{
+									if (unit != null && (unit.getVisible() || _save.getDebugMode()))
+										frameNumber = 7 + (_animFrame / 2); // yellow animated crosshairs
+									else
+										frameNumber = 6; // red static crosshairs
+								}
+								tmpSurface = _game.getMod().getSurfaceSet("CURSOR.PCK").getFrame(frameNumber);
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y, 0);
+							}
+							else if (_camera.getViewLevel() > itZ)
+							{
+								frameNumber = 2; // blue box
+								tmpSurface = _game.getMod().getSurfaceSet("CURSOR.PCK").getFrame(frameNumber);
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y, 0);
+							}
+						}
+
+						// special handling for a moving unit in background of tile.
+						const int backPosSize = 3;
+						Position[] backPos =
+						{
+							new Position(0, -1, 0),
+							new Position(-1, -1, 0),
+							new Position(-1, 0, 0),
+						};
+
+						for (int b = 0; b < backPosSize; ++b)
+						{
+							drawUnit(surface, _save.getTile(mapPosition + backPos[b]), tile, screenPosition, tileShade, obstacleShade, topLayer);
+						}
+
+						// Draw walls
+						if (!tile.isVoid())
+						{
+							// Draw west wall
+							tmpSurface = tile.getSprite((int)TilePart.O_WESTWALL);
+							if (tmpSurface != null)
+							{
+								if ((tile.getMapData(TilePart.O_WESTWALL).isDoor() || tile.getMapData(TilePart.O_WESTWALL).isUFODoor())
+									 && tile.isDiscovered(0))
+									wallShade = tile.getShade();
+								else
+									wallShade = tileShade;
+								if (tile.getObstacle((int)TilePart.O_WESTWALL))
+									tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_WESTWALL).getYOffset(), obstacleShade, false);
+								else
+									tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_WESTWALL).getYOffset(), wallShade, false);
+							}
+							// Draw north wall
+							tmpSurface = tile.getSprite((int)TilePart.O_NORTHWALL);
+							if (tmpSurface != null)
+							{
+								if ((tile.getMapData(TilePart.O_NORTHWALL).isDoor() || tile.getMapData(TilePart.O_NORTHWALL).isUFODoor())
+									 && tile.isDiscovered(1))
+									wallShade = tile.getShade();
+								else
+									wallShade = tileShade;
+								if (tile.getObstacle((int)TilePart.O_NORTHWALL))
+									tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_NORTHWALL).getYOffset(), obstacleShade, tile.getMapData(TilePart.O_WESTWALL) != null);
+								else
+									tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_NORTHWALL).getYOffset(), wallShade, tile.getMapData(TilePart.O_WESTWALL) != null);
+							}
+							// Draw object
+							if (tile.getMapData(TilePart.O_OBJECT) != null && (tile.getMapData(TilePart.O_OBJECT).getBigWall() < 6 || tile.getMapData(TilePart.O_OBJECT).getBigWall() == 9))
+							{
+								tmpSurface = tile.getSprite((int)TilePart.O_OBJECT);
+								if (tmpSurface != null)
+								{
+									if (tile.getObstacle((int)TilePart.O_OBJECT))
+										tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_OBJECT).getYOffset(), obstacleShade, false);
+									else
+										tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_OBJECT).getYOffset(), tileShade, false);
+								}
+							}
+							// draw an item on top of the floor (if any)
+							int sprite = tile.getTopItemSprite();
+							if (sprite != -1)
+							{
+								tmpSurface = _game.getMod().getSurfaceSet("FLOOROB.PCK").getFrame(sprite);
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y + tile.getTerrainLevel(), tileShade, false);
+							}
+
+						}
+
+						// check if we got bullet && it is in Field Of View
+						if (_projectile != null && _projectileInFOV)
+						{
+							tmpSurface = null;
+							if (_projectile.getItem() != null)
+							{
+								tmpSurface = _projectile.getSprite();
+
+								Position voxelPos = _projectile.getPosition();
+								// draw shadow on the floor
+								voxelPos.z = _save.getTileEngine().castedShade(voxelPos);
+								if (voxelPos.x / 16 >= itX &&
+									voxelPos.y / 16 >= itY &&
+									voxelPos.x / 16 <= itX+1 &&
+									voxelPos.y / 16 <= itY+1 &&
+									voxelPos.z / 24 == itZ &&
+									_save.getTileEngine().isVoxelVisible(voxelPos))
+								{
+									_camera.convertVoxelToScreen(voxelPos, out bulletPositionScreen);
+									tmpSurface.blitNShade(surface, bulletPositionScreen.x - 16, bulletPositionScreen.y - 26, 16);
+								}
+
+								voxelPos = _projectile.getPosition();
+								// draw thrown object
+								if (voxelPos.x / 16 >= itX &&
+									voxelPos.y / 16 >= itY &&
+									voxelPos.x / 16 <= itX+1 &&
+									voxelPos.y / 16 <= itY+1 &&
+									voxelPos.z / 24 == itZ &&
+									_save.getTileEngine().isVoxelVisible(voxelPos))
+								{
+									_camera.convertVoxelToScreen(voxelPos, out bulletPositionScreen);
+									tmpSurface.blitNShade(surface, bulletPositionScreen.x - 16, bulletPositionScreen.y - 26, 0);
+								}
+
+							}
+							else
+							{
+								// draw bullet on the correct tile
+								if (itX >= bulletLowX && itX <= bulletHighX && itY >= bulletLowY && itY <= bulletHighY)
+								{
+									int begin = 0;
+									int end = BULLET_SPRITES;
+									int direction = 1;
+									if (_projectile.isReversed())
+									{
+										begin = BULLET_SPRITES - 1;
+										end = -1;
+										direction = -1;
+									}
+
+									for (int i = begin; i != end; i += direction)
+									{
+										tmpSurface = _projectileSet.getFrame(_projectile.getParticle(i));
+										if (tmpSurface != null)
+										{
+											Position voxelPos = _projectile.getPosition(1-i);
+											// draw shadow on the floor
+											voxelPos.z = _save.getTileEngine().castedShade(voxelPos);
+											if (voxelPos.x / 16 == itX &&
+												voxelPos.y / 16 == itY &&
+												voxelPos.z / 24 == itZ &&
+												_save.getTileEngine().isVoxelVisible(voxelPos))
+											{
+												_camera.convertVoxelToScreen(voxelPos, out bulletPositionScreen);
+												bulletPositionScreen.x -= tmpSurface.getWidth() / 2;
+												bulletPositionScreen.y -= tmpSurface.getHeight() / 2;
+												tmpSurface.blitNShade(surface, bulletPositionScreen.x, bulletPositionScreen.y, 16);
+											}
+
+											// draw bullet itself
+											voxelPos = _projectile.getPosition(1-i);
+											if (voxelPos.x / 16 == itX &&
+												voxelPos.y / 16 == itY &&
+												voxelPos.z / 24 == itZ &&
+												_save.getTileEngine().isVoxelVisible(voxelPos))
+											{
+												_camera.convertVoxelToScreen(voxelPos, out bulletPositionScreen);
+												bulletPositionScreen.x -= tmpSurface.getWidth() / 2;
+												bulletPositionScreen.y -= tmpSurface.getHeight() / 2;
+												tmpSurface.blitNShade(surface, bulletPositionScreen.x, bulletPositionScreen.y, 0);
+											}
+										}
+									}
+								}
+							}
+						}
+						unit = tile.getUnit();
+						// Draw soldier from this tile or below
+						drawUnit(surface, tile, tile, screenPosition, tileShade, obstacleShade, topLayer);
+
+						// special handling for a moving unit in forground of tile.
+						const int frontPosSize = 5;
+						Position[] frontPos =
+						{
+							new Position(-1, +1, 0),
+							new Position(0, +1, 0),
+							new Position(+1, +1, 0),
+							new Position(+1, 0, 0),
+							new Position(+1, -1, 0),
+						};
+
+						for (int f = 0; f < frontPosSize; ++f)
+						{
+							drawUnit(surface, _save.getTile(mapPosition + frontPos[f]), tile, screenPosition, tileShade, obstacleShade, topLayer);
+						}
+
+						// Draw smoke/fire
+						if (tile.getSmoke() != 0 && tile.isDiscovered(2))
+						{
+							frameNumber = 0;
+							int shade = 0;
+							if (tile.getFire() == 0)
+							{
+								if (_save.getDepth() > 0)
+								{
+									frameNumber += Mod.Mod.UNDERWATER_SMOKE_OFFSET;
+								}
+								else
+								{
+									frameNumber += Mod.Mod.SMOKE_OFFSET;
+								}
+								frameNumber += (int)Math.Floor((tile.getSmoke() / 6.0) - 0.1); // see http://www.ufopaedia.org/images/c/cb/Smoke.gif
+								shade = tileShade;
+							}
+
+							if ((_animFrame / 2) + tile.getAnimationOffset() > 3)
+							{
+								frameNumber += ((_animFrame / 2) + tile.getAnimationOffset() - 4);
+							}
+							else
+							{
+								frameNumber += (_animFrame / 2) + tile.getAnimationOffset();
+							}
+							tmpSurface = _game.getMod().getSurfaceSet("SMOKE.PCK").getFrame(frameNumber);
+							tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y, shade);
+						}
+
+						//draw particle clouds
+						foreach (var i in tile.getParticleCloud())
+						{
+							int vaporX = (int)(screenPosition.x + i.getX());
+							int vaporY = (int)(screenPosition.y + i.getY());
+							if ((int)(_transparencies.Count) >= (i.getColor() + 1) * 1024)
+							{
+								switch (i.getSize())
+								{
+									case 3:
+										surface.setPixel(vaporX+1, vaporY+1, _transparencies[(i.getColor() * 1024) + (i.getOpacity() * 256) + surface.getPixel(vaporX+1, vaporY+1)]);
+										goto case 2;
+									case 2:
+										surface.setPixel(vaporX + 1, vaporY, _transparencies[(i.getColor() * 1024) + (i.getOpacity() * 256) + surface.getPixel(vaporX + 1, vaporY)]);
+										goto case 1;
+									case 1:
+										surface.setPixel(vaporX, vaporY + 1, _transparencies[(i.getColor() * 1024) + (i.getOpacity() * 256) + surface.getPixel(vaporX, vaporY + 1)]);
+										goto default;
+									default:
+										surface.setPixel(vaporX, vaporY, _transparencies[(i.getColor() * 1024) + (i.getOpacity() * 256) + surface.getPixel(vaporX, vaporY)]);
+										break;
+								}
+							}
+						}
+
+						// Draw Path Preview
+						if (tile.getPreview() != -1 && tile.isDiscovered(0) && ((_previewSetting & PathPreview.PATH_ARROWS) != 0))
+						{
+							if (itZ > 0 && tile.hasNoFloor(_save.getTile(tile.getPosition() + new Position(0,0,-1))))
+							{
+								tmpSurface = _game.getMod().getSurfaceSet("Pathfinding").getFrame(11);
+								if (tmpSurface != null)
+								{
+									tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y+2, 0, false, tile.getMarkerColor());
+								}
+							}
+							tmpSurface = _game.getMod().getSurfaceSet("Pathfinding").getFrame(tile.getPreview());
+							if (tmpSurface != null)
+							{
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y + tile.getTerrainLevel(), 0, false, tileColor);
+							}
+						}
+						if (!tile.isVoid())
+						{
+							// Draw object
+							if (tile.getMapData(TilePart.O_OBJECT) != null && tile.getMapData(TilePart.O_OBJECT).getBigWall() >= 6 && tile.getMapData(TilePart.O_OBJECT).getBigWall() != 9)
+							{
+								tmpSurface = tile.getSprite((int)TilePart.O_OBJECT);
+								if (tmpSurface != null)
+								{
+									if (tile.getObstacle((int)TilePart.O_OBJECT))
+										tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_OBJECT).getYOffset(), obstacleShade, false);
+									else
+										tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - tile.getMapData(TilePart.O_OBJECT).getYOffset(), tileShade, false);
+								}
+							}
+						}
+						// Draw cursor front
+						if (_cursorType != CursorType.CT_NONE && _selectorX > itX - _cursorSize && _selectorY > itY - _cursorSize && _selectorX < itX+1 && _selectorY < itY+1 && !_save.getBattleState().getMouseOverIcons())
+						{
+							if (_camera.getViewLevel() == itZ)
+							{
+								if (_cursorType != CursorType.CT_AIM)
+								{
+									if (unit != null && (unit.getVisible() || _save.getDebugMode()))
+										frameNumber = 3 + (_animFrame % 2); // yellow box
+									else
+										frameNumber = 3; // red box
+								}
+								else
+								{
+									if (unit != null && (unit.getVisible() || _save.getDebugMode()))
+										frameNumber = 7 + (_animFrame / 2); // yellow animated crosshairs
+									else
+										frameNumber = 6; // red static crosshairs
+								}
+								tmpSurface = _game.getMod().getSurfaceSet("CURSOR.PCK").getFrame(frameNumber);
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y, 0);
+
+								// UFO extender accuracy: display adjusted accuracy value on crosshair in real-time.
+								if (_cursorType == CursorType.CT_AIM && Options.battleUFOExtenderAccuracy)
+								{
+									BattleAction action = _save.getBattleGame().getCurrentAction();
+									RuleItem weapon = action.weapon.getRules();
+									int accuracy = action.actor.getFiringAccuracy(action.type, action.weapon);
+									int distanceSq = _save.getTileEngine().distanceUnitToPositionSq(action.actor, new Position(itX, itY,itZ), false);
+									int distance = (int)Math.Ceiling(Math.Sqrt((float)distanceSq));
+									int upperLimit = 200;
+									int lowerLimit = weapon.getMinRange();
+									switch (action.type)
+									{
+										case BattleActionType.BA_AIMEDSHOT:
+											upperLimit = weapon.getAimRange();
+											break;
+										case BattleActionType.BA_SNAPSHOT:
+											upperLimit = weapon.getSnapRange();
+											break;
+										case BattleActionType.BA_AUTOSHOT:
+											upperLimit = weapon.getAutoRange();
+											break;
+										default:
+											break;
+									}
+									// at this point, let's assume the shot is adjusted and set the text amber.
+									_txtAccuracy.setColor((byte)(Palette.blockOffset((byte)(Pathfinding.yellow - 1)) -1));
+
+									if (distance > upperLimit)
+									{
+										accuracy -= (distance - upperLimit) * weapon.getDropoff();
+									}
+									else if (distance < lowerLimit)
+									{
+										accuracy -= (lowerLimit - distance) * weapon.getDropoff();
+									}
+									else
+									{
+										// no adjustment made? set it to green.
+										_txtAccuracy.setColor((byte)(Palette.blockOffset((byte)(Pathfinding.green - 1)) -1));
+									}
+
+									bool outOfRange = distanceSq > weapon.getMaxRangeSq();
+									// special handling for short ranges and diagonals
+									if (outOfRange)
+									{
+										// special handling for maxRange 1: allow it to target diagonally adjacent tiles (one diagonal move)
+										if (weapon.getMaxRange() == 1 && distanceSq <= 3)
+										{
+											outOfRange = false;
+										}
+										// special handling for maxRange 2: allow it to target diagonally adjacent tiles (one diagonal move + one straight move)
+										else if (weapon.getMaxRange() == 2 && distanceSq <= 6)
+										{
+											outOfRange = false;
+										}
+									}
+									// zero accuracy or out of range: set it red.
+									if (accuracy <= 0 || outOfRange)
+									{
+										accuracy = 0;
+										_txtAccuracy.setColor((byte)(Palette.blockOffset((byte)(Pathfinding.red - 1)) -1));
+									}
+									_txtAccuracy.setText(Unicode.formatPercentage(accuracy));
+									_txtAccuracy.draw();
+									_txtAccuracy.blitNShade(surface, screenPosition.x, screenPosition.y, 0);
+								}
+							}
+							else if (_camera.getViewLevel() > itZ)
+							{
+								frameNumber = 5; // blue box
+								tmpSurface = _game.getMod().getSurfaceSet("CURSOR.PCK").getFrame(frameNumber);
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y, 0);
+							}
+							if ((int)_cursorType > 2 && _camera.getViewLevel() == itZ)
+							{
+								int[] frame = {0, 0, 0, 11, 13, 15};
+								tmpSurface = _game.getMod().getSurfaceSet("CURSOR.PCK").getFrame(frame[(int)_cursorType] + (_animFrame / 4));
+								tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y, 0);
+							}
+						}
+
+						// Draw waypoints if any on this tile
+						int waypid = 1;
+						int waypXOff = 2;
+						int waypYOff = 2;
+
+						foreach (var i in _waypoints)
+						{
+							if (i == mapPosition)
+							{
+								if (waypXOff == 2 && waypYOff == 2)
+								{
+									tmpSurface = _game.getMod().getSurfaceSet("CURSOR.PCK").getFrame(7);
+									tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y, 0);
+								}
+								if (_save.getBattleGame().getCurrentAction().type == BattleActionType.BA_LAUNCH)
+								{
+									_numWaypid.setValue((uint)waypid);
+									_numWaypid.draw();
+									_numWaypid.blitNShade(surface, screenPosition.x + waypXOff, screenPosition.y + waypYOff, 0);
+
+									waypXOff += waypid > 9 ? 8 : 6;
+									if (waypXOff >= 26)
+									{
+										waypXOff = 2;
+										waypYOff += 8;
+									}
+								}
+							}
+							waypid++;
+						}
+					}
+				}
+			}
+		}
+		if (pathfinderTurnedOn)
+		{
+			if (_numWaypid != null)
+			{
+				_numWaypid.setBordered(true); // give it a border for the pathfinding display, makes it more visible on snow, etc.
+			}
+			for (int itZ = beginZ; itZ <= endZ; itZ++)
+			{
+				for (int itX = beginX; itX <= endX; itX++)
+				{
+					for (int itY = beginY; itY <= endY; itY++)
+					{
+						mapPosition = new Position(itX, itY, itZ);
+						_camera.convertMapToScreen(mapPosition, out screenPosition);
+						screenPosition += _camera.getMapOffset();
+
+						// only render cells that are inside the surface
+						if (screenPosition.x > -_spriteWidth && screenPosition.x < surface.getWidth() + _spriteWidth &&
+							screenPosition.y > -_spriteHeight && screenPosition.y < surface.getHeight() + _spriteHeight )
+						{
+							tile = _save.getTile(mapPosition);
+							Tile tileBelow = _save.getTile(mapPosition - new Position(0,0,1));
+							if (tile == null || !tile.isDiscovered(0) || tile.getPreview() == -1)
+								continue;
+							int adjustment = -tile.getTerrainLevel();
+							if ((_previewSetting & PathPreview.PATH_ARROWS) != 0)
+							{
+								if (itZ > 0 && tile.hasNoFloor(tileBelow))
+								{
+									tmpSurface = _game.getMod().getSurfaceSet("Pathfinding").getFrame(23);
+									if (tmpSurface != null)
+									{
+										tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y+2, 0, false, tile.getMarkerColor());
+									}
+								}
+								int overlay = tile.getPreview() + 12;
+								tmpSurface = _game.getMod().getSurfaceSet("Pathfinding").getFrame(overlay);
+								if (tmpSurface != null)
+								{
+									tmpSurface.blitNShade(surface, screenPosition.x, screenPosition.y - adjustment, 0, false, tile.getMarkerColor());
+								}
+							}
+
+							if ((_previewSetting & PathPreview.PATH_TU_COST) != 0 && tile.getTUMarker() > -1)
+							{
+								int off = tile.getTUMarker() > 9 ? 5 : 3;
+								if (_save.getSelectedUnit() != null && _save.getSelectedUnit().getArmor().getSize() > 1)
+								{
+									adjustment += 1;
+									if (!((_previewSetting & PathPreview.PATH_ARROWS) != 0))
+									{
+										adjustment += 7;
+									}
+								}
+								_numWaypid.setValue((uint)tile.getTUMarker());
+								_numWaypid.draw();
+								if (!((_previewSetting & PathPreview.PATH_ARROWS) != 0))
+								{
+									_numWaypid.blitNShade(surface, screenPosition.x + 16 - off, screenPosition.y + (29-adjustment), 0, false, tile.getMarkerColor() );
+								}
+								else
+								{
+									_numWaypid.blitNShade(surface, screenPosition.x + 16 - off, screenPosition.y + (22-adjustment), 0);
+								}
+							}
+						}
+					}
+				}
+			}
+			if (_numWaypid != null)
+			{
+				_numWaypid.setBordered(false); // make sure we remove the border in case it's being used for missile waypoints.
+			}
+		}
+		unit = (BattleUnit)_save.getSelectedUnit();
+		if (unit != null && (_save.getSide() == UnitFaction.FACTION_PLAYER || _save.getDebugMode()) && unit.getPosition().z <= _camera.getViewLevel())
+		{
+			_camera.convertMapToScreen(unit.getPosition(), out screenPosition);
+			screenPosition += _camera.getMapOffset();
+			var offset = new Position();
+			calculateWalkingOffset(unit, offset, out _);
+			if (unit.getArmor().getSize() > 1)
+			{
+				offset.y += 4;
+			}
+			offset.y += 24 - (unit.getHeight() + unit.getFloatHeight());
+			if (unit.isKneeled())
+			{
+				offset.y -= 2;
+			}
+			if (this.getCursorType() != CursorType.CT_NONE)
+			{
+				_arrow.blitNShade(surface, screenPosition.x + offset.x + (_spriteWidth / 2) - (_arrow.getWidth() / 2), screenPosition.y + offset.y - _arrow.getHeight() + arrowBob[_animFrame], 0);
+			}
+		}
+		_numWaypid = null;
+
+		// check if we got big explosions
+		if (_explosionInFOV)
+		{
+			// big explosions cause the screen to flash as bright as possible before any explosions are actually drawn.
+			// this causes everything to look like EGA for a single frame.
+			if (_flashScreen)
+			{
+				for (int x = 0, y = 0; x < surface.getWidth() && y < surface.getHeight();)
+				{
+					byte pixel = surface.getPixel(x, y);
+					pixel = (byte)((pixel / 16) * 16);
+					surface.setPixelIterative(ref x, ref y, pixel);
+				}
+				_flashScreen = false;
+			}
+			else
+			{
+				foreach (var i in _explosions)
+				{
+					_camera.convertVoxelToScreen(i.getPosition(), out bulletPositionScreen);
+					if (i.isBig())
+					{
+						if (i.getCurrentFrame() >= 0)
+						{
+							tmpSurface = _game.getMod().getSurfaceSet("X1.PCK").getFrame(i.getCurrentFrame());
+							tmpSurface.blitNShade(surface, bulletPositionScreen.x - (tmpSurface.getWidth() / 2), bulletPositionScreen.y - (tmpSurface.getHeight() / 2), 0);
+						}
+					}
+					else if (i.isHit())
+					{
+						tmpSurface = _game.getMod().getSurfaceSet("HIT.PCK").getFrame(i.getCurrentFrame());
+						tmpSurface.blitNShade(surface, bulletPositionScreen.x - 15, bulletPositionScreen.y - 25, 0);
+					}
+					else
+					{
+						tmpSurface = _game.getMod().getSurfaceSet("SMOKE.PCK").getFrame(i.getCurrentFrame());
+						tmpSurface.blitNShade(surface, bulletPositionScreen.x - 15, bulletPositionScreen.y - 15, 0);
+					}
+				}
+			}
+		}
+		surface.unlock();
+	}
+
+	/**
+	 * Draw part of unit graphic that overlap current tile.
+	 * @param surface
+	 * @param unitTile
+	 * @param currTile
+	 * @param currTileScreenPosition
+	 * @param shade
+	 * @param obstacleShade unitShade override for no LOF obstacle indicator
+	 * @param topLayer
+	 */
+	void drawUnit(Surface surface, Tile unitTile, Tile currTile, Position currTileScreenPosition, int shade, int obstacleShade, bool topLayer)
+	{
+		const int tileFoorWidth = 32;
+		const int tileFoorHeight = 16;
+		const int tileHeight = 40;
+
+		if (unitTile == null)
+		{
+			return;
+		}
+		BattleUnit bu = unitTile.getUnit();
+		var unitOffset = new Position();
+		bool unitFromBelow = false;
+		if (bu == null)
+		{
+			Tile below = _save.getTile(unitTile.getPosition() + new Position(0,0,-1));
+			if (below != null && unitTile.hasNoFloor(below))
+			{
+				bu = below.getUnit();
+				if (bu == null)
+				{
+					return;
+				}
+				unitFromBelow = true;
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		if (!(bu.getVisible() || _save.getDebugMode()))
+		{
+			return;
+		}
+
+		unitOffset.x = unitTile.getPosition().x - bu.getPosition().x;
+		unitOffset.y = unitTile.getPosition().y - bu.getPosition().y;
+		int part = unitOffset.x + unitOffset.y*2;
+		Surface tmpSurface = bu.getCache(part);
+		if (tmpSurface == null)
+		{
+			return;
+		}
+
+		bool moving = bu.getStatus() == UnitStatus.STATUS_WALKING || bu.getStatus() == UnitStatus.STATUS_FLYING;
+		int bonusWidth = moving ? 0 : tileFoorWidth;
+		int topMargin = 0;
+		int bottomMargin = 0;
+
+		//if unit is from below then we draw only part that in in tile
+		if (unitFromBelow)
+		{
+			bottomMargin = -tileFoorHeight / 2;
+			topMargin = tileFoorHeight;
+		}
+		else if (topLayer)
+		{
+			topMargin = 2 * tileFoorHeight;
+		}
+		else
+		{
+			Tile top = _save.getTile(unitTile.getPosition() + new Position(0, 0, +1));
+			if (top != null && top.hasNoFloor(unitTile))
+			{
+				topMargin = -tileFoorHeight / 2;
+			}
+			else
+			{
+				topMargin = tileFoorHeight;
+			}
+		}
+
+		GraphSubset mask = new GraphSubset(tileFoorWidth + bonusWidth, tileHeight + topMargin + bottomMargin).offset(currTileScreenPosition.x - bonusWidth / 2, currTileScreenPosition.y - topMargin);
+
+		if (moving)
+		{
+			GraphSubset leftMask = mask.offset(-tileFoorWidth/2, 0);
+			GraphSubset rightMask = mask.offset(+tileFoorWidth/2, 0);
+			int direction = bu.getDirection();
+			Position partCurr = currTile.getPosition();
+			Position partDest = bu.getDestination() + unitOffset;
+			Position partLast = bu.getLastPosition() + unitOffset;
+			bool isTileDestPos = positionHaveSameXY(partDest, partCurr);
+			bool isTileLastPos = positionHaveSameXY(partLast, partCurr);
+
+			//adjusting mask
+			if (positionHaveSameXY(partLast, partDest))
+			{
+				if (currTile == unitTile)
+				{
+					//no change
+				}
+				else
+				{
+					//nothing to draw
+					return;
+				}
+			}
+			else if (isTileDestPos)
+			{
+				//unit is moving to this tile
+				switch (direction)
+				{
+				case 0:
+				case 1:
+					mask = GraphSubset.intersection(mask, rightMask);
+					break;
+				case 2:
+					//no change
+					break;
+				case 3:
+					//no change
+					break;
+				case 4:
+					//no change
+					break;
+				case 5:
+				case 6:
+					mask = GraphSubset.intersection(mask, leftMask);
+					break;
+				case 7:
+					//nothing to draw
+					return;
+				}
+			}
+			else if (isTileLastPos)
+			{
+				//unit is exiting this tile
+				switch (direction)
+				{
+				case 0:
+					//no change
+					break;
+				case 1:
+				case 2:
+					mask = GraphSubset.intersection(mask, leftMask);
+					break;
+				case 3:
+					//nothing to draw
+					return;
+				case 4:
+				case 5:
+					mask = GraphSubset.intersection(mask, rightMask);
+					break;
+				case 6:
+					//no change
+					break;
+				case 7:
+					//no change
+					break;
+				}
+			}
+			else
+			{
+				Position leftPos = partCurr + new Position(-1, 0, 0);
+				Position rightPos = partCurr + new Position(0, -1, 0);
+				if (!topLayer && (partDest.z > partCurr.z || partLast.z > partCurr.z))
+				{
+					//unit change layers, it will be drawn by upper layer not lower.
+					return;
+				}
+				else if (
+					(direction == 1 && (partDest == rightPos || partLast == leftPos)) ||
+					(direction == 5 && (partDest == leftPos || partLast == rightPos)))
+				{
+					mask = new GraphSubset(tileFoorWidth, tileHeight + 2 * tileFoorHeight).offset(currTileScreenPosition.x, currTileScreenPosition.y - 2 * tileFoorHeight);
+				}
+				else
+				{
+					//unit is not moving close to tile
+					return;
+				}
+			}
+		}
+		else if (unitTile != currTile)
+		{
+			return;
+		}
+
+		Position tileScreenPosition;
+		_camera.convertMapToScreen(unitTile.getPosition() + new Position(0,0, unitFromBelow ? -1 : 0), out tileScreenPosition);
+		tileScreenPosition += _camera.getMapOffset();
+
+		// draw unit
+		var offset = new Position();
+		int shadeOffset;
+		calculateWalkingOffset(bu, offset, out shadeOffset);
+		int tileShade = currTile.isDiscovered(2) ? currTile.getShade() : 16;
+		int unitShade = (tileShade * (16 - shadeOffset) + shade * shadeOffset) / 16;
+		if (!moving && unitTile.getObstacle(4))
+		{
+			unitShade = obstacleShade;
+		}
+		tmpSurface.blitNShade(surface, tileScreenPosition.x + offset.x - _spriteWidth / 2, tileScreenPosition.y + offset.y, unitShade, mask);
+		// draw fire
+		if (bu.getFire() > 0)
+		{
+			int frameNumber = 4 + (_animFrame / 2);
+			tmpSurface = _game.getMod().getSurfaceSet("SMOKE.PCK").getFrame(frameNumber);
+			tmpSurface.blitNShade(surface, tileScreenPosition.x + offset.x, tileScreenPosition.y + offset.y, 0, mask);
+		}
+		if (bu.getBreathFrame() > 0)
+		{
+			tmpSurface = _game.getMod().getSurfaceSet("BREATH-1.PCK").getFrame(bu.getBreathFrame() - 1);
+			// lower the bubbles for shorter or kneeling units.
+			offset.y += (22 - bu.getHeight());
+			if (tmpSurface != null)
+			{
+				tmpSurface.blitNShade(surface, tileScreenPosition.x + offset.x, tileScreenPosition.y + offset.y - 30, tileShade, mask);
+			}
+		}
+	}
+
+	/**
+	 * Check two positions if have same XY cords
+	 */
+	static bool positionHaveSameXY(Position a, Position b) =>
+		a.x == b.x && a.y == b.y;
+
+	/**
+	 * Calculates the offset of a soldier, when it is walking in the middle of 2 tiles.
+	 * @param unit Pointer to BattleUnit.
+	 * @param offset Pointer to the offset to return the calculation.
+	 */
+	void calculateWalkingOffset(BattleUnit unit, Position offset, out int shadeOffset)
+	{
+		int[] offsetX = { 1, 1, 1, 0, -1, -1, -1, 0 };
+		int[] offsetY = { 1, 0, -1, -1, -1, 0, 1, 1 };
+		int phase = unit.getWalkingPhase() + unit.getDiagonalWalkingPhase();
+		int dir = unit.getDirection();
+		int midphase = 4 + 4 * (dir % 2);
+		int endphase = 8 + 8 * (dir % 2);
+		int size = unit.getArmor().getSize();
+
+		//if (shadeOffset)
+		//{
+			shadeOffset = endphase == 16 ? phase : phase * 2;
+		//}
+
+		if (size > 1)
+		{
+			if (dir < 1 || dir > 5)
+				midphase = endphase;
+			else if (dir == 5)
+				midphase = 12;
+			else if (dir == 1)
+				midphase = 5;
+			else
+				midphase = 1;
+		}
+		if (unit.getVerticalDirection() != 0)
+		{
+			midphase = 4;
+			endphase = 8;
+		}
+		else
+		if ((unit.getStatus() == UnitStatus.STATUS_WALKING || unit.getStatus() == UnitStatus.STATUS_FLYING))
+		{
+			if (phase < midphase)
+			{
+				offset.x = phase * 2 * offsetX[dir];
+				offset.y = - phase * offsetY[dir];
+			}
+			else
+			{
+				offset.x = (phase - endphase) * 2 * offsetX[dir];
+				offset.y = - (phase - endphase) * offsetY[dir];
+			}
+		}
+
+		// If we are walking in between tiles, interpolate it's terrain level.
+		if (unit.getStatus() == UnitStatus.STATUS_WALKING || unit.getStatus() == UnitStatus.STATUS_FLYING)
+		{
+			if (phase < midphase)
+			{
+				int fromLevel = getTerrainLevel(unit.getPosition(), size);
+				int toLevel = getTerrainLevel(unit.getDestination(), size);
+				if (unit.getPosition().z > unit.getDestination().z)
+				{
+					// going down a level, so toLevel 0 becomes +24, -8 becomes  16
+					toLevel += 24*(unit.getPosition().z - unit.getDestination().z);
+				}else if (unit.getPosition().z < unit.getDestination().z)
+				{
+					// going up a level, so toLevel 0 becomes -24, -8 becomes -16
+					toLevel = -24*(unit.getDestination().z - unit.getPosition().z) + Math.Abs(toLevel);
+				}
+				offset.y += ((fromLevel * (endphase - phase)) / endphase) + ((toLevel * (phase)) / endphase);
+			}
+			else
+			{
+				// from phase 4 onwards the unit behind the scenes already is on the destination tile
+				// we have to get it's last position to calculate the correct offset
+				int fromLevel = getTerrainLevel(unit.getLastPosition(), size);
+				int toLevel = getTerrainLevel(unit.getDestination(), size);
+				if (unit.getLastPosition().z > unit.getDestination().z)
+				{
+					// going down a level, so fromLevel 0 becomes -24, -8 becomes -32
+					fromLevel -= 24*(unit.getLastPosition().z - unit.getDestination().z);
+				}else if (unit.getLastPosition().z < unit.getDestination().z)
+				{
+					// going up a level, so fromLevel 0 becomes +24, -8 becomes 16
+					fromLevel = 24*(unit.getDestination().z - unit.getLastPosition().z) - Math.Abs(fromLevel);
+				}
+				offset.y += ((fromLevel * (endphase - phase)) / endphase) + ((toLevel * (phase)) / endphase);
+			}
+		}
+		else
+		{
+			offset.y += getTerrainLevel(unit.getPosition(), size);
+			if (_save.getDepth() > 0)
+			{
+				unit.setFloorAbove(false);
+
+				// make sure this unit isn't obscured by the floor above him, otherwise it looks weird.
+				if (_camera.getViewLevel() > unit.getPosition().z)
+				{
+					for (int z = Math.Min(_camera.getViewLevel(), _save.getMapSizeZ() - 1); z != unit.getPosition().z; --z)
+					{
+						if (!_save.getTile(new Position(unit.getPosition().x, unit.getPosition().y, z)).hasNoFloor(null))
+						{
+							unit.setFloorAbove(true);
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	  * Terrainlevel goes from 0 to -24. For a larger sized unit, we need to pick the highest terrain level, which is the lowest number...
+	  * @param pos Position.
+	  * @param size Size of the unit we want to get the level from.
+	  * @return terrainlevel.
+	  */
+	int getTerrainLevel(Position pos, int size)
+	{
+		int lowestlevel = 0;
+
+		for (int x = 0; x < size; x++)
+		{
+			for (int y = 0; y < size; y++)
+			{
+				int l = _save.getTile(pos + new Position(x,y,0)).getTerrainLevel();
+				if (l < lowestlevel)
+					lowestlevel = l;
+			}
+		}
+
+		return lowestlevel;
+	}
 }

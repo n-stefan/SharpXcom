@@ -131,7 +131,7 @@ internal class Target
         string.Empty;
 
     /// Gets the target's marker sprite.
-    protected virtual int getMarker() =>
+    internal virtual int getMarker() =>
         0;
 
     /**
@@ -224,14 +224,14 @@ internal class Target
      * @param lang Language to get strings from.
      * @return Full name.
      */
-    internal string getDefaultName(Language lang) =>
+    internal virtual string getDefaultName(Language lang) =>
 	    lang.getString(getMarkerName()).arg(_id);
 
     /**
      * Returns the name on the globe for the target.
      * @return String ID.
      */
-    internal string getMarkerName() =>
+    internal virtual string getMarkerName() =>
 	    getType() + "_";
 
 	/// Gets the distance to another target.
@@ -256,6 +256,6 @@ internal class Target
      * Returns the marker ID on the globe for the target.
      * @return Marker ID.
      */
-    internal int getMarkerId() =>
+    internal virtual int getMarkerId() =>
 	    _id;
 }

@@ -338,4 +338,148 @@ internal class BaseView : InteractiveSurface
      */
     protected override void think() =>
 	    _timer.think(null, this);
+
+    /**
+     * Draws the view of all the facilities in the base, connectors
+     * between them and crafts landed in hangars.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+
+	    // Draw grid squares
+	    for (int x = 0; x < BASE_SIZE; ++x)
+	    {
+		    for (int y = 0; y < BASE_SIZE; ++y)
+		    {
+			    Surface frame = _texture.getFrame(0);
+			    frame.setX(x * GRID_SIZE);
+			    frame.setY(y * GRID_SIZE);
+			    frame.blit(this);
+		    }
+	    }
+
+        var crafts = _base.getCrafts();
+	    var c = 0;
+
+	    foreach (var i in _base.getFacilities())
+	    {
+		    // Draw facility shape
+		    int num = 0;
+		    for (int y = i.getY(); y < i.getY() + i.getRules().getSize(); ++y)
+		    {
+			    for (int x = i.getX(); x < i.getX() + i.getRules().getSize(); ++x)
+			    {
+				    Surface frame;
+
+				    int outline = Math.Max(i.getRules().getSize() * i.getRules().getSize(), 3);
+				    if (i.getBuildTime() == 0)
+					    frame = _texture.getFrame(i.getRules().getSpriteShape() + num);
+				    else
+					    frame = _texture.getFrame(i.getRules().getSpriteShape() + num + outline);
+
+				    frame.setX(x * GRID_SIZE);
+				    frame.setY(y * GRID_SIZE);
+				    frame.blit(this);
+
+				    num++;
+			    }
+		    }
+	    }
+
+	    foreach (var i in _base.getFacilities())
+	    {
+		    // Draw connectors
+		    if (i.getBuildTime() == 0)
+		    {
+			    // Facilities to the right
+			    int x = i.getX() + i.getRules().getSize();
+			    if (x < BASE_SIZE)
+			    {
+				    for (int y = i.getY(); y < i.getY() + i.getRules().getSize(); ++y)
+				    {
+					    if (_facilities[x, y] != null && _facilities[x, y].getBuildTime() == 0)
+					    {
+						    Surface frame = _texture.getFrame(7);
+						    frame.setX(x * GRID_SIZE - GRID_SIZE / 2);
+						    frame.setY(y * GRID_SIZE);
+						    frame.blit(this);
+					    }
+				    }
+			    }
+
+			    // Facilities to the bottom
+			    int yy = i.getY() + i.getRules().getSize();
+			    if (yy < BASE_SIZE)
+			    {
+				    for (int subX = i.getX(); subX < i.getX() + i.getRules().getSize(); ++subX)
+				    {
+					    if (_facilities[subX, yy] != null && _facilities[subX, yy].getBuildTime() == 0)
+					    {
+						    Surface frame = _texture.getFrame(8);
+						    frame.setX(subX * GRID_SIZE);
+						    frame.setY(yy * GRID_SIZE - GRID_SIZE / 2);
+						    frame.blit(this);
+					    }
+				    }
+			    }
+		    }
+	    }
+
+	    foreach (var i in _base.getFacilities())
+	    {
+		    // Draw facility graphic
+		    int num = 0;
+		    for (int y = i.getY(); y < i.getY() + i.getRules().getSize(); ++y)
+		    {
+			    for (int x = i.getX(); x < i.getX() + i.getRules().getSize(); ++x)
+			    {
+				    if (i.getRules().getSize() == 1)
+				    {
+					    Surface frame = _texture.getFrame(i.getRules().getSpriteFacility() + num);
+					    frame.setX(x * GRID_SIZE);
+					    frame.setY(y * GRID_SIZE);
+					    frame.blit(this);
+				    }
+
+				    num++;
+			    }
+		    }
+
+		    // Draw crafts
+		    i.setCraft(null);
+		    if (i.getBuildTime() == 0 && i.getRules().getCrafts() > 0)
+		    {
+			    if (c != crafts.Count - 1)
+			    {
+				    if (crafts[c].getStatus() != "STR_OUT")
+				    {
+					    Surface frame = _texture.getFrame(crafts[c].getRules().getSprite() + 33);
+					    frame.setX(i.getX() * GRID_SIZE + (i.getRules().getSize() - 1) * GRID_SIZE / 2 + 2);
+					    frame.setY(i.getY() * GRID_SIZE + (i.getRules().getSize() - 1) * GRID_SIZE / 2 - 4);
+					    frame.blit(this);
+                        i.setCraft(crafts[c]);
+				    }
+				    ++c;
+			    }
+		    }
+
+		    // Draw time remaining
+		    if (i.getBuildTime() > 0)
+		    {
+			    Text text = new Text(GRID_SIZE * i.getRules().getSize(), 16, 0, 0);
+			    text.setPalette(getPaletteColors());
+			    text.initText(_big, _small, _lang);
+			    text.setX(i.getX() * GRID_SIZE);
+			    text.setY(i.getY() * GRID_SIZE + (GRID_SIZE * i.getRules().getSize() - 16) / 2);
+			    text.setBig();
+			    string ss = i.getBuildTime().ToString();
+			    text.setAlign(TextHAlign.ALIGN_CENTER);
+			    text.setColor(_cellColor);
+			    text.setText(ss);
+			    text.blit(this);
+			    text = null;
+		    }
+	    }
+    }
 }

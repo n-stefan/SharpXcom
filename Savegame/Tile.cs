@@ -851,4 +851,73 @@ internal class Tile
 		    }
 	    }
     }
+
+    /**
+     * Get the marker color on this tile.
+     * @return color
+     */
+    internal int getMarkerColor() =>
+	    _markerColor;
+
+    /**
+     * Get the sprite of a certain part of the tile.
+     * @param part
+     * @return Pointer to the sprite.
+     */
+    internal Surface getSprite(int part)
+    {
+	    if (_objects[part] == null)
+		    return null;
+
+	    return _objects[part].getDataset().getSurfaceset().getFrame(_objects[part].getSprite(_currentFrame[part]));
+    }
+
+	/// gets single obstacle flag.
+	internal bool getObstacle(int part) =>
+		(_obstacle & (1 << part)) != 0;
+
+    /**
+     * Get the number of frames the fire or smoke animation is off-sync.
+     * To void fire and smoke animations of different tiles moving nice in sync - it looks fake.
+     * @return offset
+     */
+    internal int getAnimationOffset() =>
+	    _animationOffset;
+
+    /**
+     * get the number to be displayed for pathfinding preview.
+     * @return marker
+     */
+    internal int getTUMarker() =>
+	    _TUMarker;
+
+    /**
+     * gets a pointer to this tile's particle array.
+     * @return a pointer to the internal array of particles.
+     */
+    internal List<Particle> getParticleCloud() =>
+	    _particles;
+
+    /**
+     * Get the topmost item sprite to draw on the battlescape.
+     * @return item sprite ID in floorob, or -1 when no item
+     */
+    internal int getTopItemSprite()
+    {
+	    int biggestWeight = -1;
+	    int biggestItem = -1;
+	    foreach (var i in _inventory)
+	    {
+		    if (i.getRules().getWeight() > biggestWeight)
+		    {
+			    biggestWeight = i.getRules().getWeight();
+			    biggestItem = i.getRules().getFloorSprite();
+		    }
+	    }
+	    return biggestItem;
+    }
+
+	/// does the tile have obstacle flag set for at least one part?
+	internal bool isObstacle() =>
+		_obstacle != 0;
 }

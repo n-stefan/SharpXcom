@@ -9,13 +9,19 @@ internal class NativeImports
     internal static extern int lineColor(nint dst, short x1, short y1, short x2, short y2, uint color);
 
     [DllImport("SDL_gfx")]
-	internal static extern int lineRGBA(nint dst, short x1, short y1, short x2, short y2, byte r, byte g, byte b, byte a);
+    internal static extern int lineRGBA(nint dst, short x1, short y1, short x2, short y2, byte r, byte g, byte b, byte a);
 
     [DllImport("SDL_gfx")]
-	internal static extern int characterRGBA(nint dst, short x, short y, sbyte c, byte r, byte g, byte b, byte a);
+    internal static extern int filledCircleColor(nint dst, short x, short y, short r, uint color);
 
     [DllImport("SDL_gfx")]
-	internal static extern int stringRGBA(nint dst, short x, short y, string s, byte r, byte g, byte b, byte a);
+    internal static extern int characterRGBA(nint dst, short x, short y, sbyte c, byte r, byte g, byte b, byte a);
+
+    [DllImport("SDL_gfx")]
+    internal static extern int stringRGBA(nint dst, short x, short y, string s, byte r, byte g, byte b, byte a);
+
+    [DllImport("SDL_gfx")]
+	internal static extern int texturedPolygon(nint dst, short[] vx, short[] vy, int n, nint texture, int texture_dx, int texture_dy);
 
     #endregion
 

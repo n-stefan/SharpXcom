@@ -265,8 +265,8 @@ internal class Mod
     internal static int SMALL_EXPLOSION;
     internal static int LARGE_EXPLOSION;
     internal static int EXPLOSION_OFFSET;
-    static int SMOKE_OFFSET;
-    static int UNDERWATER_SMOKE_OFFSET;
+    internal static int SMOKE_OFFSET;
+    internal static int UNDERWATER_SMOKE_OFFSET;
     internal static int ITEM_DROP;
     internal static int ITEM_THROW;
     internal static int ITEM_RELOAD;
@@ -3432,4 +3432,11 @@ internal class Mod
 	/// Gets first turn when AI can use grenade.
 	internal int getTurnAIUseGrenade() =>
         _turnAIUseGrenade;
+
+    /**
+     * Returns the list of inventories.
+     * @return Pointer to inventory list.
+     */
+    internal Dictionary<string, RuleInventory> getInventories() =>
+	    _invs;
 }

@@ -477,7 +477,7 @@ internal class Projectile
 	 * @param offset Offset.
 	 * @return Position in voxel space.
 	 */
-	internal Position getPosition(int offset) =>
+	internal Position getPosition(int offset = 0) =>
 		getPositionFromStart(_trajectory, (int)_position + offset);
 
 	/**
@@ -529,4 +529,31 @@ internal class Projectile
 			}
 		}
 	}
+
+	/**
+	 * Gets a particle reference from the projectile surfaces.
+	 * @param i Index.
+	 * @return Particle id.
+	 */
+	internal int getParticle(int i)
+	{
+		if (_bulletSprite != -1)
+			return _bulletSprite + i;
+		else
+			return -1;
+	}
+
+	/**
+	 * Is this projectile drawn back to front or front to back?
+	 * @return return if this is to be drawn in reverse order.
+	 */
+	internal bool isReversed() =>
+		_reversed;
+
+	/**
+	 * Gets the bullet sprite.
+	 * @return Pointer to Surface.
+	 */
+	internal Surface getSprite() =>
+		_sprite;
 }

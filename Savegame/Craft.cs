@@ -128,7 +128,7 @@ internal class Craft : MovingTarget
      * Returns the globe marker for the craft.
      * @return Marker sprite, -1 if none.
      */
-    protected override int getMarker()
+    internal override int getMarker()
     {
 	    if (_status != "STR_OUT")
 		    return -1;
@@ -946,4 +946,12 @@ internal class Craft : MovingTarget
      */
     protected override string getType() =>
 	    _rules.getType();
+
+    /**
+     * Returns the craft's unique default name.
+     * @param lang Language to get strings from.
+     * @return Full name.
+     */
+    internal override string getDefaultName(Language lang) =>
+	    lang.getString("STR_CRAFTNAME").arg(lang.getString(getType())).arg(_id);
 }

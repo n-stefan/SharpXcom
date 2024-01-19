@@ -363,6 +363,24 @@ internal class Surface
     }
 
     /**
+     * Specific blit function to blit battlescape terrain data in different shades in a fast way.
+     * @param surface destination blit to
+     * @param x
+     * @param y
+     * @param shade shade offset
+     * @param range area that limit draw surface
+     */
+    internal void blitNShade(Surface surface, int x, int y, int shade, GraphSubset range)
+    {
+        var src = new ShaderMove<byte>(this, x, y);
+	    var dest = new ShaderMove<byte>(surface);
+
+	    dest.setDomain(range);
+
+        ShaderDraw(new StandardShade(), dest, src, ShaderScalar(shade));
+    }
+
+    /**
      * Changes the visibility of the surface. A hidden surface
      * isn't blitted nor receives events.
      * @param visible New visibility.
@@ -428,7 +446,7 @@ internal class Surface
      * redrawn if the flag is set by a property change, to
      * avoid unnecessary drawing.
      */
-    internal virtual void draw()
+    protected virtual void draw()
     {
         _redraw = false;
         clear();
@@ -999,4 +1017,26 @@ internal class Surface
         // Unlock the surface
         unlock();
     }
+
+    /**
+     * Draws a filled circle on the surface.
+     * @param x X coordinate in pixels.
+     * @param y Y coordinate in pixels.
+     * @param r Radius in pixels.
+     * @param color Color of the circle.
+     */
+    protected void drawCircle(short x, short y, short r, byte color) =>
+	    filledCircleColor(_surface.pixels, x, y, r, Palette.getRGBA(getPaletteColors(), color));
+
+    /**
+     * Draws a textured polygon on the surface.
+     * @param x Array of x coordinates.
+     * @param y Array of y coordinates.
+     * @param n Number of points.
+     * @param texture Texture for polygon.
+     * @param dx X offset of texture relative to the screen.
+     * @param dy Y offset of texture relative to the screen.
+     */
+    protected void drawTexturedPolygon(short[] x, short[] y, int n, Surface texture, int dx, int dy) =>
+	    texturedPolygon(_surface.pixels, x, y, n, texture.getSurface().pixels, dx, dy);
 }

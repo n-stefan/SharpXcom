@@ -76,4 +76,24 @@ internal class Particle
 	    }
 	    return true;
     }
+
+	/// Get the color.
+	internal byte getColor() =>
+        _color;
+
+	/// Get the opacity.
+	internal byte getOpacity() =>
+        (byte)Math.Min((_opacity + 7) / 10, 3);
+
+	/// Get the horizontal shift.
+	internal float getX() =>
+        _xOffset;
+
+	/// Get the vertical shift.
+	internal float getY() =>
+        _yOffset;
+
+	/// Get the size value.
+	internal int getSize() =>
+        _size;
 }

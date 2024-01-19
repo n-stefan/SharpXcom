@@ -350,4 +350,21 @@ internal class Camera
 	    _showAllLayers = !_showAllLayers;
 	    return _showAllLayers?2:1;
     }
+
+    /**
+     * Checks if the camera is showing all map layers.
+     * @return Current layer setting.
+     */
+    internal bool getShowAllLayers() =>
+	    _showAllLayers;
+
+    /**
+     * Gets map's center position.
+     * @return Map's center position.
+     */
+    internal Position getCenterPosition()
+    {
+	    _center.z = _mapOffset.z;
+	    return _center;
+    }
 }

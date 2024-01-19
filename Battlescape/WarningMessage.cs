@@ -120,4 +120,14 @@ internal class WarningMessage : Surface
      */
     protected override void think() =>
 	    _timer.think(null, this);
+
+    /**
+     * Draws the warning message.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    drawRect(0, 0, (short)getWidth(), (short)getHeight(), (byte)(_color + (_fade > 12 ? 12 : _fade)));
+	    _text.blit(this);
+    }
 }

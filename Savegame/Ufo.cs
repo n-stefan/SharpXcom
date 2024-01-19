@@ -137,7 +137,7 @@ internal class Ufo : MovingTarget
      * Returns the globe marker for the UFO.
      * @return Marker sprite, -1 if none.
      */
-    protected override int getMarker()
+    internal override int getMarker()
     {
         if (!_detected)
             return -1;
@@ -638,4 +638,56 @@ internal class Ufo : MovingTarget
      */
     protected override string getType() =>
 	    "STR_UFO";
+
+    /**
+     * Returns the UFO's unique default name.
+     * @param lang Language to get strings from.
+     * @return Full name.
+     */
+    internal override string getDefaultName(Language lang)
+    {
+	    switch (_status)
+	    {
+	        case UfoStatus.LANDED:
+		        return lang.getString(getMarkerName()).arg(_landId);
+	        case UfoStatus.CRASHED:
+		        return lang.getString(getMarkerName()).arg(_crashId);
+	        default:
+		        return lang.getString(getMarkerName()).arg(_id);
+	    }
+    }
+
+    /**
+     * Returns the name on the globe for the UFO.
+     * @return String ID.
+     */
+    internal override string getMarkerName()
+    {
+	    switch (_status)
+	    {
+	        case UfoStatus.LANDED:
+		        return "STR_LANDING_SITE_";
+	        case UfoStatus.CRASHED:
+		        return "STR_CRASH_SITE_";
+	        default:
+		        return "STR_UFO_";
+	    }
+    }
+
+    /**
+     * Returns the marker ID on the globe for the UFO.
+     * @return Marker ID.
+     */
+    internal override int getMarkerId()
+    {
+	    switch (_status)
+	    {
+	        case UfoStatus.LANDED:
+		        return _landId;
+	        case UfoStatus.CRASHED:
+		        return _crashId;
+	        default:
+		        return _id;
+	    }
+    }
 }

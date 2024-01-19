@@ -407,4 +407,11 @@ internal class Armor : IRule
      */
     internal int getDrawingRoutine() =>
 	    _drawingRoutine;
+
+    /**
+     * Checks if this armor ignores gender (power suit/flying suit).
+     * @return which torso to force on the sprite.
+     */
+    internal ForcedTorso getForcedTorso() =>
+	    _forcedTorso;
 }

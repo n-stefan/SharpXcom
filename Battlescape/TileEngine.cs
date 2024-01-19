@@ -3098,4 +3098,60 @@ internal class TileEngine
 	    _personalLighting = !_personalLighting;
 	    calculateUnitLighting();
     }
+
+    /**
+     * Traces voxel visibility.
+     * @param voxel Voxel coordinates.
+     * @return True if visible.
+     */
+    internal bool isVoxelVisible(Position voxel)
+    {
+	    int zstart = voxel.z+3; // slight Z adjust
+	    if ((zstart/24)!=(voxel.z/24))
+		    return true; // visible!
+	    Position tmpVoxel = voxel;
+	    int zend = (zstart/24)*24 +24;
+
+	    voxelCheckFlush();
+	    for (int z = zstart; z<zend; z++)
+	    {
+		    tmpVoxel.z=z;
+		    // only OBJECT can cause additional occlusion (because of any shape)
+		    if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
+		    ++tmpVoxel.x;
+		    if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
+		    ++tmpVoxel.y;
+		    if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
+	    }
+	    return true;
+    }
+
+    /**
+     * Calculates z "grounded" value for a particular voxel (used for projectile shadow).
+     * @param voxel The voxel to trace down.
+     * @return z coord of "ground".
+     */
+    internal int castedShade(Position voxel)
+    {
+	    int zstart = voxel.z;
+	    Position tmpCoord = voxel / new Position(16,16,24);
+	    Tile t = _save.getTile(tmpCoord);
+	    while (t != null && t.isVoid() && t.getUnit() == null)
+	    {
+		    zstart = tmpCoord.z* 24;
+		    --tmpCoord.z;
+		    t = _save.getTile(tmpCoord);
+	    }
+
+	    Position tmpVoxel = voxel;
+	    int z;
+
+	    voxelCheckFlush();
+	    for (z = zstart; z>0; z--)
+	    {
+		    tmpVoxel.z = z;
+		    if (voxelCheck(tmpVoxel, null) != VoxelType.V_EMPTY) break;
+	    }
+	    return z;
+    }
 }
