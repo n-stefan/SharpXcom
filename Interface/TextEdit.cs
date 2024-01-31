@@ -211,4 +211,63 @@ internal class TextEdit : InteractiveSurface
 		    setFocus(false);
 	    }
     }
+
+    /**
+     * Adds a flashing | caret to the text
+     * to show when it's focused and editable.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    string newValue = _value;
+	    if (Options.keyboardMode == KeyboardType.KEYBOARD_OFF)
+	    {
+		    if (_isFocused && _blink)
+		    {
+			    newValue += _char;
+		    }
+	    }
+	    _text.setText(Unicode.convUtf32ToUtf8(_value));
+	    clear();
+	    _text.blit(this);
+	    if (Options.keyboardMode == KeyboardType.KEYBOARD_ON)
+	    {
+		    if (_isFocused && _blink)
+		    {
+			    int x = 0;
+			    switch (_text.getAlign())
+			    {
+			        case TextHAlign.ALIGN_LEFT:
+				        x = 0;
+				        break;
+			        case TextHAlign.ALIGN_CENTER:
+				        x = (_text.getWidth() - _text.getTextWidth()) / 2;
+				        break;
+			        case TextHAlign.ALIGN_RIGHT:
+				        x = _text.getWidth() - _text.getTextWidth();
+				        break;
+			    }
+			    for (int i = 0; i < _caretPos; ++i)
+			    {
+				    x += _text.getFont().getCharSize(_value[i]).w;
+			    }
+			    _caret.setX(x);
+			    int y = 0;
+			    switch (_text.getVerticalAlign())
+			    {
+			        case TextVAlign.ALIGN_TOP:
+				        y = 0;
+				        break;
+			        case TextVAlign.ALIGN_MIDDLE:
+				        y = (int)Math.Ceiling((getHeight() - _text.getTextHeight()) / 2.0);
+				        break;
+			        case TextVAlign.ALIGN_BOTTOM:
+				        y = getHeight() - _text.getTextHeight();
+				        break;
+			    }
+			    _caret.setY(y);
+			    _caret.blit(this);
+		    }
+	    }
+    }
 }

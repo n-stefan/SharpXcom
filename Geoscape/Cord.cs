@@ -19,7 +19,7 @@
 
 namespace SharpXcom.Geoscape;
 
-internal struct Cord
+internal struct Cord : IAdditionOperators<Cord, Cord, Cord>
 {
     internal double x, y, z;
 
@@ -37,15 +37,69 @@ internal struct Cord
         z = pz;
     }
 
+    public static Cord operator +(Cord a, Cord b) =>
+        new(a.x + b.x, a.y + b.y, a.z + b.z);
+
+    public static Cord operator -(Cord a) =>
+        new(-a.x, -a.y, -a.z);
+
     public static Cord operator -(Cord a, Cord b) =>
         new(a.x - b.x, a.y - b.y, a.z - b.z);
 
     public static Cord operator *(Cord a, double b) =>
         new(a.x * b, a.y * b, a.z * b);
 
-    public static Cord operator +(Cord a, Cord b) =>
-        new(a.x + b.x, a.y + b.y, a.z + b.z);
+    public static Cord operator /(Cord a, double b)
+	{
+		double re = 1.0/b;
+		return new(a.x * re, a.y * re, a.z * re);
+	}
+
+    public static bool operator ==(Cord a, Cord b) =>
+		AreSame(a.x, b.x) && AreSame(a.y, b.y) && AreSame(a.z, b.z);
+
+    public static bool operator !=(Cord a, Cord b) =>
+        !(a == b);
+
+    public static explicit operator Cord(CordPolar pol)
+    {
+	    var x = Math.Sin(pol.lon) * Math.Cos(pol.lat);
+	    var y = Math.Sin(pol.lat);
+	    var z = Math.Cos(pol.lon) * Math.Cos(pol.lat);
+        return new Cord(x, y, z);
+    }
 
     internal double norm() =>
         Math.Sqrt(x * x + y * y + z * z);
+}
+
+struct CordPolar
+{
+	internal double lon, lat;
+
+	internal CordPolar(double plon, double plat)
+	{
+		lon = plon;
+		lat = plat;
+	}
+
+	CordPolar(CordPolar pol)
+	{
+		lon = pol.lon;
+		lat = pol.lat;
+	}
+
+	public CordPolar()
+	{
+		lon = 0;
+		lat = 0;
+	}
+
+    public static explicit operator CordPolar(Cord c)
+    {
+	    double inv = 1/c.norm();
+	    var lat = Math.Asin(c.y * inv);
+	    var lon = Math.Atan2(c.x, c.z);
+        return new CordPolar(lon, lat);
+    }
 }

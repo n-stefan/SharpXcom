@@ -28,7 +28,7 @@ namespace SharpXcom.Interface;
  */
 internal class ImageButton : InteractiveSurface
 {
-    byte _color;
+    protected byte _color;
     ImageButton _group;
     bool _inverted;
 

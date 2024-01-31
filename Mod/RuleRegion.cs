@@ -253,7 +253,43 @@ internal class RuleRegion : IRule
     internal int getBaseCost() =>
 	    _cost;
 
+	/// Gets the maximum longitude.
+	internal List<double> getLonMax() =>
+        _lonMax;
+
 	/// Gets the minimum longitude.
 	internal List<double> getLonMin() =>
         _lonMin;
+
+	/// Gets the maximum latitude.
+	internal List<double> getLatMax() =>
+        _latMax;
+
+	/// Gets the minimum latitude.
+	internal List<double> getLatMin() =>
+        _latMin;
+
+    /**
+     * Gets the list of cities contained in this region.
+     * @return Pointer to a list.
+     */
+    internal List<City> getCities()
+    {
+	    // Build a cached list of all mission zones that are cities
+	    // Saves us from constantly searching for them
+	    if (!_cities.Any())
+	    {
+		    foreach (var i in _missionZones)
+		    {
+			    foreach (var j in i.areas)
+			    {
+				    if (j.isPoint() && !string.IsNullOrEmpty(j.name))
+				    {
+					    _cities.Add(new City(j.name, j.lonMin, j.latMin));
+				    }
+			    }
+		    }
+	    }
+	    return _cities;
+    }
 }

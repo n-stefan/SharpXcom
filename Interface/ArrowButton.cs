@@ -103,4 +103,218 @@ internal class ArrowButton : ImageButton
      */
     protected override void think() =>
 	    _timer.think(null, this);
+
+	/**
+	 * Draws the button with the specified arrow shape.
+	 */
+	protected override void draw()
+	{
+		base.draw();
+		@lock();
+
+		// Draw button
+		SDL_Rect square;
+		int color = _color + 2;
+
+		square.x = 0;
+		square.y = 0;
+		square.w = getWidth() - 1;
+		square.h = getHeight() - 1;
+
+		drawRect(ref square, (byte)color);
+
+		square.x++;
+		square.y++;
+		color = _color + 5;
+
+		drawRect(ref square, (byte)color);
+
+		square.w--;
+		square.h--;
+		color = _color + 4;
+
+		drawRect(ref square, (byte)color);
+
+		setPixel(0, 0, (byte)(_color + 1));
+		setPixel(0, getHeight() - 1, (byte)(_color + 4));
+		setPixel(getWidth() - 1, 0, (byte)(_color + 4));
+
+		color = _color + 1;
+
+		switch (_shape)
+		{
+		case ArrowShape.ARROW_BIG_UP:
+			// Draw arrow square
+			square.x = 5;
+			square.y = 8;
+			square.w = 3;
+			square.h = 3;
+
+			drawRect(ref square, (byte)color);
+
+			// Draw arrow triangle
+			square.x = 2;
+			square.y = 7;
+			square.w = 9;
+			square.h = 1;
+
+			for (; square.w > 1; square.w -= 2)
+			{
+				drawRect(ref square, (byte)color);
+				square.x++;
+				square.y--;
+			}
+			drawRect(ref square, (byte)color);
+			break;
+		case ArrowShape.ARROW_BIG_DOWN:
+			// Draw arrow square
+			square.x = 5;
+			square.y = 3;
+			square.w = 3;
+			square.h = 3;
+
+			drawRect(ref square, (byte)color);
+
+			// Draw arrow triangle
+			square.x = 2;
+			square.y = 6;
+			square.w = 9;
+			square.h = 1;
+
+			for (; square.w > 1; square.w -= 2)
+			{
+				drawRect(ref square, (byte)color);
+				square.x++;
+				square.y++;
+			}
+			drawRect(ref square, (byte)color);
+			break;
+		case ArrowShape.ARROW_SMALL_UP:
+			// Draw arrow triangle 1
+			square.x = 1;
+			square.y = 5;
+			square.w = 9;
+			square.h = 1;
+
+			for (; square.w > 1; square.w -= 2)
+			{
+				drawRect(ref square, (byte)(color + 2));
+				square.x++;
+				square.y--;
+			}
+			drawRect(ref square, (byte)(color + 2));
+
+			// Draw arrow triangle 2
+			square.x = 2;
+			square.y = 5;
+			square.w = 7;
+			square.h = 1;
+
+			for (; square.w > 1; square.w -= 2)
+			{
+				drawRect(ref square, (byte)color);
+				square.x++;
+				square.y--;
+			}
+			drawRect(ref square, (byte)color);
+			break;
+		case ArrowShape.ARROW_SMALL_DOWN:
+			// Draw arrow triangle 1
+			square.x = 1;
+			square.y = 2;
+			square.w = 9;
+			square.h = 1;
+
+			for (; square.w > 1; square.w -= 2)
+			{
+				drawRect(ref square, (byte)(color + 2));
+				square.x++;
+				square.y++;
+			}
+			drawRect(ref square, (byte)(color + 2));
+
+			// Draw arrow triangle 2
+			square.x = 2;
+			square.y = 2;
+			square.w = 7;
+			square.h = 1;
+
+			for (; square.w > 1; square.w -= 2)
+			{
+				drawRect(ref square, (byte)color);
+				square.x++;
+				square.y++;
+			}
+			drawRect(ref square, (byte)color);
+			break;
+		case ArrowShape.ARROW_SMALL_LEFT:
+			// Draw arrow triangle 1
+			square.x = 2;
+			square.y = 4;
+			square.w = 2;
+			square.h = 1;
+
+			for (; square.h < 5; square.h += 2)
+			{
+				drawRect(ref square, (byte)(color + 2));
+				square.x += 2;
+				square.y--;
+			}
+			square.w = 1;
+			drawRect(ref square, (byte)(color + 2));
+
+			// Draw arrow triangle 2
+			square.x = 3;
+			square.y = 4;
+			square.w = 2;
+			square.h = 1;
+
+			for (; square.h < 5; square.h += 2)
+			{
+				drawRect(ref square, (byte)color);
+				square.x += 2;
+				square.y--;
+			}
+			square.w = 1;
+			drawRect(ref square, (byte)color);
+			break;
+		case ArrowShape.ARROW_SMALL_RIGHT:
+			// Draw arrow triangle 1
+			square.x = 7;
+			square.y = 4;
+			square.w = 2;
+			square.h = 1;
+
+			for (; square.h < 5; square.h += 2)
+			{
+				drawRect(ref square, (byte)(color + 2));
+				square.x -= 2;
+				square.y--;
+			}
+			square.x++;
+			square.w = 1;
+			drawRect(ref square, (byte)(color + 2));
+
+			// Draw arrow triangle 2
+			square.x = 6;
+			square.y = 4;
+			square.w = 2;
+			square.h = 1;
+
+			for (; square.h < 5; square.h += 2)
+			{
+				drawRect(ref square, (byte)color);
+				square.x -= 2;
+				square.y--;
+			}
+			square.x++;
+			square.w = 1;
+			drawRect(ref square, (byte)color);
+			break;
+		default:
+			break;
+		}
+
+		unlock();
+	}
 }

@@ -119,7 +119,7 @@ class Nothing : IShaderParam { };
 
 class controller_base<T, TPixel>
 	where T : ShaderBase<TPixel>
-	where TPixel : INumber<TPixel>
+	where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
 {
 	TPixel data;
 	TPixel ptr_pos_y;
@@ -131,7 +131,7 @@ class controller_base<T, TPixel>
 
 	protected controller_base(TPixel @base, GraphSubset d, GraphSubset r, KeyValuePair<int, int> s)
 	{
-		data = @base + TPixel.CreateChecked(d.beg_x * s.Key) + TPixel.CreateChecked(d.beg_y * s.Value);
+		data = @base + (TPixel)(object)(d.beg_x * s.Key) + (TPixel)(object)(d.beg_y * s.Value);
 		ptr_pos_y = default;
 		ptr_pos_x = default;
 		range = r;
@@ -154,22 +154,22 @@ class controller_base<T, TPixel>
 	}
 
     internal void mod_y(int _, int __) =>
-		ptr_pos_y = data + TPixel.CreateChecked(step.Key * start_x) + TPixel.CreateChecked(step.Value * start_y);
+		ptr_pos_y = data + (TPixel)(object)(step.Key * start_x) + (TPixel)(object)(step.Value * start_y);
 
     internal void set_y(int begin, int _) =>
-		ptr_pos_y += TPixel.CreateChecked(step.Value * begin);
+		ptr_pos_y += (TPixel)(object)(step.Value * begin);
 
     internal void inc_y() =>
-		ptr_pos_y += TPixel.CreateChecked(step.Value);
+		ptr_pos_y += (TPixel)(object)step.Value;
 
     internal void mod_x(int _, int __) =>
 		ptr_pos_x = ptr_pos_y;
 
     internal void set_x(int begin, int _) =>
-		ptr_pos_x += TPixel.CreateChecked(step.Key * begin);
+		ptr_pos_x += (TPixel)(object)(step.Key * begin);
 
     internal void inc_x() =>
-		ptr_pos_x += TPixel.CreateChecked(step.Key);
+		ptr_pos_x += (TPixel)(object)step.Key;
 
     internal ref TPixel get_ref() =>
 		ref ptr_pos_x;
@@ -177,7 +177,7 @@ class controller_base<T, TPixel>
 
 class controller<T, TPixel> : controller_base<T, TPixel>
 	where T : ShaderBase<TPixel>
-	where TPixel : INumber<TPixel>
+	where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
 {
 	internal controller(ShaderBase<TPixel> f) : base(f.ptr(), f.getDomain(), f.getImage(), KeyValuePair.Create(1, f.pitch())) { }
 };

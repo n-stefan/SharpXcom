@@ -113,7 +113,7 @@ internal class FpsCounter : Surface
     /**
      * Draws the FPS counter.
      */
-    internal void draw()
+    protected override void draw()
     {
         base.draw();
         _text.blit(this);

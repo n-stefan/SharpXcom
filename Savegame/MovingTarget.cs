@@ -302,4 +302,7 @@ internal class MovingTarget : Target
             }
         }
     }
+
+    internal bool isMeetCalculated() =>
+	    _meetCalculated;
 }

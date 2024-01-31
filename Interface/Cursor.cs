@@ -56,8 +56,7 @@ internal class Cursor : Surface
     /**
      * Draws a pointer-shaped cursor graphic.
      */
-    /// Draws the cursor.
-    internal void draw()
+    protected override void draw()
     {
         base.draw();
         byte color = _color;

@@ -33,6 +33,14 @@ internal struct GraphSubset
         end_y = max_y;
     }
 
+	internal GraphSubset(KeyValuePair<int, int> range_x, KeyValuePair<int, int> range_y)
+	{
+		beg_x = range_x.Key;
+		end_x = range_x.Value;
+		beg_y = range_y.Key;
+		end_y = range_y.Value;
+	}
+
 	internal int size_x() =>
 		end_x - beg_x;
 

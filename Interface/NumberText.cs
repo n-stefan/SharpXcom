@@ -260,4 +260,36 @@ internal class NumberText : Surface
             _borderedChars[i].setPalette(colors, firstcolor, ncolors);
         }
     }
+
+    /**
+     * Draws all the digits in the number.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    string s = _value.ToString();
+	    int x = 0;
+	    if (!_bordered)
+	    {
+		    foreach (var i in s)
+		    {
+			    _chars[i - '0'].setX(x);
+			    _chars[i - '0'].setY(0);
+			    _chars[i - '0'].blit(this);
+			    x += _chars[i - '0'].getWidth() + 1;
+		    }
+	    }
+	    else
+	    {
+		    foreach (var i in s)
+		    {
+			    _borderedChars[i - '0'].setX(x);
+			    _borderedChars[i - '0'].setY(0);
+			    _borderedChars[i - '0'].blit(this);
+			    x += _chars[i - '0'].getWidth() + 1; // no this isn't a typo, i want to use the same spacing regardless.
+		    }
+	    }
+
+	    this.offset(_color);
+    }
 }

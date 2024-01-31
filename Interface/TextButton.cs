@@ -144,4 +144,86 @@ internal class TextButton : InteractiveSurface
         _text.setBig();
         _redraw = true;
     }
+
+    /**
+     * Draws the labeled button.
+     * The colors are inverted if the button is pressed.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    SDL_Rect square;
+
+	    int mul = 1;
+	    if (_contrast)
+	    {
+		    mul = 2;
+	    }
+
+	    int color = _color + 1 * mul;
+
+	    square.x = 0;
+	    square.y = 0;
+	    square.w = getWidth();
+	    square.h = getHeight();
+
+	    for (int i = 0; i < 5; ++i)
+	    {
+		    drawRect(ref square, (byte)color);
+
+		    if (i % 2 == 0)
+		    {
+			    square.x++;
+			    square.y++;
+		    }
+		    square.w--;
+		    square.h--;
+
+		    switch (i)
+		    {
+		        case 0:
+			        color = _color + 5 * mul;
+			        setPixel(square.w, 0, (byte)color);
+			        break;
+		        case 1:
+			        color = _color + 2 * mul;
+			        break;
+		        case 2:
+			        color = _color + 4 * mul;
+			        setPixel(square.w+1, 1, (byte)color);
+			        break;
+		        case 3:
+			        color = _color + 3 * mul;
+			        break;
+		        case 4:
+			        if (_geoscapeButton)
+			        {
+				        setPixel(0, 0, _color);
+				        setPixel(1, 1, _color);
+			        }
+			        break;
+		    }
+	    }
+
+	    bool press;
+	    if (_group == null)
+		    press = isButtonPressed();
+	    else
+		    press = (_group == this);
+
+	    if (press)
+	    {
+		    if (_geoscapeButton)
+		    {
+			    this.invert((byte)(_color + 2 * mul));
+		    }
+		    else
+		    {
+			    this.invert((byte)(_color + 3 * mul));
+		    }
+	    }
+	    _text.setInvert(press);
+
+	    _text.blit(this);
+    }
 }

@@ -166,7 +166,7 @@ internal class InteractiveSurface : Surface
         }
     }
 
-    bool isButtonPressed(byte button = 0)
+    protected bool isButtonPressed(byte button = 0)
     {
 	    if (button == 0)
 	    {

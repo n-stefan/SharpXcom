@@ -44,7 +44,7 @@ struct ColorReplace : IColorFunc<byte, byte, int, int, int>
                 dest = (byte)(newColor | newShade);
 		}
 	}
-};
+}
 
 /**
  * help class used for Surface::blitNShade
@@ -72,7 +72,7 @@ struct StandardShade : IColorFunc<byte, byte, int, int, int>
 				dest = (byte)((src & (15 << 4)) | newShade);
 		}
 	}
-};
+}
 
 /**
  * Element that is blit (rendered) onto the screen.
@@ -1039,4 +1039,56 @@ internal class Surface
      */
     protected void drawTexturedPolygon(short[] x, short[] y, int n, Surface texture, int dx, int dy) =>
 	    texturedPolygon(_surface.pixels, x, y, n, texture.getSurface().pixels, dx, dy);
+
+    /**
+     * Shifts all the colors in the surface by a set amount, but
+     * keeping them inside a fixed-size color block chunk.
+     * @param off Amount to shift.
+     * @param blk Color block size.
+     * @param mul Shift multiplier.
+     */
+    internal void offsetBlock(int off, int blk = 16, int mul = 1)
+    {
+	    if (off == 0)
+		    return;
+
+	    // Lock the surface
+	    @lock();
+
+	    for (int x = 0, y = 0; x < getWidth() && y < getHeight();)
+	    {
+		    byte pixel = getPixel(x, y);
+		    int min = pixel / blk * blk;
+		    int max = min + blk;
+		    int p;
+		    if (off > 0)
+		    {
+			    p = pixel * mul + off;
+		    }
+		    else
+		    {
+			    p = (pixel + off) / mul;
+		    }
+		    if (min != -1 && p < min)
+		    {
+			    p = min;
+		    }
+		    else if (max != -1 && p > max)
+		    {
+			    p = max;
+		    }
+
+		    if (pixel > 0)
+		    {
+			    setPixelIterative(ref x, ref y, (byte)p);
+		    }
+		    else
+		    {
+			    setPixelIterative(ref x, ref y, 0);
+		    }
+	    }
+
+	    // Unlock the surface
+	    unlock();
+    }
 }

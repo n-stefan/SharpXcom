@@ -332,4 +332,12 @@ internal class Language
             names.Add(name);
         }
     }
+
+    /**
+     * Returns the direction to use for rendering
+     * text in this language.
+     * @return Text direction.
+     */
+    internal TextDirection getTextDirection() =>
+	    _direction;
 }

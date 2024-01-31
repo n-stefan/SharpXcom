@@ -23,6 +23,18 @@ enum TextHAlign { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
 
 enum TextVAlign { ALIGN_TOP, ALIGN_MIDDLE, ALIGN_BOTTOM };
 
+struct PaletteShift : IColorFunc<byte, byte, int, int, int>
+{
+	public void func(ref byte dest, byte src, int off, int mul, int mid)
+	{
+		if (src != 0)
+		{
+			int inverseOffset = mid != 0 ? 2 * (mid - src) : 0;
+			dest = (byte)(off + src * mul + inverseOffset);
+		}
+	}
+}
+
 /**
  * Text string displayed on screen.
  * Takes the characters from a Font and puts them together on screen
@@ -402,4 +414,181 @@ internal class Text : InteractiveSurface
      */
     internal void setScrollable(bool scroll) =>
 	    _scroll = scroll;
+
+    /**
+     * Draws all the characters in the text with a really
+     * nasty complex gritty text rendering algorithm logic stuff.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    if (string.IsNullOrEmpty(_text) || _font == null)
+	    {
+		    return;
+	    }
+
+	    // Show text borders for debugging
+	    if (Options.debugUi)
+	    {
+		    SDL_Rect r;
+		    r.w = getWidth();
+		    r.h = getHeight();
+		    r.x = 0;
+		    r.y = 0;
+		    this.drawRect(ref r, 5);
+		    r.w-=2;
+		    r.h-=2;
+		    r.x++;
+		    r.y++;
+		    this.drawRect(ref r, 0);
+	    }
+
+	    int x = 0, y = 0, line = 0, height = 0;
+	    Font font = _font;
+	    int color = _color;
+	    string s = _processedText;
+
+	    height = getTextHeight();
+
+	    if (_scroll)
+	    {
+		    y = _scrollY;
+	    }
+	    else
+	    {
+		    switch (_valign)
+		    {
+		        case TextVAlign.ALIGN_TOP:
+			        y = 0;
+			        break;
+		        case TextVAlign.ALIGN_MIDDLE:
+			        y = (int)Math.Ceiling((getHeight() - height) / 2.0);
+			        break;
+		        case TextVAlign.ALIGN_BOTTOM:
+			        y = getHeight() - height;
+			        break;
+		    }
+	    }
+
+	    x = getLineX(line);
+
+	    // Set up text color
+	    int mul = 1;
+	    if (_contrast)
+	    {
+		    mul = 3;
+	    }
+
+	    // Set up text direction
+	    int dir = 1;
+	    if (_lang.getTextDirection() == TextDirection.DIRECTION_RTL)
+	    {
+		    dir = -1;
+	    }
+
+	    // Invert text by inverting the font palette on index 3 (font palettes use indices 1-5)
+	    int mid = _invert ? 3 : 0;
+
+	    // Draw each letter one by one
+	    foreach (var c in s)
+	    {
+		    if (Unicode.isSpace(c) || c == '\t')
+		    {
+			    x += dir * font.getCharSize(c).w;
+		    }
+		    else if (Unicode.isLinebreak(c))
+		    {
+			    line++;
+			    y += font.getCharSize(c).h;
+			    x = getLineX(line);
+			    if (c == Unicode.TOK_NL_SMALL)
+			    {
+				    font = _small;
+			    }
+		    }
+		    else if (c == Unicode.TOK_COLOR_FLIP)
+		    {
+			    color = (color == _color ? _color2 : _color);
+		    }
+		    else
+		    {
+			    if (dir < 0)
+				    x += dir * font.getCharSize(c).w;
+			    Surface chr = font.getChar(c);
+			    chr.setX(x);
+			    chr.setY(y);
+			    ShaderDraw(new PaletteShift(), ShaderSurface(this, 0, 0), ShaderCrop(chr), ShaderScalar(color), ShaderScalar(mul), ShaderScalar(mid));
+			    if (dir > 0)
+				    x += dir * font.getCharSize(c).w;
+		    }
+	    }
+    }
+
+    /**
+     * Calculates the starting X position for a line of text.
+     * @param line The line number (0 = first, etc).
+     * @return The X position in pixels.
+     */
+    int getLineX(int line)
+    {
+	    int x = 0;
+	    switch (_lang.getTextDirection())
+	    {
+	    case TextDirection.DIRECTION_LTR:
+		    switch (_align)
+		    {
+		    case TextHAlign.ALIGN_LEFT:
+			    break;
+		    case TextHAlign.ALIGN_CENTER:
+			    x = (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
+			    break;
+		    case TextHAlign.ALIGN_RIGHT:
+			    x = getWidth() - 1 - _lineWidth[line];
+			    break;
+		    }
+		    break;
+	    case TextDirection.DIRECTION_RTL:
+		    switch (_align)
+		    {
+		    case TextHAlign.ALIGN_LEFT:
+			    x = getWidth() - 1;
+			    break;
+		    case TextHAlign.ALIGN_CENTER:
+			    x = getWidth() - (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
+			    break;
+		    case TextHAlign.ALIGN_RIGHT:
+			    x = _lineWidth[line];
+			    break;
+		    }
+		    break;
+	    }
+	    return x;
+    }
+
+    /**
+     * Enables/disables color inverting. Mostly used to make
+     * button text look pressed along with the button.
+     * @param invert Invert setting.
+     */
+    internal void setInvert(bool invert)
+    {
+	    _invert = invert;
+	    _redraw = true;
+    }
+
+    /**
+     * Returns the way the text is aligned horizontally
+     * relative to the drawing area.
+     * @return Horizontal alignment.
+     */
+    internal TextHAlign getAlign() =>
+	    _align;
+
+    /**
+     * Returns the way the text is aligned vertically
+     * relative to the drawing area.
+     * @return Horizontal alignment.
+     */
+    internal TextVAlign getVerticalAlign() =>
+	    _valign;
 }

@@ -112,4 +112,103 @@ internal class ScrollBar : InteractiveSurface
 		    _list.scrollTo((uint)scroll);
 	    }
     }
+
+    /**
+     * Updates the thumb according to the current list position.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    drawTrack();
+	    drawThumb();
+    }
+
+    /**
+     * Draws the track (background bar) semi-transparent.
+     */
+    void drawTrack()
+    {
+	    if (_bg != null)
+	    {
+		    _track.copy(_bg);
+		    if (_list.getComboBox() != null)
+		    {
+			    _track.offset(+1, Palette.backPos);
+		    }
+		    else
+		    {
+			    _track.offsetBlock(-5);
+		    }
+	    }
+    }
+
+    /**
+     * Draws the thumb (button) as a hollow square.
+     */
+    void drawThumb()
+    {
+	    double scale = (double)getHeight() / _list.getRows();
+	    _thumbRect.x = 0;
+	    _thumbRect.y = (int)Math.Floor(_list.getScroll() * scale);
+	    _thumbRect.w = _thumb.getWidth();
+	    _thumbRect.h = (int)Math.Ceiling(_list.getVisibleRows() * scale);
+
+	    // Draw base button
+	    _thumb.clear();
+	    _thumb.@lock();
+
+	    SDL_Rect square = _thumbRect;
+	    int color = _color + 2;
+
+	    square.w--;
+	    square.h--;
+
+	    _thumb.drawRect(ref square, (byte)color);
+
+	    square.x++;
+	    square.y++;
+	    color = _color + 5;
+
+	    _thumb.drawRect(ref square, (byte)color);
+
+	    square.w--;
+	    square.h--;
+	    color = _color + 4;
+
+	    _thumb.drawRect(ref square, (byte)color);
+
+	    _thumb.setPixel(_thumbRect.x, _thumbRect.y, (byte)(_color + 1));
+	    _thumb.setPixel(_thumbRect.x, _thumbRect.y + _thumbRect.h - 1, (byte)(_color + 4));
+	    _thumb.setPixel(_thumbRect.x + _thumbRect.w - 1, _thumbRect.y, (byte)(_color + 4));
+
+	    // Hollow it out
+	    if ((int)square.h - 4 > 0)
+	    {
+		    color = _color + 5;
+
+		    square.x++;
+		    square.y++;
+		    square.w -= 3;
+		    square.h -= 3;
+
+		    _thumb.drawRect(ref square, (byte)color);
+
+		    square.x++;
+		    square.y++;
+		    color = _color + 2;
+
+		    _thumb.drawRect(ref square, (byte)color);
+
+		    square.w--;
+		    square.h--;
+		    color = 0;
+
+		    _thumb.drawRect(ref square, (byte)color);
+
+		    _thumb.setPixel(_thumbRect.x + 2 + _thumbRect.w - 1 - 4, _thumbRect.y + 2 + _thumbRect.h - 1 - 4, (byte)(_color + 1));
+		    _thumb.setPixel(_thumbRect.x + 2, _thumbRect.y + 2 + _thumbRect.h - 1 - 4, (byte)(_color + 4));
+		    _thumb.setPixel(_thumbRect.x + 2 + _thumbRect.w - 1 - 4, _thumbRect.y + 2, (byte)(_color + 4));
+	    }
+	    _thumb.unlock();
+    }
 }

@@ -151,6 +151,15 @@ internal class RuleCountry : IRule
     internal int getFundingCap() =>
 	    _fundingCap;
 
+	internal List<double> getLonMax() =>
+        _lonMax;
+
 	internal List<double> getLonMin() =>
         _lonMin;
+
+	internal List<double> getLatMax() =>
+        _latMax;
+
+	internal List<double> getLatMin() =>
+        _latMin;
 }

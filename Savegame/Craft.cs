@@ -954,4 +954,18 @@ internal class Craft : MovingTarget
      */
     internal override string getDefaultName(Language lang) =>
 	    lang.getString("STR_CRAFTNAME").arg(lang.getString(getType())).arg(_id);
+
+    /**
+     * Returns the longitude of the meeting point.
+     * @return Angle in rad.
+     */
+    internal double getMeetLongitude() =>
+	    _meetPointLon;
+
+    /**
+     * Returns the latitude of the meeting point.
+     * @return Angle in rad.
+     */
+    internal double getMeetLatitude() =>
+	    _meetPointLat;
 }

@@ -31,7 +31,7 @@ internal class City : Target
      * @param lon Longitude of the city.
      * @param lat Latitude of the city.
      */
-    City(string name, double lon, double lat) : base()
+    internal City(string name, double lon, double lat) : base()
     {
         _name = name;
         _lon = lon;

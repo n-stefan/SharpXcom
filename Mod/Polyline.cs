@@ -71,4 +71,27 @@ internal class Polyline
 		    _lat[j] = Deg2Rad(coords[i+1]);
 	    }
     }
+
+    /**
+     * Returns the latitude (X) of a given point.
+     * @param i Point number (0-max).
+     * @return Point's latitude.
+     */
+    internal double getLatitude(int i) =>
+	    _lat[i];
+
+    /**
+     * Returns the longitude (Y) of a given point.
+     * @param i Point number (0-max).
+     * @return Point's longitude.
+     */
+    internal double getLongitude(int i) =>
+	    _lon[i];
+
+    /**
+     * Returns the number of points (vertexes) that make up the polyline.
+     * @return Number of points.
+     */
+    internal int getPoints() =>
+	    _points;
 }

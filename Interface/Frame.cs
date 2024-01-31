@@ -67,4 +67,55 @@ internal class Frame : Surface
         _color = color;
         _redraw = true;
     }
+
+    /**
+     * Draws the bordered frame with a graphic background.
+     * The background never moves with the frame, it's
+     * always aligned to the top-left corner of the screen
+     * and cropped to fit the inside area.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    SDL_Rect square;
+
+	    square.x = 0;
+	    square.w = getWidth();
+	    square.y = 0;
+	    square.h = getHeight();
+
+	    int mul = 1;
+	    if (_contrast)
+	    {
+		    mul = 2;
+	    }
+
+	    // _color denotes our middle line color, so we start (half the thickness times the multiplier) steps darker and build up
+	    byte color = (byte)(_color + ((1 + _thickness) * mul) / 2);
+	    // we want the darkest version of this colour to outline any thick borders
+	    byte darkest = (byte)(Palette.blockOffset((byte)(_color / 16)) + 15);
+	    for (int i = 0; i < _thickness; ++i)
+	    {
+		    if (_thickness > 5 && (i == 0 || i == _thickness -1))
+			    drawRect(ref square, darkest);
+		    else
+			    drawRect(ref square, color);
+		    if (i < _thickness / 2)
+			    color = (byte)(color - 1 * mul);
+		    else
+			    color = (byte)(color + 1 * mul);
+		    square.x++;
+		    square.y++;
+		    if (square.w >= 2)
+			    square.w -= 2;
+		    else
+			    square.w = 1;
+
+		    if (square.h >= 2)
+			    square.h -= 2;
+		    else
+			    square.h = 1;
+	    }
+	    drawRect(ref square, _bg);
+    }
 }

@@ -826,4 +826,45 @@ internal class TextList : InteractiveSurface
      */
     internal int getColumnX(uint column) =>
 	    getX() + _texts[0][(int)column].getX();
+
+    /**
+     * Gets the combobox that this list is attached to, if any.
+     * @return the attached combobox.
+     */
+    internal ComboBox getComboBox() =>
+	    _comboBox;
+
+    /**
+     * Draws the text list and all the text contained within.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    int y = 0;
+	    if (_rows.Any())
+	    {
+		    // for wrapped items, offset the draw height above the visible surface
+		    // so that the correct row appears at the top
+		    for (var row = (int)_scroll; row > 0 && _rows[row] == _rows[row - 1]; --row)
+		    {
+			    y -= _font.getHeight() + _font.getSpacing();
+		    }
+		    for (var i = (int)_rows[(int)_scroll]; i < _texts.Count && i < _rows[(int)_scroll] + _visibleRows; ++i)
+		    {
+			    foreach (var j in _texts[i])
+			    {
+				    j.setY(y);
+				    j.blit(this);
+			    }
+			    if (_texts[i].Any())
+			    {
+				    y += _texts[i].First().getHeight() + _font.getSpacing();
+			    }
+			    else
+			    {
+				    y += _font.getHeight() + _font.getSpacing();
+			    }
+		    }
+	    }
+    }
 }

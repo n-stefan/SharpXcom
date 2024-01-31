@@ -101,4 +101,45 @@ internal class Bar : Surface
      */
     internal byte getColor() =>
 	    _color;
+
+    /**
+     * Draws the bordered bar filled according
+     * to its values.
+     */
+    protected override void draw()
+    {
+	    base.draw();
+	    SDL_Rect square;
+
+	    square.x = 0;
+	    square.y = 0;
+	    square.w = (ushort)(_scale * _max) + 1;
+	    square.h = getHeight();
+
+	    if (_borderColor != 0)
+		    drawRect(ref square, _borderColor);
+	    else
+		    drawRect(ref square, (byte)(_color + 4));
+
+	    square.y++;
+	    square.w--;
+	    square.h -= 2;
+
+	    drawRect(ref square, 0);
+
+	    if (_secondOnTop)
+	    {
+		    square.w = (ushort)(_scale * _value);
+		    drawRect(ref square, _color);
+		    square.w = (ushort)(_scale * _value2);
+		    drawRect(ref square, _color2);
+	    }
+	    else
+	    {
+		    square.w = (ushort)(_scale * _value2);
+		    drawRect(ref square, _color2);
+		    square.w = (ushort)(_scale * _value);
+		    drawRect(ref square, _color);
+	    }
+    }
 }

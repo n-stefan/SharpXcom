@@ -57,4 +57,16 @@ internal class ToggleTextButton : TextButton
         _fakeGroup = null;
         _redraw = true;
     }
+
+    /// handle draw() in case we need to paint the button a garish color
+    protected override void draw()
+    {
+	    if (_invertedColor > -1) _fakeGroup = null; // nevermind, TextButton. We'll invert the surface ourselves.
+	    base.draw();
+
+	    if (_invertedColor > -1 && _isPressed)
+	    {
+		    this.invert((byte)(_invertedColor + 4));
+	    }
+    }
 }

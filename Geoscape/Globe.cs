@@ -111,7 +111,7 @@ struct GlobeStaticData
     }
 }
 
-struct CreateShadow
+struct CreateShadow : IColorFunc<byte, Cord, Cord, short, int>
 {
 	internal static byte getShadowValue(Cord earth, Cord sun, short noise)
 	{
@@ -155,6 +155,28 @@ struct CreateShadow
 		if (e > d + ColorShade)
 			return (byte)(d + ColorShade);
 		return (byte)e;
+	}
+
+	public void func(ref byte dest, Cord earth, Cord sun, short noise, int _)
+	{
+		if (dest != 0 && earth.z != 0)
+		{
+			byte shadow = getShadowValue(earth, sun, noise);
+			//this pixel is ocean
+			if (isOcean(dest))
+			{
+				dest = getOceanShadow(shadow);
+			}
+			//this pixel is land
+			else
+			{
+				dest = getLandShadow(dest, shadow);
+			}
+		}
+		else
+		{
+			dest = 0;
+		}
 	}
 }
 
@@ -1194,7 +1216,7 @@ internal class Globe : InteractiveSurface
 
     void XuLine(Surface surface, Surface src, double x1, double y1, double x2, double y2, int shade)
     {
-	    if (_clipper.LineClip(&x1,&y1,&x2,&y2) != 1) return; //empty line
+	    if (_clipper.LineClip(ref x1,ref y1,ref x2,ref y2) != 1) return; //empty line
 
 	    double deltax = x2-x1, deltay = y2-y1;
 	    bool inv;
@@ -1251,6 +1273,336 @@ internal class Globe : InteractiveSurface
 		    x0+=SX;
 		    y0+=SY;
 		    len-=1.0;
+	    }
+    }
+
+    /**
+     * Draws the flight paths of player craft flying on the globe.
+     */
+    void drawFlights()
+    {
+	    //_radars.clear();
+
+	    if (!Options.globeFlightPaths)
+		    return;
+
+	    // Lock the surface
+	    _radars.@lock();
+
+	    // Draw the craft flight paths
+	    foreach (var i in _game.getSavedGame().getBases())
+	    {
+		    foreach (var j in i.getCrafts())
+		    {
+			    // Hide crafts docked at base
+			    if (j.getStatus() != "STR_OUT" || j.getDestination() == null /*|| pointBack(j.getLongitude(), j.getLatitude())*/)
+				    continue;
+
+			    double lon1 = j.getLongitude();
+			    double lat1 = j.getLatitude();
+			    double lon2 = j.getDestination().getLongitude();
+			    double lat2 = j.getDestination().getLatitude();
+
+			    if (j.isMeetCalculated())
+			    {
+				    lon2 = j.getMeetLongitude();
+				    lat2 = j.getMeetLatitude();
+			    }
+			    drawPath(_radars, lon1, lat1, lon2, lat2);
+
+			    if (j.isMeetCalculated())
+			    {
+				    lon1 = j.getDestination().getLongitude();
+				    lat1 = j.getDestination().getLatitude();
+
+				    drawPath(_radars, lon1, lat1, lon2, lat2);
+			    }
+		    }
+	    }
+
+	    // Unlock the surface
+	    _radars.unlock();
+    }
+
+    void drawPath(Surface surface, double lon1, double lat1, double lon2, double lat2)
+    {
+	    double length;
+	    short count;
+	    double x1, y1, x2, y2;
+	    CordPolar p1, p2;
+	    Cord a = (Cord)new CordPolar(lon1, lat1);
+	    Cord b = (Cord)new CordPolar(lon2, lat2);
+
+	    if (-b == a)
+		    return;
+
+	    b -= a;
+
+	    //longer path have more parts
+	    length = b.norm();
+	    length *= length*15;
+	    count = (short)(length + 1);
+	    b /= count;
+	    p1 = (CordPolar)a;
+	    polarToCart(p1.lon, p1.lat, out x1, out y1);
+	    for (int i = 0; i < count; ++i)
+	    {
+		    a += b;
+		    p2 = (CordPolar)a;
+		    polarToCart(p2.lon, p2.lat, out x2, out y2);
+
+		    if (!pointBack(p1.lon, p1.lat) && !pointBack(p2.lon, p2.lat))
+		    {
+			    XuLine(surface, this, x1, y1, x2, y2, 8);
+		    }
+
+		    p1 = p2;
+		    x1 = x2;
+		    y1 = y2;
+	    }
+    }
+
+    void drawShadow()
+    {
+	    ShaderMove<Cord> earth = new ShaderMove<Cord>(_earthData[(int)_zoom], getWidth(), getHeight());
+	    ShaderRepeat<short> noise = new ShaderRepeat<short>(_randomNoiseData, GlobeStaticData.random_surf_size, GlobeStaticData.random_surf_size);
+
+	    earth.setMove(_cenX-getWidth()/2, _cenY-getHeight()/2);
+
+	    @lock();
+	    ShaderDraw(new CreateShadow(), ShaderSurface(this), earth, ShaderScalar(getSunDirection(_cenLon, _cenLat)), noise);
+	    unlock();
+    }
+
+	static int debugType = 0;
+	static bool canSwitchDebugType = false;
+    /**
+     * Draws the details of the countries on the globe,
+     * based on the current zoom level.
+     */
+    void drawDetail()
+    {
+	    _countries.clear();
+
+	    if (!Options.globeDetail)
+		    return;
+
+	    // Draw the country borders
+	    if (_zoom >= 1)
+	    {
+		    // Lock the surface
+		    _countries.@lock();
+
+		    foreach (var i in _rules.getPolylines())
+		    {
+			    short[] x = [2], y = [2];
+			    for (int j = 0; j < i.getPoints() - 1; ++j)
+			    {
+				    // Don't draw if polyline is facing back
+				    if (pointBack(i.getLongitude(j), i.getLatitude(j)) || pointBack(i.getLongitude(j + 1), i.getLatitude(j + 1)))
+					    continue;
+
+				    // Convert coordinates
+				    polarToCart(i.getLongitude(j), i.getLatitude(j), out x[0], out y[0]);
+				    polarToCart(i.getLongitude(j + 1), i.getLatitude(j + 1), out x[1], out y[1]);
+
+				    _countries.drawLine(x[0], y[0], x[1], y[1], LINE_COLOR);
+			    }
+		    }
+
+		    // Unlock the surface
+		    _countries.unlock();
+	    }
+
+	    // Draw the country names
+	    if (_zoom >= 2)
+	    {
+		    Text label = new Text(100, 9, 0, 0);
+		    label.setPalette(getPaletteColors());
+		    label.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+		    label.setAlign(TextHAlign.ALIGN_CENTER);
+		    label.setColor(COUNTRY_LABEL_COLOR);
+
+		    short x, y;
+		    foreach (var i in _game.getSavedGame().getCountries())
+		    {
+			    // Don't draw if label is facing back
+			    if (pointBack(i.getRules().getLabelLongitude(), i.getRules().getLabelLatitude()))
+				    continue;
+
+			    // Convert coordinates
+			    polarToCart(i.getRules().getLabelLongitude(), i.getRules().getLabelLatitude(), out x, out y);
+
+			    label.setX(x - 50);
+			    label.setY(y);
+			    label.setText(_game.getLanguage().getString(i.getRules().getType()));
+			    label.blit(_countries);
+		    }
+
+		    label = null;
+	    }
+
+	    // Draw the city and base markers
+	    if (_zoom >= 3)
+	    {
+		    Text label = new Text(100, 9, 0, 0);
+		    label.setPalette(getPaletteColors());
+		    label.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+		    label.setAlign(TextHAlign.ALIGN_CENTER);
+		    label.setColor(CITY_LABEL_COLOR);
+
+		    short x, y;
+		    foreach (var i in _game.getSavedGame().getRegions())
+		    {
+			    foreach (var j in i.getRules().getCities())
+			    {
+				    drawTarget(j, _countries);
+
+				    // Don't draw if city is facing back
+				    if (pointBack(j.getLongitude(), j.getLatitude()))
+					    continue;
+
+				    // Convert coordinates
+				    polarToCart(j.getLongitude(), j.getLatitude(), out x, out y);
+
+				    label.setX(x - 50);
+				    label.setY(y + 2);
+				    label.setText(j.getName(_game.getLanguage()));
+				    label.blit(_countries);
+			    }
+		    }
+		    // Draw bases names
+		    foreach (var j in _game.getSavedGame().getBases())
+		    {
+			    if (j.getMarker() == -1 || pointBack(j.getLongitude(), j.getLatitude()))
+				    continue;
+			    polarToCart(j.getLongitude(), j.getLatitude(), out x, out y);
+			    label.setX(x - 50);
+			    label.setY(y + 2);
+			    label.setColor(BASE_LABEL_COLOR);
+			    label.setText(j.getName());
+			    label.blit(_countries);
+		    }
+
+		    label = null;
+	    }
+
+	    if (_game.getSavedGame().getDebugMode())
+	    {
+		    int color;
+		    canSwitchDebugType = true;
+		    if (debugType == 0)
+		    {
+			    color = 0;
+			    foreach (var i in _game.getSavedGame().getCountries())
+			    {
+				    color += 10;
+				    for (int k = 0; k != i.getRules().getLatMax().Count; ++k)
+				    {
+					    double lon2 = i.getRules().getLonMax()[k];
+					    double lon1 = i.getRules().getLonMin()[k];
+					    double lat2 = i.getRules().getLatMax()[k];
+					    double lat1 = i.getRules().getLatMin()[k];
+
+					    drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
+					    drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
+					    drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
+					    drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
+				    }
+			    }
+		    }
+		    else if (debugType == 1)
+		    {
+			    color = 0;
+			    foreach (var i in _game.getSavedGame().getRegions())
+			    {
+				    color += 10;
+				    for (int k = 0; k != i.getRules().getLatMax().Count; ++k)
+				    {
+					    double lon2 = i.getRules().getLonMax()[k];
+					    double lon1 = i.getRules().getLonMin()[k];
+					    double lat2 = i.getRules().getLatMax()[k];
+					    double lat1 = i.getRules().getLatMin()[k];
+
+					    drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
+					    drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
+					    drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
+					    drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
+				    }
+			    }
+		    }
+		    else if (debugType == 2)
+		    {
+			    foreach (var i in _game.getSavedGame().getRegions())
+			    {
+				    color = -1;
+				    foreach (var j in i.getRules().getMissionZones())
+				    {
+					    color += 2;
+					    foreach (var k in j.areas)
+					    {
+						    double lon2 = k.lonMax;
+						    double lon1 = k.lonMin;
+						    double lat2 = k.latMax;
+						    double lat1 = k.latMin;
+
+						    drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
+						    drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
+						    drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
+						    drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
+					    }
+				    }
+			    }
+		    }
+	    }
+	    else
+	    {
+		    if (canSwitchDebugType)
+		    {
+			    ++debugType;
+			    if (debugType > 2) debugType = 0;
+			    canSwitchDebugType = false;
+		    }
+	    }
+    }
+
+    void drawVHLine(Surface surface, double lon1, double lat1, double lon2, double lat2, byte color)
+    {
+	    double sx = lon2 - lon1;
+	    double sy = lat2 - lat1;
+	    double ln1, lt1, ln2, lt2;
+	    int seg;
+	    short x1, y1, x2, y2;
+
+	    if (sx<0) sx += 2*M_PI;
+
+	    if (Math.Abs(sx)<0.01)
+	    {
+		    seg = (int)Math.Abs(sy/(2*M_PI)*48);
+		    if (seg == 0) ++seg;
+	    }
+	    else
+	    {
+		    seg = (int)Math.Abs(sx/(2*M_PI)*96);
+		    if (seg == 0) ++seg;
+	    }
+
+	    sx /= seg;
+	    sy /= seg;
+
+	    for (int i = 0; i < seg; ++i)
+	    {
+		    ln1 = lon1 + sx*i;
+		    lt1 = lat1 + sy*i;
+		    ln2 = lon1 + sx*(i+1);
+		    lt2 = lat1 + sy*(i+1);
+
+		    if (!pointBack(ln2, lt2)&&!pointBack(ln1, lt1))
+		    {
+			    polarToCart(ln1,lt1,out x1,out y1);
+			    polarToCart(ln2,lt2,out x2,out y2);
+			    surface.drawLine(x1, y1, x2, y2, color);
+		    }
 	    }
     }
 }

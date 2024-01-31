@@ -212,4 +212,11 @@ internal class RuleGlobe
 		}
 		return terrains;
 	}
+
+	/**
+	 * Returns the list of polylines in the globe.
+	 * @return Pointer to the list of polylines.
+	 */
+	internal List<Polyline> getPolylines() =>
+		_polylines;
 }
