@@ -482,4 +482,17 @@ internal class BaseView : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * Blits the base view and selector.
+     * @param surface Pointer to surface to blit onto.
+     */
+    protected override void blit(Surface surface)
+    {
+	    base.blit(surface);
+	    if (_selector != null)
+	    {
+		    _selector.blit(surface);
+	    }
+    }
 }

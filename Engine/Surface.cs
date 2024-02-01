@@ -540,7 +540,7 @@ internal class Surface
      * that is blitted.
      * @param surface Pointer to surface to blit onto.
      */
-    internal virtual void blit(Surface surface)
+    protected virtual void blit(Surface surface)
     {
 	    if (_visible && !_hidden)
 	    {
@@ -551,7 +551,7 @@ internal class Surface
 		    var target = new SDL_Rect();
 		    if (_crop.w == 0 && _crop.h == 0)
 		    {
-			    cropper = new SDL_Rect();
+			    cropper = default;
 		    }
 		    else
 		    {

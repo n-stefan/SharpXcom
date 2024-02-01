@@ -2559,4 +2559,16 @@ internal class GeoscapeState : State
 	    _sideLine.setY(0);
 	    _sideLine.drawRect(0, 0, (short)_sideLine.getWidth(), (short)_sideLine.getHeight(), 15);
     }
+
+    /**
+     * Handle blitting of Geoscape and Dogfights.
+     */
+    protected override void blit()
+    {
+	    base.blit();
+	    foreach (var it in _dogfights)
+	    {
+		    it.blit();
+	    }
+    }
 }

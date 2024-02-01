@@ -867,4 +867,53 @@ internal class TextList : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * Blits the text list and selector.
+     * @param surface Pointer to surface to blit onto.
+     */
+    protected override void blit(Surface surface)
+    {
+	    if (_visible && !_hidden)
+	    {
+		    _selector.blit(surface);
+	    }
+	    base.blit(surface);
+	    if (_visible && !_hidden)
+	    {
+		    if (_arrowPos != -1 && _rows.Any())
+		    {
+			    int y = getY();
+			    for (var row = (int)_scroll; row > 0 && _rows[row] == _rows[row - 1]; --row)
+			    {
+				    y -= _font.getHeight() + _font.getSpacing();
+			    }
+			    int maxY = getY() + getHeight();
+			    for (var i = (int)_rows[(int)_scroll]; i < _texts.Count && i < _rows[(int)_scroll] + _visibleRows && y < maxY; ++i)
+			    {
+				    _arrowLeft[i].setY(y);
+				    _arrowRight[i].setY(y);
+
+				    if (y >= getY())
+				    {
+					    // only blit arrows that belong to texts that have their first row on-screen
+					    _arrowLeft[i].blit(surface);
+					    _arrowRight[i].blit(surface);
+				    }
+
+				    if (_texts[i].Any())
+				    {
+					    y += _texts[i].First().getHeight() + _font.getSpacing();
+				    }
+				    else
+				    {
+					    y += _font.getHeight() + _font.getSpacing();
+				    }
+			    }
+		    }
+		    _up.blit(surface);
+		    _down.blit(surface);
+		    _scrollbar.blit(surface);
+	    }
+    }
 }

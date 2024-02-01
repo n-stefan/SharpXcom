@@ -1605,4 +1605,16 @@ internal class Globe : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * Blits the globe onto another surface.
+     * @param surface Pointer to another surface.
+     */
+    protected override void blit(Surface surface)
+    {
+	    base.blit(surface);
+	    _radars.blit(surface);
+	    _countries.blit(surface);
+	    _markers.blit(surface);
+    }
 }

@@ -345,4 +345,21 @@ internal class ComboBox : InteractiveSurface
 		    _toggled = false;
 	    }
     }
+
+    /**
+     * Blits the combo box components.
+     * @param surface Pointer to surface to blit onto.
+     */
+    protected override void blit(Surface surface)
+    {
+	    base.blit(surface);
+	    _list.invalidate();
+	    if (_visible && !_hidden)
+	    {
+		    _button.blit(surface);
+		    _arrow.blit(surface);
+		    _window.blit(surface);
+		    _list.blit(surface);
+	    }
+    }
 }

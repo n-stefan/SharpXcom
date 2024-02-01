@@ -211,4 +211,19 @@ internal class ScrollBar : InteractiveSurface
 	    }
 	    _thumb.unlock();
     }
+
+    /**
+     * Blits the scrollbar contents.
+     * @param surface Pointer to surface to blit onto.
+     */
+    protected override void blit(Surface surface)
+    {
+	    base.blit(surface);
+	    if (_visible && !_hidden)
+	    {
+		    _track.blit(surface);
+		    _thumb.blit(surface);
+		    invalidate();
+	    }
+    }
 }

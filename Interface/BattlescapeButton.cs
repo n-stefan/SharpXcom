@@ -155,4 +155,21 @@ internal class BattlescapeButton : InteractiveSurface
      */
     internal void allowClickInversion() =>
 	    _toggleMode = InversionType.INVERT_CLICK;
+
+    /**
+     * Blits this surface or the alternate surface onto another one,
+     * depending on whether the button is "pressed" or not.
+     * @param surface Pointer to surface to blit onto.
+     */
+    protected override void blit(Surface surface)
+    {
+	    if (_inverted)
+	    {
+		    _altSurface.blit(surface);
+	    }
+	    else
+	    {
+		    base.blit(surface);
+	    }
+    }
 }

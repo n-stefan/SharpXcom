@@ -63,4 +63,14 @@ internal class BattlescapeMessage : Surface
      */
     internal void setTextColor(byte color) =>
         _text.setColor(color);
+
+    /**
+     * Blits the warning message.
+     */
+    protected override void blit(Surface surface)
+    {
+	    base.blit(surface);
+	    _window.blit(surface);
+	    _text.blit(surface);
+    }
 }

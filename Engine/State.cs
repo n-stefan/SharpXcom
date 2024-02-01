@@ -379,8 +379,8 @@ internal abstract class State
      */
     protected virtual void blit()
     {
-        foreach (var surface in _surfaces)
-            surface.blit(_game.getScreen().getSurface());
+        foreach (var i in _surfaces)
+            i.blit(_game.getScreen().getSurface());
     }
 
     /**

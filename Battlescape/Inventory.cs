@@ -605,4 +605,18 @@ internal class Inventory : InteractiveSurface
 		    text.blit(_grid);
 	    }
     }
+
+    /**
+     * Blits the inventory elements.
+     * @param surface Pointer to surface to blit onto.
+     */
+    protected override void blit(Surface surface)
+    {
+	    clear();
+	    _grid.blit(this);
+	    _items.blit(this);
+	    _selection.blit(this);
+	    _warning.blit(this);
+	    base.blit(surface);
+    }
 }

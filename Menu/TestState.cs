@@ -128,4 +128,11 @@ internal class TestState : State
 		_i++;
 		*/
 	}
+
+	protected override void blit()
+	{
+		base.blit();
+
+		_set.getFrame(0).blit(_game.getScreen().getSurface());
+	}
 }

@@ -174,4 +174,20 @@ internal class Slider : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * Blits the slider contents
+     * @param surface Pointer to surface to blit onto.
+     */
+    protected override void blit(Surface surface)
+    {
+	    base.blit(surface);
+	    if (_visible && !_hidden)
+	    {
+		    _txtMinus.blit(surface);
+		    _txtPlus.blit(surface);
+		    _frame.blit(surface);
+		    _button.blit(surface);
+	    }
+    }
 }
