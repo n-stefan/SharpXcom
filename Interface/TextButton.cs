@@ -226,4 +226,51 @@ internal class TextButton : InteractiveSurface
 
 	    _text.blit(this);
     }
+
+    protected override bool isButtonHandled(byte button = 0)
+    {
+	    if (_comboBox != null)
+	    {
+		    return (button == SDL_BUTTON_LEFT);
+	    }
+	    else
+	    {
+		    return base.isButtonHandled(button);
+	    }
+    }
+
+    /**
+     * Sets the button as the pressed button if it's part of a group.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mousePress(Action action, State state)
+    {
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT && _group != null)
+	    {
+		    TextButton old = _group;
+		    _group = this;
+            if (old != null)
+			    old.draw();
+		    draw();
+	    }
+
+	    if (isButtonHandled(action.getDetails().button.button))
+	    {
+		    if (soundPress != null && _group == null &&
+			    action.getDetails().wheel.y == 0) //button.button != SDL_BUTTON_WHEELUP && button.button != SDL_BUTTON_WHEELDOWN
+		    {
+			    soundPress.play(Mix_GroupAvailable(0));
+		    }
+
+		    if (_comboBox != null)
+		    {
+			    _comboBox.toggle();
+		    }
+
+		    draw();
+		    //_redraw = true;
+	    }
+	    base.mousePress(action, state);
+    }
 }

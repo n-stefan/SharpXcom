@@ -100,13 +100,13 @@ internal class BuildFacilitiesState : State
      * Places the selected facility.
      * @param action Pointer to an action.
      */
-    void lstFacilitiesClick(Action _) =>
+    protected virtual void lstFacilitiesClick(Action _) =>
         _game.pushState(new PlaceFacilityState(_base, _facilities[(int)_lstFacilities.getSelectedRow()]));
 
     /**
      * Populates the build list from the current "available" facilities.
      */
-    void PopulateBuildList()
+    protected virtual void PopulateBuildList()
     {
         List<string> facilities = _game.getMod().getBaseFacilitiesList();
         foreach (var i in facilities)

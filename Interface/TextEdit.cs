@@ -270,4 +270,43 @@ internal class TextEdit : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * Focuses the text edit when it's pressed on.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mousePress(Action action, State state)
+    {
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+	    {
+		    if (!_isFocused)
+		    {
+			    setFocus(true);
+		    }
+		    else
+		    {
+			    double mouseX = action.getRelativeXMouse();
+			    double scaleX = action.getXScale();
+			    double w = 0;
+			    int c = 0;
+			    foreach (var i in _value)
+			    {
+				    if (mouseX <= w)
+				    {
+					    break;
+				    }
+				    w += (double)_text.getFont().getCharSize(i).w / 2 * scaleX;
+				    if (mouseX <= w)
+				    {
+					    break;
+				    }
+				    c++;
+				    w += (double) _text.getFont().getCharSize(i).w / 2 * scaleX;
+			    }
+			    _caretPos = (uint)c;
+		    }
+	    }
+	    base.mousePress(action, state);
+    }
 }

@@ -226,4 +226,35 @@ internal class ScrollBar : InteractiveSurface
 		    invalidate();
 	    }
     }
+
+	/**
+	 * The scrollbar only moves while the button is pressed.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mousePress(Action action, State state)
+	{
+		base.mousePress(action, state);
+		if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+		{
+			int cursorY = (int)(action.getAbsoluteYMouse() - getY());
+			if (cursorY >= _thumbRect.y && cursorY < _thumbRect.y + _thumbRect.h)
+			{
+				_offset = _thumbRect.y - cursorY;
+			}
+			else
+			{
+				_offset = -_thumbRect.h / 2;
+			}
+			_pressed = true;
+		}
+		else if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
+		{
+			_list.scrollUp(false, true);
+		}
+		else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+		{
+			_list.scrollDown(false, true);
+		}
+	}
 }

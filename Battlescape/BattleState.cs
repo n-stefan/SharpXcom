@@ -58,14 +58,20 @@ internal class BattleState
     ~BattleState() { }
 
     /**
+     * Start the current BattleState.
+     */
+    protected virtual void init() { }
+
+    /**
      * Cancels the current BattleState.
      */
     protected virtual void cancel() { }
 
     /**
-     * Start the current BattleState.
+     * Runs any code the state needs to keep updating every
+     * game cycle.
      */
-    protected virtual void init() { }
+    protected virtual void think() { }
 
     /**
      * Gets the action result. Returns error messages or an empty string when everything went fine.
@@ -73,10 +79,4 @@ internal class BattleState
      */
     internal BattleAction getAction() =>
 	    _action;
-
-    /**
-     * Runs any code the state needs to keep updating every
-     * game cycle.
-     */
-    protected virtual void think() { }
 }

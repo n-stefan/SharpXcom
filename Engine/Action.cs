@@ -172,4 +172,17 @@ internal class Action
      */
     internal int getXMouse() =>
 	    _mouseX;
+
+    /**
+     * Returns the relative X position of the
+     * mouse cursor relative to the surface that
+     * triggered the action, corrected for screen scaling.
+     * @return Mouse's relative X position.
+     */
+    internal double getRelativeXMouse()
+    {
+	    if (_mouseX == -1)
+		    return -1;
+	    return _mouseX - _surfaceX * _scaleX;
+    }
 }

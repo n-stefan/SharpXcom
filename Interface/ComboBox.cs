@@ -110,7 +110,7 @@ internal class ComboBox : InteractiveSurface
      * Opens/closes the combo box list.
      * @param first Is it the initialization toggle?
      */
-    void toggle(bool first = false)
+    internal void toggle(bool first = false)
     {
         _window.setVisible(!_window.getVisible());
         _list.setVisible(!_list.getVisible());

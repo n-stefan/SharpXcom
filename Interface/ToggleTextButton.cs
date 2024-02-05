@@ -50,7 +50,7 @@ internal class ToggleTextButton : TextButton
     internal bool getPressed() =>
         _isPressed;
 
-    /// When this is set, Surface::invert() is called with the value from mid when it's time to invert the button
+    /// When this is set, Surface.invert() is called with the value from mid when it's time to invert the button
     internal void setInvertColor(byte color)
     {
         _invertedColor = color;
@@ -68,5 +68,20 @@ internal class ToggleTextButton : TextButton
 	    {
 		    this.invert((byte)(_invertedColor + 4));
 	    }
+    }
+
+    /// handle mouse clicks by toggling the button state; use _fakeGroup to trick TextButton into drawing the right thing
+    protected override void mousePress(Action action, State state)
+    {
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT || action.getDetails().button.button == SDL_BUTTON_RIGHT)
+	    {
+		    _isPressed = !_isPressed;
+		    _fakeGroup = _isPressed ? this : null; // this is the trick that makes TextButton stick
+		    if (_isPressed && _invertedColor > -1) base.setColor((byte)_invertedColor);
+		    else base.setColor((byte)_originalColor);
+	    }
+
+	    base.mousePress(action, state); // skip TextButton's code as it will try to set *_group
+	    draw();
     }
 }

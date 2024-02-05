@@ -197,16 +197,16 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    internal void mousePress(Action action, State state)
+    protected virtual void mousePress(Action action, State state)
     {
-        if (_press.TryGetValue(0, out ActionHandler handler))
-        {
-            handler(action);
-        }
-        if (_press.TryGetValue(action.getDetails().button.button, out ActionHandler handler2))
-        {
-            handler2(action);
-        }
+        if (_press.TryGetValue(0, out ActionHandler allHandler))
+	    {
+            allHandler(action);
+	    }
+        if (_press.TryGetValue(action.getDetails().button.button, out ActionHandler oneHandler))
+	    {
+            oneHandler(action);
+	    }
     }
 
     /**
@@ -318,7 +318,7 @@ internal class InteractiveSurface : Surface
      * where the surface is unpressed without user input.
      * @param state Pointer to running state.
      */
-    internal void unpress(State state)
+    protected virtual void unpress(State state)
     {
         if (isButtonPressed())
         {
@@ -483,4 +483,19 @@ internal class InteractiveSurface : Surface
      */
     internal bool isFocused() =>
 	    _isFocused;
+
+	/// Is this mouse button event handled?
+    protected virtual bool isButtonHandled(byte button = 0)
+    {
+	    bool handled = (_click.ContainsKey(0) ||
+					    _press.ContainsKey(0) ||
+					    _release.ContainsKey(0));
+	    if (!handled && button != 0)
+	    {
+		    handled = (_click.ContainsKey(button) ||
+				       _press.ContainsKey(button) ||
+				       _release.ContainsKey(button));
+	    }
+	    return handled;
+    }
 }

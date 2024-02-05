@@ -76,4 +76,29 @@ internal class ImageButton : InteractiveSurface
         if (_group != null && _group == this)
             invert((byte)(_color + 3));
     }
+
+    /**
+     * Sets the button as the pressed button if it's part of a group,
+     * and inverts the colors when pressed.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mousePress(Action action, State state)
+    {
+	    if (_group != null)
+	    {
+		    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+		    {
+			    _group.invert((byte)(_group.getColor() + 3));
+			    _group = this;
+			    invert((byte)(_color + 3));
+		    }
+	    }
+	    else if (!_inverted && isButtonPressed() && isButtonHandled(action.getDetails().button.button))
+	    {
+		    _inverted = true;
+		    invert((byte)(_color + 3));
+	    }
+	    base.mousePress(action, state);
+    }
 }

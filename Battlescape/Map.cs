@@ -1687,4 +1687,15 @@ internal class Map : InteractiveSurface
 
 		return lowestlevel;
 	}
+
+	/**
+	 * Handles mouse presses on the map.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mousePress(Action action, State state)
+	{
+		base.mousePress(action, state);
+		_camera.mousePress(action, state);
+	}
 }

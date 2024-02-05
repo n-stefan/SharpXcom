@@ -190,4 +190,27 @@ internal class Slider : InteractiveSurface
 		    _button.blit(surface);
 	    }
     }
+
+    /**
+     * The slider only moves while the button is pressed.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mousePress(Action action, State state)
+    {
+	    base.mousePress(action, state);
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+	    {
+		    _pressed = true;
+		    int cursorX = (int)action.getAbsoluteXMouse();
+		    if (cursorX >= _button.getX() && cursorX < _button.getX() + _button.getWidth())
+		    {
+			    _offsetX = _button.getX() - cursorX;
+		    }
+		    else
+		    {
+			    _offsetX = -_button.getWidth() / 2;
+		    }
+	    }
+    }
 }

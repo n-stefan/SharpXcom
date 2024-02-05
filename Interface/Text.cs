@@ -534,33 +534,33 @@ internal class Text : InteractiveSurface
 	    int x = 0;
 	    switch (_lang.getTextDirection())
 	    {
-	    case TextDirection.DIRECTION_LTR:
-		    switch (_align)
-		    {
-		    case TextHAlign.ALIGN_LEFT:
-			    break;
-		    case TextHAlign.ALIGN_CENTER:
-			    x = (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
-			    break;
-		    case TextHAlign.ALIGN_RIGHT:
-			    x = getWidth() - 1 - _lineWidth[line];
-			    break;
-		    }
-		    break;
-	    case TextDirection.DIRECTION_RTL:
-		    switch (_align)
-		    {
-		    case TextHAlign.ALIGN_LEFT:
-			    x = getWidth() - 1;
-			    break;
-		    case TextHAlign.ALIGN_CENTER:
-			    x = getWidth() - (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
-			    break;
-		    case TextHAlign.ALIGN_RIGHT:
-			    x = _lineWidth[line];
-			    break;
-		    }
-		    break;
+	        case TextDirection.DIRECTION_LTR:
+		        switch (_align)
+		        {
+		            case TextHAlign.ALIGN_LEFT:
+			            break;
+		            case TextHAlign.ALIGN_CENTER:
+			            x = (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
+			            break;
+		            case TextHAlign.ALIGN_RIGHT:
+			            x = getWidth() - 1 - _lineWidth[line];
+			            break;
+		        }
+		        break;
+	        case TextDirection.DIRECTION_RTL:
+		        switch (_align)
+		        {
+		            case TextHAlign.ALIGN_LEFT:
+			            x = getWidth() - 1;
+			            break;
+		            case TextHAlign.ALIGN_CENTER:
+			            x = getWidth() - (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
+			            break;
+		            case TextHAlign.ALIGN_RIGHT:
+			            x = _lineWidth[line];
+			            break;
+		        }
+		        break;
 	    }
 	    return x;
     }
@@ -591,4 +591,29 @@ internal class Text : InteractiveSurface
      */
     internal TextVAlign getVerticalAlign() =>
 	    _valign;
+
+    /**
+     * Handles scrolling.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mousePress(Action action, State state)
+    {
+	    base.mousePress(action, state);
+	    if (_scroll &&
+		    (action.getDetails().wheel.y > 0 || //button.button == SDL_BUTTON_WHEELUP
+		    action.getDetails().wheel.y < 0)) //button.button == SDL_BUTTON_WHEELDOWN
+	    {
+		    int scrollArea = getHeight() - getTextHeight();
+		    if (scrollArea < 0)
+		    {
+			    int scrollAmount = _font.getHeight() + _font.getSpacing();
+			    if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+				    scrollAmount = -scrollAmount;
+
+			    _scrollY = Math.Clamp(_scrollY + scrollAmount, scrollArea, 0);
+			    _redraw = true;
+		    }
+	    }
+    }
 }

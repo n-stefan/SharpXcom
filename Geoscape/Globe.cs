@@ -1617,4 +1617,32 @@ internal class Globe : InteractiveSurface
 	    _countries.blit(surface);
 	    _markers.blit(surface);
     }
+
+    /**
+     * Ignores any mouse clicks that are outside the globe.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mousePress(Action action, State state)
+    {
+	    double lon, lat;
+	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
+
+	    if (action.getDetails().button.button == Options.geoDragScrollButton)
+	    {
+		    _isMouseScrolling = true;
+		    _isMouseScrolled = false;
+		    SDL_GetMouseState(out _xBeforeMouseScrolling, out _yBeforeMouseScrolling);
+		    _lonBeforeMouseScrolling = _cenLon;
+		    _latBeforeMouseScrolling = _cenLat;
+		    _totalMouseMoveX = 0; _totalMouseMoveY = 0;
+		    _mouseMovedOverThreshold = false;
+		    _mouseScrollingStartTime = SDL_GetTicks();
+	    }
+	    // Check for errors
+	    //if (lat == lat && lon == lon)
+	    //{
+		    base.mousePress(action, state);
+	    //}
+    }
 }

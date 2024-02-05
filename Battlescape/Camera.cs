@@ -25,6 +25,7 @@ namespace SharpXcom.Battlescape;
 internal class Camera
 {
 	internal const int SCROLL_BORDER = 5;
+	internal const int SCROLL_DIAGONAL_EDGE = 60;
 
     Timer _scrollMouseTimer, _scrollKeyTimer;
     int _spriteWidth, _spriteHeight;
@@ -366,5 +367,139 @@ internal class Camera
     {
 	    _center.z = _mapOffset.z;
 	    return _center;
+    }
+
+    /**
+     * Handles camera mouse shortcuts.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    void mousePress(Action action, State _)
+    {
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT && Options.battleEdgeScroll == ScrollType.SCROLL_TRIGGER)
+	    {
+		    _scrollTrigger = true;
+		    mouseOver(action, null);
+	    }
+	    else if (Options.battleDragScrollButton != SDL_BUTTON_MIDDLE || (SDL_GetMouseState(0,0)&SDL_BUTTON((uint)Options.battleDragScrollButton)) == 0)
+	    {
+            if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
+		    {
+			    up();
+		    }
+            else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+		    {
+			    down();
+		    }
+	    }
+    }
+
+    /**
+     * Handles mouse over events.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    void mouseOver(Action action, State _)
+    {
+	    if (_map.getCursorType() == CursorType.CT_NONE)
+	    {
+		    return;
+	    }
+
+	    if (Options.battleEdgeScroll == ScrollType.SCROLL_AUTO || _scrollTrigger)
+	    {
+		    int posX = action.getXMouse();
+		    int posY = action.getYMouse();
+		    int scrollSpeed = Options.battleScrollSpeed;
+
+		    //left scroll
+		    if (posX < (SCROLL_BORDER * action.getXScale()) && posX >= 0)
+		    {
+			    _scrollMouseX = scrollSpeed;
+			    // if close to top or bottom, also scroll diagonally
+			    //downleft
+			    if (posY < (SCROLL_DIAGONAL_EDGE * action.getYScale()) && posY >= 0)
+			    {
+				    _scrollMouseY = scrollSpeed/2;
+			    }
+			    //upleft
+			    else if (posY > (_screenHeight - SCROLL_DIAGONAL_EDGE) * action.getYScale())
+			    {
+				    _scrollMouseY = -scrollSpeed/2;
+			    }
+			    else _scrollMouseY = 0;
+		    }
+		    //right scroll
+		    else if (posX > (_screenWidth - SCROLL_BORDER) * action.getXScale())
+		    {
+			    _scrollMouseX = -scrollSpeed;
+			    // if close to top or bottom, also scroll diagonally
+			    //downright
+			    if (posY <= (SCROLL_DIAGONAL_EDGE * action.getYScale()) && posY >= 0)
+			    {
+				    _scrollMouseY = scrollSpeed/2;
+			    }
+			    //upright
+			    else if (posY > (_screenHeight - SCROLL_DIAGONAL_EDGE) * action.getYScale())
+			    {
+				    _scrollMouseY = -scrollSpeed/2;
+			    }
+			    else _scrollMouseY = 0;
+		    }
+		    else if (posX != 0)
+		    {
+			    _scrollMouseX = 0;
+		    }
+
+		    //up
+		    if (posY < (SCROLL_BORDER * action.getYScale()) && posY >= 0)
+		    {
+			    _scrollMouseY = scrollSpeed;
+			    // if close to left or right edge, also scroll diagonally
+			    //up left
+			    if (posX < (SCROLL_DIAGONAL_EDGE * action.getXScale()) && posX >= 0)
+			    {
+				    _scrollMouseX = scrollSpeed;
+				    _scrollMouseY /=2;
+			    }
+			    //up right
+			    else if (posX > (_screenWidth - SCROLL_DIAGONAL_EDGE) * action.getXScale())
+			    {
+				    _scrollMouseX = -scrollSpeed;
+				    _scrollMouseY /=2;
+			    }
+		    }
+		    //down
+		    else if (posY > (_screenHeight- SCROLL_BORDER) * action.getYScale())
+		    {
+			    _scrollMouseY = -scrollSpeed;
+			    // if close to left or right edge, also scroll diagonally
+			    //down left
+			    if (posX < (SCROLL_DIAGONAL_EDGE * action.getXScale()) && posX >= 0)
+			    {
+				    _scrollMouseX = scrollSpeed;
+				    _scrollMouseY /=2;
+			    }
+			    //down right
+			    else if (posX > (_screenWidth - SCROLL_DIAGONAL_EDGE) * action.getXScale())
+			    {
+				    _scrollMouseX = -scrollSpeed;
+				    _scrollMouseY /=2;
+			    }
+		    }
+		    else if (posY != 0 && _scrollMouseX == 0)
+		    {
+			    _scrollMouseY = 0;
+		    }
+
+		    if ((_scrollMouseX != 0 || _scrollMouseY != 0) && !_scrollMouseTimer.isRunning() && !_scrollKeyTimer.isRunning() && 0==(SDL_GetMouseState(0,0)&SDL_BUTTON((uint)Options.battleDragScrollButton)))
+		    {
+			    _scrollMouseTimer.start();
+		    }
+		    else if ((_scrollMouseX == 0 && _scrollMouseY == 0) && _scrollMouseTimer.isRunning())
+		    {
+			    _scrollMouseTimer.stop();
+		    }
+	    }
     }
 }

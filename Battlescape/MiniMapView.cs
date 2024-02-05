@@ -41,6 +41,7 @@ internal class MiniMapView : InteractiveSurface
 	int _totalMouseMoveX, _totalMouseMoveY;
 	bool _mouseMovedOverThreshold;
 	SurfaceSet _set;
+	Position _posBeforeMouseScrolling, _cursorPosition;
 
 	/**
 	 * Initializes all the elements in the MiniMapView.
@@ -205,5 +206,34 @@ internal class MiniMapView : InteractiveSurface
 		drawLine((short)(centerX + CELL_WIDTH), (short)(centerY + CELL_HEIGHT),
              (short)(centerX + xOffset), (short)(centerY + yOffset),
 			 color); //bottom right
+	}
+
+	/**
+	 * Handles mouse presses on the minimap. Enters mouse-moving mode when the right button is used.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mousePress(Action action, State state)
+	{
+		base.mousePress(action, state);
+
+		if (action.getDetails().button.button == Options.battleDragScrollButton)
+		{
+			_isMouseScrolling = true;
+			_isMouseScrolled = false;
+			SDL_GetMouseState(out _xBeforeMouseScrolling, out _yBeforeMouseScrolling);
+			_posBeforeMouseScrolling = _camera.getCenterPosition();
+			if (!Options.battleDragScrollInvert && _cursorPosition.z == 0)
+			{
+				_cursorPosition.x = action.getDetails().motion.x;
+				_cursorPosition.y = action.getDetails().motion.y;
+				// the Z is irrelevant to our mouse position, but we can use it as a boolean to check if the position is set or not
+				_cursorPosition.z = 1;
+			}
+			_mouseScrollX = 0; _mouseScrollY = 0;
+			_totalMouseMoveX = 0; _totalMouseMoveY = 0;
+			_mouseMovedOverThreshold = false;
+			_mouseScrollingStartTime = SDL_GetTicks();
+		}
 	}
 }

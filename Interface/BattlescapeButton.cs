@@ -172,4 +172,28 @@ internal class BattlescapeButton : InteractiveSurface
 		    base.blit(surface);
 	    }
     }
+
+    /**
+     * Sets the button as the pressed button if it's part of a group,
+     * and inverts the colors when pressed.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mousePress(Action action, State state)
+    {
+	    if (_group != null)
+	    {
+		    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+		    {
+			    _group.toggle(false);
+			    _group = this;
+			    _inverted = true;
+		    }
+	    }
+	    else if ((_tftdMode || _toggleMode == InversionType.INVERT_CLICK) && !_inverted && isButtonPressed() && isButtonHandled(action.getDetails().button.button))
+	    {
+		    _inverted = true;
+	    }
+	    base.mousePress(action, state);
+    }
 }

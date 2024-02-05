@@ -916,4 +916,51 @@ internal class TextList : InteractiveSurface
 		    _scrollbar.blit(surface);
 	    }
     }
+
+    /**
+     * Unpresses all the arrow buttons.
+     * @param state Pointer to running state.
+     */
+    protected override void unpress(State state)
+    {
+	    base.unpress(state);
+	    foreach (var i in _arrowLeft)
+	    {
+		    i.unpress(state);
+	    }
+	    foreach (var i in _arrowRight)
+	    {
+		    i.unpress(state);
+	    }
+    }
+
+    /**
+     * Ignores any mouse clicks that aren't on a row.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mousePress(Action action, State state)
+    {
+	    bool allowScroll = true;
+	    if (Options.changeValueByMouseWheel != 0)
+	    {
+		    allowScroll = (action.getAbsoluteXMouse() < _arrowsLeftEdge || action.getAbsoluteXMouse() > _arrowsRightEdge);
+	    }
+	    if (allowScroll)
+	    {
+		    if (action.getDetails().wheel.y > 0) scrollUp(false, true); //button.button == SDL_BUTTON_WHEELUP
+		    else if (action.getDetails().wheel.y < 0) scrollDown(false, true); //button.button == SDL_BUTTON_WHEELDOWN
+	    }
+	    if (_selectable)
+	    {
+		    if (_selRow < _rows.Count)
+		    {
+			    base.mousePress(action, state);
+		    }
+	    }
+	    else
+	    {
+		    base.mousePress(action, state);
+	    }
+    }
 }

@@ -70,13 +70,13 @@ internal class SelectStartFacilityState : BuildFacilitiesState
      * Places the selected facility.
      * @param action Pointer to an action.
      */
-    void lstFacilitiesClick(Action _) =>
+    protected override void lstFacilitiesClick(Action _) =>
         _game.pushState(new PlaceStartFacilityState(_base, this, _facilities[(int)_lstFacilities.getSelectedRow()]));
 
     /**
      * Populates the build list from the current "available" facilities.
      */
-    void populateBuildList()
+    protected virtual void populateBuildList()
     {
         _lstFacilities.clearList();
         foreach (var i in _facilities)

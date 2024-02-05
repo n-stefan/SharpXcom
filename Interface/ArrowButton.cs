@@ -317,4 +317,35 @@ internal class ArrowButton : ImageButton
 
 		unlock();
 	}
+
+	protected override bool isButtonHandled(byte button = 0)
+	{
+		if (_list != null)
+		{
+			return (button == SDL_BUTTON_LEFT || button == SDL_BUTTON_RIGHT);
+		}
+		else
+		{
+			return base.isButtonHandled(button);
+		}
+	}
+
+	/**
+	 * Starts scrolling the associated list.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mousePress(Action action, State state)
+	{
+		base.mousePress(action, state);
+		if (_list != null)
+		{
+			if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+			{
+				_timer.start();
+			}
+			else if (action.getDetails().wheel.y > 0) _list.scrollUp(false, true); //button.button == SDL_BUTTON_WHEELUP
+			else if (action.getDetails().wheel.y < 0) _list.scrollDown(false, true); //button.button == SDL_BUTTON_WHEELDOWN
+		}
+	}
 }
