@@ -118,4 +118,11 @@ internal class Frame : Surface
 	    }
 	    drawRect(ref square, _bg);
     }
+
+    /**
+     * Returns the color used to draw the background.
+     * @return Color value.
+     */
+    internal byte getSecondaryColor() =>
+	    _bg;
 }

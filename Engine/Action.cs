@@ -185,4 +185,17 @@ internal class Action
 		    return -1;
 	    return _mouseX - _surfaceX * _scaleX;
     }
+
+    /**
+     * Returns the relative X position of the
+     * mouse cursor relative to the surface that
+     * triggered the action, corrected for screen scaling.
+     * @return Mouse's relative X position.
+     */
+    internal double getRelativeYMouse()
+    {
+	    if (_mouseY == -1)
+		    return -1;
+	    return _mouseY - _surfaceY * _scaleY;
+    }
 }

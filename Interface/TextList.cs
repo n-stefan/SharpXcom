@@ -963,4 +963,49 @@ internal class TextList : InteractiveSurface
 		    base.mousePress(action, state);
 	    }
     }
+
+    /*
+     * Ignores any mouse clicks that aren't on a row.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseRelease(Action action, State state)
+    {
+	    if (_selectable)
+	    {
+		    if (_selRow < _rows.Count)
+		    {
+			    base.mouseRelease(action, state);
+		    }
+	    }
+	    else
+	    {
+		    base.mouseRelease(action, state);
+	    }
+    }
+
+    /**
+     * Ignores any mouse clicks that aren't on a row.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseClick(Action action, State state)
+    {
+	    if (_selectable)
+	    {
+		    if (_selRow < _rows.Count)
+		    {
+			    base.mouseClick(action, state);
+			    if (_comboBox != null && action.getDetails().button.button == SDL_BUTTON_LEFT)
+			    {
+				    _comboBox.setSelected(_selRow);
+				    _comboBox.toggle();
+			    }
+		    }
+	    }
+	    else
+	    {
+		    base.mouseClick(action, state);
+	    }
+    }
 }

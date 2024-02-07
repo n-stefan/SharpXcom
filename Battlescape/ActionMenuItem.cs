@@ -131,4 +131,17 @@ internal class ActionMenuItem : InteractiveSurface
 		_txtAcc.blit(this);
 		_txtTU.blit(this);
 	}
+
+	/**
+	 * Processes a mouse hover in event.
+	 * @param action Pointer to an action.
+	 * @param state Pointer to a state.
+	 */
+	protected override void mouseIn(Action action, State state)
+	{
+		_highlighted = true;
+		_frame.setSecondaryColor((byte)(_frame.getSecondaryColor() - _highlightModifier));
+		draw();
+		base.mouseIn(action, state);
+	}
 }

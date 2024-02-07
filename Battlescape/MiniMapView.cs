@@ -236,4 +236,97 @@ internal class MiniMapView : InteractiveSurface
 			_mouseScrollingStartTime = SDL_GetTicks();
 		}
 	}
+
+	/**
+	 * Handles mouse clicks on the minimap. Will change the camera center to the clicked point.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseClick(Action action, State state)
+	{
+		base.mouseClick(action, state);
+
+		// The following is the workaround for a rare problem where sometimes
+		// the mouse-release event is missed for any reason.
+		// However if the SDL is also missed the release event, then it is to no avail :(
+		// (this part handles the release if it is missed and now an other button is used)
+		if (_isMouseScrolling) {
+			if (action.getDetails().button.button != Options.battleDragScrollButton
+			&& 0==(SDL_GetMouseState(0,0)&SDL_BUTTON((uint)Options.battleDragScrollButton))) { // so we missed again the mouse-release :(
+				// Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+				if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+					{ _camera.centerOnPosition(_posBeforeMouseScrolling); _redraw = true; }
+				_isMouseScrolled = _isMouseScrolling = false;
+				stopScrolling(action);
+			}
+		}
+
+		// Drag-Scroll release: release mouse-scroll-mode
+		if (_isMouseScrolling)
+		{
+			// While scrolling, other buttons are ineffective
+			if (action.getDetails().button.button == Options.battleDragScrollButton)
+			{
+				_isMouseScrolling = false;
+				stopScrolling(action);
+			}
+			else
+			{
+				return;
+			}
+			// Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+			if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+			{
+				_isMouseScrolled = false;
+				stopScrolling(action);
+				_camera.centerOnPosition(_posBeforeMouseScrolling);
+				_redraw = true;
+			}
+			if (_isMouseScrolled) return;
+		}
+
+		if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
+		{
+			((MiniMapState)state).btnOkClick(action);
+		}
+
+		if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+		{
+			int origX = (int)(action.getRelativeXMouse() / action.getXScale());
+			int origY = (int)(action.getRelativeYMouse() / action.getYScale());
+			// get offset (in cells) of the click relative to center of screen
+			int xOff = (origX / CELL_WIDTH) - ((getWidth() / 2) / CELL_WIDTH);
+			int yOff = (origY / CELL_HEIGHT) - ((getHeight() / 2) / CELL_HEIGHT);
+			// center the camera on this new position
+			int newX = _camera.getCenterPosition().x + xOff;
+			int newY = _camera.getCenterPosition().y + yOff;
+			_camera.centerOnPosition(new Position(newX,newY,_camera.getViewLevel()));
+			_redraw = true;
+		}
+	}
+
+	void stopScrolling(Action action)
+	{
+		if (!Options.battleDragScrollInvert)
+		{
+			SDL_WarpMouseGlobal(_cursorPosition.x, _cursorPosition.y);
+			action.setMouseAction(_cursorPosition.x, _cursorPosition.y, getX(), getY());
+		}
+		// reset our "mouse position stored" flag
+		_cursorPosition.z = 0;
+	}
+
+	/**
+	 * Handles moving into the minimap.
+	 * Stops the mouse-scrolling mode, if its left on.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseIn(Action action, State state)
+	{
+		base.mouseIn(action, state);
+
+		_isMouseScrolling = false;
+		setButtonPressed((byte)SDL_BUTTON_RIGHT, false);
+	}
 }

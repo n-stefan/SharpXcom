@@ -109,7 +109,7 @@ internal class MiniMapState : State
 	 * Returns to the previous screen.
 	 * @param action Pointer to an action.
 	 */
-	void btnOkClick(Action _)
+	internal void btnOkClick(Action _)
 	{
 		if (Options.maximizeInfoScreens)
 		{

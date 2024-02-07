@@ -273,4 +273,19 @@ internal class TextButton : InteractiveSurface
 	    }
 	    base.mousePress(action, state);
     }
+
+    /**
+     * Sets the button as the released button.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseRelease(Action action, State state)
+    {
+	    if (isButtonHandled(action.getDetails().button.button))
+	    {
+		    draw();
+		    //_redraw = true;
+	    }
+	    base.mouseRelease(action, state);
+    }
 }

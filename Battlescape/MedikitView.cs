@@ -124,4 +124,26 @@ internal class MedikitView : InteractiveSurface
 		_partTxt.setText(ss);
 		_woundTxt.setText(ss1);
 	}
+
+	/**
+	 * Handles clicks on the medikit view.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseClick(Action action, State _)
+	{
+		SurfaceSet set = _game.getMod().getSurfaceSet("MEDIBITS.DAT");
+		int x = (int)(action.getRelativeXMouse() / action.getXScale());
+		int y = (int)(action.getRelativeYMouse() / action.getYScale());
+		for (int i = 0; i < set.getTotalFrames(); i++)
+		{
+			Surface surface = set.getFrame(i);
+			if (surface.getPixel(x, y) != 0)
+			{
+				_selectedPart = i;
+				_redraw = true;
+				break;
+			}
+		}
+	}
 }

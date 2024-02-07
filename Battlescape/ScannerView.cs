@@ -97,4 +97,13 @@ internal class ScannerView : InteractiveSurface
 		surface.blitNShade(this, getX()+(9*8)-4, getY()+(9*8)-4, 0);
 		this.unlock();
 	}
+
+	/**
+	 * Handles clicks on the scanner view.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseClick(Action _, State __)
+	{
+	}
 }

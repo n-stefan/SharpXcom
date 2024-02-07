@@ -1645,4 +1645,107 @@ internal class Globe : InteractiveSurface
 		    base.mousePress(action, state);
 	    //}
     }
+
+    /**
+     * Ignores any mouse clicks that are outside the globe.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseRelease(Action action, State state)
+    {
+	    double lon, lat;
+	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
+	    if (action.getDetails().button.button == Options.geoDragScrollButton)
+	    {
+		    stopScrolling(action);
+	    }
+	    // Check for errors
+	    //if (lat == lat && lon == lon)
+	    //{
+		    base.mouseRelease(action, state);
+	    //}
+    }
+
+    /**
+     * Move the mouse back to where it started after we finish drag scrolling.
+     * @param action Pointer to an action.
+     */
+    void stopScrolling(Action action)
+    {
+	    SDL_WarpMouseGlobal(_xBeforeMouseScrolling, _yBeforeMouseScrolling);
+	    action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
+    }
+
+    /**
+     * Ignores any mouse clicks that are outside the globe
+     * and handles globe rotation and zooming.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseClick(Action action, State state)
+    {
+        if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
+	    {
+		    zoomIn();
+	    }
+        else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+	    {
+		    zoomOut();
+	    }
+
+	    double lon, lat;
+	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
+
+	    // The following is the workaround for a rare problem where sometimes
+	    // the mouse-release event is missed for any reason.
+	    // However if the SDL is also missed the release event, then it is to no avail :(
+	    // (this part handles the release if it is missed and now an other button is used)
+	    if (_isMouseScrolling)
+	    {
+		    if (action.getDetails().button.button != Options.geoDragScrollButton
+			    && 0 == (SDL_GetMouseState(0, 0)&SDL_BUTTON((uint)Options.geoDragScrollButton)))
+		    { // so we missed again the mouse-release :(
+			    // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+			    if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+			    {
+				    center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
+			    }
+			    _isMouseScrolled = _isMouseScrolling = false;
+			    stopScrolling(action);
+		    }
+	    }
+
+	    // DragScroll-Button release: release mouse-scroll-mode
+	    if (_isMouseScrolling)
+	    {
+		    // While scrolling, other buttons are ineffective
+		    if (action.getDetails().button.button == Options.geoDragScrollButton)
+		    {
+			    _isMouseScrolling = false;
+			    stopScrolling(action);
+		    }
+		    else
+		    {
+			    return;
+		    }
+		    // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+		    if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+		    {
+			    _isMouseScrolled = false;
+			    stopScrolling(action);
+			    center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
+		    }
+		    if (_isMouseScrolled) return;
+	    }
+
+	    // Check for errors
+	    //if (lat == lat && lon == lon)
+	    //{
+		    base.mouseClick(action, state);
+		    if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
+		    {
+			    center(lon, lat);
+		    }
+	    //}
+    }
 }

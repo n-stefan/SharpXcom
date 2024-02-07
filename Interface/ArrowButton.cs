@@ -348,4 +348,32 @@ internal class ArrowButton : ImageButton
 			else if (action.getDetails().wheel.y < 0) _list.scrollDown(false, true); //button.button == SDL_BUTTON_WHEELDOWN
 		}
 	}
+
+	/*
+	 * Stops scrolling the associated list.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseRelease(Action action, State state)
+	{
+		base.mouseRelease(action, state);
+		if (_list != null && action.getDetails().button.button == SDL_BUTTON_LEFT)
+		{
+			_timer.stop();
+		}
+	}
+
+	/*
+	 * Scrolls the associated list to top or bottom.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseClick(Action action, State state)
+	{
+		base.mouseClick(action, state);
+		if (_list != null && SDL_BUTTON_RIGHT == action.getDetails().button.button) {
+			if (_shape == ArrowShape.ARROW_BIG_UP) _list.scrollUp(true);
+			else if (_shape == ArrowShape.ARROW_BIG_DOWN) _list.scrollDown(true);
+		}
+	}
 }

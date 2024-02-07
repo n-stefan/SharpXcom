@@ -101,4 +101,19 @@ internal class ImageButton : InteractiveSurface
 	    }
 	    base.mousePress(action, state);
     }
+
+    /*
+     * Sets the button as the released button if it's part of a group.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseRelease(Action action, State state)
+    {
+	    if (_inverted && isButtonHandled(action.getDetails().button.button))
+	    {
+		    _inverted = false;
+		    invert((byte)(_color + 3));
+	    }
+	    base.mouseRelease(action, state);
+    }
 }

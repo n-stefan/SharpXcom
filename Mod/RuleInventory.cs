@@ -181,4 +181,66 @@ internal class RuleInventory : IListOrder, IRule
      */
     internal int getY() =>
 	    _y;
+
+    /**
+     * Gets the time unit cost to place an item in another section.
+     * @param slot The new section id.
+     * @return The time unit cost.
+     */
+    internal int getCost(RuleInventory slot)
+    {
+	    if (slot == this)
+		    return 0;
+	    return _costs[slot.getId()];
+    }
+
+    /**
+     * Gets the slot located in the specified mouse position.
+     * @param x Mouse X position. Returns the slot's X position.
+     * @param y Mouse Y position. Returns the slot's Y position.
+     * @return True if there's a slot there.
+     */
+    internal bool checkSlotInPosition(ref int x, ref int y)
+    {
+	    int mouseX = x, mouseY = y;
+	    if (_type == InventoryType.INV_HAND)
+	    {
+		    for (int xx = 0; xx < HAND_W; ++xx)
+		    {
+			    for (int yy = 0; yy < HAND_H; ++yy)
+			    {
+				    if (mouseX >= _x + xx * SLOT_W && mouseX < _x + (xx + 1) * SLOT_W &&
+					    mouseY >= _y + yy * SLOT_H && mouseY < _y + (yy + 1) * SLOT_H)
+				    {
+					    x = 0;
+					    y = 0;
+					    return true;
+				    }
+			    }
+		    }
+	    }
+	    else if (_type == InventoryType.INV_GROUND)
+	    {
+		    if (mouseX >= _x && mouseX < 320 && mouseY >= _y && mouseY < 200)
+		    {
+			    x = (int)Math.Floor((double)(mouseX - _x) / SLOT_W);
+			    y = (int)Math.Floor((double)(mouseY - _y) / SLOT_H);
+			    return true;
+		    }
+	    }
+	    else
+	    {
+		    foreach (var i in _slots)
+		    {
+			    if (mouseX >= _x + i.x * SLOT_W && mouseX < _x + (i.x + 1) * SLOT_W &&
+				    mouseY >= _y + i.y * SLOT_H && mouseY < _y + (i.y + 1) * SLOT_H)
+			    {
+				    x = i.x;
+				    y = i.y;
+				    return true;
+			    }
+		    }
+	    }
+	    return false;
+    }
 }

@@ -1698,4 +1698,15 @@ internal class Map : InteractiveSurface
 		base.mousePress(action, state);
 		_camera.mousePress(action, state);
 	}
+
+	/**
+	 * Handles mouse releases on the map.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseRelease(Action action, State state)
+	{
+		base.mouseRelease(action, state);
+		_camera.mouseRelease(action, state);
+	}
 }

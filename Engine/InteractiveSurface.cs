@@ -216,16 +216,16 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    void mouseRelease(Action action, State state)
+    protected virtual void mouseRelease(Action action, State state)
     {
-        if (_release.TryGetValue(0, out ActionHandler handler))
-        {
-            handler(action);
-        }
-        if (_release.TryGetValue(action.getDetails().button.button, out ActionHandler handler2))
-        {
-            handler2(action);
-        }
+        if (_release.TryGetValue(0, out ActionHandler allHandler))
+	    {
+            allHandler(action);
+	    }
+        if (_release.TryGetValue(action.getDetails().button.button, out ActionHandler oneHandler))
+	    {
+            oneHandler(action);
+	    }
     }
 
     /**
@@ -235,16 +235,16 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    void mouseClick(Action action, State state)
+    protected virtual void mouseClick(Action action, State state)
     {
-        if (_click.TryGetValue(0, out ActionHandler handler))
-        {
-            handler(action);
-        }
-        if (_click.TryGetValue(action.getDetails().button.button, out ActionHandler handler2))
-        {
-            handler2(action);
-        }
+        if (_click.TryGetValue(0, out ActionHandler allHandler))
+	    {
+            allHandler(action);
+	    }
+        if (_click.TryGetValue(action.getDetails().button.button, out ActionHandler oneHandler))
+	    {
+            oneHandler(action);
+	    }
     }
 
     /**
@@ -290,7 +290,7 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    void mouseIn(Action action, State state) =>
+    protected virtual void mouseIn(Action action, State state) =>
         _in?.Invoke(action);
 
     /**

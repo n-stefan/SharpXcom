@@ -213,4 +213,19 @@ internal class Slider : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * The slider stops moving when the button is released.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseRelease(Action action, State state)
+    {
+	    base.mouseRelease(action, state);
+	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+	    {
+		    _pressed = false;
+		    _offsetX = 0;
+	    }
+    }
 }
