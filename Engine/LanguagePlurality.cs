@@ -70,6 +70,11 @@ internal abstract class LanguagePlurality
 		return creator();
 	}
 
+	/// Get dictionary key suffix for value of @a n.
+	/**
+	 * @param n The number controlling the plurality.
+	 * @return Pointer to the zero-terminated suffix string.
+	*/
 	internal abstract string getSuffix(uint n);
 }
 

@@ -154,4 +154,15 @@ internal class MiniBaseView : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * Selects the base the mouse is over.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseOver(Action action, State state)
+    {
+	    _hoverBase = (uint)Math.Floor(action.getRelativeXMouse() / ((MINI_SIZE + 2) * action.getXScale()));
+	    base.mouseOver(action, state);
+    }
 }

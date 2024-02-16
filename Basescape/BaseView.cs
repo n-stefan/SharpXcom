@@ -495,4 +495,58 @@ internal class BaseView : InteractiveSurface
 		    _selector.blit(surface);
 	    }
     }
+
+	/**
+	 * Selects the facility the mouse is over.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseOver(Action action, State state)
+	{
+		_gridX = (int)Math.Floor(action.getRelativeXMouse() / (GRID_SIZE * action.getXScale()));
+		_gridY = (int)Math.Floor(action.getRelativeYMouse() / (GRID_SIZE * action.getYScale()));
+		if (_gridX >= 0 && _gridX < BASE_SIZE && _gridY >= 0 && _gridY < BASE_SIZE)
+		{
+			_selFacility = _facilities[_gridX, _gridY];
+			if (_selSize > 0)
+			{
+				if (_gridX + _selSize - 1 < BASE_SIZE && _gridY + _selSize - 1 < BASE_SIZE)
+				{
+					_selector.setX(_x + _gridX * GRID_SIZE);
+					_selector.setY(_y + _gridY * GRID_SIZE);
+					_selector.setVisible(true);
+				}
+				else
+				{
+					_selector.setVisible(false);
+				}
+			}
+		}
+		else
+		{
+			_selFacility = null;
+			if (_selSize > 0)
+			{
+				_selector.setVisible(false);
+			}
+		}
+
+		base.mouseOver(action, state);
+	}
+
+	/**
+	 * Deselects the facility.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseOut(Action action, State state)
+	{
+		_selFacility = null;
+		if (_selSize > 0)
+		{
+			_selector.setVisible(false);
+		}
+
+		base.mouseOut(action, state);
+	}
 }

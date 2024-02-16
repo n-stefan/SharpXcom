@@ -63,7 +63,7 @@ internal class Music
      * Plays the contained music track.
      * @param loop Amount of times to loop the track. -1 = infinite
      */
-    protected virtual void play(int loop = -1)
+    internal virtual void play(int loop = -1)
     {
 #if !__NO_MUSIC
         if (!Options.mute)
@@ -85,7 +85,7 @@ internal class Music
      * @param data Pointer to the music file in memory
      * @param size Size of the music file in bytes.
      */
-    internal void load(byte[] data, int size)
+    internal virtual void load(byte[] data, int size)
     {
 #if !__NO_MUSIC
         nint dataPtr = Marshal.AllocHGlobal(data.Length);
@@ -125,7 +125,7 @@ internal class Music
      * Loads a music file from a specified filename.
      * @param filename Filename of the music file.
      */
-    internal void load(string filename)
+    internal virtual void load(string filename)
     {
 #if !__NO_MUSIC
         string utf8 = Unicode.convPathToUtf8(filename);

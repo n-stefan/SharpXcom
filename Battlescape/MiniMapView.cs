@@ -329,4 +329,108 @@ internal class MiniMapView : InteractiveSurface
 		_isMouseScrolling = false;
 		setButtonPressed((byte)SDL_BUTTON_RIGHT, false);
 	}
+
+	/**
+	 * Handles moving over the minimap.
+	 * Will change the camera center when the mouse is moved in mouse-moving mode.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseOver(Action action, State state)
+	{
+		base.mouseOver(action, state);
+
+		if (_isMouseScrolling && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+		{
+			// The following is the workaround for a rare problem where sometimes
+			// the mouse-release event is missed for any reason.
+			// However if the SDL is also missed the release event, then it is to no avail :(
+			// (checking: is the dragScroll-mouse-button still pressed?)
+			if (0==(SDL_GetMouseState(0,0)&SDL_BUTTON((uint)Options.battleDragScrollButton))) { // so we missed again the mouse-release :(
+				// Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+				if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+				{
+						_camera.centerOnPosition(_posBeforeMouseScrolling);
+						_redraw = true;
+				}
+				_isMouseScrolled = _isMouseScrolling = false;
+				stopScrolling(action);
+				return;
+			}
+
+			_isMouseScrolled = true;
+
+			if (Options.touchEnabled == false)
+			{
+				// Set the mouse cursor back
+				SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_IGNORE);
+				SDL_WarpMouseGlobal(_xBeforeMouseScrolling, _yBeforeMouseScrolling);
+				SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_ENABLE);
+			}
+
+			// Check the threshold
+			_totalMouseMoveX += action.getDetails().motion.xrel;
+			_totalMouseMoveY += action.getDetails().motion.yrel;
+			if (!_mouseMovedOverThreshold)
+				_mouseMovedOverThreshold = ((Math.Abs(_totalMouseMoveX) > Options.dragScrollPixelTolerance) || (Math.Abs(_totalMouseMoveY) > Options.dragScrollPixelTolerance));
+
+			// Calculate the move
+			int newX, newY;
+			int scrollX, scrollY;
+
+			if (Options.battleDragScrollInvert)
+			{
+				scrollX = action.getDetails().motion.xrel;
+				scrollY = action.getDetails().motion.yrel;
+			}
+			else
+			{
+				scrollX = -action.getDetails().motion.xrel;
+				scrollY = -action.getDetails().motion.yrel;
+			}
+			_mouseScrollX += scrollX;
+			_mouseScrollY += scrollY;
+			newX = (int)(_posBeforeMouseScrolling.x + _mouseScrollX / action.getXScale() / 4);
+			newY = (int)(_posBeforeMouseScrolling.y + _mouseScrollY / action.getYScale() / 4);
+
+			// Keep the limits...
+			if (newX < -1 || _camera.getMapSizeX() < newX)
+			{
+				_mouseScrollX -= scrollX;
+				newX = _posBeforeMouseScrolling.x + _mouseScrollX / 4;
+			}
+			if (newY < -1 || _camera.getMapSizeY() < newY)
+			{
+				_mouseScrollY -= scrollY;
+				newY = _posBeforeMouseScrolling.y + _mouseScrollY / 4;
+			}
+
+			// Scrolling
+			_camera.centerOnPosition(new Position(newX,newY,_camera.getViewLevel()));
+			_redraw = true;
+
+			if (Options.touchEnabled == false)
+			{
+				// We don't want to see the mouse-cursor jumping :)
+				if (Options.battleDragScrollInvert)
+				{
+					action.getDetails().motion.x = _xBeforeMouseScrolling;
+					action.getDetails().motion.y = _yBeforeMouseScrolling;
+				}
+				else
+				{
+					var delta = new Position(-scrollX, -scrollY, 0);
+					int barWidth = _game.getScreen().getCursorLeftBlackBand();
+					int barHeight = _game.getScreen().getCursorTopBlackBand();
+					int cursorX = _cursorPosition.x + delta.x;
+					int cursorY =_cursorPosition.y + delta.y;
+					_cursorPosition.x = Math.Clamp(cursorX, (int)Math.Round(getX() * action.getXScale()) + barWidth, (int)Math.Round((getX() + getWidth()) * action.getXScale()) + barWidth);
+					_cursorPosition.y = Math.Clamp(cursorY, (int)Math.Round(getY() * action.getYScale()) + barHeight, (int)Math.Round((getY() + getHeight()) * action.getYScale()) + barHeight);
+					action.getDetails().motion.x = _cursorPosition.x;
+					action.getDetails().motion.y = _cursorPosition.y;
+				}
+			}
+			_game.getCursor().handle(action);
+		}
+	}
 }

@@ -83,4 +83,100 @@ internal class AdlibMusic : Music
         }
         _data = null;
     }
+
+    /**
+     * Loads a music file from a specified filename.
+     * @param filename Filename of the music file.
+     */
+    internal override void load(string filename)
+    {
+        try
+        {
+            using var file = new FileStream(filename, FileMode.Open);
+	    
+	        //file.Seek(0, SeekOrigin.End);
+	        //_size = (uint)file.Position;
+	        //file.Seek(0, SeekOrigin.Begin);
+            _size = (uint)file.Length;
+
+	        _data = new byte[_size];
+	        file.Read(_data);
+
+            file.Close();
+        }
+        catch (Exception)
+        {
+		    throw new Exception(filename + " not found");
+        }
+    }
+
+    /**
+     * Loads a music file from a specified memory chunk.
+     * @param data Pointer to the music file in memory
+     * @param size Size of the music file in bytes.
+     */
+    internal override void load(byte[] data, int size)
+    {
+	    _data = data;
+	    if (_data[0]<=56) size+=_data[0];
+	    _size = (uint)size;
+    }
+
+    /**
+     * Plays the contained music track.
+     * @param loop Amount of times to loop the track. -1 = infinite
+     */
+    internal override void play(int loop = -1)
+    {
+#if !__NO_MUSIC
+	    if (!Options.mute)
+	    {
+		    stop();
+		    func_setup_music(_data, (int)_size);
+		    func_set_music_volume((int)(127 * _volume));
+		    Mix_HookMusic(player, nint.Zero /*(void*)this*/);
+	    }
+#endif
+    }
+
+    /**
+     * Custom audio player.
+     * @param udata User data to send to the player.
+     * @param stream Raw audio to output.
+     * @param len Length of audio to output.
+     */
+    void player(nint udata, nint stream, int len)
+    {
+#if !__NO_MUSIC
+	    // Check SDL volume for Background Mute functionality
+	    if (Options.musicVolume == 0 || Mix_VolumeMusic(-1) == 0)
+		    return;
+	    if (Options.musicAlwaysLoop && !func_is_music_playing())
+	    {
+		    //AdlibMusic *music = (AdlibMusic*)udata;
+		    /*music.*/ play();
+		    return;
+	    }
+	    while (len != 0)
+	    {
+		    if (opl[0] == default || opl[1] == default)
+			    return;
+		    int i = Math.Min(delay, len);
+		    if (i != 0)
+		    {
+			    float volume = (float)Game.volumeExponent(Options.musicVolume);
+			    YM3812UpdateOne(opl[0], (INT16*)stream, i / 2, 2, volume);
+			    YM3812UpdateOne(opl[1], ((INT16*)stream) + 1, i / 2, 2, volume);
+			    stream += i;
+			    delay -= i;
+			    len -= i;
+		    }
+		    if (len == 0)
+			    return;
+		    func_play_tick();
+
+		    delay = delayRates[rate];
+	    }
+#endif
+    }
 }

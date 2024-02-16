@@ -309,4 +309,164 @@ internal class TextEdit : InteractiveSurface
 	    }
 	    base.mousePress(action, state);
     }
+
+	/**
+	 * Changes the text edit according to keyboard input, and
+	 * unfocuses the text if Enter is pressed.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void keyboardPress(Action action, State state)
+	{
+		if (Options.keyboardMode == KeyboardType.KEYBOARD_OFF)
+		{
+			switch (action.getDetails().key.keysym.sym)
+			{
+			case SDL_Keycode.SDLK_UP:
+				_char++;
+				if (_char > '~')
+				{
+					_char = ' ';
+				}
+				break;
+			case SDL_Keycode.SDLK_DOWN:
+				_char--;
+				if (_char < ' ')
+				{
+					_char = '~';
+				}
+				break;
+			case SDL_Keycode.SDLK_LEFT:
+				if (!string.IsNullOrEmpty(_value))
+				{
+					_value = _value[..(_value.Length - 1)];
+				}
+				break;
+			case SDL_Keycode.SDLK_RIGHT:
+				if (!exceedsMaxWidth((char)_char))
+				{
+					_value += _char;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		else if (Options.keyboardMode == KeyboardType.KEYBOARD_ON)
+		{
+			switch (action.getDetails().key.keysym.sym)
+			{
+			case SDL_Keycode.SDLK_LEFT:
+				if (_caretPos > 0)
+				{
+					_caretPos--;
+				}
+				break;
+			case SDL_Keycode.SDLK_RIGHT:
+				if (_caretPos < _value.Length)
+				{
+					_caretPos++;
+				}
+				break;
+			case SDL_Keycode.SDLK_HOME:
+				_caretPos = 0;
+				break;
+			case SDL_Keycode.SDLK_END:
+				_caretPos = (uint)_value.Length;
+				break;
+			case SDL_Keycode.SDLK_BACKSPACE:
+				if (_caretPos > 0)
+				{
+					_value.Remove((int)(_caretPos - 1), 1);
+					_caretPos--;
+				}
+				break;
+			case SDL_Keycode.SDLK_DELETE:
+				if (_caretPos < _value.Length)
+				{
+					_value.Remove((int)_caretPos, 1);
+				}
+				break;
+			case SDL_Keycode.SDLK_RETURN:
+			case SDL_Keycode.SDLK_KP_ENTER:
+				if (!string.IsNullOrEmpty(_value))
+				{
+					setFocus(false);
+				}
+				break;
+			default:
+				char c = (char)action.getDetails().key.keysym.unicode;
+				if (isValidChar(c) && !exceedsMaxWidth(c))
+				{
+					_value.Insert((int)_caretPos, new string(c, 1));
+					_caretPos++;
+				}
+				break;
+			}
+		}
+		_redraw = true;
+		if (_change != null)
+		{
+			_change(action);
+		}
+
+		base.keyboardPress(action, state);
+	}
+
+	/**
+	 * Checks if adding a certain character to
+	 * the text edit will exceed the maximum width.
+	 * Used to make sure user input stays within bounds.
+	 * @param c Character to add.
+	 * @return True if it exceeds, False if it doesn't.
+	 */
+	bool exceedsMaxWidth(char c)
+	{
+		int w = 0;
+		string s = _value;
+
+		s += c;
+		foreach (var i in s)
+		{
+			w += _text.getFont().getCharSize(i).w;
+		}
+
+		return (w > getWidth());
+	}
+
+	/**
+	 * Checks if input key character is valid to
+	 * be inserted at caret position in the text edit
+	 * without breaking the text edit constraint.
+	 * @param c Character to validate.
+	 * @return True if character can be inserted, False if it cannot.
+	 */
+	bool isValidChar(char c)
+	{
+		switch (_textEditConstraint)
+		{
+		case TextEditConstraint.TEC_NUMERIC_POSITIVE:
+			return c >= '0' && c <= '9';
+
+		// If constraint is "(signed) numeric", need to check:
+		// - user does not input a character before '-' or '+'
+		// - user enter either figure anywhere, or a sign at first position
+		case TextEditConstraint.TEC_NUMERIC:
+			if (_caretPos > 0)
+			{
+				return c >= '0' && c <= '9';
+			}
+			else
+			{
+				return ((c >= '0' && c <= '9') || c == '+' || c == '-') &&
+						(string.IsNullOrEmpty(_value) || (_value[0] != '+' && _value[0] != '-'));
+			}
+
+		case TextEditConstraint.TEC_NONE:
+			return (c >= ' ' && c <= '~') || c >= 160;
+
+		default:
+			return false;
+		}
+	}
 }

@@ -1748,4 +1748,125 @@ internal class Globe : InteractiveSurface
 		    }
 	    //}
     }
+
+    /**
+     * Ignores any mouse hovers that are outside the globe.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseOver(Action action, State state)
+    {
+	    double lon, lat;
+	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
+
+	    if (_isMouseScrolling && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+	    {
+		    // The following is the workaround for a rare problem where sometimes
+		    // the mouse-release event is missed for any reason.
+		    // (checking: is the dragScroll-mouse-button still pressed?)
+		    // However if the SDL is also missed the release event, then it is to no avail :(
+		    if (0 == (SDL_GetMouseState(0, 0)&SDL_BUTTON((uint)Options.geoDragScrollButton)))
+		    { // so we missed again the mouse-release :(
+			    // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+			    if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+			    {
+				    center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
+			    }
+			    _isMouseScrolled = _isMouseScrolling = false;
+			    stopScrolling(action);
+			    return;
+		    }
+
+		    _isMouseScrolled = true;
+
+		    if (Options.touchEnabled == false)
+		    {
+			    // Set the mouse cursor back
+			    SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_IGNORE);
+			    SDL_WarpMouseGlobal((_game.getScreen().getWidth() - 100) / 2 , _game.getScreen().getHeight() / 2);
+			    SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_ENABLE);
+		    }
+
+		    // Check the threshold
+		    _totalMouseMoveX += action.getDetails().motion.xrel;
+		    _totalMouseMoveY += action.getDetails().motion.yrel;
+
+		    if (!_mouseMovedOverThreshold)
+			    _mouseMovedOverThreshold = ((Math.Abs(_totalMouseMoveX) > Options.dragScrollPixelTolerance) || (Math.Abs(_totalMouseMoveY) > Options.dragScrollPixelTolerance));
+
+		    // Scrolling
+		    if (Options.geoDragScrollInvert)
+		    {
+			    double newLon = ((double)_totalMouseMoveX / action.getXScale()) * ROTATE_LONGITUDE/(_zoom+1)/2;
+			    double newLat = ((double)_totalMouseMoveY / action.getYScale()) * ROTATE_LATITUDE/(_zoom+1)/2;
+			    center(_lonBeforeMouseScrolling + newLon / (Options.geoScrollSpeed / 10), _latBeforeMouseScrolling + newLat / (Options.geoScrollSpeed / 10));
+		    }
+		    else
+		    {
+			    double newLon = -action.getDetails().motion.xrel * ROTATE_LONGITUDE/(_zoom+1)/2;
+			    double newLat = -action.getDetails().motion.yrel * ROTATE_LATITUDE/(_zoom+1)/2;
+			    center(_cenLon + newLon / (Options.geoScrollSpeed / 10), _cenLat + newLat / (Options.geoScrollSpeed / 10));
+		    }
+
+		    if (Options.touchEnabled == false)
+		    {
+			    // We don't want to see the mouse-cursor jumping :)
+			    action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
+			    action.getDetails().motion.x = _xBeforeMouseScrolling; action.getDetails().motion.y = _yBeforeMouseScrolling;
+		    }
+
+		    _game.getCursor().handle(action);
+	    }
+
+	    if (Options.touchEnabled == false &&
+		    _isMouseScrolling &&
+		    (action.getDetails().motion.x != _xBeforeMouseScrolling ||
+		    action.getDetails().motion.y != _yBeforeMouseScrolling))
+	    {
+		    action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
+		    action.getDetails().motion.x = _xBeforeMouseScrolling; action.getDetails().motion.y = _yBeforeMouseScrolling;
+	    }
+	    // Check for errors
+	    //if (lat == lat && lon == lon)
+	    //{
+		    base.mouseOver(action, state);
+	    //}
+    }
+
+    /**
+     * Handles globe keyboard shortcuts.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void keyboardPress(Action action, State state)
+    {
+	    base.keyboardPress(action, state);
+	    if (action.getDetails().key.keysym.sym == Options.keyGeoToggleDetail)
+	    {
+		    toggleDetail();
+	    }
+	    if (action.getDetails().key.keysym.sym == Options.keyGeoToggleRadar)
+	    {
+		    toggleRadarLines();
+	    }
+    }
+
+    /**
+     * Switches the amount of detail shown on the globe.
+     * With detail on, country and city details are shown when zoomed in.
+     */
+    void toggleDetail()
+    {
+	    Options.globeDetail = !Options.globeDetail;
+	    drawDetail();
+    }
+
+    /*
+     * Turns Radar lines on or off.
+     */
+    void toggleRadarLines()
+    {
+	    Options.globeRadarLines = !Options.globeRadarLines;
+	    drawRadars();
+    }
 }

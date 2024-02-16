@@ -144,4 +144,17 @@ internal class ActionMenuItem : InteractiveSurface
 		draw();
 		base.mouseIn(action, state);
 	}
+
+	/**
+	 * Processes a mouse hover out event.
+	 * @param action Pointer to an action.
+	 * @param state Pointer to a state.
+	 */
+	protected override void mouseOut(Action action, State state)
+	{
+		_highlighted = false;
+		_frame.setSecondaryColor((byte)(_frame.getSecondaryColor() + _highlightModifier));
+		draw();
+		base.mouseOut(action, state);
+	}
 }

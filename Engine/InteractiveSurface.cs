@@ -254,15 +254,18 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    void keyboardPress(Action action, State state)
+    protected virtual void keyboardPress(Action action, State state)
     {
-        //TODO: SDLK_ANY?
+	    if (_keyPress.TryGetValue(SDLK_ANY, out ActionHandler allHandler))
+	    {
+		    allHandler(action);
+	    }
         // Check if Ctrl, Alt and Shift aren't pressed
-        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL | SDL_Keymod.KMOD_ALT | SDL_Keymod.KMOD_SHIFT)) != 0);
-        if (_keyPress.TryGetValue(action.getDetails().key.keysym.sym, out ActionHandler handler) && !mod)
-        {
-            handler(action);
-        }
+        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL|SDL_Keymod.KMOD_ALT|SDL_Keymod.KMOD_SHIFT)) != 0);
+        if (_keyPress.TryGetValue(action.getDetails().key.keysym.sym, out ActionHandler oneHandler) && !mod)
+	    {
+            oneHandler(action);
+	    }
     }
 
     /**
@@ -272,15 +275,18 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    void keyboardRelease(Action action, State state)
+    protected virtual void keyboardRelease(Action action, State state)
     {
-        //TODO: SDLK_ANY?
+	    if (_keyRelease.TryGetValue(SDLK_ANY, out ActionHandler allHandler))
+	    {
+		    allHandler(action);
+	    }
         // Check if Ctrl, Alt and Shift aren't pressed
-        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL | SDL_Keymod.KMOD_ALT | SDL_Keymod.KMOD_SHIFT)) != 0);
-        if (_keyRelease.TryGetValue(action.getDetails().key.keysym.sym, out ActionHandler handler) && !mod)
-        {
-            handler(action);
-        }
+        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL|SDL_Keymod.KMOD_ALT|SDL_Keymod.KMOD_SHIFT)) != 0);
+        if (_keyRelease.TryGetValue(action.getDetails().key.keysym.sym, out ActionHandler oneHandler) && !mod)
+	    {
+            oneHandler(action);
+	    }
     }
 
     /**
@@ -300,7 +306,7 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    void mouseOver(Action action, State state) =>
+    protected virtual void mouseOver(Action action, State state) =>
         _over?.Invoke(action);
 
     /**
@@ -310,7 +316,7 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    void mouseOut(Action action, State state) =>
+    protected virtual void mouseOut(Action action, State state) =>
         _out?.Invoke(action);
 
     /**

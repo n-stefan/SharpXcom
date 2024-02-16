@@ -974,4 +974,45 @@ internal class Inventory : InteractiveSurface
 	    }
 	    return placed;
     }
+
+    /**
+     * Moves the selected item.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseOver(Action action, State state)
+    {
+	    _selection.setX((int)Math.Floor(action.getAbsoluteXMouse()) - _selection.getWidth()/2 - getX());
+	    _selection.setY((int)Math.Floor(action.getAbsoluteYMouse()) - _selection.getHeight()/2 - getY());
+	    if (_selUnit == null)
+		    return;
+
+	    int x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX(),
+		    y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
+	    RuleInventory slot = getSlotInPosition(ref x, ref y);
+        if (slot != null)
+	    {
+		    if (slot.getType() == InventoryType.INV_GROUND)
+		    {
+			    x += _groundOffset;
+		    }
+		    BattleItem item = _selUnit.getItem(slot, x, y);
+		    setMouseOverItem(item);
+	    }
+	    else
+	    {
+		    setMouseOverItem(null);
+	    }
+
+	    _selection.setX((int)Math.Floor(action.getAbsoluteXMouse()) - _selection.getWidth()/2 - getX());
+	    _selection.setY((int)Math.Floor(action.getAbsoluteYMouse()) - _selection.getHeight()/2 - getY());
+	    base.mouseOver(action, state);
+    }
+
+    /**
+     * Changes the item currently under mouse cursor.
+     * @param item Pointer to selected item, or NULL if none.
+     */
+    void setMouseOverItem(BattleItem item) =>
+	    _mouseOverItem = (item != null && !item.getRules().isFixed()) ? item : null;
 }

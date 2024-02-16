@@ -1709,4 +1709,40 @@ internal class Map : InteractiveSurface
 		base.mouseRelease(action, state);
 		_camera.mouseRelease(action, state);
 	}
+
+	/**
+	 * Handles mouse over events on the map.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void mouseOver(Action action, State state)
+	{
+		base.mouseOver(action, state);
+		_camera.mouseOver(action, state);
+		_mouseX = (int)action.getAbsoluteXMouse();
+		_mouseY = (int)action.getAbsoluteYMouse();
+		setSelectorPosition(_mouseX, _mouseY);
+	}
+
+	/**
+	 * Handles keyboard presses on the map.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void keyboardPress(Action action, State state)
+	{
+		base.keyboardPress(action, state);
+		_camera.keyboardPress(action, state);
+	}
+
+	/**
+	 * Handles keyboard releases on the map.
+	 * @param action Pointer to an action.
+	 * @param state State that the action handlers belong to.
+	 */
+	protected override void keyboardRelease(Action action, State state)
+	{
+		base.keyboardRelease(action, state);
+		_camera.keyboardRelease(action, state);
+	}
 }

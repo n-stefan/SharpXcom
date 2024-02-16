@@ -1008,4 +1008,75 @@ internal class TextList : InteractiveSurface
 		    base.mouseClick(action, state);
 	    }
     }
+
+    /**
+     * Selects the row the mouse is over.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseOver(Action action, State state)
+    {
+	    if (_selectable)
+	    {
+		    int rowHeight = _font.getHeight() + _font.getSpacing(); //theoretical line height
+		    _selRow = (uint)Math.Max(0, (int)(_scroll + (int)Math.Floor(action.getRelativeYMouse() / (rowHeight * action.getYScale()))));
+		    if (_selRow < _rows.Count)
+		    {
+			    Text selText = _texts[(int)_rows[(int)_selRow]].First();
+			    int y = getY() + selText.getY();
+			    int actualHeight = selText.getHeight() + _font.getSpacing(); //current line height
+			    if (y < getY() || y + actualHeight > getY() + getHeight())
+			    {
+				    actualHeight /= 2;
+			    }
+			    if (y < getY())
+			    {
+				    y = getY();
+			    }
+			    if (_selector.getHeight() != actualHeight)
+			    {
+				    // resizing doesn't work, but recreating does, so let's do that!
+				    _selector = null;
+				    _selector = new Surface(getWidth(), actualHeight, getX(), y);
+				    _selector.setPalette(getPaletteColors());
+			    }
+			    _selector.setY(y);
+			    _selector.copy(_bg);
+			    if (_contrast)
+			    {
+				    _selector.offsetBlock(-5);
+			    }
+			    else if (_comboBox != null)
+			    {
+				    _selector.offset(+1, Palette.backPos);
+			    }
+			    else
+			    {
+				    _selector.offsetBlock(-10);
+			    }
+			    _selector.setVisible(true);
+		    }
+		    else
+		    {
+			    _selector.setVisible(false);
+		    }
+	    }
+
+	    base.mouseOver(action, state);
+    }
+
+    /**
+     * Deselects the row.
+     * @param action Pointer to an action.
+     * @param state State that the action handlers belong to.
+     */
+    protected override void mouseOut(Action action, State state)
+    {
+	    if (_selectable)
+	    {
+		    _selector.setVisible(false);
+	    }
+
+	    base.mouseOut(action, state);
+    }
 }
