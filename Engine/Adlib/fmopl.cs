@@ -29,6 +29,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/* --- select emulation chips --- */
+#define BUILD_YM3812
+//#define BUILD_YM3526 (HAS_YM3526)
+//#define BUILD_Y8950  (HAS_Y8950)
+
+#define DELTAT_MIXING_LEVEL // DELTA-T ADPCM MIXING LEVEL
+
 namespace SharpXcom.Engine.Adlib;
 
 delegate byte OPL_PORTHANDLER_R(int param);
@@ -128,9 +135,9 @@ record struct FM_OPL
     /* LFO */
     internal Memory<int> ams_table;
     internal Memory<int> vib_table;
-    int amsCnt;
+    internal int amsCnt;
     internal int amsIncr;
-    int vibCnt;
+    internal int vibCnt;
     internal int vibIncr;
     /* wave selector enable flag */
     internal byte wavesel;
@@ -149,9 +156,55 @@ internal class fmopl
 {
     const double PI = 3.14159265358979323846;
 
+    /* --- system optimize --- */
+    /* select bit size of output : 8 or 16 */
+    const int OPL_OUTPUT_BIT = 16;
+
+    /* -------------------- preliminary define section --------------------- */
+    /* attack/decay rate time rate */
+    const int OPL_ARRATE = 141280;  /* RATE 4 =  2826.24ms @ 3.6MHz */
+    const int OPL_DRRATE = 1956000;  /* RATE 4 = 39280.64ms @ 3.6MHz */
+
+    const int FREQ_BITS = 24;			/* frequency turn          */
+
+    /* counter bits = 20 , octerve 7 */
+    const int FREQ_RATE = (1 << (FREQ_BITS - 20));
+    const int TL_BITS = (FREQ_BITS + 2);
+
+    /* final output shift , limit minimum and maximum */
+    const int OPL_OUTSB = (TL_BITS + 1 - 16);		/* OPL output final shift 16bit */
+    const int OPL_MAXOUT = (0x7fff << OPL_OUTSB);
+    const int OPL_MINOUT = (-(0x8000 << OPL_OUTSB));
+
+    /* -------------------- quality selection --------------------- */
+
     /* sinwave entries */
     /* used static memory = SIN_ENT * 4 (byte) */
     const int SIN_ENT = 2048;
+
+    /* output level entries (envelope,sinwave) */
+    /* envelope counter lower bits */
+    const int ENV_BITS = 16;
+    /* envelope output entries */
+    const int EG_ENT = 4096;
+    /* used dynamic memory = EG_ENT*4*4(byte)or EG_ENT*6*4(byte) */
+    /* used static  memory = EG_ENT*4 (byte)                     */
+
+    const int EG_OFF = ((2 * EG_ENT) << ENV_BITS);  /* OFF          */
+    const int EG_DED = EG_OFF;
+    const int EG_DST = (EG_ENT << ENV_BITS);      /* DECAY  START */
+    const int EG_AED = EG_DST;
+    const int EG_AST = 0;                       /* ATTACK START */
+
+    const double EG_STEP = (96.0 / EG_ENT); /* OPL is 0.1875 dB step  */
+
+    /* LFO table entries */
+    const int VIB_ENT = 512;
+    const int VIB_SHIFT = (32 - 9);
+    const int AMS_ENT = 512;
+    const int AMS_SHIFT = (32 - 9);
+
+    const int VIB_RATE = 256;
 
     /* register number to channel number , slot offset */
     const int SLOT1 = 0;
@@ -161,34 +214,6 @@ internal class fmopl
     const int ENV_MOD_RR = 0x00;
     const int ENV_MOD_DR = 0x01;
     const int ENV_MOD_AR = 0x02;
-
-    const int VIB_RATE = 256;
-    /* LFO table entries */
-    const int VIB_ENT = 512;
-    const int VIB_SHIFT = (32 - 9);
-    const int AMS_ENT = 512;
-    const int AMS_SHIFT = (32 - 9);
-
-    const int FREQ_BITS = 24;   /* frequency turn          */
-    /* counter bits = 20 , octerve 7 */
-    const int FREQ_RATE = (1 << (FREQ_BITS - 20));
-    const int TL_BITS = (FREQ_BITS + 2);
-
-    /* attack/decay rate time rate */
-    const int OPL_ARRATE = 141280;  /* RATE 4 =  2826.24ms @ 3.6MHz */
-    const int OPL_DRRATE = 1956000;  /* RATE 4 = 39280.64ms @ 3.6MHz */
-
-    /* output level entries (envelope,sinwave) */
-    /* envelope counter lower bits */
-    const int ENV_BITS = 16;
-    /* envelope output entries */
-    const int EG_ENT = 4096;
-    const int EG_OFF = ((2 * EG_ENT) << ENV_BITS);  /* OFF          */
-    const int EG_DED = EG_OFF;
-    const int EG_DST = (EG_ENT << ENV_BITS);      /* DECAY  START */
-    const int EG_AED = EG_DST;
-    const int EG_AST = 0;                       /* ATTACK START */
-    const double EG_STEP = (96.0 / EG_ENT); /* OPL is 0.1875 dB step  */
 
     const int OPL_TYPE_WAVESEL = 0x01; /* waveform select    */
     /* ---------- Generic interface section ---------- */
@@ -200,11 +225,25 @@ internal class fmopl
 
     const int TL_MAX = (EG_ENT * 2); /* limit(tl + ksr + envelope) + sinwave */
 
+    /* -------------------- static state --------------------- */
+
     /* lock level of common table */
     static int num_lock = 0;
 
     /* work table */
-    static byte[] cur_chip = null;  /* current chip point */
+    static byte[] cur_chip = null;	/* current chip point */
+    /* current chip state */
+    /* static OPLSAMPLE  *bufL,*bufR; */
+    static Memory<OPL_CH> S_CH;
+    static Memory<OPL_CH> E_CH;
+    static OPL_SLOT SLOT7_1,SLOT7_2,SLOT8_1,SLOT8_2;
+
+    static int ams;
+    static int vib;
+    static Memory<int> ams_table;
+    static Memory<int> vib_table;
+    static int amsIncr;
+    static int vibIncr;
 
     /* sustain level table (3db per step) */
     /* 0 - 15: 0, 3, 6, 9,12,15,18,21,24,27,30,33,36,39,42,93 (dB)*/
@@ -294,6 +333,20 @@ internal class fmopl
 
     static uint U(double x) =>
         ((uint)x);
+
+    static readonly Random random = new();
+
+    /* --------------------- subroutines  --------------------- */
+
+    static int Limit( int val, int max, int min )
+    {
+	    if ( val > max )
+		    val = max;
+	    else if ( val < min )
+		    val = min;
+
+	    return val;
+    }
 
     /* ---------- YM3812 I/O interface ---------- */
     internal static int OPLWrite(FM_OPL OPL, int a, int v)
@@ -1019,5 +1072,245 @@ internal class fmopl
                 if (OPL.IRQHandler != null) OPL.IRQHandler(OPL.IRQParam, 1);
             }
         }
+    }
+
+#if (BUILD_YM3812 || BUILD_YM3526)
+    /*******************************************************************************/
+    /*		YM3812 local section                                                   */
+    /*******************************************************************************/
+
+    /* ---------- update one of chip ----------- */
+    internal static void YM3812UpdateOne(FM_OPL OPL, short[] buffer, int length, int stripe, float volume)
+    {
+        int i;
+	    int data;
+	    short[] buf = buffer;
+	    uint amsCnt  = (uint)OPL.amsCnt;
+	    uint vibCnt  = (uint)OPL.vibCnt;
+	    byte rythm = (byte)(OPL.rythm&0x20);
+	    Memory<OPL_CH> CH,R_CH;
+
+	    if( MemoryMarshal.Read<FM_OPL>(cur_chip) != OPL ) {
+		    MemoryMarshal.Write(cur_chip, OPL);
+		    /* channel pointers */
+		    S_CH = OPL.P_CH;
+		    E_CH = S_CH.Slice(9);
+		    /* rythm slot */
+		    SLOT7_1 = S_CH.Span[7].SLOT[SLOT1];
+		    SLOT7_2 = S_CH.Span[7].SLOT[SLOT2];
+		    SLOT8_1 = S_CH.Span[8].SLOT[SLOT1];
+		    SLOT8_2 = S_CH.Span[8].SLOT[SLOT2];
+		    /* LFO state */
+		    amsIncr = OPL.amsIncr;
+		    vibIncr = OPL.vibIncr;
+		    ams_table = OPL.ams_table;
+		    vib_table = OPL.vib_table;
+	    }
+	    R_CH = rythm != 0 ? S_CH.Slice(6) : E_CH;
+        for( i=0; i < length ; i+=stripe )
+	    {
+            /*            channel A         channel B         channel C      */
+            /* LFO */
+            amsCnt = (uint)(amsCnt + amsIncr);
+		    ams = ams_table.Span[(int)(amsCnt>>AMS_SHIFT)];
+            vibCnt = (uint)(vibCnt + vibIncr);
+		    vib = vib_table.Span[(int)(vibCnt>>VIB_SHIFT)];
+		    outd[0] = 0;
+		    /* FM part */
+		    for(var j = 0; j < R_CH.Length; j++)
+			    OPL_CALC_CH(S_CH.Span[j]);
+		    /* Rythm part */
+		    if(rythm != 0)
+			    OPL_CALC_RH(S_CH);
+		    outd[0] = (int)(outd[0] * volume);
+		    /* limit check */
+		    data = Limit( outd[0], OPL_MAXOUT, OPL_MINOUT );
+		    /* store to sound buffer */
+		    buf[i] = (short)(data >> OPL_OUTSB);
+	    }
+
+	    OPL.amsCnt = (int)amsCnt;
+	    OPL.vibCnt = (int)vibCnt;
+#if OPL_OUTPUT_LOG
+	    if(opl_dbg_fp)
+	    {
+		    for(opl_dbg_chip=0;opl_dbg_chip<opl_dbg_maxchip;opl_dbg_chip++)
+			    if( opl_dbg_opl[opl_dbg_chip] == OPL) break;
+		    fprintf(opl_dbg_fp,"%c%c%c",0x20+opl_dbg_chip,length&0xff,length/256);
+	    }
+#endif
+    }
+#endif //(BUILD_YM3812 || BUILD_YM3526)
+
+    /* operator output calcrator */
+    static int OP_OUT(OPL_SLOT slot, uint env, int con) =>
+        slot.wavetable.Span[(int)((slot.Cnt + con) / (0x1000000 / SIN_ENT)) & (SIN_ENT - 1)][env];
+
+    /* ---------- calcrate one of channel ---------- */
+    static void OPL_CALC_CH( OPL_CH CH )
+    {
+	    uint env_out;
+	    OPL_SLOT SLOT;
+
+	    feedback2 = 0;
+	    /* SLOT 1 */
+	    SLOT = CH.SLOT[SLOT1];
+	    env_out=OPL_CALC_SLOT(SLOT);
+	    if( env_out < EG_ENT-1 )
+	    {
+		    /* PG */
+		    if(SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr*vib/VIB_RATE));
+		    else          SLOT.Cnt += SLOT.Incr;
+		    /* connection */
+		    if(CH.FB != 0)
+		    {
+			    int feedback1 = (CH.op1_out[0]+CH.op1_out[1])>>CH.FB;
+			    CH.op1_out[1] = CH.op1_out[0];
+			    CH.connect1 = CH.connect1.Slice(CH.op1_out[0] = OP_OUT(SLOT,env_out,feedback1));
+		    }
+		    else
+		    {
+			    CH.connect1 = CH.connect1.Slice(OP_OUT(SLOT,env_out,0));
+		    }
+	    }else
+	    {
+		    CH.op1_out[1] = CH.op1_out[0];
+		    CH.op1_out[0] = 0;
+	    }
+	    /* SLOT 2 */
+	    SLOT = CH.SLOT[SLOT2];
+	    env_out=OPL_CALC_SLOT(SLOT);
+	    if( env_out < EG_ENT-1 )
+	    {
+		    /* PG */
+		    if(SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr*vib/VIB_RATE));
+		    else          SLOT.Cnt += SLOT.Incr;
+		    /* connection */
+		    outd[0] += OP_OUT(SLOT,env_out, feedback2);
+	    }
+    }
+
+    /* ---------- calcrate Envelope Generator & Phase Generator ---------- */
+    /* return : envelope output */
+    static uint OPL_CALC_SLOT( OPL_SLOT SLOT )
+    {
+	    /* calcrate envelope generator */
+	    if( (SLOT.evc+=SLOT.evs) >= SLOT.eve )
+	    {
+		    switch( SLOT.evm ){
+		    case ENV_MOD_AR: /* ATTACK -> DECAY1 */
+			    /* next DR */
+			    SLOT.evm = ENV_MOD_DR;
+			    SLOT.evc = EG_DST;
+			    SLOT.eve = SLOT.SL;
+			    SLOT.evs = SLOT.evsd;
+			    break;
+		    case ENV_MOD_DR: /* DECAY -> SL or RR */
+			    SLOT.evc = SLOT.SL;
+			    SLOT.eve = EG_DED;
+			    if(SLOT.eg_typ != 0)
+			    {
+				    SLOT.evs = 0;
+			    }
+			    else
+			    {
+				    SLOT.evm = ENV_MOD_RR;
+				    SLOT.evs = SLOT.evsr;
+			    }
+			    break;
+		    case ENV_MOD_RR: /* RR -> OFF */
+			    SLOT.evc = EG_OFF;
+			    SLOT.eve = EG_OFF+1;
+			    SLOT.evs = 0;
+			    break;
+		    }
+	    }
+	    /* calcrate envelope */
+	    return (uint)(SLOT.TLL+ENV_CURVE[SLOT.evc>>ENV_BITS]+(SLOT.ams != 0 ? ams : 0));
+    }
+
+    /* ---------- calcrate rythm block ---------- */
+    const double WHITE_NOISE_db = 6.0;
+    static void OPL_CALC_RH( Memory<OPL_CH> CH )
+    {
+	    uint env_tam,env_sd,env_top,env_hh;
+	    int whitenoise = (int)((random.Next()&1)*(WHITE_NOISE_db/EG_STEP));
+	    int tone8;
+
+	    OPL_SLOT SLOT;
+	    int env_out;
+
+	    /* BD : same as FM serial mode and output level is large */
+	    feedback2 = 0;
+	    /* SLOT 1 */
+	    SLOT = CH.Span[6].SLOT[SLOT1];
+	    env_out = (int)OPL_CALC_SLOT(SLOT);
+	    if( env_out < EG_ENT-1 )
+	    {
+		    /* PG */
+		    if(SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr*vib/VIB_RATE));
+		    else          SLOT.Cnt += SLOT.Incr;
+		    /* connection */
+		    if(CH.Span[6].FB != 0)
+		    {
+			    int feedback1 = (CH.Span[6].op1_out[0]+CH.Span[6].op1_out[1])>>CH.Span[6].FB;
+			    CH.Span[6].op1_out[1] = CH.Span[6].op1_out[0];
+			    feedback2 = CH.Span[6].op1_out[0] = OP_OUT(SLOT, (uint)env_out,feedback1);
+		    }
+		    else
+		    {
+			    feedback2 = OP_OUT(SLOT, (uint)env_out,0);
+		    }
+	    }else
+	    {
+		    feedback2 = 0;
+		    CH.Span[6].op1_out[1] = CH.Span[6].op1_out[0];
+		    CH.Span[6].op1_out[0] = 0;
+	    }
+	    /* SLOT 2 */
+	    SLOT = CH.Span[6].SLOT[SLOT2];
+	    env_out = (int)OPL_CALC_SLOT(SLOT);
+	    if( env_out < EG_ENT-1 )
+	    {
+		    /* PG */
+		    if(SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr*vib/VIB_RATE));
+		    else          SLOT.Cnt += SLOT.Incr;
+		    /* connection */
+		    outd[0] += OP_OUT(SLOT, (uint)env_out, feedback2)*2;
+	    }
+
+	    // SD  (17) = mul14[fnum7] + white noise
+	    // TAM (15) = mul15[fnum8]
+	    // TOP (18) = fnum6(mul18[fnum8]+whitenoise)
+	    // HH  (14) = fnum7(mul18[fnum8]+whitenoise) + white noise
+	    env_sd = (uint)(OPL_CALC_SLOT(SLOT7_2) + whitenoise);
+	    env_tam=OPL_CALC_SLOT(SLOT8_1);
+	    env_top=OPL_CALC_SLOT(SLOT8_2);
+	    env_hh = (uint)(OPL_CALC_SLOT(SLOT7_1) + whitenoise);
+
+	    /* PG */
+	    if(SLOT7_1.vib != 0) SLOT7_1.Cnt = (uint)(SLOT7_1.Cnt + (2*SLOT7_1.Incr*vib/VIB_RATE));
+	    else             SLOT7_1.Cnt += 2*SLOT7_1.Incr;
+	    if(SLOT7_2.vib != 0) SLOT7_2.Cnt = (uint)(SLOT7_2.Cnt + ((CH.Span[7].fc*8)*vib/VIB_RATE));
+	    else             SLOT7_2.Cnt += (CH.Span[7].fc*8);
+	    if(SLOT8_1.vib != 0) SLOT8_1.Cnt = (uint)(SLOT8_1.Cnt + (SLOT8_1.Incr*vib/VIB_RATE));
+	    else             SLOT8_1.Cnt += SLOT8_1.Incr;
+	    if(SLOT8_2.vib != 0) SLOT8_2.Cnt = (uint)(SLOT8_2.Cnt + ((CH.Span[8].fc*48)*vib/VIB_RATE));
+	    else             SLOT8_2.Cnt += (CH.Span[8].fc*48);
+
+	    tone8 = OP_OUT(SLOT8_2, (uint)whitenoise,0 );
+
+	    /* SD */
+	    if( env_sd < EG_ENT-1 )
+		    outd[0] += OP_OUT(SLOT7_1,env_sd, 0)*8;
+	    /* TAM */
+	    if( env_tam < EG_ENT-1 )
+		    outd[0] += OP_OUT(SLOT8_1,env_tam, 0)*2;
+	    /* TOP-CY */
+	    if( env_top < EG_ENT-1 )
+		    outd[0] += OP_OUT(SLOT7_2,env_top,tone8)*2;
+	    /* HH */
+	    if( env_hh  < EG_ENT-1 )
+		    outd[0] += OP_OUT(SLOT7_2,env_hh,tone8)*2;
     }
 }
