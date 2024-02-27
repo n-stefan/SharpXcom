@@ -1042,7 +1042,7 @@ internal class Globe : InteractiveSurface
     /**
      * Draws the whole globe, part by part.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    if (_redraw)
 	    {

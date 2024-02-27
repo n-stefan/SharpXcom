@@ -216,7 +216,7 @@ internal class TextEdit : InteractiveSurface
      * Adds a flashing | caret to the text
      * to show when it's focused and editable.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    string newValue = _value;

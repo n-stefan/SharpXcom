@@ -96,7 +96,7 @@ internal class MiniBaseView : InteractiveSurface
      * Draws the view of all the bases with facilities
      * in varying colors.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    for (int i = 0; i < MAX_BASES; ++i)

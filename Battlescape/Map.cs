@@ -510,7 +510,7 @@ internal class Map : InteractiveSurface
     /**
      * Draws the whole map, part by part.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    if (!_redraw)
 	    {

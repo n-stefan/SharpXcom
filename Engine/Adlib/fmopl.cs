@@ -1080,11 +1080,11 @@ internal class fmopl
     /*******************************************************************************/
 
     /* ---------- update one of chip ----------- */
-    internal static void YM3812UpdateOne(FM_OPL OPL, short[] buffer, int length, int stripe, float volume)
+    internal static void YM3812UpdateOne(FM_OPL OPL, Span<short> buffer, int length, int stripe, float volume)
     {
         int i;
 	    int data;
-	    short[] buf = buffer;
+	    var buf = buffer;
 	    uint amsCnt  = (uint)OPL.amsCnt;
 	    uint vibCnt  = (uint)OPL.vibCnt;
 	    byte rythm = (byte)(OPL.rythm&0x20);

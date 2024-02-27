@@ -186,7 +186,7 @@ internal class Window : Surface
      * always aligned to the top-left corner of the screen
      * and cropped to fit the inside area.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    SDL_Rect square;

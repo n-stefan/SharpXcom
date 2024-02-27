@@ -837,7 +837,7 @@ internal class TextList : InteractiveSurface
     /**
      * Draws the text list and all the text contained within.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    int y = 0;

@@ -106,7 +106,7 @@ internal class Bar : Surface
      * Draws the bordered bar filled according
      * to its values.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    SDL_Rect square;

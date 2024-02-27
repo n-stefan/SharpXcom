@@ -235,8 +235,8 @@ internal abstract class State
      */
     internal void showAll()
     {
-        foreach (var surface in _surfaces)
-            surface.setHidden(false);
+        foreach (var i in _surfaces)
+            i.setHidden(false);
     }
 
     /**
@@ -300,9 +300,9 @@ internal abstract class State
         {
             _game.getMod().setPalette(_palette);
         }
-        foreach (var surface in _surfaces)
+        foreach (var i in _surfaces)
         {
-            Window window = (Window)surface;
+            Window window = (Window)i;
             if (window != null)
             {
                 window.invalidate();
@@ -320,9 +320,9 @@ internal abstract class State
      */
     internal void resetAll()
     {
-        foreach (var surface in _surfaces)
+        foreach (var i in _surfaces)
         {
-            InteractiveSurface s = (InteractiveSurface)surface;
+            InteractiveSurface s = (InteractiveSurface)i;
             if (s != null)
             {
                 s.unpress(this);
@@ -336,15 +336,15 @@ internal abstract class State
      */
     internal void redrawText()
     {
-        foreach (var surface in _surfaces)
+        foreach (var i in _surfaces)
         {
-            Text text = (Text)surface;
-            TextButton button = (TextButton)surface;
-            TextEdit edit = (TextEdit)surface;
-            TextList list = (TextList)surface;
+            Text text = (Text)i;
+            TextButton button = (TextButton)i;
+            TextEdit edit = (TextEdit)i;
+            TextList list = (TextList)i;
             if (text != null || button != null || edit != null || list != null)
             {
-                surface.draw();
+                i.draw();
             }
         }
     }
@@ -356,10 +356,10 @@ internal abstract class State
      */
     internal void recenter(int dX, int dY)
     {
-        foreach (var surface in _surfaces)
+        foreach (var i in _surfaces)
         {
-            surface.setX(surface.getX() + dX / 2);
-            surface.setY(surface.getY() + dY / 2);
+            i.setX(i.getX() + dX / 2);
+            i.setY(i.getY() + dY / 2);
         }
     }
 
@@ -398,10 +398,10 @@ internal abstract class State
      */
     protected void centerAllSurfaces()
     {
-        foreach (var surface in _surfaces)
+        foreach (var i in _surfaces)
         {
-            surface.setX(surface.getX() + _game.getScreen().getDX());
-            surface.setY(surface.getY() + _game.getScreen().getDY());
+            i.setX(i.getX() + _game.getScreen().getDX());
+            i.setY(i.getY() + _game.getScreen().getDY());
         }
     }
 

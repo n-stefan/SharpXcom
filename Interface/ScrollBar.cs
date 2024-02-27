@@ -116,7 +116,7 @@ internal class ScrollBar : InteractiveSurface
     /**
      * Updates the thumb according to the current list position.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    drawTrack();

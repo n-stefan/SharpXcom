@@ -92,7 +92,7 @@ internal class MedikitView : InteractiveSurface
 	/**
 	 * Draws the medikit view.
 	 */
-	protected override void draw()
+	internal override void draw()
 	{
 		SurfaceSet set = _game.getMod().getSurfaceSet("MEDIBITS.DAT");
 		int fatal_wound = _unit.getFatalWound(_selectedPart);

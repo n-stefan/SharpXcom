@@ -124,7 +124,7 @@ internal class WarningMessage : Surface
     /**
      * Draws the warning message.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    drawRect(0, 0, (short)getWidth(), (short)getHeight(), (byte)(_color + (_fade > 12 ? 12 : _fade)));

@@ -520,7 +520,7 @@ internal class Inventory : InteractiveSurface
     /**
      * Draws the inventory elements.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    drawGrid();
 	    drawItems();

@@ -62,7 +62,7 @@ internal class ScannerView : InteractiveSurface
 	/**
 	 * Draws the ScannerView view.
 	 */
-	protected override void draw()
+	internal override void draw()
 	{
 		SurfaceSet set = _game.getMod().getSurfaceSet("DETBLOB.DAT");
 		Surface surface = null;

@@ -149,7 +149,7 @@ internal class TextButton : InteractiveSurface
      * Draws the labeled button.
      * The colors are inverted if the button is pressed.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    SDL_Rect square;

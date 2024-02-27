@@ -419,7 +419,7 @@ internal class Text : InteractiveSurface
      * Draws all the characters in the text with a really
      * nasty complex gritty text rendering algorithm logic stuff.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    if (string.IsNullOrEmpty(_text) || _font == null)

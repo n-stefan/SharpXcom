@@ -264,7 +264,7 @@ internal class NumberText : Surface
     /**
      * Draws all the digits in the number.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 	    string s = _value.ToString();

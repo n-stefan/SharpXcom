@@ -145,7 +145,7 @@ internal class AdlibMusic : Music
      * @param stream Raw audio to output.
      * @param len Length of audio to output.
      */
-    void player(nint udata, nint stream, int len)
+    unsafe void player(nint udata, nint stream, int len)
     {
 #if !__NO_MUSIC
 	    // Check SDL volume for Background Mute functionality
@@ -165,8 +165,10 @@ internal class AdlibMusic : Music
 		    if (i != 0)
 		    {
 			    float volume = (float)Game.volumeExponent(Options.musicVolume);
-			    YM3812UpdateOne(opl[0], (INT16*)stream, i / 2, 2, volume);
-			    YM3812UpdateOne(opl[1], ((INT16*)stream) + 1, i / 2, 2, volume);
+                var buffer = new short[i / 2];
+                Marshal.Copy(stream, buffer, 0, i);
+			    YM3812UpdateOne(opl[0], buffer.AsSpan(), i / 2, 2, volume);
+			    YM3812UpdateOne(opl[1], buffer.AsSpan(1), i / 2, 2, volume);
 			    stream += i;
 			    delay -= i;
 			    len -= i;

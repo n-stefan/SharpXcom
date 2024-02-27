@@ -343,7 +343,7 @@ internal class BaseView : InteractiveSurface
      * Draws the view of all the facilities in the base, connectors
      * between them and crafts landed in hangars.
      */
-    protected override void draw()
+    internal override void draw()
     {
 	    base.draw();
 

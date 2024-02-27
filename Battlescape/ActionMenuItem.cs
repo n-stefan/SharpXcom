@@ -124,7 +124,7 @@ internal class ActionMenuItem : InteractiveSurface
 	/**
 	 * Draws the bordered box.
 	 */
-	protected override void draw()
+	internal override void draw()
 	{
 		_frame.blit(this);
 		_txtDescription.blit(this);

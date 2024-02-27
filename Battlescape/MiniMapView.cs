@@ -111,7 +111,7 @@ internal class MiniMapView : InteractiveSurface
 	/**
 	 * Draws the minimap.
 	 */
-	protected override void draw()
+	internal override void draw()
 	{
 		int _startX = _camera.getCenterPosition().x - ((getWidth() / CELL_WIDTH) / 2);
 		int _startY = _camera.getCenterPosition().y - ((getHeight() / CELL_HEIGHT) / 2);

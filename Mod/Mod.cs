@@ -455,18 +455,18 @@ internal class Mod
     internal void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
         _statePalette = colors;
-        foreach (var font in _fonts)
+        foreach (var i in _fonts)
         {
-            font.Value.setPalette(colors, firstcolor, ncolors);
+            i.Value.setPalette(colors, firstcolor, ncolors);
         }
-        foreach (var surface in _surfaces)
+        foreach (var i in _surfaces)
         {
-            if (!CrossPlatform.compareExt(surface.Key, "LBM"))
-                surface.Value.setPalette(colors, firstcolor, ncolors);
+            if (!CrossPlatform.compareExt(i.Key, "LBM"))
+                i.Value.setPalette(colors, firstcolor, ncolors);
         }
-        foreach (var set in _sets)
+        foreach (var i in _sets)
         {
-            set.Value.setPalette(colors, firstcolor, ncolors);
+            i.Value.setPalette(colors, firstcolor, ncolors);
         }
     }
 

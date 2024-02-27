@@ -446,7 +446,7 @@ internal class Surface
      * redrawn if the flag is set by a property change, to
      * avoid unnecessary drawing.
      */
-    protected virtual void draw()
+    internal virtual void draw()
     {
         _redraw = false;
         clear();

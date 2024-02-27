@@ -107,7 +107,7 @@ internal class ArrowButton : ImageButton
 	/**
 	 * Draws the button with the specified arrow shape.
 	 */
-	protected override void draw()
+	internal override void draw()
 	{
 		base.draw();
 		@lock();

@@ -123,7 +123,7 @@ internal class UnitSprite : Surface
 	 * Draws a unit, using the drawing rules of the unit.
 	 * This function is called by Map, for each unit on the screen.
 	 */
-	protected override void draw()
+	internal override void draw()
 	{
 		base.draw();
 		// Array of drawing routines
