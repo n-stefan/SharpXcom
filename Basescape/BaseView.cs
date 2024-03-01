@@ -487,7 +487,7 @@ internal class BaseView : InteractiveSurface
      * Blits the base view and selector.
      * @param surface Pointer to surface to blit onto.
      */
-    protected override void blit(Surface surface)
+    internal override void blit(Surface surface)
     {
 	    base.blit(surface);
 	    if (_selector != null)
@@ -548,5 +548,21 @@ internal class BaseView : InteractiveSurface
 		}
 
 		base.mouseOut(action, state);
+	}
+
+	/**
+	 * Changes the various resources needed for text rendering.
+	 * The different fonts need to be passed in advance since the
+	 * text size can change mid-text, and the language affects
+	 * how the text is rendered.
+	 * @param big Pointer to large-size font.
+	 * @param small Pointer to small-size font.
+	 * @param lang Pointer to current language.
+	 */
+	internal override void initText(Font big, Font small, Language lang)
+	{
+		_big = big;
+		_small = small;
+		_lang = lang;
 	}
 }

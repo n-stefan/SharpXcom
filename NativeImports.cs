@@ -27,8 +27,8 @@ internal class NativeImports
 
     #region SDL2
 
-    [DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
-    internal static extern nint SDL_LoadBMP_RW(nint src, int freesrc);
+    //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
+    //internal static extern nint SDL_LoadBMP_RW(nint src, int freesrc);
 
     //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
     //internal static extern void glDeleteProgram(uint program);

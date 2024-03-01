@@ -157,4 +157,19 @@ internal class ActionMenuItem : InteractiveSurface
 		draw();
 		base.mouseOut(action, state);
 	}
+
+	/**
+	 * Replaces a certain amount of colors in the surface's palette.
+	 * @param colors Pointer to the set of colors.
+	 * @param firstcolor Offset of the first color to replace.
+	 * @param ncolors Amount of colors to replace.
+	 */
+	internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+	{
+		base.setPalette(colors, firstcolor, ncolors);
+		_frame.setPalette(colors, firstcolor, ncolors);
+		_txtDescription.setPalette(colors, firstcolor, ncolors);
+		_txtAcc.setPalette(colors, firstcolor, ncolors);
+		_txtTU.setPalette(colors, firstcolor, ncolors);
+	}
 }

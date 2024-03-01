@@ -67,10 +67,74 @@ internal class BattlescapeMessage : Surface
     /**
      * Blits the warning message.
      */
-    protected override void blit(Surface surface)
+    internal override void blit(Surface surface)
     {
 	    base.blit(surface);
 	    _window.blit(surface);
 	    _text.blit(surface);
+    }
+
+    /**
+     * Changes the various resources needed for text rendering.
+     * The different fonts need to be passed in advance since the
+     * text size can change mid-text, and the language affects
+     * how the text is rendered.
+     * @param big Pointer to large-size font.
+     * @param small Pointer to small-size font.
+     * @param lang Pointer to current language.
+     */
+    internal override void initText(Font big, Font small, Language lang)
+    {
+	    _text.initText(big, small, lang);
+	    _text.setBig();
+    }
+
+    /**
+     * Replaces a certain amount of colors in the surface's palette.
+     * @param colors Pointer to the set of colors.
+     * @param firstcolor Offset of the first color to replace.
+     * @param ncolors Amount of colors to replace.
+     */
+    internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    {
+	    base.setPalette(colors, firstcolor, ncolors);
+	    _window.setPalette(colors, firstcolor, ncolors);
+	    _text.setPalette(colors, firstcolor, ncolors);
+    }
+
+    /**
+     * Changes the message background.
+     * @param background Pointer to background surface.
+     */
+    internal void setBackground(Surface background) =>
+	    _window.setBackground(background);
+
+    /**
+     * Changes the message text.
+     * @param message Message string.
+     */
+    internal void setText(string message) =>
+	    _text.setText(message);
+
+    /**
+     * Changes the position of the surface in the X axis.
+     * @param x X position in pixels.
+     */
+    internal override void setX(int x)
+    {
+	    base.setX(x);
+	    _window.setX(x);
+	    _text.setX(x);
+    }
+
+    /**
+     * Changes the position of the surface in the Y axis.
+     * @param y Y position in pixels.
+     */
+    internal override void setY(int y)
+    {
+	    base.setY(y);
+	    _window.setY(y);
+	    _text.setY(y);
     }
 }

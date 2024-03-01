@@ -469,4 +469,31 @@ internal class TextEdit : InteractiveSurface
 			return false;
 		}
 	}
+
+	/**
+	 * Changes the various fonts for the text edit to use.
+	 * The different fonts need to be passed in advance since the
+	 * text size can change mid-text.
+	 * @param big Pointer to large-size font.
+	 * @param small Pointer to small-size font.
+	 * @param lang Pointer to current language.
+	 */
+	internal override void initText(Font big, Font small, Language lang)
+	{
+		_text.initText(big, small, lang);
+		_caret.initText(big, small, lang);
+	}
+
+	/**
+	 * Replaces a certain amount of colors in the text edit's palette.
+	 * @param colors Pointer to the set of colors.
+	 * @param firstcolor Offset of the first color to replace.
+	 * @param ncolors Amount of colors to replace.
+	 */
+	internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+	{
+		base.setPalette(colors, firstcolor, ncolors);
+		_text.setPalette(colors, firstcolor, ncolors);
+		_caret.setPalette(colors, firstcolor, ncolors);
+	}
 }

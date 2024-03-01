@@ -1610,7 +1610,7 @@ internal class Globe : InteractiveSurface
      * Blits the globe onto another surface.
      * @param surface Pointer to another surface.
      */
-    protected override void blit(Surface surface)
+    internal override void blit(Surface surface)
     {
 	    base.blit(surface);
 	    _radars.blit(surface);
@@ -1868,5 +1868,23 @@ internal class Globe : InteractiveSurface
     {
 	    Options.globeRadarLines = !Options.globeRadarLines;
 	    drawRadars();
+    }
+
+    /**
+     * Replaces a certain amount of colors in the palette of the globe.
+     * @param colors Pointer to the set of colors.
+     * @param firstcolor Offset of the first color to replace.
+     * @param ncolors Amount of colors to replace.
+     */
+    internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    {
+	    base.setPalette(colors, firstcolor, ncolors);
+
+	    _texture.setPalette(colors, firstcolor, ncolors);
+	    _markerSet.setPalette(colors, firstcolor, ncolors);
+
+	    _countries.setPalette(colors, firstcolor, ncolors);
+	    _markers.setPalette(colors, firstcolor, ncolors);
+	    _radars.setPalette(colors, firstcolor, ncolors);
     }
 }

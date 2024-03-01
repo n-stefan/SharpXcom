@@ -75,9 +75,9 @@ internal class SurfaceSet
      */
     internal void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-        foreach (var frame in _frames)
+        foreach (var i in _frames)
         {
-            frame.Value.setPalette(colors, firstcolor, ncolors);
+            i.Value.setPalette(colors, firstcolor, ncolors);
         }
     }
 

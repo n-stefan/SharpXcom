@@ -610,7 +610,7 @@ internal class Inventory : InteractiveSurface
      * Blits the inventory elements.
      * @param surface Pointer to surface to blit onto.
      */
-    protected override void blit(Surface surface)
+    internal override void blit(Surface surface)
     {
 	    clear();
 	    _grid.blit(this);
@@ -1015,4 +1015,20 @@ internal class Inventory : InteractiveSurface
      */
     void setMouseOverItem(BattleItem item) =>
 	    _mouseOverItem = (item != null && !item.getRules().isFixed()) ? item : null;
+
+    /**
+     * Replaces a certain amount of colors in the inventory's palette.
+     * @param colors Pointer to the set of colors.
+     * @param firstcolor Offset of the first color to replace.
+     * @param ncolors Amount of colors to replace.
+     */
+    internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    {
+	    base.setPalette(colors, firstcolor, ncolors);
+	    _grid.setPalette(colors, firstcolor, ncolors);
+	    _items.setPalette(colors, firstcolor, ncolors);
+	    _selection.setPalette(colors, firstcolor, ncolors);
+	    _warning.setPalette(colors, firstcolor, ncolors);
+	    _stackNumber.setPalette(getPaletteColors());
+    }
 }

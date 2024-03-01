@@ -98,7 +98,7 @@ internal class WarningMessage : Surface
      * @param small Pointer to small-size font.
      * @param lang Pointer to current language.
      */
-    internal void initText(Font big, Font small, Language lang) =>
+    internal override void initText(Font big, Font small, Language lang) =>
         _text.initText(big, small, lang);
 
     /**
@@ -129,5 +129,17 @@ internal class WarningMessage : Surface
 	    base.draw();
 	    drawRect(0, 0, (short)getWidth(), (short)getHeight(), (byte)(_color + (_fade > 12 ? 12 : _fade)));
 	    _text.blit(this);
+    }
+
+    /**
+     * Replaces a certain amount of colors in the surface's palette.
+     * @param colors Pointer to the set of colors.
+     * @param firstcolor Offset of the first color to replace.
+     * @param ncolors Amount of colors to replace.
+     */
+    internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    {
+	    base.setPalette(colors, firstcolor, ncolors);
+	    _text.setPalette(colors, firstcolor, ncolors);
     }
 }

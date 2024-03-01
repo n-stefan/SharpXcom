@@ -251,7 +251,7 @@ internal class NumberText : Surface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         for (int i = 0; i < 10; ++i)

@@ -350,7 +350,7 @@ internal class ComboBox : InteractiveSurface
      * Blits the combo box components.
      * @param surface Pointer to surface to blit onto.
      */
-    protected override void blit(Surface surface)
+    internal override void blit(Surface surface)
     {
 	    base.blit(surface);
 	    _list.invalidate();
@@ -361,5 +361,63 @@ internal class ComboBox : InteractiveSurface
 		    _window.blit(surface);
 		    _list.blit(surface);
 	    }
+    }
+
+    /**
+     * Changes the resources for the text in the combo box.
+     * @param big Pointer to large-size font.
+     * @param small Pointer to small-size font.
+     * @param lang Pointer to current language.
+     */
+    internal override void initText(Font big, Font small, Language lang)
+    {
+	    _lang = lang;
+	    _button.initText(big, small, lang);
+	    _list.initText(big, small, lang);
+    }
+
+    /**
+     * Replaces a certain amount of colors in the palette of all
+     * the text contained in the list.
+     * @param colors Pointer to the set of colors.
+     * @param firstcolor Offset of the first color to replace.
+     * @param ncolors Amount of colors to replace.
+     */
+    internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    {
+	    base.setPalette(colors, firstcolor, ncolors);
+	    _button.setPalette(colors, firstcolor, ncolors);
+	    _arrow.setPalette(colors, firstcolor, ncolors);
+	    _window.setPalette(colors, firstcolor, ncolors);
+	    _list.setPalette(colors, firstcolor, ncolors);
+    }
+
+    /**
+     * Changes the position of the surface in the X axis.
+     * @param x X position in pixels.
+     */
+    internal override void setX(int x)
+    {
+	    base.setX(x);
+	    _button.setX(x);
+	    _arrow.setX(x + getWidth() - BUTTON_WIDTH);
+	    _window.setX(x);
+	    _list.setX(x + HORIZONTAL_MARGIN);
+    }
+
+    /**
+     * Changes the position of the surface in the Y axis.
+     * @param y Y position in pixels.
+     */
+    internal override void setY(int y)
+    {
+	    base.setY(y);
+	    _button.setY(y);
+	    _arrow.setY(y + 4);
+
+	    int popupHeight = _window.getHeight();
+	    int popupY = getPopupWindowY(getHeight(), y, popupHeight, _popupAboveButton);
+	    _window.setY(popupY);
+	    _list.setY(popupY + VERTICAL_MARGIN);
     }
 }

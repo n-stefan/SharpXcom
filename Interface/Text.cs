@@ -94,7 +94,7 @@ internal class Text : InteractiveSurface
      * @param small Pointer to small-size font.
      * @param lang Pointer to current language.
      */
-    internal void initText(Font big, Font small, Language lang)
+    internal override void initText(Font big, Font small, Language lang)
     {
         _big = big;
         _small = small;

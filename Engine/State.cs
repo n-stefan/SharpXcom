@@ -71,7 +71,7 @@ internal abstract class State
      * @param ncolors Amount of colors to replace.
      * @param immediately Apply changes immediately, otherwise wait in case of multiple setPalettes.
      */
-    internal void setPalette(Span<SDL_Color> colors, int firstcolor = 0, int ncolors = 256, bool immediately = true)
+    internal virtual void setPalette(Span<SDL_Color> colors, int firstcolor = 0, int ncolors = 256, bool immediately = true)
     {
         if (colors != null)
         {
@@ -95,7 +95,7 @@ internal abstract class State
      * @param palette String ID of the palette to load.
      * @param backpals BACKPALS.DAT offset to use.
      */
-    internal void setPalette(string palette, int backpals = -1)
+    internal virtual void setPalette(string palette, int backpals = -1)
     {
 	    setPalette(_game.getMod().getPalette(palette).getColors(), 0, 256, false);
 	    if (palette == "PAL_GEOSCAPE")

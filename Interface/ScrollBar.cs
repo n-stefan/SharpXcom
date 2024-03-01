@@ -216,7 +216,7 @@ internal class ScrollBar : InteractiveSurface
      * Blits the scrollbar contents.
      * @param surface Pointer to surface to blit onto.
      */
-    protected override void blit(Surface surface)
+    internal override void blit(Surface surface)
     {
 	    base.blit(surface);
 	    if (_visible && !_hidden)
@@ -271,5 +271,40 @@ internal class ScrollBar : InteractiveSurface
 			_pressed = false;
 			_offset = 0;
 		}
+	}
+
+	/**
+	 * Replaces a certain amount of colors in the scrollbar's palette.
+	 * @param colors Pointer to the set of colors.
+	 * @param firstcolor Offset of the first color to replace.
+	 * @param ncolors Amount of colors to replace.
+	 */
+	internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+	{
+		base.setPalette(colors, firstcolor, ncolors);
+		_track.setPalette(colors, firstcolor, ncolors);
+		_thumb.setPalette(colors, firstcolor, ncolors);
+	}
+
+	/**
+	 * Changes the position of the surface in the X axis.
+	 * @param x X position in pixels.
+	 */
+	internal override void setX(int x)
+	{
+		base.setX(x);
+		_track.setX(x+1);
+		_thumb.setX(x);
+	}
+
+	/**
+	 * Changes the position of the surface in the Y axis.
+	 * @param y Y position in pixels.
+	 */
+	internal override void setY(int y)
+	{
+		base.setY(y);
+		_track.setY(y);
+		_thumb.setY(y);
 	}
 }

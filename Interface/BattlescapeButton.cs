@@ -161,7 +161,7 @@ internal class BattlescapeButton : InteractiveSurface
      * depending on whether the button is "pressed" or not.
      * @param surface Pointer to surface to blit onto.
      */
-    protected override void blit(Surface surface)
+    internal override void blit(Surface surface)
     {
 	    if (_inverted)
 	    {
@@ -209,5 +209,31 @@ internal class BattlescapeButton : InteractiveSurface
 		    _inverted = false;
 	    }
 	    base.mouseRelease(action, state);
+    }
+
+    /**
+     * Changes the position of the surface in the X axis.
+     * @param x X position in pixels.
+     */
+    internal override void setX(int x)
+    {
+	    base.setX(x);
+	    if (_altSurface != null)
+	    {
+		    _altSurface.setX(x);
+	    }
+    }
+
+    /**
+     * Changes the position of the surface in the Y axis.
+     * @param y Y position in pixels.
+     */
+    internal override void setY(int y)
+    {
+	    base.setY(y);
+	    if (_altSurface != null)
+	    {
+		    _altSurface.setY(y);
+	    }
     }
 }

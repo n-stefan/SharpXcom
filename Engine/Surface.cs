@@ -403,7 +403,7 @@ internal class Surface
     }
 
     /// Initializes the surface's various text resources.
-    internal virtual void initText(Font font1, Font font2, Language language) { }
+    internal virtual void initText(Font _, Font __, Language ___) { }
 
 	/**
 	 * Returns the position of the surface in the X axis.
@@ -423,14 +423,14 @@ internal class Surface
      * Changes the position of the surface in the X axis.
      * @param x X position in pixels.
      */
-    internal void setX(int x) =>
+    internal virtual void setX(int x) =>
         _x = x;
 
     /**
      * Changes the position of the surface in the Y axis.
      * @param y Y position in pixels.
      */
-    internal void setY(int y) =>
+    internal virtual void setY(int y) =>
         _y = y;
 
     /**
@@ -540,7 +540,7 @@ internal class Surface
      * that is blitted.
      * @param surface Pointer to surface to blit onto.
      */
-    protected virtual void blit(Surface surface)
+    internal virtual void blit(Surface surface)
     {
 	    if (_visible && !_hidden)
 	    {

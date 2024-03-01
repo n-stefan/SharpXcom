@@ -1745,4 +1745,23 @@ internal class Map : InteractiveSurface
 		base.keyboardRelease(action, state);
 		_camera.keyboardRelease(action, state);
 	}
+
+	/**
+	 * Replaces a certain amount of colors in the surface's palette.
+	 * @param colors Pointer to the set of colors.
+	 * @param firstcolor Offset of the first color to replace.
+	 * @param ncolors Amount of colors to replace.
+	 */
+	internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+	{
+		base.setPalette(colors, firstcolor, ncolors);
+		foreach (var i in _save.getMapDataSets())
+		{
+			i.getSurfaceset().setPalette(colors, firstcolor, ncolors);
+		}
+		_message.setPalette(colors, firstcolor, ncolors);
+		_message.setBackground(_game.getMod().getSurface("TAC00.SCR"));
+		_message.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+		_message.setText(_game.getLanguage().getString("STR_HIDDEN_MOVEMENT"));
+	}
 }

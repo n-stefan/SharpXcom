@@ -78,9 +78,9 @@ internal class Font
      */
     internal void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
     {
-        foreach (var image in _images)
+        foreach (var i in _images)
         {
-            image.surface.setPalette(colors, firstcolor, ncolors);
+            i.surface.setPalette(colors, firstcolor, ncolors);
         }
     }
 

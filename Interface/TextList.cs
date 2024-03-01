@@ -872,7 +872,7 @@ internal class TextList : InteractiveSurface
      * Blits the text list and selector.
      * @param surface Pointer to surface to blit onto.
      */
-    protected override void blit(Surface surface)
+    internal override void blit(Surface surface)
     {
 	    if (_visible && !_hidden)
 	    {
@@ -1078,5 +1078,89 @@ internal class TextList : InteractiveSurface
 	    }
 
 	    base.mouseOut(action, state);
+    }
+
+    /**
+     * Changes the resources for the text in the list
+     * and calculates the selector and visible amount of rows.
+     * @param big Pointer to large-size font.
+     * @param small Pointer to small-size font.
+     * @param lang Pointer to current language.
+     */
+    internal override void initText(Font big, Font small, Language lang)
+    {
+	    _big = big;
+	    _small = small;
+	    _font = small;
+	    _lang = lang;
+
+	    _selector = null;
+	    _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
+	    _selector.setPalette(getPaletteColors());
+	    _selector.setVisible(false);
+
+	    updateVisible();
+    }
+
+    /**
+     * Replaces a certain amount of colors in the palette of all
+     * the text contained in the list.
+     * @param colors Pointer to the set of colors.
+     * @param firstcolor Offset of the first color to replace.
+     * @param ncolors Amount of colors to replace.
+     */
+    internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    {
+	    base.setPalette(colors, firstcolor, ncolors);
+	    foreach (var u in _texts)
+	    {
+		    foreach (var v in u)
+		    {
+			    v.setPalette(colors, firstcolor, ncolors);
+		    }
+	    }
+	    foreach (var i in _arrowLeft)
+	    {
+		    i.setPalette(colors, firstcolor, ncolors);
+	    }
+	    foreach (var i in _arrowRight)
+	    {
+		    i.setPalette(colors, firstcolor, ncolors);
+	    }
+	    if (_selector != null)
+	    {
+		    _selector.setPalette(colors, firstcolor, ncolors);
+	    }
+	    _up.setPalette(colors, firstcolor, ncolors);
+	    _down.setPalette(colors, firstcolor, ncolors);
+	    _scrollbar.setPalette(colors, firstcolor, ncolors);
+    }
+
+    /**
+     * Changes the position of the surface in the X axis.
+     * @param x X position in pixels.
+     */
+    internal override void setX(int x)
+    {
+	    base.setX(x);
+	    _up.setX(getX() + getWidth() + _scrollPos);
+	    _down.setX(getX() + getWidth() + _scrollPos);
+	    _scrollbar.setX(getX() + getWidth() + _scrollPos);
+	    if (_selector != null)
+		    _selector.setX(getX());
+    }
+
+    /**
+     * Changes the position of the surface in the Y axis.
+     * @param y Y position in pixels.
+     */
+    internal override void setY(int y)
+    {
+	    base.setY(y);
+	    _up.setY(getY());
+	    _down.setY(getY() + getHeight() - 14);
+	    _scrollbar.setY(_up.getY() + _up.getHeight());
+	    if (_selector != null)
+		    _selector.setY(getY());
     }
 }
