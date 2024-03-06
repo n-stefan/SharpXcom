@@ -33,7 +33,7 @@ internal class AIModule
     int _escapeTUs, _ambushTUs;
     bool _rifle, _melee, _blaster;
     bool _traceAI, _didPsi;
-    int _AIMode, _intelligence, _closestDist;
+	int _AIMode, _intelligence, _closestDist;
     Node _fromNode, _toNode;
     BattleActionType _reserve;
     BattleAction _escapeAction, _ambushAction, _attackAction, _patrolAction, _psiAction;
@@ -2144,5 +2144,27 @@ internal class AIModule
 			}
 		}
 		return _aggroTarget != null;
+	}
+
+	/**
+	 * Loads the AI state from a YAML file.
+	 * @param node YAML node.
+	 */
+	internal void load(YamlNode node)
+	{
+		int fromNodeID, toNodeID;
+		fromNodeID = node["fromNode"] != null ? int.Parse(node["fromNode"].ToString()) : -1;
+		toNodeID = node["toNode"] != null ? int.Parse(node["toNode"].ToString()) : -1;
+		_AIMode = node["AIMode"] != null ? int.Parse(node["AIMode"].ToString()) : (int)AIMode.AI_PATROL;
+		_wasHitBy = ((YamlSequenceNode)node["wasHitBy"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+		// TODO: Figure out why AI are sometimes left with junk nodes
+		if (fromNodeID >= 0 && (uint)fromNodeID < _save.getNodes().Count)
+		{
+			_fromNode = _save.getNodes()[fromNodeID];
+		}
+		if (toNodeID >= 0 && (uint)toNodeID < _save.getNodes().Count)
+		{
+			_toNode = _save.getNodes()[toNodeID];
+		}
 	}
 }

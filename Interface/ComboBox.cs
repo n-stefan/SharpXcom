@@ -136,7 +136,7 @@ internal class ComboBox : InteractiveSurface
      * Changes the color used to draw the combo box.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _color = color;
         drawArrow();
@@ -419,5 +419,17 @@ internal class ComboBox : InteractiveSurface
 	    int popupY = getPopupWindowY(getHeight(), y, popupHeight, _popupAboveButton);
 	    _window.setY(popupY);
 	    _list.setY(popupY + VERTICAL_MARGIN);
+    }
+
+    /**
+     * Enables/disables high contrast color. Mostly used for
+     * Battlescape UI.
+     * @param contrast High contrast setting.
+     */
+    internal override void setHighContrast(bool contrast)
+    {
+	    _button.setHighContrast(contrast);
+	    _window.setHighContrast(contrast);
+	    _list.setHighContrast(contrast);
     }
 }

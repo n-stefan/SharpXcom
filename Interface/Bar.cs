@@ -142,4 +142,32 @@ internal class Bar : Surface
 		    drawRect(ref square, _color);
 	    }
     }
+
+    /**
+     * Changes the color used to draw the border and contents.
+     * @param color Color value.
+     */
+    internal override void setColor(byte color)
+    {
+	    _color = color;
+	    _redraw = true;
+    }
+
+    /**
+     * Changes the color used to draw the second contents.
+     * @param color Color value.
+     */
+    internal override void setSecondaryColor(byte color)
+    {
+	    _color2 = color;
+	    _redraw = true;
+    }
+
+    /**
+     * sets the border color for the bar.
+     * @param bc the color for the outline of the bar.
+     * @note will use base colour + 4 if none is defined here.
+     */
+    internal override void setBorderColor(byte bc) =>
+	    _borderColor = bc;
 }

@@ -84,4 +84,10 @@ internal class ToggleTextButton : TextButton
 	    base.mousePress(action, state); // skip TextButton's code as it will try to set *_group
 	    draw();
     }
+
+    internal override void setColor(byte color)
+    {
+	    _originalColor = color;
+	    base.setColor(color);
+    }
 }

@@ -62,7 +62,7 @@ internal class Frame : Surface
      * Changes the color used to draw the shaded border.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _color = color;
         _redraw = true;
@@ -125,4 +125,35 @@ internal class Frame : Surface
      */
     internal byte getSecondaryColor() =>
 	    _bg;
+
+    /**
+     * Changes the color used to draw the background.
+     * @param bg Color value.
+     */
+    internal override void setSecondaryColor(byte bg)
+    {
+	    _bg = bg;
+	    _redraw = true;
+    }
+
+    /**
+     * Changes the color used to draw the shaded border.
+     * only really to be used in conjunction with the State add()
+     * function as a convenience wrapper to avoid ugly hacks on that end
+     * better to have them here!
+     * @param color Color value.
+     */
+    internal override void setBorderColor(byte color) =>
+	    setColor(color);
+
+    /**
+     * Enables/disables high contrast color. Mostly used for
+     * Battlescape UI.
+     * @param contrast High contrast setting.
+     */
+    internal override void setHighContrast(bool contrast)
+    {
+	    _contrast = contrast;
+	    _redraw = true;
+    }
 }

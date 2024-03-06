@@ -128,7 +128,7 @@ internal class Text : InteractiveSurface
      * in the palette to be displayed.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _color = color;
         _color2 = color;
@@ -345,7 +345,7 @@ internal class Text : InteractiveSurface
      * Battlescape UI.
      * @param contrast High contrast setting.
      */
-    internal void setHighContrast(bool contrast)
+    internal override void setHighContrast(bool contrast)
     {
         _contrast = contrast;
         _redraw = true;
@@ -379,7 +379,7 @@ internal class Text : InteractiveSurface
      * a 0x01 in the string.
      * @param color Color value.
      */
-    internal void setSecondaryColor(byte color)
+    internal override void setSecondaryColor(byte color)
     {
         _color2 = color;
         _redraw = true;

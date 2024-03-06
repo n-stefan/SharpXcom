@@ -82,7 +82,7 @@ internal class ArrowButton : ImageButton
      * Changes the color for the image button.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         base.setColor(color);
         _redraw = true;

@@ -84,7 +84,7 @@ internal class ScrollBar : InteractiveSurface
      * Changes the color used to render the scrollbar.
      * @param color Color value.
      */
-    internal void setColor(byte color) =>
+    internal override void setColor(byte color) =>
         _color = color;
 
     /**
@@ -307,4 +307,24 @@ internal class ScrollBar : InteractiveSurface
 		_track.setY(y);
 		_thumb.setY(y);
 	}
+
+	/**
+	 * Changes the height of the scrollbar.
+	 * @param height New height in pixels.
+	 */
+	internal override void setHeight(int height)
+	{
+		base.setHeight(height);
+		_track.setHeight(height);
+		_thumb.setHeight(height);
+		_redraw = true;
+	}
+
+	/**
+	 * Enables/disables high contrast color. Mostly used for
+	 * Battlescape text.
+	 * @param contrast High contrast setting.
+	 */
+	internal override void setHighContrast(bool contrast) =>
+		_contrast = contrast;
 }

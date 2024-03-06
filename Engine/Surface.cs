@@ -582,7 +582,7 @@ internal class Surface
      * It will force the surface to be recreated for the new size.
      * @param width New width in pixels.
      */
-    internal void setWidth(int width)
+    internal virtual void setWidth(int width)
     {
         resize(width, getHeight());
         _redraw = true;
@@ -594,7 +594,7 @@ internal class Surface
      * It will force the surface to be recreated for the new size.
      * @param height New height in pixels.
      */
-    internal void setHeight(int height)
+    internal virtual void setHeight(int height)
     {
         resize(getWidth(), height);
         _redraw = true;

@@ -105,7 +105,7 @@ internal class WarningMessage : Surface
      * Changes the color for the message background.
      * @param color Color value.
      */
-    internal void setColor(byte color) =>
+    internal override void setColor(byte color) =>
         _color = color;
 
     /**

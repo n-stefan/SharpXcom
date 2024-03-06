@@ -236,4 +236,11 @@ internal class BattlescapeButton : InteractiveSurface
 		    _altSurface.setY(y);
 	    }
     }
+
+    /**
+     * Changes the color for the battlescape button.
+     * @param color Color value.
+     */
+    internal override void setColor(byte color) =>
+	    _color = color;
 }

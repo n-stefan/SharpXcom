@@ -116,7 +116,7 @@ internal class Slider : InteractiveSurface
      * Changes the color used to render the slider.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _txtMinus.setColor(color);
         _txtPlus.setColor(color);
@@ -287,5 +287,18 @@ internal class Slider : InteractiveSurface
 	    _txtPlus.setY(y);
 	    _frame.setY(getY() + (getHeight() - _thickness) / 2);
 	    _button.setY(getY());
+    }
+
+    /**
+     * Enables/disables high contrast color. Mostly used for
+     * Battlescape.
+     * @param contrast High contrast setting.
+     */
+    internal override void setHighContrast(bool contrast)
+    {
+	    _txtMinus.setHighContrast(contrast);
+	    _txtPlus.setHighContrast(contrast);
+	    _frame.setHighContrast(contrast);
+	    _button.setHighContrast(contrast);
     }
 }

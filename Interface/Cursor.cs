@@ -95,7 +95,7 @@ internal class Cursor : Surface
      * Changes the cursor's base color.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _color = color;
         _redraw = true;

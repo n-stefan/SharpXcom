@@ -250,14 +250,14 @@ internal class Font
 	    int height = int.Parse(node["height"].ToString());
 	    int spacing = int.Parse(node["spacing"].ToString());
         _monospace = bool.Parse(node["monospace"].ToString());
-	    foreach (var item in ((YamlSequenceNode)node["images"]).Children)
+	    foreach (var i in ((YamlSequenceNode)node["images"]).Children)
 	    {
             var image = new FontImage();
-            image.width = item["width"] != null ? int.Parse(item["width"].ToString()) : width;
-		    image.height = item["height"] != null ? int.Parse(item["height"].ToString()) : height;
-		    image.spacing = item["spacing"] != null ? int.Parse(item["spacing"].ToString()) : spacing;
-		    string file = "Language/" + item["file"].ToString();
-		    string chars = Unicode.convUtf8ToUtf32(item["chars"].ToString());
+            image.width = i["width"] != null ? int.Parse(i["width"].ToString()) : width;
+		    image.height = i["height"] != null ? int.Parse(i["height"].ToString()) : height;
+		    image.spacing = i["spacing"] != null ? int.Parse(i["spacing"].ToString()) : spacing;
+		    string file = "Language/" + i["file"].ToString();
+		    string chars = Unicode.convUtf8ToUtf32(i["chars"].ToString());
 		    image.surface = new Surface(image.width, image.height);
 		    image.surface.loadImage(FileMap.getFilePath(file));
 		    _images.Add(image);

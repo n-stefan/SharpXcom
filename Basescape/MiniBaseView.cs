@@ -165,4 +165,10 @@ internal class MiniBaseView : InteractiveSurface
 	    _hoverBase = (uint)Math.Floor(action.getRelativeXMouse() / ((MINI_SIZE + 2) * action.getXScale()));
 	    base.mouseOver(action, state);
     }
+
+    internal override void setColor(byte color) =>
+	    _green = color;
+
+    internal override void setSecondaryColor(byte color) =>
+	    _red = color;
 }

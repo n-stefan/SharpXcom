@@ -96,7 +96,7 @@ internal class Window : Surface
      * Changes the color used to draw the shaded border.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _color = color;
         _redraw = true;
@@ -107,7 +107,7 @@ internal class Window : Surface
      * Battlescape UI.
      * @param contrast High contrast setting.
      */
-    internal void setHighContrast(bool contrast)
+    internal override void setHighContrast(bool contrast)
     {
         _contrast = contrast;
         _redraw = true;

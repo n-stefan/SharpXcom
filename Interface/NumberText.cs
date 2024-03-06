@@ -236,7 +236,7 @@ internal class NumberText : Surface
      * Changes the color used to render the number.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _color = color;
         _redraw = true;

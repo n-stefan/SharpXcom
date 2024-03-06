@@ -62,7 +62,7 @@ internal class ImageButton : InteractiveSurface
      * Changes the color for the image button.
      * @param color Color value.
      */
-    protected void setColor(byte color) =>
+    internal override void setColor(byte color) =>
         _color = color;
 
     /**

@@ -342,7 +342,7 @@ internal class InteractiveSurface : Surface
      * isn't blitted nor receives events.
      * @param visible New visibility.
      */
-    internal void setVisible(bool visible)
+    internal override void setVisible(bool visible)
     {
         base.setVisible(visible);
         // Unpress button if it was hidden

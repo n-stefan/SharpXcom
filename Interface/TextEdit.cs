@@ -496,4 +496,36 @@ internal class TextEdit : InteractiveSurface
 		_text.setPalette(colors, firstcolor, ncolors);
 		_caret.setPalette(colors, firstcolor, ncolors);
 	}
+
+	/**
+	 * Changes the color used to render the text. Unlike regular graphics,
+	 * fonts are greyscale so they need to be assigned a specific position
+	 * in the palette to be displayed.
+	 * @param color Color value.
+	 */
+	internal override void setColor(byte color)
+	{
+		_text.setColor(color);
+		_caret.setColor(color);
+	}
+
+	/**
+	 * Changes the secondary color used to render the text. The text
+	 * switches between the primary and secondary color whenever there's
+	 * a 0x01 in the string.
+	 * @param color Color value.
+	 */
+	internal override void setSecondaryColor(byte color) =>
+		_text.setSecondaryColor(color);
+
+	/**
+	 * Enables/disables high contrast color. Mostly used for
+	 * Battlescape text.
+	 * @param contrast High contrast setting.
+	 */
+	internal override void setHighContrast(bool contrast)
+	{
+		_text.setHighContrast(contrast);
+		_caret.setHighContrast(contrast);
+	}
 }

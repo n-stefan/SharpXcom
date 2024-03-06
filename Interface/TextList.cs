@@ -289,17 +289,17 @@ internal class TextList : InteractiveSurface
      * the color of existing text, just the color of text added from then on.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _color = color;
         _up.setColor(color);
         _down.setColor(color);
         _scrollbar.setColor(color);
-        foreach (var text in _texts)
+        foreach (var u in _texts)
         {
-            foreach (var t in text)
+            foreach (var v in u)
             {
-                t.setColor(color);
+                v.setColor(color);
             }
         }
     }
@@ -1162,5 +1162,50 @@ internal class TextList : InteractiveSurface
 	    _scrollbar.setY(_up.getY() + _up.getHeight());
 	    if (_selector != null)
 		    _selector.setY(getY());
+    }
+
+    /**
+     * Changes the height of the text list.
+     * @param height New height in pixels.
+     */
+    internal override void setHeight(int height)
+    {
+	    base.setHeight(height);
+	    setY(getY());
+	    int h = Math.Max(_down.getY() - _up.getY() - _up.getHeight(), 1);
+	    _scrollbar.setHeight(h);
+	    updateVisible();
+    }
+
+    /**
+     * Changes the secondary color of the text in the list.
+     * @param color Color value.
+     */
+    internal override void setSecondaryColor(byte color) =>
+	    _color2 = color;
+
+    internal override void setBorderColor(byte color)
+    {
+	    _up.setColor(color);
+	    _down.setColor(color);
+	    _scrollbar.setColor(color);
+    }
+
+    /**
+     * Enables/disables high contrast color. Mostly used for
+     * Battlescape text.
+     * @param contrast High contrast setting.
+     */
+    internal override void setHighContrast(bool contrast)
+    {
+	    _contrast = contrast;
+	    foreach (var u in _texts)
+	    {
+		    foreach (var v in u)
+		    {
+			    v.setHighContrast(contrast);
+		    }
+	    }
+	    _scrollbar.setHighContrast(contrast);
     }
 }

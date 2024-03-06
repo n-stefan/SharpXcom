@@ -86,7 +86,7 @@ internal class TextButton : InteractiveSurface
      * Changes the color for the button and text.
      * @param color Color value.
      */
-    internal void setColor(byte color)
+    internal override void setColor(byte color)
     {
         _color = color;
         _text.setColor(color);
@@ -115,7 +115,7 @@ internal class TextButton : InteractiveSurface
      * Battlescape UI.
      * @param contrast High contrast setting.
      */
-    internal void setHighContrast(bool contrast)
+    internal override void setHighContrast(bool contrast)
     {
         _contrast = contrast;
         _text.setHighContrast(contrast);
@@ -314,5 +314,17 @@ internal class TextButton : InteractiveSurface
     {
 	    base.setPalette(colors, firstcolor, ncolors);
 	    _text.setPalette(colors, firstcolor, ncolors);
+    }
+
+    internal override void setWidth(int width)
+    {
+	    base.setWidth(width);
+	    _text.setWidth(width);
+    }
+
+    internal override void setHeight(int height)
+    {
+	    base.setHeight(height);
+	    _text.setHeight(height);
     }
 }

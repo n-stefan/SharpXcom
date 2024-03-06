@@ -565,4 +565,10 @@ internal class BaseView : InteractiveSurface
 		_small = small;
 		_lang = lang;
 	}
+
+	internal override void setColor(byte color) =>
+		_cellColor = color;
+
+	internal override void setSecondaryColor(byte color) =>
+		_selectorColor = color;
 }

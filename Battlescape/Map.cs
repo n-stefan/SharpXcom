@@ -1764,4 +1764,27 @@ internal class Map : InteractiveSurface
 		_message.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
 		_message.setText(_game.getLanguage().getString("STR_HIDDEN_MOVEMENT"));
 	}
+
+	/**
+	 * Special handling for setting the width of the map viewport.
+	 * @param width the new base screen width.
+	 */
+	internal override void setWidth(int width)
+	{
+		int dX = width - getWidth();
+		base.setWidth(width);
+		_message.setX(_message.getX() + dX / 2);
+	}
+
+	/**
+	 * Special handling for setting the height of the map viewport.
+	 * @param height the new base screen height.
+	 */
+	internal override void setHeight(int height)
+	{
+		base.setHeight(height);
+		_visibleMapHeight = height - _iconHeight;
+		_message.setHeight((_visibleMapHeight < 200)? _visibleMapHeight : 200);
+		_message.setY((_visibleMapHeight - _message.getHeight()) / 2);
+	}
 }

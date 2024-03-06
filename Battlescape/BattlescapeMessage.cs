@@ -137,4 +137,15 @@ internal class BattlescapeMessage : Surface
 	    _window.setY(y);
 	    _text.setY(y);
     }
+
+    /*
+     * Special handling for setting the height of the battlescape message.
+     * @param height the new height.
+     */
+    internal override void setHeight(int height)
+    {
+	    base.setHeight(height);
+	    _window.setHeight(height);
+	    _text.setHeight(height);
+    }
 }

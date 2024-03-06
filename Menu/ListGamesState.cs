@@ -301,10 +301,10 @@ internal class ListGamesState : State
     {
         uint row = 0;
         byte color = _lstSaves.getSecondaryColor();
-        foreach (var save in _saves)
+        foreach (var i in _saves)
         {
-            _lstSaves.addRow(3, save.displayName, save.isoDate, save.isoTime);
-            if (save.reserved && _origin != OptionsOrigin.OPT_BATTLESCAPE)
+            _lstSaves.addRow(3, i.displayName, i.isoDate, i.isoTime);
+            if (i.reserved && _origin != OptionsOrigin.OPT_BATTLESCAPE)
             {
                 _lstSaves.setRowColor(row, color);
             }

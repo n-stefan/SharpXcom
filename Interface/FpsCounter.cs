@@ -94,7 +94,7 @@ internal class FpsCounter : Surface
      * Sets the text color of the counter.
      * @param color The color to set.
      */
-    internal void setColor(byte color) =>
+    internal override void setColor(byte color) =>
         _text.setColor(color);
 
     /**
