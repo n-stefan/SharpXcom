@@ -73,12 +73,12 @@ internal class RuleInterface : IRule
 		_palette = node["palette"].ToString();
 		_parent = node["parent"].ToString();
 		_music = node["music"].ToString();
-		foreach (var item in ((YamlSequenceNode)node["elements"]).Children)
+		foreach (var i in ((YamlSequenceNode)node["elements"]).Children)
 		{
 			Element element;
-			if (item["size"] != null)
+			if (i["size"] != null)
 			{
-				var pos = item["size"];
+				var pos = i["size"];
 				element.w = int.Parse(pos[0].ToString());
 				element.h = int.Parse(pos[1].ToString());
 			}
@@ -86,9 +86,9 @@ internal class RuleInterface : IRule
 			{
 				element.w = element.h = int.MaxValue;
 			}
-			if (item["pos"] != null)
+			if (i["pos"] != null)
 			{
-				var pos = item["pos"];
+				var pos = i["pos"];
 				element.x = int.Parse(pos[0].ToString());
 				element.y = int.Parse(pos[1].ToString());
 			}
@@ -96,12 +96,12 @@ internal class RuleInterface : IRule
 			{
 				element.x = element.y = int.MaxValue;
 			}
-			element.color = int.Parse(item["color"].ToString());
-			element.color2 = int.Parse(item["color2"].ToString());
-			element.border = int.Parse(item["border"].ToString());
-			element.TFTDMode = bool.Parse(item["TFTDMode"].ToString());
+			element.color = int.Parse(i["color"].ToString());
+			element.color2 = int.Parse(i["color2"].ToString());
+			element.border = int.Parse(i["border"].ToString());
+			element.TFTDMode = bool.Parse(i["TFTDMode"].ToString());
 
-			string id = item["id"].ToString();
+			string id = i["id"].ToString();
 			_elements[id] = element;
 		}
 	}

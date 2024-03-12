@@ -324,7 +324,7 @@ internal class BattleItem
      * Gets the item's id.
      * @return The item's id.
      */
-    int getId() =>
+    internal int getId() =>
 	    _id;
 
     /**
@@ -489,4 +489,42 @@ internal class BattleItem
      */
     internal bool getTurnFlag() =>
 	    _droppedOnAlienTurn;
+
+    /**
+     * Loads the item from a YAML file.
+     * @param node YAML node.
+     * @param mod Mod for the item.
+     */
+    internal void load(YamlNode node, Mod.Mod mod)
+    {
+	    string slot = node["inventoryslot"] != null ? node["inventoryslot"].ToString() : "NULL";
+	    if (slot != "NULL")
+	    {
+		    if (mod.getInventory(slot) != null)
+		    {
+			    _inventorySlot = mod.getInventory(slot);
+
+		    }
+		    else
+		    {
+			    _inventorySlot = mod.getInventory("STR_GROUND");
+		    }
+	    }
+	    _inventoryX = int.Parse(node["inventoryX"].ToString());
+	    _inventoryY = int.Parse(node["inventoryY"].ToString());
+	    _ammoQuantity = int.Parse(node["ammoqty"].ToString());
+	    _painKiller = int.Parse(node["painKiller"].ToString());
+	    _heal = int.Parse(node["heal"].ToString());
+	    _stimulant = int.Parse(node["stimulant"].ToString());
+	    _fuseTimer = int.Parse(node["fuseTimer"].ToString());
+	    _droppedOnAlienTurn = bool.Parse(node["droppedOnAlienTurn"].ToString());
+	    _XCOMProperty = bool.Parse(node["XCOMProperty"].ToString());
+    }
+
+    /**
+     * Sets the item's previous owner.
+     * @param owner Pointer to Battleunit.
+     */
+    internal void setPreviousOwner(BattleUnit owner) =>
+	    _previousOwner = owner;
 }

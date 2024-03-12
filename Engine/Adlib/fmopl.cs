@@ -334,8 +334,6 @@ internal class fmopl
     static uint U(double x) =>
         ((uint)x);
 
-    static readonly Random random = new();
-
     /* --------------------- subroutines  --------------------- */
 
     static int Limit( int val, int max, int min )
@@ -1234,7 +1232,7 @@ internal class fmopl
     static void OPL_CALC_RH( Memory<OPL_CH> CH )
     {
 	    uint env_tam,env_sd,env_top,env_hh;
-	    int whitenoise = (int)((random.Next()&1)*(WHITE_NOISE_db/EG_STEP));
+	    int whitenoise = (int)((new Random().Next()&1)*(WHITE_NOISE_db/EG_STEP));
 	    int tone8;
 
 	    OPL_SLOT SLOT;

@@ -141,26 +141,26 @@ internal class RuleAlienMission : IRule
 		{
             var assoc = new Dictionary<uint, WeightedOptions>();
 			//Place in the associative container so we can index by month and keep entries sorted.
-			foreach (var raceDistribution in _raceDistribution)
+			foreach (var ii in _raceDistribution)
 			{
-				assoc.Add(raceDistribution.Key, raceDistribution.Value);
+				assoc.Add(ii.Key, ii.Value);
 			}
 
 			// Now go through the node contents and merge with existing data.
-			foreach (var weight in ((YamlMappingNode)weights).Children)
+			foreach (var nn in ((YamlMappingNode)weights).Children)
 			{
-				uint month = uint.Parse(weight.Key.ToString());
+				uint month = uint.Parse(nn.Key.ToString());
 				if (!assoc.ContainsKey(month))
 				{
 					// New entry, load and add it.
 					WeightedOptions nw = new WeightedOptions();
-					nw.load(weight.Value);
+					nw.load(nn.Value);
 					assoc.Add(month, nw);
 				}
 				else
 				{
 					// Existing entry, update it.
-					assoc[month].load(weight.Value);
+					assoc[month].load(nn.Value);
 				}
 			}
 

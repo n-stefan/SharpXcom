@@ -200,4 +200,20 @@ internal class Production
 
     internal void setSellItems(bool sell) =>
         _sell = sell;
+
+	internal void load(YamlNode node)
+	{
+		setAssignedEngineers(node["assigned"] != null ? int.Parse(node["assigned"].ToString()) : getAssignedEngineers());
+		setTimeSpent(node["spent"] != null ? int.Parse(node["spent"].ToString()) : getTimeSpent());
+		setAmountTotal(node["amount"] != null ? int.Parse(node["amount"].ToString()) : getAmountTotal());
+		setInfiniteAmount(node["infinite"] != null ? bool.Parse(node["infinite"].ToString()) : getInfiniteAmount());
+		setSellItems(node["sell"] != null ? bool.Parse(node["sell"].ToString()) : getSellItems());
+		// backwards compatibility
+		if (getAmountTotal() == int.MaxValue)
+		{
+			setAmountTotal(999);
+			setInfiniteAmount(true);
+			setSellItems(true);
+		}
+	}
 }

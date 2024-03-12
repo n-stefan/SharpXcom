@@ -193,4 +193,23 @@ internal class Node
 
     internal void allocateNode() =>
 	    _allocated = true;
+
+    /**
+     * Loads the UFO from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _id = int.Parse(node["id"].ToString());
+        _pos = new Position(); _pos.load(node["position"]);
+	    //_segment = node["segment"].as<int>(_segment);
+	    _type = int.Parse(node["type"].ToString());
+	    _rank = int.Parse(node["rank"].ToString());
+	    _flags = int.Parse(node["flags"].ToString());
+	    _reserved = int.Parse(node["reserved"].ToString());
+	    _priority = int.Parse(node["priority"].ToString());
+	    _allocated = bool.Parse(node["allocated"].ToString());
+        _nodeLinks = ((YamlSequenceNode)node["links"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+	    _dummy = bool.Parse(node["dummy"].ToString());
+    }
 }

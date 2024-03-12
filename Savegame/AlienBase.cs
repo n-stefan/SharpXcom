@@ -124,4 +124,16 @@ internal class AlienBase : Target
      */
     protected override string getType() =>
 	    _deployment.getMarkerName();
+
+    /**
+     * Loads the alien base from a YAML file.
+     * @param node YAML node.
+     */
+    protected override void load(YamlNode node)
+    {
+	    base.load(node);
+	    _race = node["race"].ToString();
+	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+	    _discovered = bool.Parse(node["discovered"].ToString());
+    }
 }

@@ -285,4 +285,63 @@ internal class Transfer
 	    }
 	    return lang.getString(_itemId);
     }
+
+    /**
+     * Loads the transfer from a YAML file.
+     * @param node YAML node.
+     * @param base Destination base.
+     * @param rule Game mod.
+     * @param save Pointer to savegame.
+     * @return Was the transfer content valid?
+     */
+    internal bool load(YamlNode node, Base @base, Mod.Mod mod, SavedGame save)
+    {
+	    _hours = int.Parse(node["hours"].ToString());
+	    if (node["soldier"] is YamlNode soldier)
+	    {
+		    string type = soldier["type"] != null ? soldier["type"].ToString() : mod.getSoldiersList().First();
+		    if (mod.getSoldier(type) != null)
+		    {
+			    _soldier = new Soldier(mod.getSoldier(type), null);
+			    _soldier.load(soldier, mod, save);
+		    }
+		    else
+		    {
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
+			    //this = null;
+			    return false;
+		    }
+	    }
+	    if (node["craft"] is YamlNode craft)
+	    {
+		    string type = craft["type"].ToString();
+		    if (mod.getCraft(type) != null)
+		    {
+			    _craft = new Craft(mod.getCraft(type), @base);
+			    _craft.load(craft, mod, null);
+		    }
+		    else
+		    {
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load craft {type}");
+			    //this = null;
+			    return false;
+		    }
+
+	    }
+	    if (node["itemId"] is YamlNode item)
+	    {
+		    _itemId = item.ToString();
+		    if (mod.getItem(_itemId) == null)
+		    {
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {_itemId}");
+			    //this = null;
+			    return false;
+		    }
+	    }
+	    _itemQty = int.Parse(node["itemQty"].ToString());
+	    _scientists = int.Parse(node["scientists"].ToString());
+	    _engineers = int.Parse(node["engineers"].ToString());
+	    _delivered = bool.Parse(node["delivered"].ToString());
+	    return true;
+    }
 }

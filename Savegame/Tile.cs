@@ -920,4 +920,70 @@ internal class Tile
 	/// does the tile have obstacle flag set for at least one part?
 	internal bool isObstacle() =>
 		_obstacle != 0;
+
+    /**
+     * Load the tile from a YAML node.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    //_position = node["position"].as<Position>(_position);
+	    for (int i = 0; i < 4; i++)
+	    {
+		    _mapDataID[i] = int.Parse(node["mapDataID"][i].ToString());
+		    _mapDataSetID[i] = int.Parse(node["mapDataSetID"][i].ToString());
+	    }
+	    _fire = int.Parse(node["fire"].ToString());
+	    _smoke = int.Parse(node["smoke"].ToString());
+	    if (node["discovered"] != null)
+	    {
+		    for (int i = 0; i < 3; i++)
+		    {
+			    _discovered[i] = bool.Parse(node["discovered"][i].ToString());
+		    }
+	    }
+	    if (node["openDoorWest"] != null)
+	    {
+		    _currentFrame[1] = 7;
+	    }
+	    if (node["openDoorNorth"] != null)
+	    {
+		    _currentFrame[2] = 7;
+	    }
+	    if (_fire != 0 || _smoke != 0)
+	    {
+		    _animationOffset = new Random().Next() % 4;
+	    }
+    }
+
+    /**
+     * Load the tile from binary.
+     * @param buffer Pointer to buffer.
+     * @param serKey Serialization key.
+     */
+    internal void loadBinary(Span<byte> buffer, SerializationKey serKey)
+    {
+	    _mapDataID[0] = unserializeInt(ref buffer, serKey._mapDataID);
+	    _mapDataID[1] = unserializeInt(ref buffer, serKey._mapDataID);
+	    _mapDataID[2] = unserializeInt(ref buffer, serKey._mapDataID);
+	    _mapDataID[3] = unserializeInt(ref buffer, serKey._mapDataID);
+	    _mapDataSetID[0] = unserializeInt(ref buffer, serKey._mapDataSetID);
+	    _mapDataSetID[1] = unserializeInt(ref buffer, serKey._mapDataSetID);
+	    _mapDataSetID[2] = unserializeInt(ref buffer, serKey._mapDataSetID);
+	    _mapDataSetID[3] = unserializeInt(ref buffer, serKey._mapDataSetID);
+
+	    _smoke = unserializeInt(ref buffer, serKey._smoke);
+	    _fire = unserializeInt(ref buffer, serKey._fire);
+
+	    byte boolFields = (byte)unserializeInt(ref buffer, serKey.boolFields);
+	    _discovered[0] = (boolFields & 1) != 0 ? true : false;
+	    _discovered[1] = (boolFields & 2) != 0 ? true : false;
+	    _discovered[2] = (boolFields & 4) != 0 ? true : false;
+	    _currentFrame[1] = (boolFields & 8) != 0 ? 7 : 0;
+	    _currentFrame[2] = (boolFields & 0x10) != 0 ? 7 : 0;
+	    if (_fire != 0 || _smoke != 0)
+	    {
+		    _animationOffset = new Random().Next() % 4;
+	    }
+    }
 }

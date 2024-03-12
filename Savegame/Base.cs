@@ -1498,4 +1498,193 @@ internal class Base : Target
      */
     protected override string getType() =>
 	    "STR_BASE";
+
+    /**
+     * Loads the base from a YAML file.
+     * @param node YAML node.
+     * @param save Pointer to saved game.
+     * @param newGame Is this the first base of a new game?
+     * @param newBattleGame Is this the base of a skirmish game?
+     */
+    internal void load(YamlNode node, SavedGame save, bool newGame, bool newBattleGame = false)
+    {
+	    base.load(node);
+
+	    if (!newGame || !Options.customInitialBase || newBattleGame)
+	    {
+		    foreach (var i in ((YamlSequenceNode)node["facilities"]).Children)
+		    {
+			    string type = i["type"].ToString();
+			    if (_mod.getBaseFacility(type) != null)
+			    {
+				    BaseFacility f = new BaseFacility(_mod.getBaseFacility(type), this);
+				    f.load(i);
+				    _facilities.Add(f);
+			    }
+			    else
+			    {
+					Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load facility {type}");
+			    }
+		    }
+	    }
+
+	    foreach (var i in ((YamlSequenceNode)node["crafts"]).Children)
+	    {
+		    string type = i["type"].ToString();
+		    if (_mod.getCraft(type) != null)
+		    {
+			    Craft c = new Craft(_mod.getCraft(type), this);
+			    c.load(i, _mod, save);
+			    _crafts.Add(c);
+		    }
+		    else
+		    {
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load craft {type}");
+		    }
+	    }
+
+	    foreach (var i in ((YamlSequenceNode)node["soldiers"]).Children)
+	    {
+		    string type = i["type"] != null ? i["type"].ToString() : _mod.getSoldiersList().First();
+		    if (_mod.getSoldier(type) != null)
+		    {
+			    Soldier s = new Soldier(_mod.getSoldier(type), null);
+			    s.load(i, _mod, save);
+			    s.setCraft(null);
+			    if (i["craft"] is YamlNode craft)
+			    {
+				    KeyValuePair<string, int> craftId = Craft.loadId(craft);
+				    foreach (var j in _crafts)
+				    {
+					    if (j.getUniqueId().Key == craftId.Key && j.getUniqueId().Value == craftId.Value)
+					    {
+						    s.setCraft(j);
+						    break;
+					    }
+				    }
+			    }
+			    _soldiers.Add(s);
+		    }
+		    else
+		    {
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
+		    }
+	    }
+
+	    _items.load(node["items"]);
+	    // Some old saves have bad items, better get rid of them to avoid further bugs
+        var k = _items.getContents().GetEnumerator();
+        k.MoveNext();
+        while (k.Current.Key != null)
+	    {
+		    if (_mod.getItem(k.Current.Key) == null)
+		    {
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {k.Current.Key}");
+                _items.getContents().Remove(k.Current.Key); k.MoveNext();
+		    }
+		    else
+		    {
+			    k.MoveNext();
+		    }
+	    }
+
+	    _scientists = int.Parse(node["scientists"].ToString());
+	    _engineers = int.Parse(node["engineers"].ToString());
+	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+
+	    foreach (var i in ((YamlSequenceNode)node["transfers"]).Children)
+	    {
+		    int hours = int.Parse(i["hours"].ToString());
+		    Transfer t = new Transfer(hours);
+		    if (t.load(i, this, _mod, save))
+		    {
+			    _transfers.Add(t);
+		    }
+	    }
+
+	    foreach (var i in ((YamlSequenceNode)node["research"]).Children)
+	    {
+		    string research = i["project"].ToString();
+		    if (_mod.getResearch(research) != null)
+		    {
+			    ResearchProject r = new ResearchProject(_mod.getResearch(research));
+			    r.load(i);
+			    _research.Add(r);
+		    }
+		    else
+		    {
+			    _scientists += int.Parse(i["assigned"].ToString());
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {research}");
+		    }
+	    }
+
+	    foreach (var i in ((YamlSequenceNode)node["productions"]).Children)
+	    {
+		    string item = i["item"].ToString();
+		    if (_mod.getManufacture(item) != null)
+		    {
+			    Production p = new Production(_mod.getManufacture(item), 0);
+			    p.load(i);
+			    _productions.Add(p);
+		    }
+		    else
+		    {
+			    _engineers += int.Parse(i["assigned"].ToString());
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load manufacture {item}");
+		    }
+	    }
+
+	    _retaliationTarget = bool.Parse(node["retaliationTarget"].ToString());
+
+	    isOverlappingOrOverflowing(); // don't crash, just report in the log file...
+    }
+
+    /**
+     * Tests whether the base facilities are within the base boundaries and not overlapping.
+     * @return True if the base has a problem.
+     */
+    bool isOverlappingOrOverflowing()
+    {
+	    bool result = false;
+        BaseFacility[,] grid = new BaseFacility[BASE_SIZE, BASE_SIZE];
+
+	    // i don't think i NEED to do this for a pointer array, but who knows what might happen on weird archaic linux distros if i don't?
+	    for (int x = 0; x < BASE_SIZE; ++x)
+	    {
+		    for (int y = 0; y < BASE_SIZE; ++y)
+		    {
+			    grid[x, y] = null;
+		    }
+	    }
+
+	    foreach (var f in _facilities)
+	    {
+		    RuleBaseFacility rules = f.getRules();
+		    int facilityX = f.getX();
+		    int facilityY = f.getY();
+		    int facilitySize = rules.getSize();
+
+		    if (facilityX < 0 || facilityY < 0 || facilityX + (facilitySize - 1) >= BASE_SIZE || facilityY + (facilitySize - 1) >= BASE_SIZE)
+		    {
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Facility {rules.getType()} at [{facilityX}, {facilityY}] (size {facilitySize}) is outside of base boundaries.");
+			    result = true;
+			    continue;
+		    }
+
+		    for (int x = facilityX; x < facilityX + facilitySize; ++x)
+		    {
+			    for (int y = facilityY; y < facilityY + facilitySize; ++y)
+			    {
+				    if (grid[x, y] != null)
+				    {
+				        Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Facility {rules.getType()} at [{facilityX}, {facilityY}] (size {facilitySize}) overlaps with {grid[x, y].getRules().getType()} at [{x}, {y}] (size {grid[x, y].getRules().getSize()})");
+					    result = true;
+				    }
+				    grid[x, y] = f;
+			    }
+		    }
+	    }
+
+	    return result;
+    }
 }

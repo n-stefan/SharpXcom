@@ -94,10 +94,10 @@ internal class MapBlock
 			}
 		}
         _items = new Dictionary<string, List<Position>>();
-        foreach (var item in ((YamlMappingNode)node["items"]).Children)
+        foreach (var i in ((YamlMappingNode)node["items"]).Children)
         {
-            var key = item.Key.ToString();
-            var value = ((YamlSequenceNode)item.Value).Children.Select(x =>
+            var key = i.Key.ToString();
+            var value = ((YamlSequenceNode)i.Value).Children.Select(x =>
 			{
 				var pos = new Position(); pos.load(x); return pos;
             }).ToList();

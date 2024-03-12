@@ -56,21 +56,21 @@ internal class RuleCommendations
     {
         _description = node["description"].ToString();
         _criteria = new Dictionary<string, List<int>>();
-        foreach (var criteria in ((YamlMappingNode)node["criteria"]).Children)
+        foreach (var i in ((YamlMappingNode)node["criteria"]).Children)
         {
-            var key = criteria.Key.ToString();
-            var value = ((YamlSequenceNode)criteria.Value).Children.Select(x => int.Parse(x.ToString())).ToList();
+            var key = i.Key.ToString();
+            var value = ((YamlSequenceNode)i.Value).Children.Select(x => int.Parse(x.ToString())).ToList();
             _criteria.Add(key, value);
         }
 	    _sprite = int.Parse(node["sprite"].ToString());
         _killCriteria = new List<List<KeyValuePair<int, List<string>>>>();
-        foreach (var killCriteria in ((YamlSequenceNode)node["killCriteria"]).Children)
+        foreach (var i in ((YamlSequenceNode)node["killCriteria"]).Children)
         {
             var list = new List<KeyValuePair<int, List<string>>>();
-            foreach (var child in ((YamlMappingNode)killCriteria).Children)
+            foreach (var j in ((YamlMappingNode)i).Children)
             {
-                var key = int.Parse(child.Key.ToString());
-                var value = ((YamlSequenceNode)child.Value).Children.Select(x => x.ToString()).ToList();
+                var key = int.Parse(j.Key.ToString());
+                var value = ((YamlSequenceNode)j.Value).Children.Select(x => x.ToString()).ToList();
                 list.Add(KeyValuePair.Create(key, value));
             }
             _killCriteria.Add(list);

@@ -264,7 +264,7 @@ internal class MovingTarget : Target
      * Loads the moving target from a YAML file.
      * @param node YAML node.
      */
-    protected void load(YamlNode node)
+    protected override void load(YamlNode node)
     {
 	    base.load(node);
 	    _speedLon = double.Parse(node["speedLon"].ToString());

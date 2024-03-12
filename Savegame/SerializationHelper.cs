@@ -51,6 +51,46 @@ internal class SerializationHelper
                 break;
         }
 
-        buffer = buffer.Slice(sizeKey);
+		buffer = buffer.Slice(sizeKey);
     }
+
+	internal static int unserializeInt(ref Span<byte> buffer, byte sizeKey)
+	{
+		/* The C spec explicitly requires *(Type*) pointer accesses to be
+		 * sizeof(Type) aligned, which is not guaranteed by the UInt8** buffer
+		 * passed in here.
+		 * memcpy() is explicitly designed to cope with any address alignment, so
+		 * use that to avoid undefined behaviour */
+		int ret = 0;
+		switch(sizeKey)
+		{
+			case 1:
+				ret = buffer[0];
+				break;
+			case 2:
+			{
+				short tmp;
+				tmp = BitConverter.ToInt16(buffer);
+				ret = tmp;
+				break;
+			}
+			case 3:
+				Debug.Assert(false); // no.
+				break;
+			case 4:
+			{
+				uint tmp;
+				tmp = BitConverter.ToUInt32(buffer);
+				ret = (int)tmp;
+				break;
+			}
+			default:
+				Debug.Assert(false); // get out.
+				break;
+		}
+
+		buffer = buffer.Slice(sizeKey);
+
+		return ret;
+	}
 }

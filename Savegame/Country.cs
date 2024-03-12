@@ -240,4 +240,17 @@ internal class Country
      */
     internal void setFunding(int funding) =>
         _funding[^1] = funding;
+
+    /**
+     * Loads the country from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+		_funding = ((YamlSequenceNode)node["funding"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+	    _activityXcom = ((YamlSequenceNode)node["activityXcom"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+	    _activityAlien = ((YamlSequenceNode)node["activityAlien"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+	    _pact = bool.Parse(node["pact"].ToString());
+	    _newPact = bool.Parse(node["newPact"].ToString());
+    }
 }

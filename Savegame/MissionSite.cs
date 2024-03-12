@@ -187,4 +187,18 @@ internal class MissionSite : Target
      */
     internal override string getMarkerName() =>
 	    getType();
+
+    /**
+     * Loads the mission site from a YAML file.
+     * @param node YAML node.
+     */
+    protected override void load(YamlNode node)
+    {
+	    base.load(node);
+	    _texture = int.Parse(node["texture"].ToString());
+	    _secondsRemaining = uint.Parse(node["secondsRemaining"].ToString());
+	    _race = node["race"].ToString();
+	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+	    _detected = bool.Parse(node["detected"].ToString());
+    }
 }

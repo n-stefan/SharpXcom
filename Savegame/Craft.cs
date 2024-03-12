@@ -46,7 +46,7 @@ internal class Craft : MovingTarget
      * @param base Pointer to base of origin.
      * @param id ID to assign to the craft (0 to not assign).
      */
-    internal Craft(RuleCraft rules, Base @base, int id) : base()
+    internal Craft(RuleCraft rules, Base @base, int id = 0) : base()
     {
         _rules = rules;
         _base = @base;
@@ -213,18 +213,19 @@ internal class Craft : MovingTarget
 
 	    _items.load(node["items"]);
         // Some old saves have bad items, better get rid of them to avoid further bugs
-        var contents = _items.getContents();
-        foreach (var i in contents)
-	    {
-		    if (mod.getItem(i.Key) == null)
+        var k = _items.getContents().GetEnumerator();
+        k.MoveNext();
+        while (k.Current.Key != null)
+        {
+            if (mod.getItem(k.Current.Key) == null)
 		    {
-                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {i.Key}");
-			    contents.Remove(i.Key);
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {k.Current.Key}");
+                _items.getContents().Remove(k.Current.Key); k.MoveNext();
 		    }
-		    //else
-		    //{
-			//    ++i;
-		    //}
+            else
+		    {
+                k.MoveNext();
+		    }
 	    }
 	    foreach (var i in (YamlSequenceNode)node["vehicles"])
 	    {
@@ -244,8 +245,7 @@ internal class Craft : MovingTarget
 	    _lowFuel = bool.Parse(node["lowFuel"].ToString());
 	    _mission = bool.Parse(node["mission"].ToString());
 	    _interceptionOrder = int.Parse(node["interceptionOrder"].ToString());
-        YamlNode dest = node["dest"];
-        if (dest != null)
+        if (node["dest"] is YamlNode dest)
 	    {
 		    string type = dest["type"].ToString();
 		    int id = int.Parse(dest["id"].ToString());
@@ -968,4 +968,12 @@ internal class Craft : MovingTarget
      */
     internal double getMeetLatitude() =>
 	    _meetPointLat;
+
+    /**
+     * Loads a craft unique identifier from a YAML file.
+     * @param node YAML node.
+     * @return Unique craft id.
+     */
+    internal static KeyValuePair<string, int> loadId(YamlNode node) =>
+	    KeyValuePair.Create(node["type"].ToString(), int.Parse(node["id"].ToString()));
 }

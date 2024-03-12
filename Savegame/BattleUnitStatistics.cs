@@ -138,6 +138,37 @@ struct BattleUnitStatistics
 		}
 		return false;
 	}
+
+	/// Load function
+	internal void load(YamlNode node)
+	{
+		wasUnconcious = bool.Parse(node["wasUnconcious"].ToString());
+		if (node["kills"] is YamlSequenceNode YAMLkills)
+		{
+			foreach (var i in YAMLkills.Children)
+				kills.Add(new BattleUnitKills(i));
+		}
+		shotAtCounter = int.Parse(node["shotAtCounter"].ToString());
+		hitCounter = int.Parse(node["hitCounter"].ToString());
+		shotByFriendlyCounter = int.Parse(node["shotByFriendlyCounter"].ToString());
+		shotFriendlyCounter = int.Parse(node["shotFriendlyCounter"].ToString());
+		loneSurvivor = bool.Parse(node["loneSurvivor"].ToString());
+		ironMan = bool.Parse(node["ironMan"].ToString());
+		longDistanceHitCounter = int.Parse(node["longDistanceHitCounter"].ToString());
+		lowAccuracyHitCounter = int.Parse(node["lowAccuracyHitCounter"].ToString());
+		shotsFiredCounter = int.Parse(node["shotsFiredCounter"].ToString());
+		shotsLandedCounter = int.Parse(node["shotsLandedCounter"].ToString());
+		nikeCross = bool.Parse(node["nikeCross"].ToString());
+		mercyCross = bool.Parse(node["mercyCross"].ToString());
+		woundsHealed = int.Parse(node["woundsHealed"].ToString());
+		appliedStimulant = int.Parse(node["appliedStimulant"].ToString());
+		appliedPainKill = int.Parse(node["appliedPainKill"].ToString());
+		revivedSoldier = int.Parse(node["revivedSoldier"].ToString());
+		revivedHostile = int.Parse(node["revivedHostile"].ToString());
+		revivedNeutral = int.Parse(node["revivedNeutral"].ToString());
+		martyr = int.Parse(node["martyr"].ToString());
+		slaveKills = int.Parse(node["slaveKills"].ToString());
+	}
 }
 
 /**
@@ -302,8 +333,7 @@ record struct BattleUnitKills
 	/// Load
 	internal void load(YamlNode node)
 	{
-        YamlNode n = node["name"];
-        if (n != null)
+		if (node["name"] is YamlNode n)
 		{
 			name = n.ToString();
 		}

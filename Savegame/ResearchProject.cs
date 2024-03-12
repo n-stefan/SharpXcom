@@ -35,7 +35,7 @@ internal class ResearchProject
     int _spent;
     int _cost;
 
-    internal ResearchProject(RuleResearch p, int c)
+    internal ResearchProject(RuleResearch p, int c = 0)
     {
         _project = p;
         _assigned = 0;
@@ -147,4 +147,22 @@ internal class ResearchProject
 		    return "STR_EXCELLENT";
 	    }
     }
+
+    /**
+     * Loads the research project from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    setAssigned(node["assigned"] != null ? int.Parse(node["assigned"].ToString()) : getAssigned());
+	    setSpent(node["spent"] != null ? int.Parse(node["spent"].ToString()) : getSpent());
+	    setCost(node["cost"] != null ? int.Parse(node["cost"].ToString()) : getCost());
+    }
+
+    /**
+     * Changes the cost of the ResearchProject
+     * @param f new project cost(in man/day)
+     */
+    void setCost(int f) =>
+	    _cost = f;
 }

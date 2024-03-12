@@ -130,9 +130,9 @@ internal class RuleSoldier : IRule
 	    mod.loadSoundOffset(_type, _deathSoundMale, node["deathMale"], "BATTLE.CAT");
         mod.loadSoundOffset(_type, _deathSoundFemale, node["deathFemale"], "BATTLE.CAT");
 
-	    foreach (var soldierName in ((YamlSequenceNode)node["soldierNames"]).Children)
+	    foreach (var i in ((YamlSequenceNode)node["soldierNames"]).Children)
 	    {
-		    string fileName = soldierName.ToString();
+		    string fileName = i.ToString();
 		    if (fileName == "delete")
 		    {
                 _names.Clear();
@@ -143,9 +143,9 @@ internal class RuleSoldier : IRule
 			    {
 				    // load all *.nam files in given directory
 				    HashSet<string> names = FileMap.filterFiles(FileMap.getVFolderContents(fileName), "nam");
-				    foreach (var name in names)
+				    foreach (var j in names)
 				    {
-					    addSoldierNamePool(fileName + name);
+					    addSoldierNamePool(fileName + j);
 				    }
 			    }
 			    else

@@ -56,14 +56,14 @@ internal class RuleVideo : IRule
 
 		if (node["videos"] is YamlSequenceNode videos)
 		{
-			foreach (var video in videos.Children)
-				_videos.Add(video.ToString());
+			foreach (var i in videos.Children)
+				_videos.Add(i.ToString());
 		}
 
 		if (node["audioTracks"] is YamlSequenceNode tracks)
 		{
-			foreach (var track in tracks.Children)
-				_audioTracks.Add(track.ToString());
+			foreach (var i in tracks.Children)
+				_audioTracks.Add(i.ToString());
 		}
 
 		if (node["slideshow"] is YamlSequenceNode slideshow)
@@ -71,10 +71,10 @@ internal class RuleVideo : IRule
 			_slideshowHeader.musicId = slideshow["musicId"].ToString();
 			_slideshowHeader.transitionSeconds = int.Parse(slideshow["transitionSeconds"].ToString());
 
-			foreach (var child in ((YamlSequenceNode)slideshow["slides"]).Children)
+			foreach (var i in ((YamlSequenceNode)slideshow["slides"]).Children)
 			{
 				var slide = new SlideshowSlide();
-				_loadSlide(slide, child);
+				_loadSlide(slide, i);
 				_slides.Add(slide);
 			}
 		}

@@ -163,4 +163,15 @@ internal class BaseFacility
 			    (_rules.getPsiLaboratories() > 0 && _base.getAvailablePsiLabs() - _rules.getPsiLaboratories() < _base.getUsedPsiLabs()) ||
 			    (_rules.getAliens() > 0 && _base.getAvailableContainment() - _rules.getAliens() < _base.getUsedContainment()));
     }
+
+    /**
+     * Loads the base facility from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _x = int.Parse(node["x"].ToString());
+	    _y = int.Parse(node["y"].ToString());
+	    _buildTime = int.Parse(node["buildTime"].ToString());
+    }
 }

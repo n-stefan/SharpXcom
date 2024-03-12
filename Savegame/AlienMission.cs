@@ -111,8 +111,7 @@ internal class AlienMission
 		_spawnCountdown = uint.Parse(node["spawnCountdown"].ToString());
 		_liveUfos = uint.Parse(node["liveUfos"].ToString());
 		_uniqueID = int.Parse(node["uniqueID"].ToString());
-		YamlNode @base = node["alienBase"];
-		if (@base != null)
+		if (node["alienBase"] is YamlNode @base)
 		{
 			int id = int.TryParse(@base.ToString(), out int result) ? result : -1;
 			string type = "STR_ALIEN_BASE";

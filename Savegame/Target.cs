@@ -194,13 +194,12 @@ internal class Target
      * Loads the target from a YAML file.
      * @param node YAML node.
      */
-    protected void load(YamlNode node)
+    protected virtual void load(YamlNode node)
     {
 	    _lon = double.Parse(node["lon"].ToString());
 	    _lat = double.Parse(node["lat"].ToString());
 	    _id = int.Parse(node["id"].ToString());
-        YamlNode name = node["name"];
-        if (name != null)
+        if (node["name"] is YamlNode name)
 	    {
 		    _name = name.ToString();
 	    }

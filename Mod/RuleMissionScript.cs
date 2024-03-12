@@ -105,29 +105,29 @@ internal class RuleMissionScript : IRule
         _conditionals = ((YamlSequenceNode)node["conditionals"]).Children.Select(x => int.Parse(x.ToString())).ToList();
 		if (node["missionWeights"] is YamlNode missionWeights)
 		{
-			foreach (var missionWeight in ((YamlMappingNode)missionWeights).Children)
+			foreach (var nn in ((YamlMappingNode)missionWeights).Children)
 			{
 				WeightedOptions nw = new WeightedOptions();
-				nw.load(missionWeight.Value);
-				_missionWeights.Add(KeyValuePair.Create(uint.Parse(missionWeight.Key.ToString()), nw));
+				nw.load(nn.Value);
+				_missionWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
 			}
 		}
 		if (node["raceWeights"] is YamlNode raceWeights)
 		{
-			foreach (var raceWeight in ((YamlMappingNode)raceWeights).Children)
+			foreach (var nn in ((YamlMappingNode)raceWeights).Children)
 			{
 				WeightedOptions nw = new WeightedOptions();
-				nw.load(raceWeight.Value);
-				_raceWeights.Add(KeyValuePair.Create(uint.Parse(raceWeight.Key.ToString()), nw));
+				nw.load(nn.Value);
+				_raceWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
 			}
 		}
 		if (node["regionWeights"] is YamlNode regionWeights)
 		{
-			foreach (var regionWeight in ((YamlMappingNode)regionWeights).Children)
+			foreach (var nn in ((YamlMappingNode)regionWeights).Children)
 			{
 				WeightedOptions nw = new WeightedOptions();
-				nw.load(regionWeight.Value);
-				_regionWeights.Add(KeyValuePair.Create(uint.Parse(regionWeight.Key.ToString()), nw));
+				nw.load(nn.Value);
+				_regionWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
 			}
 		}
 		_researchTriggers = ((YamlMappingNode)node["researchTriggers"]).Children.ToDictionary(x => x.Key.ToString(), x => bool.Parse(x.Value.ToString()));

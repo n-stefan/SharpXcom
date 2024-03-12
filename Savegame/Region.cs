@@ -107,4 +107,14 @@ internal class Region
         if (_activityXcom.Count > 12)
             _activityXcom.RemoveAt(0);
     }
+
+    /**
+     * Loads the region from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+        _activityXcom = ((YamlSequenceNode)node["activityXcom"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+        _activityAlien = ((YamlSequenceNode)node["activityAlien"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+    }
 }

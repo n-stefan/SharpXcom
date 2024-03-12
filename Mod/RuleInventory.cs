@@ -110,7 +110,7 @@ internal class RuleInventory : IListOrder, IRule
         {
             var slot = new RuleSlot(); slot.load(x); return slot;
         }).ToList();
-        _costs = ((YamlSequenceNode)node["costs"]).Children.ToDictionary(x => x[0].ToString(), x => int.Parse(x[1].ToString()));
+        _costs = ((YamlMappingNode)node["costs"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
 	    _listOrder = int.Parse(node["listOrder"].ToString());
     }
 

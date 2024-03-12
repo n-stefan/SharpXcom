@@ -106,14 +106,14 @@ internal class AlienStrategy
 			options.load(missions);
 			_regionMissions.Add(region, options);
 		}
-		foreach (var child in ((YamlSequenceNode)node["missionLocations"]).Children)
+		foreach (var i in ((YamlMappingNode)node["missionLocations"]).Children)
 		{
-            _missionLocations.Add(child[0].ToString(), ((YamlSequenceNode)child[1]).Select(x =>
-				KeyValuePair.Create(x[0].ToString(), int.Parse(x[1].ToString()))).ToList());
+            _missionLocations.Add(i.Key.ToString(), ((YamlMappingNode)i.Value).Select(x =>
+				KeyValuePair.Create(x.Key.ToString(), int.Parse(x.Value.ToString()))).ToList());
         }
-		foreach (var child in ((YamlSequenceNode)node["missionsRun"]).Children)
+		foreach (var i in ((YamlMappingNode)node["missionsRun"]).Children)
 		{
-			_missionRuns.Add(child[0].ToString(), int.Parse(child[1].ToString()));
+			_missionRuns.Add(i.Key.ToString(), int.Parse(i.Value.ToString()));
         }
 	}
 

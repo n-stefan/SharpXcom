@@ -67,19 +67,19 @@ internal class RuleTerrain : IRule
 		if (node["mapDataSets"] is YamlSequenceNode mapDataSets)
 		{
 			_mapDataSets.Clear();
-			foreach (var mapDataSet in mapDataSets.Children)
+			foreach (var i in mapDataSets.Children)
 			{
-				_mapDataSets.Add(mod.getMapDataSet(mapDataSet.ToString()));
+				_mapDataSets.Add(mod.getMapDataSet(i.ToString()));
 			}
 		}
 		if (node["mapBlocks"] is YamlSequenceNode mapBlocks)
 		{
 			_mapBlocks.Clear();
-			foreach (var mapBlock in mapBlocks.Children)
+			foreach (var i in mapBlocks.Children)
 			{
-				MapBlock map_Block = new MapBlock(mapBlock["name"].ToString());
-				map_Block.load(mapBlock);
-				_mapBlocks.Add(map_Block);
+				MapBlock mapBlock = new MapBlock(i["name"].ToString());
+				mapBlock.load(i);
+				_mapBlocks.Add(mapBlock);
 			}
 		}
 		_name = node["name"].ToString();
@@ -92,9 +92,9 @@ internal class RuleTerrain : IRule
 			_civilianTypes.Add("MALE_CIVILIAN");
 			_civilianTypes.Add("FEMALE_CIVILIAN");
 		}
-		foreach (var music in ((YamlSequenceNode)node["music"]).Children)
+		foreach (var i in ((YamlSequenceNode)node["music"]).Children)
 		{
-			_music.Add(music.ToString());
+			_music.Add(i != null ? i.ToString() : string.Empty);
 		}
 		if (node["depth"] != null)
 		{

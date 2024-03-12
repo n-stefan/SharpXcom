@@ -49,20 +49,20 @@ internal class ExtraStrings
 	 */
 	internal void load(YamlNode node)
 	{
-		foreach (var @string in ((YamlMappingNode)node["strings"]).Children)
+		foreach (var i in ((YamlMappingNode)node["strings"]).Children)
 		{
 			// Regular strings
-			if (@string.Value is YamlScalarNode)
+			if (i.Value is YamlScalarNode)
 			{
-				_strings[@string.Key.ToString()] = @string.Value.ToString();
+				_strings[i.Key.ToString()] = i.Value.ToString();
 			}
 			// Strings with plurality
-			else if (@string.Value is YamlMappingNode map)
+			else if (i.Value is YamlMappingNode map)
 			{
-				foreach (var child in map.Children)
+				foreach (var j in map.Children)
 				{
-					string s = @string.Key.ToString() + "_" + child.Key.ToString();
-					_strings[s] = child.Value.ToString();
+					string s = i.Key.ToString() + "_" + j.Key.ToString();
+					_strings[s] = j.Value.ToString();
 				}
 			}
 		}

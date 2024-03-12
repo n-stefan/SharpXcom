@@ -548,13 +548,13 @@ internal class SavedBattleGame
 	    //    }
         //#else
 	    // first, write out the field sizes we're going to use to write the tile data
-	    node.Add("tileIndexSize", ((sbyte)Tile.serializationKey.index).ToString());
+	    node.Add("tileIndexSize", ((byte)Tile.serializationKey.index).ToString());
 	    node.Add("tileTotalBytesPer", Tile.serializationKey.totalBytes.ToString());
-	    node.Add("tileFireSize", ((sbyte)Tile.serializationKey._fire).ToString());
-	    node.Add("tileSmokeSize", ((sbyte)Tile.serializationKey._smoke).ToString());
-	    node.Add("tileIDSize", ((sbyte)Tile.serializationKey._mapDataID).ToString());
-	    node.Add("tileSetIDSize", ((sbyte)Tile.serializationKey._mapDataSetID).ToString());
-	    node.Add("tileBoolFieldsSize", ((sbyte)Tile.serializationKey.boolFields).ToString());
+	    node.Add("tileFireSize", ((byte)Tile.serializationKey._fire).ToString());
+	    node.Add("tileSmokeSize", ((byte)Tile.serializationKey._smoke).ToString());
+	    node.Add("tileIDSize", ((byte)Tile.serializationKey._mapDataID).ToString());
+	    node.Add("tileSetIDSize", ((byte)Tile.serializationKey._mapDataSetID).ToString());
+	    node.Add("tileBoolFieldsSize", ((byte)Tile.serializationKey.boolFields).ToString());
 
         uint tileDataSize = (uint)(Tile.serializationKey.totalBytes * _mapsize_z * _mapsize_y * _mapsize_x);
         var tileData = new byte[tileDataSize];
@@ -1806,5 +1806,269 @@ internal class SavedBattleGame
 	    {
 		    return bu;
 	    }
+    }
+
+    /**
+     * Loads the saved battle game from a YAML file.
+     * @param node YAML node.
+     * @param mod for the saved game.
+     * @param savedGame Pointer to saved game.
+     */
+    internal void load(YamlNode node, Mod.Mod mod, SavedGame savedGame)
+    {
+	    int mapsize_x = node["width"] != null ? int.Parse(node["width"].ToString()) : _mapsize_x;
+	    int mapsize_y = node["length"] != null ? int.Parse(node["length"].ToString()) : _mapsize_y;
+	    int mapsize_z = node["height"] != null ? int.Parse(node["height"].ToString()) : _mapsize_z;
+	    initMap(mapsize_x, mapsize_y, mapsize_z);
+
+	    _missionType = node["missionType"].ToString();
+	    _globalShade = int.Parse(node["globalshade"].ToString());
+	    _turn = int.Parse(node["turn"].ToString());
+	    _depth = int.Parse(node["depth"].ToString());
+	    int selectedUnit = int.Parse(node["selectedUnit"].ToString());
+
+	    foreach (var i in ((YamlSequenceNode)node["mapdatasets"]).Children)
+	    {
+		    string name = i.ToString();
+		    MapDataSet mds = mod.getMapDataSet(name);
+		    _mapDataSets.Add(mds);
+	    }
+
+	    if (node["tileTotalBytesPer"] == null)
+	    {
+		    // binary tile data not found, load old-style text tiles :(
+		    foreach (var i in ((YamlSequenceNode)node["tiles"]).Children)
+		    {
+                Position pos = new Position(); pos.load(i["position"]);
+			    getTile(pos).load(i);
+		    }
+	    }
+	    else
+	    {
+		    // load key to how the tile data was saved
+		    SerializationKey serKey;
+		    uint totalTiles = uint.Parse(node["totalTiles"].ToString());
+
+            serKey = default;
+		    serKey.index = byte.Parse(node["tileIndexSize"].ToString());
+		    serKey.totalBytes = uint.Parse(node["tileTotalBytesPer"].ToString());
+		    serKey._fire = byte.Parse(node["tileFireSize"].ToString());
+		    serKey._smoke = byte.Parse(node["tileSmokeSize"].ToString());
+		    serKey._mapDataID = byte.Parse(node["tileIDSize"].ToString());
+		    serKey._mapDataSetID = byte.Parse(node["tileSetIDSize"].ToString());
+		    serKey.boolFields = node["tileBoolFieldsSize"] != null ? byte.Parse(node["tileBoolFieldsSize"].ToString()) : (byte)1; // boolean flags used to be stored in an unmentioned byte (Uint8) :|
+
+		    // load binary tile data!
+		    string binTiles = node["binTiles"].ToString();
+            binTiles = binTiles[..9]; // skip "!!binary "
+
+		    byte[] r = Convert.FromBase64String(binTiles);
+		    uint size = totalTiles * serKey.totalBytes;
+            uint i = 0;
+
+		    while (i < size)
+		    {
+                Span<byte> s = r.AsSpan((int)i);
+                int index = unserializeInt(ref s, serKey.index);
+			    Debug.Assert(index >= 0 && index < _mapsize_x * _mapsize_z * _mapsize_y);
+			    _tiles[index].loadBinary(s, serKey); // loadBinary's privileges to advance *r have been revoked
+			    i += serKey.totalBytes-serKey.index; // r is now incremented strictly by totalBytes in case there are obsolete fields present in the data
+		    }
+	    }
+	    if (_missionType == "STR_BASE_DEFENSE")
+	    {
+		    if (node["moduleMap"] != null)
+		    {
+                _baseModules = new List<List<KeyValuePair<int, int>>>();
+                foreach (var i in ((YamlSequenceNode)node["moduleMap"]).Children)
+                {
+                    var list = new List<KeyValuePair<int, int>>();
+                    foreach (var j in ((YamlMappingNode)i).Children)
+                    {
+                        var key = int.Parse(j.Key.ToString());
+                        var value = int.Parse(j.Value.ToString());
+                        list.Add(KeyValuePair.Create(key, value));
+                    }
+                    _baseModules.Add(list);
+                }
+		    }
+		    else
+		    {
+			    // backwards compatibility: imperfect solution, modules that were completely destroyed
+			    // prior to saving and updating builds will be counted as indestructible.
+			    calculateModuleMap();
+		    }
+	    }
+	    foreach (var i in ((YamlSequenceNode)node["nodes"]).Children)
+	    {
+		    Node n = new Node();
+		    n.load(i);
+		    _nodes.Add(n);
+	    }
+
+	    foreach (var i in ((YamlSequenceNode)node["units"]).Children)
+	    {
+		    UnitFaction faction = (UnitFaction)int.Parse(i["faction"].ToString());
+		    UnitFaction originalFaction = i["originalFaction"] != null ? (UnitFaction)int.Parse(i["originalFaction"].ToString()) : faction;
+		    int id = int.Parse(i["id"].ToString());
+		    BattleUnit unit;
+		    if (id < BattleUnit.MAX_SOLDIER_ID) // Unit is linked to a geoscape soldier
+		    {
+			    // look up the matching soldier
+			    unit = new BattleUnit(savedGame.getSoldier(id), _depth);
+		    }
+		    else
+		    {
+			    string type = i["genUnitType"].ToString();
+			    string armor = i["genUnitArmor"].ToString();
+			    // create a new Unit.
+			    if(mod.getUnit(type) == null || mod.getArmor(armor) == null) continue;
+			    unit = new BattleUnit(mod.getUnit(type), originalFaction, id, mod.getArmor(armor), mod.getStatAdjustment((int)savedGame.getDifficulty()), _depth);
+		    }
+		    unit.load(i);
+		    unit.setSpecialWeapon(this, mod);
+		    _units.Add(unit);
+		    if (faction == UnitFaction.FACTION_PLAYER)
+		    {
+			    if ((unit.getId() == selectedUnit) || (_selectedUnit == null && !unit.isOut()))
+				    _selectedUnit = unit;
+		    }
+		    if (unit.getStatus() != UnitStatus.STATUS_DEAD && unit.getStatus() != UnitStatus.STATUS_IGNORE_ME)
+		    {
+			    if (i["AI"] is YamlNode ai)
+			    {
+				    AIModule aiModule;
+				    if (faction != UnitFaction.FACTION_PLAYER)
+				    {
+					    aiModule = new AIModule(this, unit, null);
+				    }
+				    else
+				    {
+					    continue;
+				    }
+				    aiModule.load(ai);
+				    unit.setAIModule(aiModule);
+			    }
+		    }
+	    }
+	    // matches up tiles and units
+	    resetUnitTiles();
+
+	    string[] fromContainer = { "items", "recoverConditional", "recoverGuaranteed" };
+	    for (int pass = 0; pass != 3; ++pass)
+	    {
+		    foreach (var i in ((YamlSequenceNode)node[fromContainer[pass]]).Children)
+		    {
+			    if (i["owner"] != null && i["inventoryslot"] == null)
+			    {
+				    // skip special items from OXCE saves
+				    continue;
+			    }
+			    string type = i["type"].ToString();
+			    if (mod.getItem(type) != null)
+			    {
+				    int id = int.Parse(i["id"].ToString());
+				    _itemId = Math.Max(_itemId, id);
+				    BattleItem item = new BattleItem(mod.getItem(type), ref id);
+				    item.load(i, mod);
+
+				    int owner = i["owner"] != null ? int.Parse(i["owner"].ToString()) : -1;
+				    int prevOwner = i["previousOwner"] != null ? int.Parse(i["previousOwner"].ToString()) : -1;
+				    int unit = i["unit"] != null ? int.Parse(i["unit"].ToString()) : -1;
+
+				    // match up items and units
+				    for (var bu = 0; bu < _units.Count && owner != -1; ++bu)
+				    {
+					    if (_units[bu].getId() == owner)
+					    {
+						    item.moveToOwner(_units[bu]);
+						    break;
+					    }
+				    }
+				    for (var bu = 0; bu < _units.Count && prevOwner != -1; ++bu)
+				    {
+					    if (_units[bu].getId() == prevOwner)
+					    {
+						    item.setPreviousOwner(_units[bu]);
+						    break;
+					    }
+				    }
+				    for (var bu = 0; bu < _units.Count && unit != -1; ++bu)
+				    {
+					    if (_units[bu].getId() == unit)
+					    {
+						    item.setUnit(_units[bu]);
+						    break;
+					    }
+				    }
+
+				    // match up items and tiles
+				    if (item.getSlot() != null && item.getSlot().getType() == InventoryType.INV_GROUND)
+				    {
+                        Position pos;
+                        if (i["position"] != null)
+                        {
+                            pos = new Position();
+                            pos.load(i["position"]);
+                        }
+                        else
+                        {
+                            pos = new Position(-1, -1, -1);
+                        }
+					    if (pos.x != -1)
+						    getTile(pos).addItem(item, mod.getInventory("STR_GROUND", true));
+				    }
+                    switch (pass)
+                    {
+                        case 0: _items.Add(item); break;
+                        case 1: _recoverConditional.Add(item); break;
+                        case 2: _recoverGuaranteed.Add(item); break;
+                    }
+			    }
+			    else
+			    {
+                    Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {type}");
+			    }
+		    }
+	    }
+	    _itemId++;
+
+        // tie ammo items to their weapons, running through the items again
+        var weaponi = 0;
+	    foreach (var i in ((YamlSequenceNode)node["items"]).Children)
+	    {
+		    if (i["owner"] != null && i["inventoryslot"] == null)
+		    {
+			    // skip special items from OXCE saves
+			    continue;
+		    }
+		    if (mod.getItem(i["type"].ToString()) != null)
+		    {
+			    int ammo = i["ammoItem"] != null ? int.Parse(i["ammoItem"].ToString()) : -1;
+			    if (ammo != -1)
+			    {
+				    foreach (var ammoi in _items)
+				    {
+					    if (ammoi.getId() == ammo)
+					    {
+						    _items[weaponi].setAmmoItem(ammoi);
+						    break;
+					    }
+				    }
+			    }
+			     ++weaponi;
+		    }
+	    }
+	    _objectiveType = int.Parse(node["objectiveType"].ToString());
+	    _objectivesDestroyed = int.Parse(node["objectivesDestroyed"].ToString());
+	    _objectivesNeeded = int.Parse(node["objectivesNeeded"].ToString());
+	    _tuReserved = (BattleActionType)int.Parse(node["tuReserved"].ToString());
+	    _kneelReserved = bool.Parse(node["kneelReserved"].ToString());
+	    _ambience = int.Parse(node["ambience"].ToString());
+	    _ambientVolume = double.Parse(node["ambientVolume"].ToString());
+	    _music = node["music"].ToString();
+	    _turnLimit = int.Parse(node["turnLimit"].ToString());
+	    _chronoTrigger = (ChronoTrigger)int.Parse(node["chronoTrigger"].ToString());
+	    _cheatTurn = int.Parse(node["cheatTurn"].ToString());
     }
 }

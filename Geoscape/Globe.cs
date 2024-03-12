@@ -291,9 +291,8 @@ internal class Globe : InteractiveSurface
 
         //filling random noise "texture"
         _randomNoiseData = new List<short>(GlobeStaticData.random_surf_size * GlobeStaticData.random_surf_size);
-        var random = new Random();
         for (var i = 0; i < _randomNoiseData.Count; ++i)
-            _randomNoiseData[i] = (short)(random.Next() % 4);
+            _randomNoiseData[i] = (short)(new Random().Next() % 4);
 
         cachePolygons();
     }

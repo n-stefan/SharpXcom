@@ -66,28 +66,28 @@ internal class RuleGlobe
 		if (node["polygons"] != null)
 		{
 			_polygons.Clear();
-			foreach (var item in ((YamlSequenceNode)node["polygons"]).Children)
+			foreach (var i in ((YamlSequenceNode)node["polygons"]).Children)
 			{
 				Polygon polygon = new Polygon(3);
-				polygon.load(item);
+				polygon.load(i);
 				_polygons.Add(polygon);
 			}
 		}
 		if (node["polylines"] != null)
 		{
 			_polylines.Clear();
-			foreach (var item in ((YamlSequenceNode)node["polylines"]).Children)
+			foreach (var i in ((YamlSequenceNode)node["polylines"]).Children)
 			{
 				Polyline polyline = new Polyline(3);
-				polyline.load(item);
+				polyline.load(i);
 				_polylines.Add(polyline);
 			}
 		}
-		foreach (var item in ((YamlSequenceNode)node["textures"]).Children)
+		foreach (var i in ((YamlSequenceNode)node["textures"]).Children)
 		{
-			if (item["id"] != null)
+			if (i["id"] != null)
 			{
-				int id = int.Parse(item["id"].ToString());
+				int id = int.Parse(i["id"].ToString());
 				Texture texture;
 				if (_textures.TryGetValue(id, out var value))
 				{
@@ -98,11 +98,11 @@ internal class RuleGlobe
 					texture = new Texture(id);
 					_textures[id] = texture;
 				}
-				texture.load(item);
+				texture.load(i);
 			}
-			else if (item["delete"] != null)
+			else if (i["delete"] != null)
 			{
-				int id = int.Parse(item["delete"].ToString());
+				int id = int.Parse(i["delete"].ToString());
 				if (_textures.ContainsKey(id))
 				{
 					_textures.Remove(id);

@@ -3139,4 +3139,70 @@ internal class BattleUnit
      */
     internal int getFallingPhase() =>
 	    _fallPhase;
+
+    /**
+     * Loads the unit from a YAML file.
+     * @param node YAML node.
+     */
+    internal void load(YamlNode node)
+    {
+	    _id = int.Parse(node["id"].ToString());
+	    _faction = _originalFaction = (UnitFaction)int.Parse(node["faction"].ToString());
+	    _status = (UnitStatus)int.Parse(node["status"].ToString());
+        _pos = new Position(); _pos.load(node["position"]);
+	    _direction = _toDirection = int.Parse(node["direction"].ToString());
+	    _directionTurret = _toDirectionTurret = int.Parse(node["directionTurret"].ToString());
+	    _tu = int.Parse(node["tu"].ToString());
+	    _health = int.Parse(node["health"].ToString());
+	    _stunlevel = int.Parse(node["stunlevel"].ToString());
+	    _energy = int.Parse(node["energy"].ToString());
+	    _morale = int.Parse(node["morale"].ToString());
+	    _kneeled = bool.Parse(node["kneeled"].ToString());
+	    _floating = bool.Parse(node["floating"].ToString());
+	    for (int i=0; i < 5; i++)
+		    _currentArmor[i] = int.Parse(node["armor"][i].ToString());
+	    for (int i=0; i < 6; i++)
+		    _fatalWounds[i] = int.Parse(node["fatalWounds"][i].ToString());
+	    _fire = int.Parse(node["fire"].ToString());
+	    _expBravery = int.Parse(node["expBravery"].ToString());
+	    _expReactions = int.Parse(node["expReactions"].ToString());
+	    _expFiring = int.Parse(node["expFiring"].ToString());
+	    _expThrowing = int.Parse(node["expThrowing"].ToString());
+	    _expPsiSkill = int.Parse(node["expPsiSkill"].ToString());
+	    _expPsiStrength = int.Parse(node["expPsiStrength"].ToString());
+	    _expMelee = int.Parse(node["expMelee"].ToString());
+	    _turretType = int.Parse(node["turretType"].ToString());
+	    _visible = bool.Parse(node["visible"].ToString());
+	    _turnsSinceSpotted = int.Parse(node["turnsSinceSpotted"].ToString());
+	    _killedBy = (UnitFaction)int.Parse(node["killedBy"].ToString());
+	    _moraleRestored = int.Parse(node["moraleRestored"].ToString());
+	    _rankInt = int.Parse(node["rankInt"].ToString());
+	    _originalFaction = (UnitFaction)int.Parse(node["originalFaction"].ToString());
+	    _kills = int.Parse(node["kills"].ToString());
+	    _dontReselect = bool.Parse(node["dontReselect"].ToString());
+	    _charging = null;
+	    _spawnUnit = node["spawnUnit"].ToString();
+	    _motionPoints = int.Parse(node["motionPoints"].ToString());
+	    _respawn = bool.Parse(node["respawn"].ToString());
+	    _activeHand = node["activeHand"].ToString();
+	    if (node["tempUnitStatistics"] != null)
+	    {
+		    _statistics.load(node["tempUnitStatistics"]);
+	    }
+	    _murdererId = int.Parse(node["murdererId"].ToString());
+	    _fatalShotSide = (UnitSide)int.Parse(node["fatalShotSide"].ToString());
+	    _fatalShotBodyPart = (UnitBodyPart)int.Parse(node["fatalShotBodyPart"].ToString());
+	    _murdererWeapon = node["murdererWeapon"].ToString();
+	    _murdererWeaponAmmo = node["murdererWeaponAmmo"].ToString();
+
+	    if (node["recolor"] is YamlSequenceNode p)
+	    {
+		    _recolor.Clear();
+		    for (var i = 0; i < p.Children.Count; ++i)
+		    {
+			    _recolor.Add(KeyValuePair.Create(byte.Parse(p.Children[i][0].ToString()), byte.Parse(p.Children[i][1].ToString())));
+		    }
+	    }
+	    _mindControllerID = int.Parse(node["mindControllerID"].ToString());
+    }
 }

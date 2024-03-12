@@ -41,7 +41,7 @@ struct TrajectoryWaypoint
         altitude = uint.Parse(node["altitude"].ToString());
         speed = uint.Parse(node["speed"].ToString());
     }
-};
+}
 
 /**
  * Holds information about a specific trajectory.

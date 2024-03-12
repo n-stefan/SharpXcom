@@ -104,14 +104,14 @@ internal class EquipmentLayoutItem
      * Loads the soldier-equipment layout item from a YAML file.
      * @param node YAML node.
      */
-    void load(YamlNode node)
+    internal void load(YamlNode node)
     {
 	    _itemType = node["itemType"].ToString();
 	    _slot = node["slot"].ToString();
-	    _slotX = int.TryParse(node["slotX"].ToString(), out int slotX) ? slotX : 0;
-	    _slotY = int.TryParse(node["slotY"].ToString(), out int slotY) ? slotY : 0;
-	    _ammoItem = node["ammoItem"].ToString() ?? "NONE";
-	    _fuseTimer = int.TryParse(node["fuseTimer"].ToString(), out int fuseTimer) ? fuseTimer : -1;
+	    _slotX = int.Parse(node["slotX"].ToString());
+	    _slotY = int.Parse(node["slotY"].ToString());
+	    _ammoItem = node["ammoItem"] != null ? node["ammoItem"].ToString() : "NONE";
+	    _fuseTimer = node["fuseTimer"] != null ? int.Parse(node["fuseTimer"].ToString()) : -1;
     }
 
     /**

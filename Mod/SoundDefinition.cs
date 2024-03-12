@@ -52,7 +52,7 @@ internal class SoundDefinition : IRule
 		}
 		foreach (var i in ((YamlSequenceNode)node["sounds"]).Children)
 		{
-			_soundList.Add(int.Parse(i.ToString()));
+			_soundList.Add(i != null ? int.Parse(i.ToString()) : -1);
 		}
         _catFile = node["file"].ToString();
 	}
