@@ -3295,9 +3295,9 @@ internal class Mod
 	    if (node != null)
 	    {
 		    // Starting soldiers specified by type
-		    if (node is YamlMappingNode map)
+		    if (node is YamlMappingNode m)
 		    {
-			    foreach (var i in map.Children)
+			    foreach (var i in m.Children)
 			    {
                     for (int s = 0; s < int.Parse(i.Value.ToString()); ++s)
 				    {

@@ -115,9 +115,9 @@ internal class ModInfo
 	    _id       = doc.Children["id"].ToString();
 	    _isMaster = bool.Parse(doc.Children["isMaster"].ToString());
 	    _reservedSpace = int.Parse(doc.Children["reservedSpace"].ToString());
-	    if (doc.Children["requiredExtendedVersion"] != null)
+	    if (doc.Children["requiredExtendedVersion"] is YamlNode req)
 	    {
-		    _requiredExtendedVersion = doc.Children["requiredExtendedVersion"].ToString();
+		    _requiredExtendedVersion = req.ToString();
 		    _requiredExtendedEngine = "Extended"; //for backward compatibility
 	    }
 	    _requiredExtendedEngine = doc.Children["requiredExtendedEngine"].ToString();
@@ -139,7 +139,7 @@ internal class ModInfo
 		    // masters, but they must be explicitly declared.
 		    _master = string.Empty;
 		    // only masters can load external resource dirs
-		    _externalResourceDirs = ((YamlSequenceNode)doc.Children["loadResources"]).Select(x => ((YamlScalarNode)x).Value).ToList();
+		    _externalResourceDirs = ((YamlSequenceNode)doc.Children["loadResources"]).Select(x => x.ToString()).ToList();
 		    // or basic resource definition
 		    _resourceConfigFile = doc.Children["resourceConfig"].ToString();
 	    }

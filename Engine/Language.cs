@@ -277,28 +277,37 @@ internal class Language
         using var input = new StreamReader(filename);
         var yaml = new YamlStream();
         yaml.Load(input);
-
-	    foreach (var lang in ((YamlMappingNode)yaml.Documents[0].RootNode).Children)
+	    YamlMappingNode lang;
+	    if (((YamlMappingNode)yaml.Documents[0].RootNode).Children[0].Value is YamlMappingNode m)
+	    {
+		    lang = m;
+	    }
+	    // Fallback when file is missing language specifier
+	    else
+	    {
+		    lang = (YamlMappingNode)yaml.Documents[0].RootNode;
+	    }
+	    foreach (var i in lang.Children)
 	    {
 		    // Regular strings
-		    if (lang.Value is YamlScalarNode)
+		    if (i.Value is YamlScalarNode)
 		    {
-                string value = lang.Value.ToString();
+                string value = i.Value.ToString();
 			    if (!string.IsNullOrEmpty(value))
 			    {
-				    string key = lang.Key.ToString();
+				    string key = i.Key.ToString();
 				    _strings[key] = loadString(value);
 			    }
 		    }
 		    // Strings with plurality
-		    else if (lang.Value is YamlMappingNode map)
+		    else if (i.Value is YamlMappingNode n)
 		    {
-			    foreach (var child in map.Children)
+			    foreach (var j in n.Children)
 			    {
-                    string value = child.Value.ToString();
+                    string value = j.Value.ToString();
 				    if (!string.IsNullOrEmpty(value))
 				    {
-					    string key = lang.Key.ToString() + "_" + child.Key.ToString();
+					    string key = i.Key.ToString() + "_" + j.Key.ToString();
                         _strings[key] = loadString(value);
 				    }
 			    }

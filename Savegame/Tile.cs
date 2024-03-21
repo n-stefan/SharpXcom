@@ -976,9 +976,9 @@ internal class Tile
 	    _fire = unserializeInt(ref buffer, serKey._fire);
 
 	    byte boolFields = (byte)unserializeInt(ref buffer, serKey.boolFields);
-	    _discovered[0] = (boolFields & 1) != 0 ? true : false;
-	    _discovered[1] = (boolFields & 2) != 0 ? true : false;
-	    _discovered[2] = (boolFields & 4) != 0 ? true : false;
+	    _discovered[0] = (boolFields & 1) != 0;
+	    _discovered[1] = (boolFields & 2) != 0;
+	    _discovered[2] = (boolFields & 4) != 0;
 	    _currentFrame[1] = (boolFields & 8) != 0 ? 7 : 0;
 	    _currentFrame[2] = (boolFields & 0x10) != 0 ? 7 : 0;
 	    if (_fire != 0 || _smoke != 0)

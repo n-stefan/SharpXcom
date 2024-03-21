@@ -145,7 +145,7 @@ internal class OptionInfo
      */
     internal void load(Dictionary<string, string> map)
     {
-	    string id = _id.ToLower();
+        string id = _id.ToLower();
 	    if (map.TryGetValue(id, out var value))
 	    {
 		    switch (_type)
@@ -175,16 +175,16 @@ internal class OptionInfo
 	    switch (_type)
 	    {
 	        case OptionType.OPTION_BOOL:
-                _ref.b = bool.Parse(node[_id].ToString()); //_def.b
+                _ref.b = node[_id] != null ? bool.Parse(node[_id].ToString()) : _def.b;
 		        break;
 	        case OptionType.OPTION_INT:
-                _ref.i = int.Parse(node[_id].ToString()); //_def.i
+                _ref.i = node[_id] != null ? int.Parse(node[_id].ToString()) : _def.i;
 		        break;
 	        case OptionType.OPTION_KEY:
-                _ref.k = Enum.Parse<SDL_Keycode>(node[_id].ToString()); //_def.k
+                _ref.k = node[_id] != null ? (SDL_Keycode)int.Parse(node[_id].ToString()) : _def.k;
 		        break;
 	        case OptionType.OPTION_STRING:
-                _ref.s = node[_id].ToString(); //_def.s
+                _ref.s = node[_id] != null ? node[_id].ToString() : _def.s;
 		        break;
 	    }
     }

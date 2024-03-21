@@ -57,9 +57,9 @@ internal class ExtraStrings
 				_strings[i.Key.ToString()] = i.Value.ToString();
 			}
 			// Strings with plurality
-			else if (i.Value is YamlMappingNode map)
+			else if (i.Value is YamlMappingNode m)
 			{
-				foreach (var j in map.Children)
+				foreach (var j in m.Children)
 				{
 					string s = i.Key.ToString() + "_" + j.Key.ToString();
 					_strings[s] = j.Value.ToString();

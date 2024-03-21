@@ -533,4 +533,96 @@ internal class NewBattleState : State
 			load();
 		}
 	}
+
+	/**
+	 * Loads new battle data from a YAML file.
+	 * @param filename YAML filename.
+	 */
+	void load(string filename = "battle")
+	{
+		string s = Options.getMasterUserFolder() + filename + ".cfg";
+		if (!CrossPlatform.fileExists(s))
+		{
+			initSave();
+		}
+		else
+		{
+			try
+			{
+				using var input = new StreamReader(s);
+				var yaml = new YamlStream();
+				yaml.Load(input);
+				var doc = (YamlMappingNode)yaml.Documents[0].RootNode;
+				_cbxMission.setSelected((uint)Math.Min(uint.Parse(doc.Children["mission"].ToString()), _missionTypes.Count - 1));
+				cbxMissionChange(null);
+				_cbxCraft.setSelected((uint)Math.Min(uint.Parse(doc.Children["craft"].ToString()), _crafts.Count - 1));
+				_slrDarkness.setValue((int)uint.Parse(doc.Children["darkness"].ToString()));
+				_cbxTerrain.setSelected((uint)Math.Min(uint.Parse(doc.Children["terrain"].ToString()), _terrainTypes.Count - 1));
+				cbxTerrainChange(null);
+				_cbxAlienRace.setSelected((uint)Math.Min(uint.Parse(doc.Children["alienRace"].ToString()), _alienRaces.Count - 1));
+				_cbxDifficulty.setSelected(uint.Parse(doc.Children["difficulty"].ToString()));
+				_slrAlienTech.setValue((int)uint.Parse(doc.Children["alienTech"].ToString()));
+
+				if (doc.Children["base"] != null)
+				{
+					Mod.Mod mod = _game.getMod();
+					SavedGame save = new SavedGame();
+
+					Base @base = new Base(mod);
+					@base.load(doc.Children["base"], save, false);
+					save.getBases().Add(@base);
+
+					// Add research
+					List<string> research = mod.getResearchList();
+					foreach (var i in research)
+					{
+						save.addFinishedResearchSimple(mod.getResearch(i));
+					}
+
+					// Generate items
+					@base.getStorageItems().getContents().Clear();
+					List<string> items = mod.getItemsList();
+					foreach (var i in items)
+					{
+						RuleItem rule = _game.getMod().getItem(i);
+						if (rule.getBattleType() != BattleType.BT_CORPSE && rule.isRecoverable())
+						{
+							@base.getStorageItems().addItem(i, 1);
+						}
+					}
+
+					// Fix invalid contents
+					if (!@base.getCrafts().Any())
+					{
+						string craftType = _crafts[(int)_cbxCraft.getSelected()];
+						_craft = new Craft(_game.getMod().getCraft(craftType), @base, save.getId(craftType));
+						@base.getCrafts().Add(_craft);
+					}
+					else
+					{
+						_craft = @base.getCrafts().First();
+						foreach (var i in _craft.getItems().getContents())
+						{
+							RuleItem rule = _game.getMod().getItem(i.Key);
+							if (rule == null)
+							{
+								_craft.getItems().getContents()[i.Key] = 0;
+							}
+						}
+					}
+
+					_game.setSavedGame(save);
+				}
+				else
+				{
+					initSave();
+				}
+			}
+			catch (YamlException e)
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {e.Message}");
+				initSave();
+			}
+		}
+	}
 }

@@ -33,7 +33,7 @@ struct ItemSet
 	 */
     internal void load(YamlNode node) =>
         items = ((YamlSequenceNode)node["items"]).Children.Select(x => x.ToString()).ToList();
-};
+}
 
 struct DeploymentData
 {
@@ -59,7 +59,7 @@ struct DeploymentData
             var set = new ItemSet(); set.load(x); return set;
         }).ToList();
     }
-};
+}
 
 struct BriefingData
 {
@@ -93,7 +93,7 @@ struct BriefingData
         showCraft = bool.Parse(node["showCraft"].ToString());
         showTarget = bool.Parse(node["showTarget"].ToString());
     }
-};
+}
 
 /**
  * Represents a specific type of Alien Deployment.

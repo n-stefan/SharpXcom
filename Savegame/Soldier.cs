@@ -271,8 +271,7 @@ internal class Soldier
 		_psiTraining = bool.Parse(node["psiTraining"].ToString());
 		_improvement = int.Parse(node["improvement"].ToString());
 		_psiStrImprovement = int.Parse(node["psiStrImprovement"].ToString());
-		var layout = node["equipmentLayout"] as YamlSequenceNode;
-        if (layout != null)
+        if (node["equipmentLayout"] is YamlSequenceNode layout)
 		{
 			foreach (var i in layout)
 			{

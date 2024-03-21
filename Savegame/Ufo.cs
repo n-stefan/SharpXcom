@@ -223,8 +223,7 @@ internal class Ufo : MovingTarget
 	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
 	    double lon = _lon;
 	    double lat = _lat;
-        YamlNode dest = node["dest"];
-        if (dest != null)
+        if (node["dest"] is YamlNode dest)
 	    {
 		    lon = double.Parse(dest["lon"].ToString());
 		    lat = double.Parse(dest["lat"].ToString());
@@ -232,8 +231,7 @@ internal class Ufo : MovingTarget
 	    _dest = new Waypoint();
 	    _dest.setLongitude(lon);
 	    _dest.setLatitude(lat);
-        YamlNode status = node["status"];
-        if (status != null)
+        if (node["status"] is YamlNode status)
 	    {
 		    _status = (UfoStatus)int.Parse(status.ToString());
 	    }

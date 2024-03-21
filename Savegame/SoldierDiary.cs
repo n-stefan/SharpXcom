@@ -77,12 +77,12 @@ internal class SoldierCommendations
      * Loads the commendation from a YAML file.
      * @param node YAML node.
      */
-    void load(YamlNode node)
+    internal void load(YamlNode node)
     {
 	    _type = node["commendationName"].ToString();
-	    _noun = node["noun"].ToString() ?? "noNoun";
+	    _noun = node["noun"] != null ? node["noun"].ToString() : "noNoun";
 	    _decorationLevel = int.Parse(node["decorationLevel"].ToString());
-	    _isNew = bool.TryParse(node["isNew"].ToString(), out bool isNew) ? isNew : false;
+	    _isNew = bool.Parse(node["isNew"].ToString());
     }
 
     /**
@@ -276,8 +276,7 @@ internal class SoldierDiary
      */
     internal void load(YamlNode node, Mod.Mod mod)
     {
-        var commendations = node["commendations"] as YamlSequenceNode;
-        if (commendations != null)
+        if (node["commendations"] is YamlSequenceNode commendations)
 	    {
 		    foreach (var i in commendations)
 		    {
@@ -294,8 +293,7 @@ internal class SoldierDiary
 			    }
 		    }
 	    }
-        var killList = node["killList"] as YamlSequenceNode;
-        if (killList != null)
+        if (node["killList"] is YamlSequenceNode killList)
 	    {
 		    foreach (var i in killList)
 			    _killList.Add(new BattleUnitKills(i));

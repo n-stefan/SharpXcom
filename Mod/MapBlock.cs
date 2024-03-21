@@ -69,28 +69,28 @@ internal class MapBlock
 			string ss = $"Error: MapBlock {_name}: Size must be divisible by ten";
 			throw new Exception(ss);
 		}
-		if (node["groups"] is YamlSequenceNode groups)
+		if (node["groups"] is YamlSequenceNode map1)
 		{
 			_groups.Clear();
-			if (groups.NodeType == YamlNodeType.Sequence)
+			if (map1.NodeType == YamlNodeType.Sequence)
 			{
-                _groups = groups.Children.Select(x => int.Parse(x.ToString())).ToList();
+                _groups = map1.Children.Select(x => int.Parse(x.ToString())).ToList();
 			}
 			else
 			{
-				_groups.Add(int.Parse(groups.ToString()));
+				_groups.Add(int.Parse(map1.ToString()));
 			}
 		}
-		if (node["revealedFloors"] is YamlSequenceNode revealedFloors)
+		if (node["revealedFloors"] is YamlSequenceNode map2)
 		{
 			_revealedFloors.Clear();
-			if (revealedFloors.NodeType == YamlNodeType.Sequence)
+			if (map2.NodeType == YamlNodeType.Sequence)
 			{
-                _revealedFloors = revealedFloors.Children.Select(x => int.Parse(x.ToString())).ToList();
+                _revealedFloors = map2.Children.Select(x => int.Parse(x.ToString())).ToList();
 			}
 			else
 			{
-				_revealedFloors.Add(int.Parse(revealedFloors.ToString()));
+				_revealedFloors.Add(int.Parse(map2.ToString()));
 			}
 		}
         _items = new Dictionary<string, List<Position>>();

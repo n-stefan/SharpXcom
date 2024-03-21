@@ -700,9 +700,8 @@ internal class Options
             var yaml = new YamlStream();
             yaml.Load(input);
             var doc = (YamlMappingNode)yaml.Documents[0].RootNode;
-
 		    // Ignore old options files
-		    if (doc.Children["options"]["NewBattleMission"].ToString() == bool.TrueString)
+		    if (doc.Children["options"]["NewBattleMission"] != null)
 		    {
 			    return false;
 		    }

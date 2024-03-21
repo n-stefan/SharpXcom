@@ -82,9 +82,9 @@ internal class MapScript
 	internal void load(YamlNode node)
 	{
 		string command;
-		if (node["type"] is YamlNode type)
+		if (node["type"] is YamlNode map1)
 		{
-			command = type != null ? type.ToString() : string.Empty;
+			command = map1 != null ? map1.ToString() : string.Empty;
 			if (command == "addBlock")
 				_type = MapScriptCommand.MSC_ADDBLOCK;
 			else if (command == "addLine")
@@ -122,9 +122,9 @@ internal class MapScript
 			throw new Exception("Missing command type.");
 		}
 
-		if (node["rects"] is YamlSequenceNode rects)
+		if (node["rects"] is YamlSequenceNode map2)
 		{
-			foreach (var i in rects.Children)
+			foreach (var i in map2.Children)
 			{
 				SDL_Rect rect = new SDL_Rect();
 				rect.x = int.Parse(i[0].ToString());
@@ -134,40 +134,40 @@ internal class MapScript
 				_rects.Add(rect);
 			}
 		}
-		if (node["tunnelData"] is YamlNode tunnelData)
+		if (node["tunnelData"] is YamlNode map3)
 		{
 			_tunnelData = new TunnelData();
-			_tunnelData.level = int.Parse(tunnelData["level"].ToString());
-			if (tunnelData["MCDReplacements"] is YamlSequenceNode data)
+			_tunnelData.level = int.Parse(map3["level"].ToString());
+			if (map3["MCDReplacements"] is YamlSequenceNode data)
 			{
 				foreach (var i in data.Children)
 				{
 					MCDReplacement replacement = new MCDReplacement();
-					string replacementType = i["type"] != null ? i["type"].ToString() : string.Empty;
+					string type = i["type"] != null ? i["type"].ToString() : string.Empty;
 					replacement.entry = i["entry"] != null ? int.Parse(i["entry"].ToString()) : -1;
 					replacement.set = i["set"] != null ? int.Parse(i["set"].ToString()) : -1;
-					_tunnelData.replacements[replacementType] = replacement;
+					_tunnelData.replacements[type] = replacement;
 				}
 			}
 		}
-		if (node["conditionals"] is YamlNode conditionals)
+		if (node["conditionals"] is YamlNode map4)
 		{
-			if (conditionals.NodeType == YamlNodeType.Sequence)
+			if (map4.NodeType == YamlNodeType.Sequence)
 			{
-                _conditionals = ((YamlSequenceNode)conditionals).Children.Select(x => int.Parse(x.ToString())).ToList();
+                _conditionals = ((YamlSequenceNode)map4).Children.Select(x => int.Parse(x.ToString())).ToList();
 			}
 			else
 			{
-				_conditionals.Add(int.Parse(conditionals.ToString()));
+				_conditionals.Add(int.Parse(map4.ToString()));
 			}
 		}
-		if (node["size"] is YamlNode size)
+		if (node["size"] is YamlNode map5)
 		{
-			if (size.NodeType == YamlNodeType.Sequence)
+			if (map5.NodeType == YamlNodeType.Sequence)
 			{
 				int[] sizes = { _sizeX, _sizeY, _sizeZ };
 				int entry = 0;
-				foreach (var i in ((YamlSequenceNode)size).Children)
+				foreach (var i in ((YamlSequenceNode)map5).Children)
 				{
 					sizes[entry] = i != null ? int.Parse(i.ToString()) : 1;
                     entry++;
@@ -179,40 +179,40 @@ internal class MapScript
 			}
 			else
 			{
-				_sizeX = int.Parse(size.ToString());
+				_sizeX = int.Parse(map5.ToString());
 				_sizeY = _sizeX;
 			}
 		}
 
-		if (node["groups"] is YamlNode groups)
+		if (node["groups"] is YamlNode map6)
 		{
 			_groups.Clear();
-			if (groups.NodeType == YamlNodeType.Sequence)
+			if (map6.NodeType == YamlNodeType.Sequence)
 			{
-				foreach (var i in ((YamlSequenceNode)groups).Children)
+				foreach (var i in ((YamlSequenceNode)map6).Children)
 				{
 					_groups.Add(int.Parse(i.ToString()));
 				}
 			}
 			else
 			{
-				_groups.Add(int.Parse(groups.ToString()));
+				_groups.Add(int.Parse(map6.ToString()));
 			}
 		}
         uint selectionSize = (uint)_groups.Count;
-		if (node["blocks"] is YamlNode blocks)
+		if (node["blocks"] is YamlNode map7)
 		{
 			_groups.Clear();
-			if (blocks.NodeType == YamlNodeType.Sequence)
+			if (map7.NodeType == YamlNodeType.Sequence)
 			{
-				foreach (var i in ((YamlSequenceNode)blocks).Children)
+				foreach (var i in ((YamlSequenceNode)map7).Children)
 				{
 					_blocks.Add(int.Parse(i.ToString()));
 				}
 			}
 			else
 			{
-				_blocks.Add(int.Parse(blocks.ToString()));
+				_blocks.Add(int.Parse(map7.ToString()));
 			}
 			selectionSize = (uint)_blocks.Count;
 		}
@@ -220,12 +220,12 @@ internal class MapScript
         _frequencies = Enumerable.Repeat(1, (int)selectionSize).ToList();
 		_maxUses = Enumerable.Repeat(-1, (int)selectionSize).ToList();
 
-		if (node["freqs"] is YamlNode freqs)
+		if (node["freqs"] is YamlNode map8)
 		{
-			if (freqs.NodeType == YamlNodeType.Sequence)
+			if (map8.NodeType == YamlNodeType.Sequence)
 			{
 				uint entry = 0;
-				foreach (var i in ((YamlSequenceNode)freqs).Children)
+				foreach (var i in ((YamlSequenceNode)map8).Children)
 				{
 					if (entry == selectionSize)
 						break;
@@ -235,15 +235,15 @@ internal class MapScript
 			}
 			else
 			{
-				_frequencies[0] = freqs != null ? int.Parse(freqs.ToString()) : 1;
+				_frequencies[0] = map8 != null ? int.Parse(map8.ToString()) : 1;
 			}
 		}
-		if (node["maxUses"] is YamlNode maxUses)
+		if (node["maxUses"] is YamlNode map9)
 		{
-			if (maxUses.NodeType == YamlNodeType.Sequence)
+			if (map9.NodeType == YamlNodeType.Sequence)
 			{
 				uint entry = 0;
-				foreach (var i in ((YamlSequenceNode)maxUses).Children)
+				foreach (var i in ((YamlSequenceNode)map9).Children)
 				{
 					if (entry == selectionSize)
 						break;
@@ -253,17 +253,17 @@ internal class MapScript
 			}
 			else
 			{
-				_maxUses[0] = maxUses != null ? int.Parse(maxUses.ToString()) : -1;
+				_maxUses[0] = map9 != null ? int.Parse(map9.ToString()) : -1;
 			}
 		}
 
-		if (node["direction"] is YamlNode direction)
+		if (node["direction"] is YamlNode map10)
 		{
-			string sdir = direction != null ? direction.ToString() : string.Empty;
-			if (!string.IsNullOrEmpty(sdir))
+			string direction = map10 != null ? map10.ToString() : string.Empty;
+			if (!string.IsNullOrEmpty(direction))
 			{
-				char cdir = char.ToUpper(sdir[0]);
-				switch (cdir)
+				char dir = char.ToUpper(direction[0]);
+				switch (dir)
 				{
 					case 'V':
 						_direction = MapDirection.MD_VERTICAL;
@@ -275,7 +275,7 @@ internal class MapScript
 						_direction = MapDirection.MD_BOTH;
 						break;
 					default:
-						throw new Exception("direction must be [V]ertical, [H]orizontal, or [B]oth, what does " + sdir + " mean?");
+						throw new Exception("direction must be [V]ertical, [H]orizontal, or [B]oth, what does " + direction + " mean?");
 				}
 			}
 		}
