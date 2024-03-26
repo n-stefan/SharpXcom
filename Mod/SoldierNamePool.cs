@@ -133,27 +133,26 @@ internal class SoldierNamePool
         using var input = new StreamReader(filename);
         var yaml = new YamlStream();
         yaml.Load(input);
-
         YamlMappingNode doc = (YamlMappingNode)yaml.Documents[0].RootNode;
 
-		foreach (var maleFirst in ((YamlSequenceNode)doc["maleFirst"]).Children)
+		foreach (var i in ((YamlSequenceNode)doc["maleFirst"]).Children)
 		{
-			string name = maleFirst.ToString();
+			string name = i.ToString();
 			_maleFirst.Add(name);
 		}
-		foreach (var femaleFirst in ((YamlSequenceNode)doc["femaleFirst"]).Children)
+		foreach (var i in ((YamlSequenceNode)doc["femaleFirst"]).Children)
 		{
-			string name = femaleFirst.ToString();
+			string name = i.ToString();
 			_femaleFirst.Add(name);
 		}
-		foreach (var maleLast in ((YamlSequenceNode)doc["maleLast"]).Children)
+		foreach (var i in ((YamlSequenceNode)doc["maleLast"]).Children)
 		{
-			string name = maleLast.ToString();
+			string name = i.ToString();
 			_maleLast.Add(name);
 		}
-		foreach (var femaleLast in ((YamlSequenceNode)doc["femaleLast"]).Children)
+		foreach (var i in ((YamlSequenceNode)doc["femaleLast"]).Children)
 		{
-			string name = femaleLast.ToString();
+			string name = i.ToString();
 			_femaleLast.Add(name);
 		}
 		if (!_femaleFirst.Any())
@@ -166,9 +165,9 @@ internal class SoldierNamePool
 		}
         _lookWeights = ((YamlSequenceNode)doc["lookWeights"]).Children.Select(x => int.Parse(x.ToString())).ToList();
 		_totalWeight = 0;
-		foreach (var lookWeight in _lookWeights)
+		foreach (var i in _lookWeights)
 		{
-			_totalWeight += lookWeight;
+			_totalWeight += i;
 		}
 		_femaleFrequency = int.Parse(doc["femaleFrequency"].ToString());
 	}

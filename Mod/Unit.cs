@@ -205,12 +205,7 @@ internal class Unit : IRule
 	    _capturable = bool.Parse(node["capturable"].ToString());
         foreach (var i in ((YamlSequenceNode)node["builtInWeaponSets"]).Children)
         {
-            var builtInWeapons = new List<string>();
-            foreach (var j in ((YamlSequenceNode)i).Children)
-            {
-                builtInWeapons.Add(j.ToString());
-            }
-            _builtInWeapons.Add(builtInWeapons);
+            _builtInWeapons.Add(((YamlSequenceNode)i).Children.Select(x => x.ToString()).ToList());
         }
         if (node["builtInWeapons"] != null)
 	    {

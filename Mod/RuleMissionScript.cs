@@ -103,27 +103,27 @@ internal class RuleMissionScript : IRule
 		_avoidRepeats = int.Parse(node["avoidRepeats"].ToString());
 		_delay = int.Parse(node["startDelay"].ToString());
         _conditionals = ((YamlSequenceNode)node["conditionals"]).Children.Select(x => int.Parse(x.ToString())).ToList();
-		if (node["missionWeights"] is YamlNode missionWeights)
+		if (node["missionWeights"] is YamlNode weights1)
 		{
-			foreach (var nn in ((YamlMappingNode)missionWeights).Children)
+			foreach (var nn in ((YamlMappingNode)weights1).Children)
 			{
 				WeightedOptions nw = new WeightedOptions();
 				nw.load(nn.Value);
 				_missionWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
 			}
 		}
-		if (node["raceWeights"] is YamlNode raceWeights)
+		if (node["raceWeights"] is YamlNode weights2)
 		{
-			foreach (var nn in ((YamlMappingNode)raceWeights).Children)
+			foreach (var nn in ((YamlMappingNode)weights2).Children)
 			{
 				WeightedOptions nw = new WeightedOptions();
 				nw.load(nn.Value);
 				_raceWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
 			}
 		}
-		if (node["regionWeights"] is YamlNode regionWeights)
+		if (node["regionWeights"] is YamlNode weights3)
 		{
-			foreach (var nn in ((YamlMappingNode)regionWeights).Children)
+			foreach (var nn in ((YamlMappingNode)weights3).Children)
 			{
 				WeightedOptions nw = new WeightedOptions();
 				nw.load(nn.Value);

@@ -85,12 +85,7 @@ internal class RuleCountry : IRule
 	    var areas = new List<List<double>>();
 	    foreach (var i in ((YamlSequenceNode)node["areas"]).Children)
         {
-            var area = new List<double>();
-            foreach (var j in ((YamlSequenceNode)i).Children)
-            {
-                area.Add(double.Parse(j.ToString()));
-            }
-            areas.Add(area);
+            areas.Add(((YamlSequenceNode)i).Children.Select(x => double.Parse(x.ToString())).ToList());
         }
 	    for (var i = 0; i != areas.Count; ++i)
 	    {

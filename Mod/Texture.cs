@@ -47,7 +47,7 @@ struct TerrainCriteria
         latMin = double.Parse(node["latMin"].ToString());
         latMax = double.Parse(node["latMax"].ToString());
     }
-};
+}
 
 /**
  * Represents the relations between a Geoscape texture

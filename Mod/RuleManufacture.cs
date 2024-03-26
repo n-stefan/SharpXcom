@@ -68,11 +68,11 @@ internal class RuleManufacture : IListOrder, IRule
      */
     internal void load(YamlNode node, int listOrder)
     {
-	    bool same = (1 == _producedItems.Count && _name == _producedItems.Keys.First());
+	    bool same = (1 == _producedItems.Count && _name == _producedItems.First().Key);
 	    _name = node["name"].ToString();
 	    if (same)
 	    {
-		    int value = _producedItems.Values.First();
+		    int value = _producedItems.First().Value;
 		    _producedItems.Clear();
 		    _producedItems[_name] = value;
 	    }

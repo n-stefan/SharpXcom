@@ -163,12 +163,7 @@ internal class RuleCraft : IListOrder, IRule
 	    }
         foreach (var i in ((YamlSequenceNode)node["deployment"]).Children)
         {
-            var deployment = new List<int>();
-            foreach (var j in ((YamlSequenceNode)i).Children)
-            {
-                deployment.Add(int.Parse(j.ToString()));
-            }
-            _deployment.Add(deployment);
+            _deployment.Add(((YamlSequenceNode)i).Children.Select(x => int.Parse(x.ToString())).ToList());
         }
 	    _spacecraft = bool.Parse(node["spacecraft"].ToString());
 	    _listOrder = int.Parse(node["listOrder"].ToString());

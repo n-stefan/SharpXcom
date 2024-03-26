@@ -71,7 +71,7 @@ struct MissionZone
     {
         for (var i = 0; i < areas.Count; i++)
         {
-            areas[i].load(node["areas"][i]);
+            areas[i].load(node[i]);
         }
     }
 };
@@ -140,12 +140,7 @@ internal class RuleRegion : IRule
         var areas = new List<List<double>>();
         foreach (var i in ((YamlSequenceNode)node["areas"]).Children)
         {
-            var area = new List<double>();
-            foreach (var j in ((YamlSequenceNode)i).Children)
-            {
-                area.Add(double.Parse(j.ToString()));
-            }
-            areas.Add(area);
+            areas.Add(((YamlSequenceNode)i).Children.Select(x => double.Parse(x.ToString())).ToList());
         }
         for (var i = 0; i != areas.Count; ++i)
         {
@@ -161,9 +156,9 @@ internal class RuleRegion : IRule
         {
             var zone = new MissionZone(); zone.load(x); return zone;
         }).ToList();
-        if (node["missionWeights"] != null)
+        if (node["missionWeights"] is YamlNode weights)
 	    {
-		    _missionWeights.load(node["missionWeights"]);
+		    _missionWeights.load(weights);
 	    }
 	    _regionWeight = uint.Parse(node["regionWeight"].ToString());
         _missionRegion = node["missionRegion"].ToString();

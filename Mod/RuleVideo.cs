@@ -66,10 +66,10 @@ internal class RuleVideo : IRule
 				_audioTracks.Add(i.ToString());
 		}
 
-		if (node["slideshow"] is YamlSequenceNode slideshow)
+		if (node["slideshow"] is YamlNode slideshow)
 		{
-			_slideshowHeader.musicId = slideshow["musicId"].ToString();
-			_slideshowHeader.transitionSeconds = int.Parse(slideshow["transitionSeconds"].ToString());
+			_slideshowHeader.musicId = slideshow["musicId"] != null ? slideshow["musicId"].ToString() : string.Empty;
+			_slideshowHeader.transitionSeconds = slideshow["transitionSeconds"] != null ? int.Parse(slideshow["transitionSeconds"].ToString()) : 30;
 
 			foreach (var i in ((YamlSequenceNode)slideshow["slides"]).Children)
 			{

@@ -64,18 +64,18 @@ internal class RuleTerrain : IRule
 	 */
 	internal void load(YamlNode node, Mod mod)
 	{
-		if (node["mapDataSets"] is YamlSequenceNode mapDataSets)
+		if (node["mapDataSets"] is YamlSequenceNode map1)
 		{
 			_mapDataSets.Clear();
-			foreach (var i in mapDataSets.Children)
+			foreach (var i in map1.Children)
 			{
 				_mapDataSets.Add(mod.getMapDataSet(i.ToString()));
 			}
 		}
-		if (node["mapBlocks"] is YamlSequenceNode mapBlocks)
+		if (node["mapBlocks"] is YamlSequenceNode map2)
 		{
 			_mapBlocks.Clear();
-			foreach (var i in mapBlocks.Children)
+			foreach (var i in map2.Children)
 			{
 				MapBlock mapBlock = new MapBlock(i["name"].ToString());
 				mapBlock.load(i);
