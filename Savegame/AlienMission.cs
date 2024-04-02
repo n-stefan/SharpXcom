@@ -113,7 +113,7 @@ internal class AlienMission
 		_uniqueID = int.Parse(node["uniqueID"].ToString());
 		if (node["alienBase"] is YamlNode @base)
 		{
-			int id = int.TryParse(@base.ToString(), out int result) ? result : -1;
+			int id = @base != null ? int.Parse(@base.ToString()) : -1;
 			string type = "STR_ALIEN_BASE";
 			// New format
 			if (id == -1)

@@ -2013,7 +2013,7 @@ internal class BattlescapeGame
 					    if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
 					    {
 						    _parentState.getGame().getMod().getSoundByDepth((uint)_save.getDepth(), (uint)_currentAction.weapon.getRules().getHitSound()).play(-1, getMap().getSoundAngle(pos));
-						    _parentState.getGame().pushState (new UnitInfoState(_save.selectUnit(pos), _parentState, false, true));
+						    _parentState.getGame().pushState(new UnitInfoState(_save.selectUnit(pos), _parentState, false, true));
 						    cancelCurrentAction();
 					    }
 					    else

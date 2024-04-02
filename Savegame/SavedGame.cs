@@ -1543,4 +1543,237 @@ internal class SavedGame
      */
     internal void setDebugMode() =>
 	    _debug = !_debug;
+
+	/**
+	 * Loads a saved game's contents from a YAML file.
+	 * @note Assumes the saved game is blank.
+	 * @param filename YAML filename.
+	 * @param mod Mod for the saved game.
+	 */
+	internal void load(string filename, Mod.Mod mod)
+	{
+		string s = Options.getMasterUserFolder() + filename;
+        using var input = new StreamReader(s);
+        var yaml = new YamlStream();
+        yaml.Load(input);
+		if (!yaml.Documents.Any())
+		{
+			throw new Exception(filename + " is not a valid save file");
+		}
+
+		// Get brief save info
+        var brief = (YamlMappingNode)yaml.Documents[0].RootNode;
+		_time.load(brief["time"]);
+		if (brief["name"] != null)
+		{
+			_name = brief["name"].ToString();
+		}
+		else
+		{
+			_name = Unicode.convPathToUtf8(filename);
+		}
+		_ironman = bool.Parse(brief["ironman"].ToString());
+
+		// Get full save data
+        var doc = (YamlMappingNode)yaml.Documents[1].RootNode;
+		_difficulty = (GameDifficulty)int.Parse(doc["difficulty"].ToString());
+		_end = (GameEnding)int.Parse(doc["end"].ToString());
+		if (doc["rng"] != null && (_ironman || !Options.newSeedOnLoad))
+			RNG.setSeed(ulong.Parse(doc["rng"].ToString()));
+		_monthsPassed = int.Parse(doc["monthsPassed"].ToString());
+		_graphRegionToggles = doc["graphRegionToggles"].ToString();
+		_graphCountryToggles = doc["graphCountryToggles"].ToString();
+		_graphFinanceToggles = doc["graphFinanceToggles"].ToString();
+		_funds = ((YamlSequenceNode)doc["funds"]).Children.Select(x => long.Parse(x.ToString())).ToList();
+		_maintenance = ((YamlSequenceNode)doc["maintenance"]).Children.Select(x => long.Parse(x.ToString())).ToList();
+		_researchScores = ((YamlSequenceNode)doc["researchScores"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+		_incomes = ((YamlSequenceNode)doc["incomes"]).Children.Select(x => long.Parse(x.ToString())).ToList();
+		_expenditures = ((YamlSequenceNode)doc["expenditures"]).Children.Select(x => long.Parse(x.ToString())).ToList();
+		_warned = bool.Parse(doc["warned"].ToString());
+		_globeLon = double.Parse(doc["globeLon"].ToString());
+		_globeLat = double.Parse(doc["globeLat"].ToString());
+		_globeZoom = int.Parse(doc["globeZoom"].ToString());
+		_ids = ((YamlMappingNode)doc["ids"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
+
+		foreach (var i in ((YamlSequenceNode)doc["countries"]).Children)
+		{
+			string type = i["type"].ToString();
+			if (mod.getCountry(type) != null)
+			{
+				Country c = new Country(mod.getCountry(type), false);
+				c.load(i);
+				_countries.Add(c);
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load country {type}");
+			}
+		}
+
+		foreach (var i in ((YamlSequenceNode)doc["regions"]).Children)
+		{
+			string type = i["type"].ToString();
+			if (mod.getRegion(type) != null)
+			{
+				Region r = new Region(mod.getRegion(type));
+				r.load(i);
+				_regions.Add(r);
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load region {type}");
+			}
+		}
+
+		// Alien bases must be loaded before alien missions
+		foreach (var i in ((YamlSequenceNode)doc["alienBases"]).Children)
+		{
+			string deployment = i["deployment"] != null ? i["deployment"].ToString() : "STR_ALIEN_BASE_ASSAULT";
+			if (mod.getDeployment(deployment) != null)
+			{
+				AlienBase b = new AlienBase(mod.getDeployment(deployment));
+				b.load(i);
+				_alienBases.Add(b);
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load deployment for alien base {deployment}");
+			}
+		}
+
+		// Missions must be loaded before UFOs.
+		foreach (var it in ((YamlSequenceNode)doc["alienMissions"]).Children)
+		{
+			string missionType = it["type"].ToString();
+			if (mod.getAlienMission(missionType) != null)
+			{
+				RuleAlienMission mRule = mod.getAlienMission(missionType);
+				AlienMission mission = new AlienMission(mRule);
+				mission.load(it, this);
+				_activeMissions.Add(mission);
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {missionType}");
+			}
+		}
+
+		foreach (var i in ((YamlSequenceNode)doc["ufos"]).Children)
+		{
+			string type = i["type"].ToString();
+			if (mod.getUfo(type) != null)
+			{
+				Ufo u = new Ufo(mod.getUfo(type));
+				u.load(i, mod, this);
+				_ufos.Add(u);
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load UFO {type}");
+			}
+		}
+
+		foreach (var i in ((YamlSequenceNode)doc["waypoints"]).Children)
+		{
+			Waypoint w = new Waypoint();
+			w.load(i);
+			_waypoints.Add(w);
+		}
+
+		// Backwards compatibility
+		foreach (var i in ((YamlSequenceNode)doc["terrorSites"]).Children)
+		{
+			string type = "STR_ALIEN_TERROR";
+			string deployment = "STR_TERROR_MISSION";
+			if (mod.getAlienMission(type) != null && mod.getDeployment(deployment) != null)
+			{
+				MissionSite m = new MissionSite(mod.getAlienMission(type), mod.getDeployment(deployment));
+				m.load(i);
+				_missionSites.Add(m);
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {type} deployment {deployment}");
+			}
+		}
+
+		foreach (var i in ((YamlSequenceNode)doc["missionSites"]).Children)
+		{
+			string type = i["type"].ToString();
+			string deployment = i["deployment"] != null ? i["deployment"].ToString() : "STR_TERROR_MISSION";
+			if (mod.getAlienMission(type) != null && mod.getDeployment(deployment) != null)
+			{
+				MissionSite m = new MissionSite(mod.getAlienMission(type), mod.getDeployment(deployment));
+				m.load(i);
+				_missionSites.Add(m);
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {type} deployment {deployment}");
+			}
+		}
+
+		// Discovered Techs Should be loaded before Bases (e.g. for PSI evaluation)
+		foreach (var it in ((YamlSequenceNode)doc["discovered"]).Children)
+		{
+			string research = it.ToString();
+			if (mod.getResearch(research) != null)
+			{
+				_discovered.Add(mod.getResearch(research));
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {research}");
+			}
+		}
+
+		foreach (var i in ((YamlSequenceNode)doc["bases"]).Children)
+		{
+			Base b = new Base(mod);
+			b.load(i, this, false);
+			_bases.Add(b);
+		}
+
+		foreach (var it in ((YamlSequenceNode)doc["poppedResearch"]).Children)
+		{
+			string id = it.ToString();
+			if (mod.getResearch(id) != null)
+			{
+				_poppedResearch.Add(mod.getResearch(id));
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {id}");
+			}
+		}
+		_alienStrategy.load(doc["alienStrategy"]);
+
+		foreach (var i in ((YamlSequenceNode)doc["deadSoldiers"]).Children)
+		{
+			string type = i["type"] != null ? i["type"].ToString() : mod.getSoldiersList().First();
+			if (mod.getSoldier(type) != null)
+			{
+				Soldier soldier = new Soldier(mod.getSoldier(type), null);
+				soldier.load(i, mod, this);
+				_deadSoldiers.Add(soldier);
+			}
+			else
+			{
+				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
+			}
+		}
+
+		foreach (var i in ((YamlSequenceNode)doc["missionStatistics"]).Children)
+		{
+			MissionStatistics ms = new MissionStatistics();
+			ms.load(i);
+			_missionStatistics.Add(ms);
+		}
+
+		if (doc["battleGame"] is YamlNode battle)
+		{
+			_battleGame = new SavedBattleGame();
+			_battleGame.load(battle, mod, this);
+		}
+	}
 }

@@ -1882,14 +1882,9 @@ internal class SavedBattleGame
                 _baseModules = new List<List<KeyValuePair<int, int>>>();
                 foreach (var i in ((YamlSequenceNode)node["moduleMap"]).Children)
                 {
-                    var list = new List<KeyValuePair<int, int>>();
-                    foreach (var j in ((YamlMappingNode)i).Children)
-                    {
-                        var key = int.Parse(j.Key.ToString());
-                        var value = int.Parse(j.Value.ToString());
-                        list.Add(KeyValuePair.Create(key, value));
-                    }
-                    _baseModules.Add(list);
+                    _baseModules.Add(((YamlMappingNode)i).Children.Select(x =>
+                        KeyValuePair.Create(int.Parse(x.Key.ToString()), int.Parse(x.Value.ToString()))
+                    ).ToList());
                 }
 		    }
 		    else
@@ -2056,7 +2051,7 @@ internal class SavedBattleGame
 					    }
 				    }
 			    }
-			     ++weaponi;
+			    ++weaponi;
 		    }
 	    }
 	    _objectiveType = int.Parse(node["objectiveType"].ToString());

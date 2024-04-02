@@ -163,4 +163,25 @@ internal struct MissionStatistics
 		}
 		return false;
 	}
+
+	/// Load
+	internal void load(YamlNode node)
+	{
+		id = int.Parse(node["id"].ToString());
+		markerName = node["markerName"].ToString();
+		markerId = int.Parse(node["markerId"].ToString());
+		time.load(node["time"]);
+		region = node["region"].ToString();
+		country = node["country"].ToString();
+		type = node["type"].ToString();
+		ufo = node["ufo"].ToString();
+		success = bool.Parse(node["success"].ToString());
+		score = int.Parse(node["score"].ToString());
+		rating = node["rating"].ToString();
+		alienRace = node["alienRace"].ToString();
+		daylight = int.Parse(node["daylight"].ToString());
+		injuryList = ((YamlMappingNode)node["injuryList"]).Children.ToDictionary(x => int.Parse(x.ToString()), x => int.Parse(x.ToString()));
+		valiantCrux = bool.Parse(node["valiantCrux"].ToString());
+		lootValue = int.Parse(node["lootValue"].ToString());
+	}
 }

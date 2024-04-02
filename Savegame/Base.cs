@@ -1556,7 +1556,7 @@ internal class Base : Target
 				    KeyValuePair<string, int> craftId = Craft.loadId(craft);
 				    foreach (var j in _crafts)
 				    {
-					    if (j.getUniqueId().Key == craftId.Key && j.getUniqueId().Value == craftId.Value)
+					    if ((j.getUniqueId().Key, j.getUniqueId().Value) == (craftId.Key, craftId.Value))
 					    {
 						    s.setCraft(j);
 						    break;

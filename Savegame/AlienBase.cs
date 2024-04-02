@@ -129,7 +129,7 @@ internal class AlienBase : Target
      * Loads the alien base from a YAML file.
      * @param node YAML node.
      */
-    protected override void load(YamlNode node)
+    internal override void load(YamlNode node)
     {
 	    base.load(node);
 	    _race = node["race"].ToString();

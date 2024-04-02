@@ -201,7 +201,7 @@ internal class Node
     internal void load(YamlNode node)
     {
 	    _id = int.Parse(node["id"].ToString());
-        _pos = new Position(); _pos.load(node["position"]);
+        _pos.load(node["position"]);
 	    //_segment = node["segment"].as<int>(_segment);
 	    _type = int.Parse(node["type"].ToString());
 	    _rank = int.Parse(node["rank"].ToString());

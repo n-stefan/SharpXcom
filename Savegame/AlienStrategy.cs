@@ -111,10 +111,7 @@ internal class AlienStrategy
             _missionLocations.Add(i.Key.ToString(), ((YamlMappingNode)i.Value).Select(x =>
 				KeyValuePair.Create(x.Key.ToString(), int.Parse(x.Value.ToString()))).ToList());
         }
-		foreach (var i in ((YamlMappingNode)node["missionsRun"]).Children)
-		{
-			_missionRuns.Add(i.Key.ToString(), int.Parse(i.Value.ToString()));
-        }
+        _missionRuns = ((YamlMappingNode)node["missionsRun"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
 	}
 
 	/**

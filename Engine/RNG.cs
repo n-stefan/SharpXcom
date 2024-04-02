@@ -102,4 +102,11 @@ internal class RNG
         for (int i = list.Count - 1; i > 0; --i)
             (list[generate(0, i)], list[i]) = (list[i], list[generate(0, i)]);
     }
+
+    /**
+     * Changes the current seed in use by the generator.
+     * @param n New seed.
+     */
+    internal static void setSeed(ulong n) =>
+	    x = n;
 }

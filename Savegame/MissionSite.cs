@@ -192,7 +192,7 @@ internal class MissionSite : Target
      * Loads the mission site from a YAML file.
      * @param node YAML node.
      */
-    protected override void load(YamlNode node)
+    internal override void load(YamlNode node)
     {
 	    base.load(node);
 	    _texture = int.Parse(node["texture"].ToString());

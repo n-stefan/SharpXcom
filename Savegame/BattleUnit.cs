@@ -3149,7 +3149,7 @@ internal class BattleUnit
 	    _id = int.Parse(node["id"].ToString());
 	    _faction = _originalFaction = (UnitFaction)int.Parse(node["faction"].ToString());
 	    _status = (UnitStatus)int.Parse(node["status"].ToString());
-        _pos = new Position(); _pos.load(node["position"]);
+        _pos.load(node["position"]);
 	    _direction = _toDirection = int.Parse(node["direction"].ToString());
 	    _directionTurret = _toDirectionTurret = int.Parse(node["directionTurret"].ToString());
 	    _tu = int.Parse(node["tu"].ToString());
