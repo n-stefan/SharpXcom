@@ -485,7 +485,7 @@ internal class SaveConverter
 	    }
 	    else
 	    {
-		    //vector.resize(month);
+		    vector = new List<T>(month);
 	    }
     }
 

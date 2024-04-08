@@ -44,7 +44,7 @@ enum PathPreview
     PATH_ARROWS = 0x01, // 0001
     PATH_TU_COST = 0x02, // 0010
     PATH_FULL = 0x03  // 0011 (must always be all values combined)
-};
+}
 
 enum ScaleType
 {
@@ -54,7 +54,7 @@ enum ScaleType
     SCALE_SCREEN_DIV_3,
     SCALE_SCREEN_DIV_2,
     SCALE_SCREEN
-};
+}
 
 /**
  * Container for all the various global game options
@@ -885,19 +885,19 @@ internal class Options
     {
 	    // get list of master mods
 	    var masters = new List<string>();
-	    foreach (var modInfo in _modInfos)
+	    foreach (var i in _modInfos)
 	    {
-		    if (modInfo.Value.isMaster())
+		    if (i.Value.isMaster())
 		    {
-			    masters.Add(modInfo.Key);
+			    masters.Add(i.Key);
 		    }
 	    }
 
 	    // create master subfolders if they don't already exist
 	    var saves = new List<string>();
-	    foreach (var master in masters)
+	    foreach (var i in masters)
 	    {
-		    string masterFolder = _userFolder + master;
+		    string masterFolder = _userFolder + i;
 		    if (!CrossPlatform.folderExists(masterFolder))
 		    {
 			    CrossPlatform.createFolder(masterFolder);
@@ -908,22 +908,23 @@ internal class Options
 				    List<string> autosaves = CrossPlatform.getFolderContents(_userFolder, "asav");
                     saves.AddRange(autosaves);
 			    }
-                for (var i = 0; i < saves.Count;)
+                for (var j = 0; j < saves.Count;)
 			    {
-                    string srcFile = _userFolder + saves[i];
+                    string srcFile = _userFolder + saves[j];
                     using var input = new StreamReader(srcFile);
                     var yaml = new YamlStream();
                     yaml.Load(input);
                     var doc = (YamlMappingNode)yaml.Documents[0].RootNode;
-				    if (((YamlSequenceNode)doc.Children["mods"]).Any(x => x["id"].ToString() == master))
+				    var srcMods = doc["mods"] != null ? ((YamlSequenceNode)doc["mods"]).Children.Select(x => x.ToString()).ToList() : new List<string>();
+				    if (srcMods.Contains(i))
 				    {
-					    string dstFile = masterFolder + Path.PathSeparator + saves[i];
+					    string dstFile = masterFolder + Path.PathSeparator + saves[j];
                         CrossPlatform.moveFile(srcFile, dstFile);
-                        saves.RemoveAt(i);
+                        saves.RemoveAt(j);
 				    }
 				    else
 				    {
-					    ++i;
+					    ++j;
 				    }
 			    }
 		    }

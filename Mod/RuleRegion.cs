@@ -51,7 +51,7 @@ struct MissionArea
         texture = int.Parse(node["texture"].ToString());
         name = node["name"].ToString();
     }
-};
+}
 
 /**
  * A zone (set of areas) on the globe.
@@ -74,7 +74,7 @@ struct MissionZone
             areas[i].load(node[i]);
         }
     }
-};
+}
 
 /**
  * Represents a specific region of the world.

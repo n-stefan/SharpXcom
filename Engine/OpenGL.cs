@@ -494,8 +494,8 @@ unsafe internal class OpenGL
 			    is_glsl = (language == "GLSL");
 
 			    linear = bool.Parse(document.Children["linear"].ToString()); // some shaders want texture linear interpolation and some don't
-			    string fragment_source = document.Children["fragment"].ToString();
-			    string vertex_source = document.Children["vertex"].ToString();
+			    string fragment_source = document.Children["fragment"] != null ? document.Children["fragment"].ToString() : string.Empty;
+			    string vertex_source = document.Children["vertex"] != null ? document.Children["vertex"].ToString() : string.Empty;
 
 			    if (is_glsl)
 			    {

@@ -40,7 +40,7 @@ enum UfopaediaTypeId
     UFOPAEDIA_TYPE_TFTD_ARMOR = 15,
     UFOPAEDIA_TYPE_TFTD_BASE_FACILITY = 16,
     UFOPAEDIA_TYPE_TFTD_USO = 17
-};
+}
 
 /**
  * ArticleDefinition is the base class for all article types.
@@ -85,7 +85,7 @@ internal class ArticleDefinition
 	 */
 	internal virtual void load(YamlNode node, int listOrder)
 	{
-		id = title = node["id"].ToString();
+		id = title = node["id"] != null ? node["id"].ToString() : id;
 		section = node["section"].ToString();
         requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
 		title = node["title"].ToString();

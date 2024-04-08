@@ -137,7 +137,7 @@ struct HairXCOM1 : IColorFunc<byte, byte, int, int, int>
 			src = (byte)(Hair + (src & Mod.ShadeMax) - 6); //make hair color like male in xcom_0.pck
 		}
 	}
-};
+}
 
 /**
 * Recolor class used in TFTD
@@ -154,7 +154,7 @@ struct HairXCOM2 : IColorFunc<byte, int, int, int, int>
             src = (byte)(ManHairColor + (src & Mod.ShadeMax));
         }
     }
-};
+}
 
 /**
 * Recolor class used in TFTD
@@ -171,7 +171,7 @@ struct FaceXCOM2 : IColorFunc<byte, int, int, int, int>
             src = (byte)(PinkColor + (src & Mod.ShadeMax));
         }
     }
-};
+}
 
 /**
 * Recolor class used in TFTD
@@ -203,7 +203,7 @@ struct BodyXCOM2 : IColorFunc<byte, int, int, int, int>
             src = (byte)(IonArmorColor + (src & Mod.ShadeMax));
         }
     }
-};
+}
 
 /**
 * Recolor class used in TFTD
@@ -223,7 +223,7 @@ struct FallXCOM2 : IColorFunc<byte, int, int, int, int>
             src = (byte)(FaceXCOM2.PinkColor + (src & Mod.ShadeMax));
         }
     }
-};
+}
 
 /**
  * Mod data used when loading resources
@@ -238,7 +238,7 @@ struct FallXCOM2 : IColorFunc<byte, int, int, int, int>
     internal uint offset;
     /// Maximum size allowed by mod in common sets
     internal uint size;
-};
+}
 
 /**
  * Contains all the game-specific static data that never changes
@@ -1922,7 +1922,7 @@ internal class Mod
 					    color.r = (byte)int.Parse(j[0].ToString());
                         color.g = (byte)int.Parse(j[1].ToString());
 					    color.b = (byte)int.Parse(j[2].ToString());
-					    color.a = (byte)int.Parse(j[3].ToString());
+					    color.a = (byte)(j[3] != null ? int.Parse(j[3].ToString()) : 2);
                         // technically its breaking change as it always overwritte from offset `start + 0` but no two mods could work correctly before this change.
                         _transparencies[(int)(start + curr++)] = color;
 				    }
@@ -2057,7 +2057,7 @@ internal class Mod
 		    }
 		    if (index != null)
 		    {
-                index.RemoveAll(x => x == type);
+                index.Remove(type);
 		    }
 	    }
 	    return rule;
@@ -2075,149 +2075,149 @@ internal class Mod
         yaml.Load(input);
         YamlNode doc = yaml.Documents[0].RootNode;
 
-        foreach (var country in ((YamlSequenceNode)doc["countries"]).Children)
+        foreach (var i in ((YamlSequenceNode)doc["countries"]).Children)
 	    {
-		    RuleCountry rule = loadRule(country, _countries, _countriesIndex);
+		    RuleCountry rule = loadRule(i, _countries, _countriesIndex);
 		    if (rule != null)
 		    {
-                rule.load(country);
+                rule.load(i);
 		    }
 	    }
-	    foreach (var region in ((YamlSequenceNode)doc["regions"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["regions"]).Children)
 	    {
-            RuleRegion rule = loadRule(region, _regions, _regionsIndex);
+            RuleRegion rule = loadRule(i, _regions, _regionsIndex);
 		    if (rule != null)
 		    {
-                rule.load(region);
+                rule.load(i);
 		    }
 	    }
-	    foreach (var facility in ((YamlSequenceNode)doc["facilities"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["facilities"]).Children)
 	    {
-		    RuleBaseFacility rule = loadRule(facility, _facilities, _facilitiesIndex);
+		    RuleBaseFacility rule = loadRule(i, _facilities, _facilitiesIndex);
 		    if (rule != null)
 		    {
 			    _facilityListOrder += 100;
-                rule.load(facility, this, _facilityListOrder);
+                rule.load(i, this, _facilityListOrder);
 		    }
 	    }
-	    foreach (var craft in ((YamlSequenceNode)doc["crafts"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["crafts"]).Children)
 	    {
-		    RuleCraft rule = loadRule(craft, _crafts, _craftsIndex);
+		    RuleCraft rule = loadRule(i, _crafts, _craftsIndex);
 		    if (rule != null)
 		    {
 			    _craftListOrder += 100;
-                rule.load(craft, this, _craftListOrder);
+                rule.load(i, this, _craftListOrder);
 		    }
 	    }
-	    foreach (var craftWeapon in ((YamlSequenceNode)doc["craftWeapons"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["craftWeapons"]).Children)
 	    {
-		    RuleCraftWeapon rule = loadRule(craftWeapon, _craftWeapons, _craftWeaponsIndex);
+		    RuleCraftWeapon rule = loadRule(i, _craftWeapons, _craftWeaponsIndex);
 		    if (rule != null)
 		    {
-                rule.load(craftWeapon, this);
+                rule.load(i, this);
 		    }
 	    }
-	    foreach (var item in ((YamlSequenceNode)doc["items"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["items"]).Children)
 	    {
-		    RuleItem rule = loadRule(item, _items, _itemsIndex);
+		    RuleItem rule = loadRule(i, _items, _itemsIndex);
 		    if (rule != null)
 		    {
 			    _itemListOrder += 100;
-                rule.load(item, this, _itemListOrder);
+                rule.load(i, this, _itemListOrder);
 		    }
 	    }
-	    foreach (var ufo in ((YamlSequenceNode)doc["ufos"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["ufos"]).Children)
 	    {
-		    RuleUfo rule = loadRule(ufo, _ufos, _ufosIndex);
+		    RuleUfo rule = loadRule(i, _ufos, _ufosIndex);
 		    if (rule != null)
 		    {
-                rule.load(ufo, this);
+                rule.load(i, this);
 		    }
 	    }
-	    foreach (var inv in ((YamlSequenceNode)doc["invs"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["invs"]).Children)
 	    {
-		    RuleInventory rule = loadRule(inv, _invs, _invsIndex, "id");
+		    RuleInventory rule = loadRule(i, _invs, _invsIndex, "id");
 		    if (rule != null)
 		    {
 			    _invListOrder += 10;
-                rule.load(inv, _invListOrder);
+                rule.load(i, _invListOrder);
 		    }
 	    }
-	    foreach (var terrain in ((YamlSequenceNode)doc["terrains"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["terrains"]).Children)
 	    {
-            RuleTerrain rule = loadRule(terrain, _terrains, _terrainIndex, "name");
+            RuleTerrain rule = loadRule(i, _terrains, _terrainIndex, "name");
 		    if (rule != null)
 		    {
-                rule.load(terrain, this);
+                rule.load(i, this);
 		    }
 	    }
-	    foreach (var armor in ((YamlSequenceNode)doc["armors"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["armors"]).Children)
 	    {
-		    Armor rule = loadRule(armor, _armors, _armorsIndex);
+		    Armor rule = loadRule(i, _armors, _armorsIndex);
 		    if (rule != null)
 		    {
-			    rule.load(armor);
+			    rule.load(i);
 		    }
 	    }
-	    foreach (var soldier in ((YamlSequenceNode)doc["soldiers"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["soldiers"]).Children)
 	    {
-		    RuleSoldier rule = loadRule(soldier, _soldiers, _soldiersIndex);
+		    RuleSoldier rule = loadRule(i, _soldiers, _soldiersIndex);
 		    if (rule != null)
 		    {
-			    rule.load(soldier, this);
+			    rule.load(i, this);
 		    }
 	    }
-	    foreach (var unit in ((YamlSequenceNode)doc["units"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["units"]).Children)
 	    {
-		    Unit rule = loadRule(unit, _units);
+		    Unit rule = loadRule(i, _units);
 		    if (rule != null)
 		    {
-                rule.load(unit, this);
+                rule.load(i, this);
 		    }
 	    }
-	    foreach (var alienRace in ((YamlSequenceNode)doc["alienRaces"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["alienRaces"]).Children)
 	    {
-            AlienRace rule = loadRule(alienRace, _alienRaces, _aliensIndex, "id");
+            AlienRace rule = loadRule(i, _alienRaces, _aliensIndex, "id");
 		    if (rule != null)
 		    {
-                rule.load(alienRace);
+                rule.load(i);
 		    }
 	    }
-	    foreach (var alienDeployment in ((YamlSequenceNode)doc["alienDeployments"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["alienDeployments"]).Children)
 	    {
-		    AlienDeployment rule = loadRule(alienDeployment, _alienDeployments, _deploymentsIndex);
+		    AlienDeployment rule = loadRule(i, _alienDeployments, _deploymentsIndex);
 		    if (rule != null)
 		    {
-			    rule.load(alienDeployment, this);
+			    rule.load(i, this);
 		    }
 	    }
-	    foreach (var research in ((YamlSequenceNode)doc["research"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["research"]).Children)
 	    {
-		    RuleResearch rule = loadRule(research, _research, _researchIndex, "name");
+		    RuleResearch rule = loadRule(i, _research, _researchIndex, "name");
 		    if (rule != null)
 		    {
 			    _researchListOrder += 100;
-			    rule.load(research, _researchListOrder);
-			    if (bool.Parse(research["unlockFinalMission"].ToString()))
+			    rule.load(i, _researchListOrder);
+			    if (bool.Parse(i["unlockFinalMission"].ToString()))
                 {
-				    _finalResearch = research["name"].ToString();
+				    _finalResearch = i["name"].ToString();
 			    }
 		    }
 	    }
-	    foreach (var manufacture in ((YamlSequenceNode)doc["manufacture"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["manufacture"]).Children)
 	    {
-		    RuleManufacture rule = loadRule(manufacture, _manufacture, _manufactureIndex, "name");
+		    RuleManufacture rule = loadRule(i, _manufacture, _manufactureIndex, "name");
 		    if (rule != null)
 		    {
 			    _manufactureListOrder += 100;
-			    rule.load(manufacture, _manufactureListOrder);
+			    rule.load(i, _manufactureListOrder);
 		    }
 	    }
-	    foreach (var ufopaedia in ((YamlSequenceNode)doc["ufopaedia"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["ufopaedia"]).Children)
 	    {
-		    if (ufopaedia["id"] != null)
+		    if (i["id"] != null)
 		    {
-			    string id = ufopaedia["id"].ToString();
+			    string id = i["id"].ToString();
 			    ArticleDefinition rule;
 			    if (_ufopaediaArticles.TryGetValue(id, out var value))
 			    {
@@ -2225,7 +2225,7 @@ internal class Mod
 			    }
 			    else
 			    {
-                    UfopaediaTypeId type = (UfopaediaTypeId)int.Parse(ufopaedia["type_id"].ToString());
+                    UfopaediaTypeId type = (UfopaediaTypeId)int.Parse(i["type_id"].ToString());
 				    switch (type)
 				    {
 				        case UfopaediaTypeId.UFOPAEDIA_TYPE_CRAFT: rule = new ArticleDefinitionCraft(); break;
@@ -2253,7 +2253,7 @@ internal class Mod
                     _ufopaediaIndex.Add(id);
 			    }
 			    _ufopaediaListOrder += 100;
-			    rule.load(ufopaedia, _ufopaediaListOrder);
+			    rule.load(i, _ufopaediaListOrder);
 			    if (rule.section != Ufopaedia.Ufopaedia.UFOPAEDIA_NOT_AVAILABLE)
 			    {
 				    if (!_ufopaediaSections.ContainsKey(rule.section))
@@ -2267,16 +2267,16 @@ internal class Mod
 				    }
 			    }
 		    }
-		    else if (ufopaedia["delete"] != null)
+		    else if (i["delete"] != null)
 		    {
-			    string type = ufopaedia["delete"].ToString();
+			    string type = i["delete"].ToString();
 			    if (_ufopaediaArticles.ContainsKey(type))
 			    {
 				    _ufopaediaArticles.Remove(type);
 			    }
                 if (_ufopaediaIndex.Contains(type))
 			    {
-				    _ufopaediaIndex.RemoveAll(x => x == type);
+				    _ufopaediaIndex.Remove(type);
 			    }
 		    }
 	    }
@@ -2284,9 +2284,9 @@ internal class Mod
         YamlMappingNode @base = (YamlMappingNode)doc["startingBase"];
 	    if (@base != null)
 	    {
-		    foreach (var startingBase in @base.Children)
+		    foreach (var i in @base.Children)
 		    {
-                _startingBase.Children[startingBase.Key.ToString()] = startingBase.Value;
+                _startingBase = new YamlMappingNode([i.Key.ToString(), i.Value]);
 		    }
 	    }
 	    if (doc["startingTime"] != null)
@@ -2314,102 +2314,97 @@ internal class Mod
 			    ++num;
 		    }
 	    }
-	    foreach (var ufoTrajectory in ((YamlSequenceNode)doc["ufoTrajectories"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["ufoTrajectories"]).Children)
 	    {
-		    UfoTrajectory rule = loadRule(ufoTrajectory, _ufoTrajectories, null, "id");
+		    UfoTrajectory rule = loadRule(i, _ufoTrajectories, null, "id");
 		    if (rule != null)
 		    {
-                rule.load(ufoTrajectory);
+                rule.load(i);
 		    }
 	    }
-	    foreach (var alienMission in ((YamlSequenceNode)doc["alienMissions"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["alienMissions"]).Children)
 	    {
-            RuleAlienMission rule = loadRule(alienMission, _alienMissions, _alienMissionsIndex);
+            RuleAlienMission rule = loadRule(i, _alienMissions, _alienMissionsIndex);
 		    if (rule != null)
 		    {
-			    rule.load(alienMission);
+			    rule.load(i);
 		    }
 	    }
 	    foreach (var i in ((YamlSequenceNode)doc["alienItemLevels"]).Children)
         {
-            var levels = new List<int>();
-            foreach (var j in ((YamlSequenceNode)i).Children)
-            {
-                levels.Add(int.Parse(j.ToString()));
-            }
-            _alienItemLevels.Add(levels);
+            _alienItemLevels.Add(((YamlSequenceNode)i).Children.Select(x => int.Parse(x.ToString())).ToList());
         }
-	    foreach (var MCDPatch in ((YamlSequenceNode)doc["MCDPatches"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["MCDPatches"]).Children)
 	    {
-		    string type = MCDPatch["type"].ToString();
+		    string type = i["type"].ToString();
 		    if (_MCDPatches.ContainsKey(type))
 		    {
-			    _MCDPatches[type].load(MCDPatch);
+			    _MCDPatches[type].load(i);
 		    }
 		    else
 		    {
 			    MCDPatch patch = new MCDPatch();
-			    patch.load(MCDPatch);
+			    patch.load(i);
 			    _MCDPatches[type] = patch;
 		    }
 	    }
-	    foreach (var extraSprite in ((YamlSequenceNode)doc["extraSprites"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["extraSprites"]).Children)
 	    {
-		    if (extraSprite["type"] != null)
+		    if (i["type"] != null)
 		    {
-			    string type = extraSprite["type"].ToString();
+			    string type = i["type"].ToString();
                 ExtraSprites extraSprites = new ExtraSprites();
 			    ModData data = _modCurrent;
 			    // doesn't support modIndex
 			    if (type == "TEXTURE.DAT")
 				    data = _modData[0];
-                extraSprites.load(extraSprite, data);
+                extraSprites.load(i, data);
 			    _extraSprites[type].Add(extraSprites);
 		    }
-		    else if (extraSprite["delete"] != null)
+		    else if (i["delete"] != null)
 		    {
-			    string type = extraSprite["delete"].ToString();
+			    string type = i["delete"].ToString();
 			    if (_extraSprites.ContainsKey(type))
 			    {
 				    _extraSprites.Remove(type);
 			    }
 		    }
 	    }
-	    foreach (var extraSound in ((YamlSequenceNode)doc["extraSounds"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["extraSounds"]).Children)
 	    {
-		    string type = extraSound["type"].ToString();
+		    string type = i["type"].ToString();
 		    ExtraSounds extraSounds = new ExtraSounds();
-            extraSounds.load(extraSound, _modCurrent);
+            extraSounds.load(i, _modCurrent);
 		    _extraSounds.Add(KeyValuePair.Create(type, extraSounds));
 	    }
-	    foreach (var extraString in ((YamlSequenceNode)doc["extraStrings"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["extraStrings"]).Children)
 	    {
-		    string type = extraString["type"].ToString();
+		    string type = i["type"].ToString();
 		    if (_extraStrings.ContainsKey(type))
 		    {
-			    _extraStrings[type].load(extraString);
+			    _extraStrings[type].load(i);
 		    }
 		    else
 		    {
 			    ExtraStrings extraStrings = new ExtraStrings();
-                extraStrings.load(extraString);
+                extraStrings.load(i);
 			    _extraStrings[type] = extraStrings;
 		    }
 	    }
 
-	    foreach (var statString in ((YamlSequenceNode)doc["statStrings"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["statStrings"]).Children)
 	    {
-		    StatString stat_String = new StatString();
-            stat_String.load(statString);
-		    _statStrings.Add(stat_String);
+		    StatString statString = new StatString();
+            statString.load(i);
+		    _statStrings.Add(statString);
 	    }
 
-	    foreach (var @interface in ((YamlSequenceNode)doc["interfaces"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["interfaces"]).Children)
 	    {
-            RuleInterface rule = loadRule(@interface, _interfaces);
+            RuleInterface rule = loadRule(i, _interfaces);
 		    if (rule != null)
 		    {
-			    rule.load(@interface);
+			    rule.load(i);
 		    }
 	    }
 	    if (doc["globe"] != null)
@@ -2423,11 +2418,11 @@ internal class Mod
 	    if (doc["constants"] is YamlNode constants)
 	    {
 		    //backward compatibility version
-		    if (doc["constants"] is YamlSequenceNode seq)
+		    if (constants is YamlSequenceNode seq)
 		    {
-			    foreach (var constant in seq.Children)
+			    foreach (var i in seq.Children)
 			    {
-				    loadConstants(constant);
+				    loadConstants(i);
 			    }
 		    }
 		    else
@@ -2435,38 +2430,37 @@ internal class Mod
 			    loadConstants(constants);
 		    }
 	    }
-	    foreach (var mapScript in ((YamlSequenceNode)doc["mapScripts"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["mapScripts"]).Children)
 	    {
-		    string type = mapScript["type"].ToString();
-		    if (mapScript["delete"] != null)
+		    string type = i["type"].ToString();
+		    if (i["delete"] != null)
 		    {
-			    type = mapScript["delete"].ToString();
+			    type = i["delete"].ToString();
 		    }
 		    if (_mapScripts.ContainsKey(type))
 		    {
                 _mapScripts[type].Clear();
-                //_mapScripts.Remove(type);
 		    }
-		    foreach (var command in ((YamlSequenceNode)mapScript["commands"]).Children)
+		    foreach (var j in ((YamlSequenceNode)i["commands"]).Children)
 		    {
-                MapScript map_Script = new MapScript();
-                map_Script.load(command);
-			    _mapScripts[type].Add(map_Script);
+                MapScript mapScript = new MapScript();
+                mapScript.load(j);
+			    _mapScripts[type].Add(mapScript);
 		    }
 	    }
-	    foreach (var missionScript in ((YamlSequenceNode)doc["missionScripts"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["missionScripts"]).Children)
 	    {
-		    RuleMissionScript rule = loadRule(missionScript, _missionScripts, _missionScriptIndex, "type");
+		    RuleMissionScript rule = loadRule(i, _missionScripts, _missionScriptIndex, "type");
 		    if (rule != null)
 		    {
-                rule.load(missionScript);
+                rule.load(i);
 		    }
 	    }
 
 	    // refresh _psiRequirements for psiStrengthEval
-	    foreach (var facilitiesIndex in _facilitiesIndex)
+	    foreach (var i in _facilitiesIndex)
 	    {
-            RuleBaseFacility rule = getBaseFacility(facilitiesIndex);
+            RuleBaseFacility rule = getBaseFacility(i);
 		    if (rule.getPsiLaboratories() > 0)
 		    {
                 _psiRequirements = rule.getRequirements();
@@ -2474,27 +2468,27 @@ internal class Mod
 		    }
 	    }
 
-	    foreach (var cutscene in ((YamlSequenceNode)doc["cutscenes"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["cutscenes"]).Children)
 	    {
-		    RuleVideo rule = loadRule(cutscene, _videos);
+		    RuleVideo rule = loadRule(i, _videos);
 		    if (rule != null)
 		    {
-                rule.load(cutscene);
+                rule.load(i);
 		    }
 	    }
-	    foreach (var music in ((YamlSequenceNode)doc["musics"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["musics"]).Children)
 	    {
-		    RuleMusic rule = loadRule(music, _musicDefs);
+		    RuleMusic rule = loadRule(i, _musicDefs);
 		    if (rule != null)
 		    {
-			    rule.load(music);
+			    rule.load(i);
 		    }
 	    }
-	    foreach (var commendation in ((YamlSequenceNode)doc["commendations"]).Children)
+	    foreach (var i in ((YamlSequenceNode)doc["commendations"]).Children)
 	    {
-		    string type = commendation["type"].ToString();
+		    string type = i["type"].ToString();
 		    RuleCommendations commendations = new RuleCommendations();
-            commendations.load(commendation);
+            commendations.load(i);
 		    _commendations[type] = commendations;
 	    }
 	    var count = 0;

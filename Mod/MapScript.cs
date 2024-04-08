@@ -26,7 +26,7 @@ enum MapScriptCommand { MSC_UNDEFINED = -1, MSC_ADDBLOCK, MSC_ADDLINE, MSC_ADDCR
 record struct MCDReplacement
 {
 	internal int set, entry;
-};
+}
 
 struct TunnelData
 {
@@ -42,7 +42,7 @@ struct TunnelData
 
         return replacements[type];
 	}
-};
+}
 
 internal class MapScript
 {
