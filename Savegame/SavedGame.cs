@@ -1513,7 +1513,7 @@ internal class SavedGame
 	    KeyValuePair<string, string> str = CrossPlatform.timeToString(save.timestamp);
 	    save.isoDate = str.Key;
 	    save.isoTime = str.Value;
-        save.mods = ((YamlSequenceNode)doc["mods"]).Children.Select(x => x.ToString()).ToList();
+        save.mods = doc["mods"] != null ? ((YamlSequenceNode)doc["mods"]).Children.Select(x => x.ToString()).ToList() : new List<string>();
 
 	    var details = new StringBuilder();
 	    if (doc["turn"] != null)

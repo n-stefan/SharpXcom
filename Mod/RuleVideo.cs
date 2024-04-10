@@ -23,7 +23,7 @@ struct SlideshowHeader
 {
     internal string musicId; // just the extension-less filename, like "GMWIN"
     internal int transitionSeconds; // number of seconds to show each slide
-};
+}
 
 struct SlideshowSlide
 {
@@ -32,7 +32,7 @@ struct SlideshowSlide
     internal int w, h, x, y, color; // caption rect and color info
     internal TextHAlign align; // caption alignment
     internal int transitionSeconds; // number of seconds to show this slide
-};
+}
 
 internal class RuleVideo : IRule
 {
@@ -82,8 +82,8 @@ internal class RuleVideo : IRule
 
 	static void _loadSlide(SlideshowSlide slide, YamlNode node)
 	{
-		slide.imagePath = node["imagePath"].ToString();
-		slide.caption = node["caption"].ToString();
+		slide.imagePath = node["imagePath"] != null ? node["imagePath"].ToString() : string.Empty;
+		slide.caption = node["caption"] != null ? node["caption"].ToString() : string.Empty;
 
 		slide.w = node["captionSize"] != null ? int.Parse(node["captionSize"][0].ToString()) : Screen.ORIGINAL_WIDTH;
 		slide.h = node["captionSize"] != null ? int.Parse(node["captionSize"][1].ToString()) : Screen.ORIGINAL_HEIGHT;

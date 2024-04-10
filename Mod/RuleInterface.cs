@@ -25,7 +25,7 @@ record struct Element
     internal int x, y, w, h, color, color2, border;
     /// defines inversion behaviour
     internal bool TFTDMode;
-};
+}
 
 internal class RuleInterface : IRule
 {

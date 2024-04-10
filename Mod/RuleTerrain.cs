@@ -18,6 +18,7 @@
  */
 
 namespace SharpXcom.Mod;
+
 /**
  * Represents a specific type of Battlescape Terrain.
  * - the names of the objectsets needed in this specific terrain.

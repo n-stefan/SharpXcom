@@ -3291,7 +3291,8 @@ internal class Mod
 		    // Starting soldiers specified by type
 		    if (node is YamlMappingNode m)
 		    {
-			    foreach (var i in m.Children)
+                var randomSoldiers = m != null ? m.Children.ToDictionary(x => x.ToString(), x => int.Parse(x.ToString())) : new Dictionary<string, int>();
+			    foreach (var i in randomSoldiers)
 			    {
                     for (int s = 0; s < int.Parse(i.Value.ToString()); ++s)
 				    {

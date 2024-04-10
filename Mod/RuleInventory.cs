@@ -34,7 +34,7 @@ struct RuleSlot
         x = int.Parse(node["x"].ToString());
         y = int.Parse(node["y"].ToString());
     }
-};
+}
 
 /**
  * Represents a specific section of the inventory,

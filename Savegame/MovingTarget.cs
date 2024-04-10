@@ -75,7 +75,7 @@ internal class MovingTarget : Target
      * great circle distance to destination and
      * current raw speed.
      */
-    void calculateSpeed()
+    protected virtual void calculateSpeed()
     {
         calculateMeetPoint();
         if (_dest != null)
@@ -88,11 +88,11 @@ internal class MovingTarget : Target
             _speedLon = dLon / length * _speedRadian / Math.Cos(_lat + _speedLat);
 
             // Check for invalid speeds when a division by zero occurs due to near-zero values
-            if (!(_speedLon == _speedLon) || !(_speedLat == _speedLat))
-            {
-                _speedLon = 0;
-                _speedLat = 0;
-            }
+            //if (!(_speedLon == _speedLon) || !(_speedLat == _speedLat))
+            //{
+            //    _speedLon = 0;
+            //    _speedLat = 0;
+            //}
         }
         else
         {
