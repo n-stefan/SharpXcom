@@ -111,7 +111,7 @@ internal class Craft : MovingTarget
      * Changes the destination the craft is heading to.
      * @param dest Pointer to new destination.
      */
-    void setDestination(Target dest)
+    internal override void setDestination(Target dest)
     {
         if (_status != "STR_OUT")
         {

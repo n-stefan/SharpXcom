@@ -128,6 +128,6 @@ internal class ExtraSounds
 	 * Gets the filename that this sound set represents.
 	 * @return The sound name.
 	 */
-	string getType() =>
+	internal string getType() =>
 		_type;
 }

@@ -115,7 +115,7 @@ internal class MovingTarget : Target
      * Changes the destination the moving target is heading to.
      * @param dest Pointer to destination.
      */
-    internal void setDestination(Target dest)
+    internal virtual void setDestination(Target dest)
     {
         _meetCalculated = false;
         // Remove moving target from old destination's followers
@@ -130,9 +130,9 @@ internal class MovingTarget : Target
             _dest.getFollowers().Add(this);
         }
         // Recalculate meeting point for any followers
-        foreach (var follower in getFollowers())
+        foreach (var i in getFollowers())
         {
-            follower.resetMeetPoint();
+            i.resetMeetPoint();
         }
         calculateSpeed();
     }
@@ -239,7 +239,7 @@ internal class MovingTarget : Target
      * Saves the moving target to a YAML file.
      * @return YAML node.
      */
-    protected virtual YamlNode save()
+    protected override YamlNode save()
     {
 	    var node = (YamlMappingNode)base.save();
 	    if (_dest != null)

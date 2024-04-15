@@ -688,4 +688,96 @@ internal class Ufo : MovingTarget
 		        return _id;
 	    }
     }
+
+    /**
+     * Calculates the direction for the UFO based
+     * on the current raw speed and destination.
+     */
+    protected override void calculateSpeed()
+    {
+	    base.calculateSpeed();
+
+	    double x = _speedLon;
+	    double y = -_speedLat;
+
+	    // This section guards vs. divide-by-zero.
+	    if (AreSame(x, 0.0) || AreSame(y, 0.0))
+	    {
+		    if (AreSame(x, 0.0) && AreSame(y, 0.0))
+		    {
+			    _direction = "STR_NONE_UC";
+		    }
+		    else if (AreSame(x, 0.0))
+		    {
+			    if (y > 0.0f)
+			    {
+				    _direction = "STR_NORTH";
+			    }
+			    else if (y < 0.0f)
+			    {
+				    _direction = "STR_SOUTH";
+			    }
+		    }
+		    else if (AreSame(y, 0.0))
+		    {
+			    if (x > 0.0f)
+			    {
+				    _direction = "STR_EAST";
+			    }
+			    else if (x < 0.0f)
+			    {
+				    _direction = "STR_WEST";
+			    }
+		    }
+
+		    return;
+	    }
+
+	    double theta = Math.Atan2(y, x); // radians
+	    theta = theta * 180.0f / M_PI; // +/- 180 deg.
+
+	    if (22.5f > theta && theta > -22.5f)
+	    {
+		    _direction = "STR_EAST";
+	    }
+	    else if (-22.5f > theta && theta > -67.5f)
+	    {
+		    _direction = "STR_SOUTH_EAST";
+	    }
+	    else if (-67.5f > theta && theta > -112.5f)
+	    {
+		    _direction = "STR_SOUTH";
+	    }
+	    else if (-112.5f > theta && theta > -157.5f)
+	    {
+		    _direction = "STR_SOUTH_WEST";
+	    }
+	    else if (-157.5f > theta || theta > 157.5f)
+	    {
+		    _direction = "STR_WEST";
+	    }
+	    else if (157.5f > theta && theta > 112.5f)
+	    {
+		    _direction = "STR_NORTH_WEST";
+	    }
+	    else if (112.5f > theta && theta > 67.5f)
+	    {
+		    _direction = "STR_NORTH";
+	    }
+	    else
+	    {
+		    _direction = "STR_NORTH_EAST";
+	    }
+    }
+
+    /**
+     * Handle destination changes, making sure to delete old waypoint destinations.
+     * @param dest Pointer to the new destination.
+     */
+    internal override void setDestination(Target dest)
+    {
+	    Waypoint old = (Waypoint)_dest;
+	    base.setDestination(dest);
+	    old = null;
+    }
 }

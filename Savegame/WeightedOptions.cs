@@ -65,9 +65,9 @@ internal class WeightedOptions
     internal List<string> getNames()
     {
         var names = new List<string>();
-        foreach (var choice in _choices)
+        foreach (var ii in _choices)
         {
-            names.Add(choice.Key);
+            names.Add(ii.Key);
         }
         return names;
     }
