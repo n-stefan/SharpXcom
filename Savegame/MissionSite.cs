@@ -53,7 +53,7 @@ internal class MissionSite : Target
      * Saves the mission site to a YAML file.
      * @return YAML node.
      */
-    internal YamlNode save()
+    internal override YamlNode save()
     {
         var node = (YamlMappingNode)base.save();
 	    node.Add("type", _rules.getType());

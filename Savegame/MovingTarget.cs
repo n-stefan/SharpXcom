@@ -239,7 +239,7 @@ internal class MovingTarget : Target
      * Saves the moving target to a YAML file.
      * @return YAML node.
      */
-    protected override YamlNode save()
+    internal override YamlNode save()
     {
 	    var node = (YamlMappingNode)base.save();
 	    if (_dest != null)

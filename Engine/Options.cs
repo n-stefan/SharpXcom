@@ -738,33 +738,51 @@ internal class Options
     internal static bool save(string filename = "options")
     {
 	    string s = _configFolder + filename + ".cfg";
-	    using var sav = new StreamWriter(s);
-	    if (sav == null)
-	    {
-            Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} Failed to save {filename}.cfg");
-		    return false;
-	    }
-	    try
-	    {
-            var serializer = new Serializer();
-            //TODO
-            serializer.Serialize(sav, new
-            {
-                mods = mods,
-                options = _info
-            });
+        try
+        {
+            using var sav = new StreamWriter(s);
+            var @out = new Emitter(sav);
+
+		    YamlMappingNode doc = new(), node = new();
+		    foreach (var i in _info)
+		    {
+			    i.save(node);
+		    }
+		    doc.Add("options", node);
+
+		    foreach (var i in mods)
+		    {
+			    YamlMappingNode mod = new()
+                {
+                    { "id", i.Key },
+                    { "active", i.Value.ToString() }
+                };
+			    ((YamlSequenceNode)doc["mods"]).Add(mod);
+		    }
+
+            @out.Emit(new StreamStart());
+            @out.Emit(new DocumentStart());
+
+		    writeNode(doc, @out);
+            //var serializer = new Serializer();
+            //serializer.Serialize(@out, doc);
+
+            @out.Emit(new DocumentEnd(false));
+            @out.Emit(new StreamEnd());
+
+            sav.WriteLine();
+	        sav.Close();
 	    }
 	    catch (YamlException e)
 	    {
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {e.Message}");
 		    return false;
 	    }
-	    sav.Close();
-	    if (sav == null)
-	    {
+        catch (Exception)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} Failed to save {filename}.cfg");
 		    return false;
-	    }
+        }
 	    return true;
     }
 
@@ -1160,4 +1178,50 @@ internal class Options
      */
     internal static List<OptionInfo> getOptionInfo() =>
         _info;
+
+    static void writeNode(YamlNode node, Emitter emitter)
+    {
+	    switch (node.NodeType)
+	    {
+		    case YamlNodeType.Sequence:
+		    {
+                emitter.Emit(new SequenceStart(null, null, false, SequenceStyle.Block));
+			    for (var i = 0; i < ((YamlSequenceNode)node).Count(); i++)
+			    {
+				    writeNode(node[i], emitter);
+			    }
+                emitter.Emit(new SequenceEnd());
+			    break;
+		    }
+		    case YamlNodeType.Mapping:
+		    {
+                emitter.Emit(new MappingStart());
+
+			    // First collect all the keys
+			    var keys = new List<string>(((YamlMappingNode)node).Count());
+			    int key_it = 0;
+			    foreach (var it in ((YamlMappingNode)node).Children)
+			    {
+				    keys[key_it++] = it.Key.ToString();
+			    }
+
+			    // Then sort them
+			    keys.Sort();
+
+			    // Then emit all the entries in sorted order.
+			    for (var i = 0; i < keys.Count; i++)
+			    {
+				    //emitter << YAML::Key;
+				    emitter.Emit(new Scalar(keys[i]));
+				    //emitter << YAML::Value;
+				    writeNode(node[keys[i]], emitter);
+			    }
+			    emitter.Emit(new MappingEnd());
+			    break;
+		    }
+		    default:
+			    emitter.Emit(new Scalar(node.ToString()));
+			    break;
+	    }
+    }
 }

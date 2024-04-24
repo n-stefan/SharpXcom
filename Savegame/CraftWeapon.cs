@@ -163,4 +163,18 @@ internal class CraftWeapon
 	    p.setRange(this.getRules().getRange());
 	    return p;
     }
+
+    /**
+     * Saves the base to a YAML file.
+     * @return YAML node.
+     */
+    internal YamlNode save()
+    {
+	    var node = new YamlMappingNode();
+	    node.Add("type", _rules.getType());
+	    node.Add("ammo", _ammo.ToString());
+	    if (_rearming)
+		    node.Add("rearming", _rearming.ToString());
+	    return node;
+    }
 }

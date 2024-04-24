@@ -96,7 +96,7 @@ internal class Target
      * Saves the target to a YAML file.
      * @returns YAML node.
      */
-    protected virtual YamlNode save()
+    internal virtual YamlNode save()
     {
         var node = new YamlMappingNode
         {

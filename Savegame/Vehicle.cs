@@ -84,4 +84,17 @@ internal class Vehicle
      */
     internal int getSize() =>
 	    _size;
+
+    /**
+     * Saves the base to a YAML file.
+     * @return YAML node.
+     */
+    internal YamlNode save()
+    {
+	    var node = new YamlMappingNode();
+	    node.Add("type", _rules.getType());
+	    node.Add("ammo", _ammo.ToString());
+	    node.Add("size", _size.ToString());
+	    return node;
+    }
 }

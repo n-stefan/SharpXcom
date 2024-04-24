@@ -253,4 +253,27 @@ internal class OptionInfo
 	    }
 	    return ref _ref.i;
     }
+
+    /**
+     * Saves an option value to the corresponding YAML.
+     * @param node Options YAML node.
+     */
+    internal void save(YamlNode node)
+    {
+	    switch (_type)
+	    {
+	        case OptionType.OPTION_BOOL:
+		        ((YamlMappingNode)node).Add(_id, _ref.b.ToString());
+		        break;
+	        case OptionType.OPTION_INT:
+		        ((YamlMappingNode)node).Add(_id, _ref.i.ToString());
+		        break;
+	        case OptionType.OPTION_KEY:
+		        ((YamlMappingNode)node).Add(_id, ((int)_ref.k).ToString());
+		        break;
+	        case OptionType.OPTION_STRING:
+		        ((YamlMappingNode)node).Add(_id, _ref.s);
+		        break;
+	    }
+    }
 }

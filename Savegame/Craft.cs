@@ -976,4 +976,46 @@ internal class Craft : MovingTarget
      */
     internal static KeyValuePair<string, int> loadId(YamlNode node) =>
 	    KeyValuePair.Create(node["type"].ToString(), int.Parse(node["id"].ToString()));
+
+    /**
+     * Saves the craft to a YAML file.
+     * @return YAML node.
+     */
+    internal override YamlNode save()
+    {
+        var node = (YamlMappingNode)base.save();
+	    node.Add("type", _rules.getType());
+	    node.Add("fuel", _fuel.ToString());
+	    node.Add("damage", _damage.ToString());
+	    foreach (var i in _weapons)
+	    {
+		    var subnode = new YamlMappingNode();
+		    if (i != null)
+		    {
+			    subnode = (YamlMappingNode)i.save();
+		    }
+		    else
+		    {
+			    subnode.Add("type", "0");
+		    }
+		    ((YamlSequenceNode)node["weapons"]).Add(subnode);
+	    }
+	    node.Add("items", _items.save());
+	    foreach (var i in _vehicles)
+	    {
+		    ((YamlSequenceNode)node["vehicles"]).Add(i.save());
+	    }
+	    node.Add("status", _status);
+	    if (_lowFuel)
+		    node.Add("lowFuel", _lowFuel.ToString());
+	    if (_mission)
+		    node.Add("mission", _mission.ToString());
+	    if (_inBattlescape)
+		    node.Add("inBattlescape", _inBattlescape.ToString());
+	    if (_interceptionOrder != 0)
+		    node.Add("interceptionOrder", _interceptionOrder.ToString());
+	    if (_takeoff != 0)
+		    node.Add("takeoff", _takeoff.ToString());
+	    return node;
+    }
 }

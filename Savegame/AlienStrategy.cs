@@ -60,19 +60,23 @@ internal class AlienStrategy
             { "regions", _regionChances.save() },
             { "possibleMissions", new YamlSequenceNode() }
         };
-        foreach (var regionMission in _regionMissions)
+        foreach (var ii in _regionMissions)
 		{
             var subnode = new YamlMappingNode
             {
-                { "region", regionMission.Key },
-                { "missions", regionMission.Value.save() }
+                { "region", ii.Key },
+                { "missions", ii.Value.save() }
             };
             ((YamlSequenceNode)node["possibleMissions"]).Add(subnode);
 		}
 		node.Add("missionLocations",
-			new YamlSequenceNode(_missionLocations.Select(x => new YamlMappingNode(x.Key,
-			new YamlSequenceNode(x.Value.Select(y => new YamlMappingNode(y.Key, y.Value.ToString())))))));
-        node.Add("missionsRun", new YamlSequenceNode(_missionRuns.Select(x => new YamlMappingNode(x.Key, x.Value.ToString()))));
+			new YamlSequenceNode(_missionLocations
+				.Select(x => new YamlMappingNode(x.Key,
+			new YamlSequenceNode(x.Value
+				.Select(y => new YamlMappingNode(y.Key, y.Value.ToString())))))));
+        node.Add("missionsRun",
+			new YamlSequenceNode(_missionRuns
+				.Select(x => new YamlMappingNode(x.Key, x.Value.ToString()))));
 		return node;
 	}
 

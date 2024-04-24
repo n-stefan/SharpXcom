@@ -82,7 +82,7 @@ internal class Base : Target
      * Saves the base to a YAML file.
      * @return YAML node.
      */
-    internal YamlNode save()
+    internal override YamlNode save()
     {
         var node = (YamlMappingNode)base.save();
         node.Add("facilities", new YamlSequenceNode(_facilities.Select(x => x.save())));

@@ -49,7 +49,7 @@ internal class AlienBase : Target
      * Saves the alien base to a YAML file.
      * @return YAML node.
      */
-    internal YamlNode save()
+    internal override YamlNode save()
     {
 	    var node = (YamlMappingNode)base.save();
 	    node.Add("race", _race);
