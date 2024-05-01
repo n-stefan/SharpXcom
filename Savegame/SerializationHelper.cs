@@ -93,4 +93,7 @@ internal class SerializationHelper
 
 		return ret;
 	}
+
+	internal static string serializeDouble(double value) =>
+		value.ToString("G17");
 }

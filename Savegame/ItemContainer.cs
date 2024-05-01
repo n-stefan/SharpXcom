@@ -43,7 +43,7 @@ internal class ItemContainer
      * @return YAML node.
      */
     internal YamlNode save() =>
-	    new YamlSequenceNode(_qty.Select(x => new YamlMappingNode(new YamlScalarNode(x.Key), new YamlScalarNode(x.Value.ToString()))));
+	    new YamlSequenceNode(_qty.Select(x => new YamlMappingNode(x.Key, x.Value.ToString())));
 
     /**
      * Adds an item amount to the container.

@@ -246,9 +246,9 @@ internal class MovingTarget : Target
 	    {
 		    node.Add("dest", _dest.saveId());
 	    }
-	    node.Add("speedLon", _speedLon.ToString());
-	    node.Add("speedLat", _speedLat.ToString());
-	    node.Add("speedRadian", _speedRadian.ToString());
+	    node.Add("speedLon", serializeDouble(_speedLon));
+	    node.Add("speedLat", serializeDouble(_speedLat));
+	    node.Add("speedRadian", serializeDouble(_speedRadian));
 	    node.Add("speed", _speed.ToString());
 	    return node;
     }

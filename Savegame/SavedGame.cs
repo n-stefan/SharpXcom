@@ -208,113 +208,100 @@ internal class SavedGame
 	{
 		string savPath = Options.getMasterUserFolder() + filename;
 		string tmpPath = savPath + ".tmp";
-		using var tmp = new StreamWriter(tmpPath);
-		if (tmp == null)
+		try
 		{
-			throw new Exception("Failed to save " + filename);
-		}
+			using var tmp = new StreamWriter(tmpPath);
 
-        //YAML::Emitter out;
-        var doc = new YamlDocument("root");
-        var str = new YamlStream(doc);
+            var @out = new Emitter(tmp);
+            var serializer = new Serializer();
 
-        // Saves the brief game info used in the saves list
-        var brief = new YamlMappingNode
-        {
-            { "name", _name },
-            { "version", OPENXCOM_VERSION_SHORT },
-            { "engine", OPENXCOM_VERSION_ENGINE }
-        };
-        string git_sha = OPENXCOM_VERSION_GIT;
-		if (!string.IsNullOrEmpty(git_sha) && git_sha[0] == '.')
-		{
-			git_sha = git_sha.Remove(0, 1);
-		}
-		brief.Add("build", git_sha);
-		brief.Add("time", _time.save());
-		if (_battleGame != null)
-		{
-			brief.Add("mission", _battleGame.getMissionType());
-			brief.Add("turn", _battleGame.getTurn().ToString());
-		}
+			// Saves the brief game info used in the saves list
+			var brief = new YamlMappingNode
+			{
+				{ "name", _name },
+				{ "version", OPENXCOM_VERSION_SHORT },
+				{ "engine", OPENXCOM_VERSION_ENGINE }
+			};
+			string git_sha = OPENXCOM_VERSION_GIT;
+			if (!string.IsNullOrEmpty(git_sha) && git_sha[0] == '.')
+			{
+				git_sha = git_sha.Remove(0, 1);
+			}
+			brief.Add("build", git_sha);
+			brief.Add("time", _time.save());
+			if (_battleGame != null)
+			{
+				brief.Add("mission", _battleGame.getMissionType());
+				brief.Add("turn", _battleGame.getTurn().ToString());
+			}
 
-		// only save mods that work with the current master
-		List<ModInfo> activeMods = Options.getActiveMods();
-		var modsList = new List<string>();
-		foreach (var activeMod in activeMods)
-		{
-			modsList.Add(activeMod.getId() + " ver: " + activeMod.getVersion());
-		}
-		brief.Add("mods", new YamlSequenceNode(modsList.Select(x => new YamlScalarNode(x))));
-		if (_ironman)
-			brief.Add("ironman", _ironman.ToString());
-        ((YamlSequenceNode)doc.RootNode).Add(brief);
-        // Saves the full game data to the save
-        //out << YAML::BeginDoc;
-        var node = new YamlMappingNode
-        {
-            { "difficulty", ((int)_difficulty).ToString() },
-            { "end", ((int)_end).ToString() },
-            { "monthsPassed", _monthsPassed.ToString() },
-            { "graphRegionToggles", _graphRegionToggles },
-            { "graphCountryToggles", _graphCountryToggles },
-            { "graphFinanceToggles", _graphFinanceToggles },
-            { "rng", RNG.getSeed().ToString() },
-            { "funds", new YamlSequenceNode(_funds.Select(x => new YamlScalarNode(x.ToString()))) },
-            { "maintenance", new YamlSequenceNode(_maintenance.Select(x => new YamlScalarNode(x.ToString()))) },
-            { "researchScores", new YamlSequenceNode(_researchScores.Select(x => new YamlScalarNode(x.ToString()))) },
-            { "incomes", new YamlSequenceNode(_incomes.Select(x => new YamlScalarNode(x.ToString()))) },
-            { "expenditures", new YamlSequenceNode(_expenditures.Select(x => new YamlScalarNode(x.ToString()))) },
-            { "warned", _warned.ToString() },
-            { "globeLon", _globeLon.ToString() },
-            { "globeLat", _globeLat.ToString() },
-            { "globeZoom", _globeZoom.ToString() },
-            { "ids", new YamlSequenceNode(_ids.Select(x => new YamlMappingNode(x.Key, x.Value.ToString()))) },
-            { "countries", new YamlSequenceNode(_countries.Select(x => x.save())) },
-            { "regions", new YamlSequenceNode(_regions.Select(x => x.save())) },
-            { "bases", new YamlSequenceNode(_bases.Select(x => x.save())) },
-            { "waypoints", new YamlSequenceNode(_waypoints.Select(x => x.save())) },
-            { "missionSites", new YamlSequenceNode(_missionSites.Select(x => x.save())) },
-            // Alien bases must be saved before alien missions.
-            { "alienBases", new YamlSequenceNode(_alienBases.Select(x => x.save())) },
-            // Missions must be saved before UFOs, but after alien bases.
-            { "alienMissions", new YamlSequenceNode(_activeMissions.Select(x => x.save())) },
-            // UFOs must be after missions
-            { "ufos", new YamlSequenceNode(_ufos.Select(x => x.save(getMonthsPassed() == -1))) },
-            { "discovered", new YamlSequenceNode(_discovered.Select(x => new YamlScalarNode(x.getName()))) },
-            { "poppedResearch", new YamlSequenceNode(_poppedResearch.Select(x => new YamlScalarNode(x.getName()))) },
-            { "alienStrategy", _alienStrategy.save() },
-            { "deadSoldiers", new YamlSequenceNode(_deadSoldiers.Select(x => x.save())) }
-        };
-        if (Options.soldierDiaries)
-		{
-            node.Add("missionStatistics", new YamlSequenceNode(_missionStatistics.Select(x => x.save())));
-		}
-		if (_battleGame != null)
-		{
-			node.Add("battleGame", _battleGame.save());
-		}
-        ((YamlSequenceNode)doc.RootNode).Add(node);
+			// only save mods that work with the current master
+			List<ModInfo> activeMods = Options.getActiveMods();
+			var modsList = new List<string>();
+			foreach (var i in activeMods)
+			{
+				modsList.Add(i.getId() + " ver: " + i.getVersion());
+			}
+			brief.Add("mods", new YamlSequenceNode(modsList.Select(x => new YamlScalarNode(x))));
+			if (_ironman)
+				brief.Add("ironman", _ironman.ToString());
+            serializer.Serialize(@out, brief);
+			// Saves the full game data to the save
+            @out.Emit(new DocumentStart());
+			var node = new YamlMappingNode
+			{
+				{ "difficulty", ((int)_difficulty).ToString() },
+				{ "end", ((int)_end).ToString() },
+				{ "monthsPassed", _monthsPassed.ToString() },
+				{ "graphRegionToggles", _graphRegionToggles },
+				{ "graphCountryToggles", _graphCountryToggles },
+				{ "graphFinanceToggles", _graphFinanceToggles },
+				{ "rng", RNG.getSeed().ToString() },
+				{ "funds", new YamlSequenceNode(_funds.Select(x => new YamlScalarNode(x.ToString()))) },
+				{ "maintenance", new YamlSequenceNode(_maintenance.Select(x => new YamlScalarNode(x.ToString()))) },
+				{ "researchScores", new YamlSequenceNode(_researchScores.Select(x => new YamlScalarNode(x.ToString()))) },
+				{ "incomes", new YamlSequenceNode(_incomes.Select(x => new YamlScalarNode(x.ToString()))) },
+				{ "expenditures", new YamlSequenceNode(_expenditures.Select(x => new YamlScalarNode(x.ToString()))) },
+				{ "warned", _warned.ToString() },
+				{ "globeLon", serializeDouble(_globeLon) },
+				{ "globeLat", serializeDouble(_globeLat) },
+				{ "globeZoom", _globeZoom.ToString() },
+				{ "ids", new YamlSequenceNode(_ids.Select(x => new YamlMappingNode(x.Key, x.Value.ToString()))) },
+				{ "countries", new YamlSequenceNode(_countries.Select(x => x.save())) },
+				{ "regions", new YamlSequenceNode(_regions.Select(x => x.save())) },
+				{ "bases", new YamlSequenceNode(_bases.Select(x => x.save())) },
+				{ "waypoints", new YamlSequenceNode(_waypoints.Select(x => x.save())) },
+				{ "missionSites", new YamlSequenceNode(_missionSites.Select(x => x.save())) },
+				// Alien bases must be saved before alien missions.
+				{ "alienBases", new YamlSequenceNode(_alienBases.Select(x => x.save())) },
+				// Missions must be saved before UFOs, but after alien bases.
+				{ "alienMissions", new YamlSequenceNode(_activeMissions.Select(x => x.save())) },
+				// UFOs must be after missions
+				{ "ufos", new YamlSequenceNode(_ufos.Select(x => x.save(getMonthsPassed() == -1))) },
+				{ "discovered", new YamlSequenceNode(_discovered.Select(x => new YamlScalarNode(x.getName()))) },
+				{ "poppedResearch", new YamlSequenceNode(_poppedResearch.Select(x => new YamlScalarNode(x.getName()))) },
+				{ "alienStrategy", _alienStrategy.save() },
+				{ "deadSoldiers", new YamlSequenceNode(_deadSoldiers.Select(x => x.save())) }
+			};
+			if (Options.soldierDiaries)
+			{
+				node.Add("missionStatistics", new YamlSequenceNode(_missionStatistics.Select(x => x.save())));
+			}
+			if (_battleGame != null)
+			{
+				node.Add("battleGame", _battleGame.save());
+			}
+            serializer.Serialize(@out, node);
 
-		// Save to temp
-		// If this goes wrong, the original save will be safe
-		str.Save(tmp);
-		tmp.Close();
-		if (tmp == null)
-		{
-			throw new Exception("Failed to save " + filename);
-		}
+			// Save to temp
+			// If this goes wrong, the original save will be safe
+			tmp.Close();
 
-		// If temp went fine, save for real
-		// If this goes wrong, they will have the temp
-        using var sav = new StreamWriter(savPath);
-        if (sav == null)
-		{
-			throw new Exception("Failed to save " + filename);
+			// If temp went fine, save for real
+			// If this goes wrong, they will have the temp
+			File.Copy(tmpPath, savPath);
 		}
-        str.Save(sav);
-		sav.Close();
-		if (sav == null)
+		catch (Exception)
 		{
 			throw new Exception("Failed to save " + filename);
 		}

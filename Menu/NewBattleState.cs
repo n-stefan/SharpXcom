@@ -625,4 +625,36 @@ internal class NewBattleState : State
 			}
 		}
 	}
+
+	/**
+	 * Saves new battle data to a YAML file.
+	 * @param filename YAML filename.
+	 */
+	void save(string filename = "battle")
+	{
+		string s = Options.getMasterUserFolder() + filename + ".cfg";
+		try
+		{
+            using var sav = new StreamWriter(s);
+			var @out = new Emitter(sav);
+			var node = new YamlMappingNode();
+            var serializer = new Serializer();
+
+			node.Add("mission", _cbxMission.getSelected().ToString());
+			node.Add("craft", _cbxCraft.getSelected().ToString());
+			node.Add("darkness", _slrDarkness.getValue().ToString());
+			node.Add("terrain", _cbxTerrain.getSelected().ToString());
+			node.Add("alienRace", _cbxAlienRace.getSelected().ToString());
+			node.Add("difficulty", _cbxDifficulty.getSelected().ToString());
+			node.Add("alienTech", _slrAlienTech.getValue().ToString());
+			node.Add("base", _game.getSavedGame().getBases().First().save());
+            serializer.Serialize(@out, node);
+
+			sav.Close();
+		}
+		catch (Exception)
+		{
+            Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} Failed to save {filename}.cfg");
+		}
+	}
 }
