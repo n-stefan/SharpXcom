@@ -590,4 +590,13 @@ internal class UnitWalkBState : BattleState
 		if (!_falling)
 			_parent.popState();
 	}
+
+	/**
+	 * Aborts unit walking.
+	 */
+	protected override void cancel()
+	{
+		if (_parent.getSave().getSide() == UnitFaction.FACTION_PLAYER && _parent.getPanicHandled())
+		_pf.abortPath();
+	}
 }

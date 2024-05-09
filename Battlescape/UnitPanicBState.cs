@@ -127,4 +127,9 @@ internal class UnitPanicBState : BattleState
 		_parent.popState();
 		_parent.setupCursor();
 	}
+
+	/**
+	 * Panicking cannot be cancelled.
+	 */
+	protected override void cancel() { }
 }

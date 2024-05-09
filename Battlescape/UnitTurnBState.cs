@@ -126,4 +126,9 @@ internal class UnitTurnBState : BattleState
 			_parent.popState();
 		}
 	}
+
+	/**
+	 * Unit turning cannot be cancelled.
+	 */
+	protected override void cancel() { }
 }

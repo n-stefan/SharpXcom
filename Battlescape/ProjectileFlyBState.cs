@@ -787,4 +787,19 @@ internal class ProjectileFlyBState : BattleState
 				victim.setMurdererWeaponAmmo(_ammo.getRules().getName());
 		}
 	}
+
+	/**
+	 * Flying projectiles cannot be cancelled,
+	 * but they can be "skipped".
+	 */
+	protected override void cancel()
+	{
+		if (_parent.getMap().getProjectile() != null)
+		{
+			_parent.getMap().getProjectile().skipTrajectory();
+			Position p = _parent.getMap().getProjectile().getPosition();
+			if (!_parent.getMap().getCamera().isOnScreen(new Position(p.x/16, p.y/16, p.z/24), false, 0, false))
+				_parent.getMap().getCamera().centerOnPosition(new Position(p.x/16, p.y/16, p.z/24));
+		}
+	}
 }

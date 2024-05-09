@@ -986,4 +986,42 @@ internal class Tile
 		    _animationOffset = new Random().Next() % 4;
 	    }
     }
+
+    /**
+     * Saves the tile to a YAML node.
+     * @return YAML node.
+     */
+    internal YamlNode save()
+    {
+	    var node = new YamlMappingNode();
+	    node.Add("position", _pos.save());
+        node.Add("mapDataID", new YamlSequenceNode());
+        node.Add("mapDataSetID", new YamlSequenceNode());
+        for (int i = 0; i < 4; i++)
+	    {
+		    ((YamlSequenceNode)node["mapDataID"]).Add(_mapDataID[i].ToString());
+		    ((YamlSequenceNode)node["mapDataSetID"]).Add(_mapDataSetID[i].ToString());
+	    }
+	    if (_smoke != 0)
+		    node.Add("smoke", _smoke.ToString());
+	    if (_fire != 0)
+		    node.Add("fire", _fire.ToString());
+	    if (_discovered[(int)TilePart.O_FLOOR] || _discovered[(int)TilePart.O_WESTWALL] || _discovered[(int)TilePart.O_NORTHWALL])
+	    {
+            node.Add("discovered", new YamlSequenceNode());
+		    for (var i = TilePart.O_FLOOR; i <= TilePart.O_NORTHWALL; i++)
+		    {
+			    ((YamlSequenceNode)node["discovered"]).Add(_discovered[(int)i].ToString());
+		    }
+	    }
+	    if (isUfoDoorOpen(TilePart.O_WESTWALL))
+	    {
+		    node.Add("openDoorWest", "true");
+	    }
+	    if (isUfoDoorOpen(TilePart.O_NORTHWALL))
+	    {
+		    node.Add("openDoorNorth", "true");
+	    }
+	    return node;
+    }
 }

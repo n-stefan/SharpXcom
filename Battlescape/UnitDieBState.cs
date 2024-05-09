@@ -332,4 +332,9 @@ internal class UnitDieBState : BattleState
 		    }
 	    }
     }
+
+    /**
+     * Unit falling cannot be cancelled.
+     */
+    protected override void cancel() { }
 }

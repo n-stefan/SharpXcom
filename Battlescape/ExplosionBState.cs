@@ -309,4 +309,9 @@ internal class ExplosionBState : BattleState
 			_parent.getSave().removeItem(_item);
 		}
 	}
+
+	/**
+	 * Explosions cannot be cancelled.
+	 */
+	protected override void cancel() { }
 }

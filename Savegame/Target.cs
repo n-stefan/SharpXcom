@@ -100,8 +100,8 @@ internal class Target
     {
         var node = new YamlMappingNode
         {
-            { "lon", _lon.ToString() },
-            { "lat", _lat.ToString() }
+            { "lon", serializeDouble(_lon) },
+            { "lat", serializeDouble(_lat) }
         };
         if (_id != 0)
 		    node.Add("id", _id.ToString());
@@ -118,8 +118,8 @@ internal class Target
     {
         var node = new YamlMappingNode
         {
-            { "lon", _lon.ToString() },
-            { "lat", _lat.ToString() },
+            { "lon", serializeDouble(_lon) },
+            { "lat", serializeDouble(_lat) },
             { "type", getType() },
             { "id", _id.ToString() }
         };

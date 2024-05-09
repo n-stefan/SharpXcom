@@ -51,9 +51,9 @@ internal class WeightedOptions
     internal YamlNode save()
 	{
 		var node = new YamlMappingNode();
-		foreach (var choice in _choices)
+		foreach (var ii in _choices)
 		{
-			node.Add(choice.Key, choice.Value.ToString());
+			node.Add(ii.Key, ii.Value.ToString());
 		}
 		return node;
 	}
