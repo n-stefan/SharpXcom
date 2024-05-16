@@ -25,7 +25,7 @@ delegate LanguagePlurality PFCreate();
  * This class is the interface used to find plural forms for the different languages.
  * Derived classes implement getSuffix() according to the specific language's rules.
  */
-internal abstract class LanguagePlurality
+internal class LanguagePlurality
 {
 	static Dictionary<string, PFCreate> s_factoryFunctions;
 
@@ -75,7 +75,8 @@ internal abstract class LanguagePlurality
 	 * @param n The number controlling the plurality.
 	 * @return Pointer to the zero-terminated suffix string.
 	*/
-	internal abstract string getSuffix(uint n);
+	internal virtual string getSuffix(uint n) =>
+		null;
 }
 
 /**

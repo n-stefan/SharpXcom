@@ -27,7 +27,7 @@ namespace SharpXcom.Engine;
  * information from/to the user, and are linked to the core game
  * engine which manages them.
  */
-internal abstract class State
+internal class State
 {
     /// Initializes static member
     internal static Game _game;

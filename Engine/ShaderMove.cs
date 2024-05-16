@@ -54,7 +54,7 @@ internal class ShaderMove<TPixel> : ShaderBase<TPixel>
 		_move_y = move_y;
 	}
 
-	GraphSubset getImage()
+	internal override GraphSubset getImage()
 	{
 		return base._range_domain.offset(_move_x, _move_y);
 	}
