@@ -307,7 +307,7 @@ internal class SoldierInfoState : State
      * Updates soldier stats when
      * the soldier changes.
      */
-    protected override void init()
+    internal override void init()
     {
         base.init();
         if (!_list.Any())

@@ -420,7 +420,7 @@ internal class Map : InteractiveSurface
     /**
      * Keeps the animation timers running.
      */
-    protected override void think()
+    internal override void think()
     {
 	    _scrollMouseTimer.think(null, this);
 	    _scrollKeyTimer.think(null, this);
@@ -1693,7 +1693,7 @@ internal class Map : InteractiveSurface
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	protected override void mousePress(Action action, State state)
+	internal override void mousePress(Action action, State state)
 	{
 		base.mousePress(action, state);
 		_camera.mousePress(action, state);

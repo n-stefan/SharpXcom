@@ -46,6 +46,6 @@ internal class Waypoint : Target
      * savegame purposes.
      * @return ID.
      */
-    protected override string getType() =>
+    internal override string getType() =>
 	    "STR_WAY_POINT";
 }

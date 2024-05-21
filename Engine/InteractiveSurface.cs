@@ -70,7 +70,7 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected virtual void handle(Action action, State state)
+    internal virtual void handle(Action action, State state)
     {
         if (!_visible || _hidden)
             return;
@@ -197,7 +197,7 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected virtual void mousePress(Action action, State state)
+    internal virtual void mousePress(Action action, State state)
     {
         if (_press.TryGetValue(0, out ActionHandler allHandler))
 	    {
@@ -324,7 +324,7 @@ internal class InteractiveSurface : Surface
      * where the surface is unpressed without user input.
      * @param state Pointer to running state.
      */
-    protected virtual void unpress(State state)
+    internal virtual void unpress(State state)
     {
         if (isButtonPressed())
         {
@@ -479,7 +479,7 @@ internal class InteractiveSurface : Surface
      * keyboard events if focused.
      * @param focus Is it focused?
      */
-    protected virtual void setFocus(bool focus) =>
+    internal virtual void setFocus(bool focus) =>
         _isFocused = focus;
 
     /**

@@ -101,7 +101,7 @@ internal class ArrowButton : ImageButton
     /**
      * Keeps the scrolling timers running.
      */
-    protected override void think() =>
+    internal override void think() =>
 	    _timer.think(null, this);
 
 	/**
@@ -335,7 +335,7 @@ internal class ArrowButton : ImageButton
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	protected override void mousePress(Action action, State state)
+	internal override void mousePress(Action action, State state)
 	{
 		base.mousePress(action, state);
 		if (_list != null)

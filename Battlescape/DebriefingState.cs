@@ -391,7 +391,7 @@ internal class DebriefingState : State
         _btnStats.setText(_showSoldierStats ? tr("STR_SCORE") : tr("STR_STATS"));
     }
 
-	protected override void init()
+	internal override void init()
 	{
 		base.init();	
 

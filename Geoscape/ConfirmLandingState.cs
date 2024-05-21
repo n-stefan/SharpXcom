@@ -154,7 +154,7 @@ internal class ConfirmLandingState : State
     /*
      * Make sure we aren't returning to base.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    Base b = (Base)_craft.getDestination();

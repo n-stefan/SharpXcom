@@ -68,7 +68,7 @@ internal class ProjectileFlyBState : BattleState
 	 * - checks if the shot is valid,
 	 * - calculates the base accuracy.
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		if (_initialized) return;
 		_initialized = true;
@@ -510,7 +510,7 @@ internal class ProjectileFlyBState : BattleState
 	 * If the animation is finished the projectile sprite is removed from the map,
 	 * and this state is finished.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		_parent.getSave().getBattleState().clearMouseScrollingState();
 		/* TODO refactoring : store the projectile in this state, instead of getting it from the map each time? */
@@ -792,7 +792,7 @@ internal class ProjectileFlyBState : BattleState
 	 * Flying projectiles cannot be cancelled,
 	 * but they can be "skipped".
 	 */
-	protected override void cancel()
+	internal override void cancel()
 	{
 		if (_parent.getMap().getProjectile() != null)
 		{

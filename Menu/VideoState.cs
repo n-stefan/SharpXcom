@@ -369,7 +369,7 @@ internal class VideoState : State
 	 */
 	~VideoState() { }
 
-	protected override void init()
+	internal override void init()
 	{
 		base.init();
 

@@ -134,7 +134,7 @@ internal class CraftsState : State
      * The soldier names can change
      * after going into other screens.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    _lstCrafts.clearList();

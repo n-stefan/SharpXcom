@@ -22,7 +22,7 @@ namespace SharpXcom.Menu;
 // Utility class for enqueuing a state in the stack that goes to the main menu
 class GoToMainMenuState : State
 {
-	protected override void init()
+	internal override void init()
 	{
 		Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
 		_game.getScreen().resetDisplay(false);
@@ -152,7 +152,7 @@ internal class MainMenuState : State
 	 * @param dX delta of X;
 	 * @param dY delta of Y;
 	 */
-	protected override void resize(ref int dX, ref int dY)
+	internal override void resize(ref int dX, ref int dY)
 	{
 		dX = Options.baseXResolution;
 		dY = Options.baseYResolution;

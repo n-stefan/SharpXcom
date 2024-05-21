@@ -944,7 +944,7 @@ internal class Craft : MovingTarget
      * savegame purposes.
      * @return ID.
      */
-    protected override string getType() =>
+    internal override string getType() =>
 	    _rules.getType();
 
     /**

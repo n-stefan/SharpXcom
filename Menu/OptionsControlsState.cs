@@ -216,7 +216,7 @@ internal class OptionsControlsState : OptionsBaseState
     /**
      * Fills the controls list based on category.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    _lstControls.clearList();

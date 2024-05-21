@@ -1009,7 +1009,7 @@ internal class Globe : InteractiveSurface
     /**
      * Keeps the animation timers running.
      */
-    protected override void think()
+    internal override void think()
     {
 	    _blinkTimer.think(null, this);
 	    _rotTimer.think(null, this);
@@ -1622,7 +1622,7 @@ internal class Globe : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void mousePress(Action action, State state)
+    internal override void mousePress(Action action, State state)
     {
 	    double lon, lat;
 	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);

@@ -224,6 +224,6 @@ internal class BaseDefenseState : State
         }
     }
 
-    protected override void think() =>
+    internal override void think() =>
 	    _timer.think(this, null);
 }

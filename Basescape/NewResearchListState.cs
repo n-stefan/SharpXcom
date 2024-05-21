@@ -92,7 +92,7 @@ internal class NewResearchListState : State
     /**
      * Initializes the screen (fills the list).
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    fillProjectList();

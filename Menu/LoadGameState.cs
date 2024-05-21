@@ -120,7 +120,7 @@ internal class LoadGameState : State
 	/**
 	 * Ignore quick loads without a save available.
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		base.init();
 		if (_filename == SavedGame.QUICKSAVE && !CrossPlatform.fileExists(Options.getMasterUserFolder() + _filename))
@@ -133,7 +133,7 @@ internal class LoadGameState : State
 	/**
 	 * Loads the specified save.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		base.think();
 		// Make sure it gets drawn properly

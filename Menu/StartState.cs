@@ -183,7 +183,7 @@ internal class StartState : State
     /**
      * Reset and reload data.
      */
-    protected override void init()
+    internal override void init()
     {
         base.init();
 
@@ -235,7 +235,7 @@ internal class StartState : State
     /**
      * If the loading fails, it shows an error, otherwise moves on to the game.
      */
-    protected override void think()
+    internal override void think()
     {
         base.think();
         _timer.think(this, null);
@@ -278,7 +278,7 @@ internal class StartState : State
      * message is on display.
      * @param action Pointer to an action.
      */
-    protected override void handle(Action action)
+    internal override void handle(Action action)
     {
 	    base.handle(action);
 	    if (loading == LoadingPhase.LOADING_DONE)

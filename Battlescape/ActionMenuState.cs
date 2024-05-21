@@ -304,7 +304,7 @@ internal class ActionMenuState : State
 	 * Closes the window on right-click.
 	 * @param action Pointer to an action.
 	 */
-	protected override void handle(Action action)
+	internal override void handle(Action action)
 	{
 		base.handle(action);
 		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
@@ -325,6 +325,6 @@ internal class ActionMenuState : State
 	 * @param dX delta of X;
 	 * @param dY delta of Y;
 	 */
-	protected override void resize(ref int dX, ref int dY) =>
+	internal override void resize(ref int dX, ref int dY) =>
 		base.recenter(dX, dY * 2);
 }

@@ -292,7 +292,7 @@ internal class SoldierDiaryPerformanceState : State
     /**
      *  Clears all the variables and reinitializes the list of kills or missions for the soldier.
      */
-    protected override void init()
+    internal override void init()
     {
         base.init();
         // Clear sprites
@@ -472,7 +472,7 @@ internal class SoldierDiaryPerformanceState : State
      * Runs state functionality every cycle.
      * Used to update sprite vector
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 

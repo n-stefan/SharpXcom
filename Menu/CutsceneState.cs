@@ -35,7 +35,7 @@ internal class CutsceneState : State
 
     ~CutsceneState() { }
 
-	protected override void init()
+	internal override void init()
 	{
 		base.init();
 

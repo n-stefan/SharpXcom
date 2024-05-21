@@ -151,7 +151,7 @@ internal class MultipleTargetsState : State
      * Resets the palette and ignores the window
      * if there's only one target.
      */
-    protected override void init()
+    internal override void init()
     {
 	    if (_targets.Count == 1)
 	    {

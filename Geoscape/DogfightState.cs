@@ -1158,7 +1158,7 @@ internal class DogfightState : State
     /**
      * Runs the higher level dogfight functionality.
      */
-    protected override void think()
+    internal override void think()
     {
         if (!_endDogfight)
         {

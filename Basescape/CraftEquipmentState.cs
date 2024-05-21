@@ -601,7 +601,7 @@ internal class CraftEquipmentState : State
     /**
      * Resets the savegame when coming back from the inventory.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 
@@ -614,7 +614,7 @@ internal class CraftEquipmentState : State
     /**
      * Runs the arrow timers.
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 

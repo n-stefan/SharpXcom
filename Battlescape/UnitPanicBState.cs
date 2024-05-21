@@ -47,13 +47,13 @@ internal class UnitPanicBState : BattleState
 	 */
 	~UnitPanicBState() { }
 
-	protected override void init() { }
+	internal override void init() { }
 
 	/**
 	 * Runs state functionality every cycle.
 	 * Ends the panicking when done.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		if (_unit != null)
 		{
@@ -131,5 +131,5 @@ internal class UnitPanicBState : BattleState
 	/**
 	 * Panicking cannot be cancelled.
 	 */
-	protected override void cancel() { }
+	internal override void cancel() { }
 }

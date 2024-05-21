@@ -178,7 +178,7 @@ internal class MissionSite : Target
      * savegame purposes.
      * @return ID.
      */
-    protected override string getType() =>
+    internal override string getType() =>
         _deployment.getMarkerName();
 
     /**

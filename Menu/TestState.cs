@@ -119,7 +119,7 @@ internal class TestState : State
 
 	~TestState() { }
 
-	protected override void think()
+	internal override void think()
 	{
 		base.think();
 
@@ -129,7 +129,7 @@ internal class TestState : State
 		*/
 	}
 
-	protected override void blit()
+	internal override void blit()
 	{
 		base.blit();
 

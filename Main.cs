@@ -1,7 +1,7 @@
 ﻿
 //TODO:
 // protected virtual/override methods
-// init(), think(), handle(), resize(), getType(), getName(), getMarker(), draw(), blit() ... missing methods
+// missing methods
 // yaml load defaults
 // string interpolation => StringBuilder
 

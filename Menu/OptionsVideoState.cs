@@ -601,7 +601,7 @@ internal class OptionsVideoState : OptionsBaseState
      * Takes care of any events from the core game engine.
      * @param action Pointer to an action.
      */
-    protected override void handle(Action action)
+    internal override void handle(Action action)
     {
 	    base.handle(action);
 	    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_g && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
@@ -615,7 +615,7 @@ internal class OptionsVideoState : OptionsBaseState
      * @param dX delta of X;
      * @param dY delta of Y;
      */
-    protected override void resize(ref int dX, ref int dY)
+    internal override void resize(ref int dX, ref int dY)
     {
 	    base.resize(ref dX, ref dY);
 	    string ss;

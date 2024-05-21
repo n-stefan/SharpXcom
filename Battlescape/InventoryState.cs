@@ -849,7 +849,7 @@ internal class InventoryState : State
     /**
      * Updates all soldier stats when the soldier changes.
      */
-    protected override void init()
+    internal override void init()
     {
         base.init();
         BattleUnit unit = _battleGame.getSelectedUnit();
@@ -936,7 +936,7 @@ internal class InventoryState : State
      * Takes care of any events from the core game engine.
      * @param action Pointer to an action.
      */
-    protected override void handle(Action action)
+    internal override void handle(Action action)
     {
 	    base.handle(action);
 

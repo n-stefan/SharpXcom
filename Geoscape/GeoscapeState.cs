@@ -2289,7 +2289,7 @@ internal class GeoscapeState : State
      * Updates the timer display and resets the palette
      * since it's bound to change on other screens.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    timeDisplay();
@@ -2375,7 +2375,7 @@ internal class GeoscapeState : State
     /**
      * Runs the game timer and handles popups.
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 
@@ -2414,7 +2414,7 @@ internal class GeoscapeState : State
      * Handle key shortcuts.
      * @param action Pointer to an action.
      */
-    protected override void handle(Action action)
+    internal override void handle(Action action)
     {
 	    if (_dogfights.Count == _minimizedDogfights)
 	    {
@@ -2500,7 +2500,7 @@ internal class GeoscapeState : State
      * @param dX delta of X;
      * @param dY delta of Y;
      */
-    protected override void resize(ref int dX, ref int dY)
+    internal override void resize(ref int dX, ref int dY)
     {
 	    if (_game.getSavedGame().getSavedBattle() != null)
 		    return;
@@ -2563,7 +2563,7 @@ internal class GeoscapeState : State
     /**
      * Handle blitting of Geoscape and Dogfights.
      */
-    protected override void blit()
+    internal override void blit()
     {
 	    base.blit();
 	    foreach (var it in _dogfights)

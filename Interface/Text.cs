@@ -597,7 +597,7 @@ internal class Text : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void mousePress(Action action, State state)
+    internal override void mousePress(Action action, State state)
     {
 	    base.mousePress(action, state);
 	    if (_scroll &&

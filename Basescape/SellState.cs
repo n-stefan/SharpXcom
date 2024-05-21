@@ -686,7 +686,7 @@ internal class SellState : State
     /**
      * Runs the arrow timers.
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 

@@ -516,7 +516,7 @@ internal class UnitInfoState : State
 	 * Updates unit info which can change
 	 * after going into other screens.
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		base.init();
 		var ss = new StringBuilder();
@@ -670,7 +670,7 @@ internal class UnitInfoState : State
 	 * Closes the window on right-click.
 	 * @param action Pointer to an action.
 	 */
-	protected override void handle(Action action)
+	internal override void handle(Action action)
 	{
 		base.handle(action);
 		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)

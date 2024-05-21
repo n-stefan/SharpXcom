@@ -118,7 +118,7 @@ internal class WarningMessage : Surface
     /**
      * Keeps the animation timers running.
      */
-    protected override void think() =>
+    internal override void think() =>
 	    _timer.think(null, this);
 
     /**

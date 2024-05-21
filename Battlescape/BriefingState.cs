@@ -174,7 +174,7 @@ internal class BriefingState : State
         }
     }
 
-	protected override void init()
+	internal override void init()
 	{
 		base.init();
 

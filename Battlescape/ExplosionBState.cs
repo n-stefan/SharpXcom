@@ -63,7 +63,7 @@ internal class ExplosionBState : BattleState
 	 * The animation and sound starts here.
 	 * If the animation is finished, the actual effect takes place.
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		if (_item != null)
 		{
@@ -177,7 +177,7 @@ internal class ExplosionBState : BattleState
 	 * Animates explosion sprites. If their animation is finished remove them from the list.
 	 * If the list is empty, this state is finished and the actual calculations take place.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		if (!_parent.getMap().getBlastFlash())
 		{
@@ -313,5 +313,5 @@ internal class ExplosionBState : BattleState
 	/**
 	 * Explosions cannot be cancelled.
 	 */
-	protected override void cancel() { }
+	internal override void cancel() { }
 }

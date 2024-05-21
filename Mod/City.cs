@@ -57,4 +57,8 @@ internal class City : Target
      */
     internal override string getName(Language lang) =>
 	    lang.getString(_name);
+
+	/// Gets the city's type (unused).
+	internal override string getType() =>
+        string.Empty;
 }

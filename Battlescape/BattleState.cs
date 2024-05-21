@@ -60,18 +60,18 @@ internal class BattleState
     /**
      * Start the current BattleState.
      */
-    protected virtual void init() { }
+    internal virtual void init() { }
 
     /**
      * Cancels the current BattleState.
      */
-    protected virtual void cancel() { }
+    internal virtual void cancel() { }
 
     /**
      * Runs any code the state needs to keep updating every
      * game cycle.
      */
-    protected virtual void think() { }
+    internal virtual void think() { }
 
     /**
      * Gets the action result. Returns error messages or an empty string when everything went fine.

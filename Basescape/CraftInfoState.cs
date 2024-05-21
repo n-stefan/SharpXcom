@@ -205,7 +205,7 @@ internal class CraftInfoState : State
      * The craft info can change
      * after going into other screens.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 

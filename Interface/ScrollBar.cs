@@ -100,7 +100,7 @@ internal class ScrollBar : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void handle(Action action, State state)
+    internal override void handle(Action action, State state)
     {
 	    base.handle(action, state);
 	    if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
@@ -232,7 +232,7 @@ internal class ScrollBar : InteractiveSurface
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	protected override void mousePress(Action action, State state)
+	internal override void mousePress(Action action, State state)
 	{
 		base.mousePress(action, state);
 		if (action.getDetails().button.button == SDL_BUTTON_LEFT)

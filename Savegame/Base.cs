@@ -1496,7 +1496,7 @@ internal class Base : Target
      * savegame purposes.
      * @return ID.
      */
-    protected override string getType() =>
+    internal override string getType() =>
 	    "STR_BASE";
 
     /**

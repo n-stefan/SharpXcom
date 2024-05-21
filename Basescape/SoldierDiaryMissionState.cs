@@ -146,7 +146,7 @@ internal class SoldierDiaryMissionState : State
      *  Clears all the variables and reinitializes the stats for the mission.
      *
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    if (!_soldier.getDiary().getMissionIdList().Any())

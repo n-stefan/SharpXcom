@@ -50,7 +50,7 @@ internal class MeleeAttackBState : BattleState
 	 * Initializes the sequence.
 	 * does a lot of validity checking.
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		if (_initialized) return;
 		_initialized = true;
@@ -155,7 +155,7 @@ internal class MeleeAttackBState : BattleState
 	/**
 	 * Performs all the overall functions of the state, this code runs AFTER the explosion state pops.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		_parent.getSave().getBattleState().clearMouseScrollingState();
 

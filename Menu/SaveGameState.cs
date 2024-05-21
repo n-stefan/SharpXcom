@@ -122,7 +122,7 @@ internal class SaveGameState : State
     /**
      * Saves the current save.
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 	    // Make sure it gets drawn properly

@@ -87,7 +87,7 @@ internal class FpsCounter : Surface
     /**
      * Advances frame counter.
      */
-    protected override void think() =>
+    internal override void think() =>
         _timer.think(null, this);
 
     /**

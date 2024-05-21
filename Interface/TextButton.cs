@@ -244,7 +244,7 @@ internal class TextButton : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void mousePress(Action action, State state)
+    internal override void mousePress(Action action, State state)
     {
 	    if (action.getDetails().button.button == SDL_BUTTON_LEFT && _group != null)
 	    {

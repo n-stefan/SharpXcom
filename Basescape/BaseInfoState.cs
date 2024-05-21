@@ -346,7 +346,7 @@ internal class BaseInfoState : State
     /**
      * The player can change the selected base.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    _edtBase.setText(_base.getName());

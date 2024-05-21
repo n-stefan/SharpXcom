@@ -43,7 +43,7 @@ internal class UnitFallBState : BattleState
     /**
      * Initializes the state.
      */
-    protected override void init()
+    internal override void init()
     {
 	    _terrain = _parent.getTileEngine();
 	    if (_parent.getSave().getSide() == UnitFaction.FACTION_PLAYER)
@@ -56,7 +56,7 @@ internal class UnitFallBState : BattleState
 	 * Runs state functionality every cycle.
 	 * Progresses the fall, updates the battlescape, ...
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		var fallingUnits = _parent.getSave().getFallingUnits();
 		for (var unit = 0; unit < fallingUnits.Count;)

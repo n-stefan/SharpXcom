@@ -165,7 +165,7 @@ internal class NewManufactureListState : State
 	/**
 	 * Initializes state (fills list of possible productions).
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		base.init();
 		fillProductionList();

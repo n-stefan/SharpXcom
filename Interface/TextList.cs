@@ -767,7 +767,7 @@ internal class TextList : InteractiveSurface
     /**
      * Passes ticks to arrow buttons.
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 	    _up.think();
@@ -788,7 +788,7 @@ internal class TextList : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void handle(Action action, State state)
+    internal override void handle(Action action, State state)
     {
 	    base.handle(action, state);
 	    _up.handle(action, state);
@@ -921,7 +921,7 @@ internal class TextList : InteractiveSurface
      * Unpresses all the arrow buttons.
      * @param state Pointer to running state.
      */
-    protected override void unpress(State state)
+    internal override void unpress(State state)
     {
 	    base.unpress(state);
 	    foreach (var i in _arrowLeft)
@@ -939,7 +939,7 @@ internal class TextList : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void mousePress(Action action, State state)
+    internal override void mousePress(Action action, State state)
     {
 	    bool allowScroll = true;
 	    if (Options.changeValueByMouseWheel != 0)

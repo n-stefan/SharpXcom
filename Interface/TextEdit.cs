@@ -137,7 +137,7 @@ internal class TextEdit : InteractiveSurface
         _textEditConstraint = constraint;
 
     // Override the base class' method properly.
-    protected override void setFocus(bool focus) =>
+    internal override void setFocus(bool focus) =>
         setFocus(focus, true);
 
     /**
@@ -193,7 +193,7 @@ internal class TextEdit : InteractiveSurface
     /**
      * Keeps the animation timers running.
      */
-    protected override void think() =>
+    internal override void think() =>
 	    _timer.think(null, this);
 
     /**
@@ -201,7 +201,7 @@ internal class TextEdit : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void handle(Action action, State state)
+    internal override void handle(Action action, State state)
     {
 	    base.handle(action, state);
 	    if (_isFocused && _modal && action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN &&
@@ -276,7 +276,7 @@ internal class TextEdit : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void mousePress(Action action, State state)
+    internal override void mousePress(Action action, State state)
     {
 	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
 	    {

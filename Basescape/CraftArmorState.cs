@@ -176,7 +176,7 @@ internal class CraftArmorState : State
      * The soldier armors can change
      * after going into other screens.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    uint row = 0;

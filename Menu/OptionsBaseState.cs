@@ -291,7 +291,7 @@ internal class OptionsBaseState : State
     /**
      * Initializes UI colors according to origin.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
@@ -305,7 +305,7 @@ internal class OptionsBaseState : State
      * @param dX delta of X;
      * @param dY delta of Y;
      */
-    protected override void resize(ref int dX, ref int dY)
+    internal override void resize(ref int dX, ref int dY)
     {
 	    Options.newDisplayWidth = Options.displayWidth;
 	    Options.newDisplayHeight = Options.displayHeight;

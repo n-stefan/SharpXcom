@@ -417,7 +417,7 @@ internal class MonthlyReportState : State
     /**
      * Make sure the game is over.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    if (_gameOver)

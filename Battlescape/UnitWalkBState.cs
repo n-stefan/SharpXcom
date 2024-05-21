@@ -57,7 +57,7 @@ internal class UnitWalkBState : BattleState
     /**
      * Initializes the state.
      */
-    protected override void init()
+    internal override void init()
     {
 	    _unit = _action.actor;
 	    _numUnitsSpotted = (uint)_unit.getUnitsSpottedThisTurn().Count;
@@ -87,7 +87,7 @@ internal class UnitWalkBState : BattleState
 	/**
 	 * Runs state functionality every cycle.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		bool unitSpotted = false;
 		int size = _unit.getArmor().getSize() - 1;
@@ -594,7 +594,7 @@ internal class UnitWalkBState : BattleState
 	/**
 	 * Aborts unit walking.
 	 */
-	protected override void cancel()
+	internal override void cancel()
 	{
 		if (_parent.getSave().getSide() == UnitFaction.FACTION_PLAYER && _parent.getPanicHandled())
 		_pf.abortPath();

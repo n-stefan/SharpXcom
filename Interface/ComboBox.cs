@@ -310,7 +310,7 @@ internal class ComboBox : InteractiveSurface
     /**
      * Passes ticks to arrow buttons.
      */
-    protected override void think()
+    internal override void think()
     {
 	    _button.think();
 	    _arrow.think();
@@ -324,7 +324,7 @@ internal class ComboBox : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void handle(Action action, State state)
+    internal override void handle(Action action, State state)
     {
 	    _button.handle(action, state);
 	    _list.handle(action, state);

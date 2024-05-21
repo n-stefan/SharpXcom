@@ -195,7 +195,7 @@ internal class UnitDieBState : BattleState
         }
     }
 
-    protected override void init()
+    internal override void init()
     {
 	    // check for presence of battlestate to ensure that we're not pre-battle
 	    // check for the unit's tile to make sure we're not trying to kill a dead guy
@@ -209,7 +209,7 @@ internal class UnitDieBState : BattleState
      * Runs state functionality every cycle.
      * Progresses the death, displays any messages, checks if the mission is over, ...
      */
-    protected override void think()
+    internal override void think()
     {
 	    if (_extraFrame == 3)
 	    {
@@ -336,5 +336,5 @@ internal class UnitDieBState : BattleState
     /**
      * Unit falling cannot be cancelled.
      */
-    protected override void cancel() { }
+    internal override void cancel() { }
 }

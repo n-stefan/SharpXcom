@@ -214,7 +214,7 @@ internal class UfopaediaStartState : State
 	/**
 	 * Run timers.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		base.think();
 		_timerScroll.think(this, null);

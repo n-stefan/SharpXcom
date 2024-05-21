@@ -333,7 +333,7 @@ internal class ResearchInfoState : State
     /**
      * Runs state functionality every cycle (used to update the timer).
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 

@@ -128,7 +128,7 @@ internal class MiniMapState : State
 	/**
 	 * Handles timers.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		base.think();
 		_timerAnimate.think(this, null);
@@ -138,7 +138,7 @@ internal class MiniMapState : State
 	 * Handles mouse-wheeling.
 	 * @param action Pointer to an action.
 	 */
-	protected override void handle(Action action)
+	internal override void handle(Action action)
 	{
 		base.handle(action);
 		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)

@@ -192,7 +192,7 @@ internal class ManufactureState : State
      * Updates the production list
      * after going to other screens.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    fillProductionList();

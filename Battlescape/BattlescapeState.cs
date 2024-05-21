@@ -876,7 +876,7 @@ internal class BattlescapeState : State
     /**
      * Initializes the battlescapestate.
      */
-    protected override void init()
+    internal override void init()
     {
 	    if (_save.getAmbientSound() != -1)
 	    {
@@ -946,7 +946,7 @@ internal class BattlescapeState : State
     /**
      * Runs the timers and handles popups.
      */
-    protected override void think()
+    internal override void think()
     {
 	    if (_gameTimer.isRunning())
 	    {
@@ -989,7 +989,7 @@ internal class BattlescapeState : State
      * Takes care of any events from the core game engine.
      * @param action Pointer to an action.
      */
-    protected override void handle(Action action)
+    internal override void handle(Action action)
     {
 	    if (!_firstInit)
 	    {
@@ -1454,7 +1454,7 @@ internal class BattlescapeState : State
 	 * @param dX delta of X;
 	 * @param dY delta of Y;
 	 */
-	protected override void resize(ref int dX, ref int dY)
+	internal override void resize(ref int dX, ref int dY)
 	{
 		dX = Options.baseXResolution;
 		dY = Options.baseYResolution;

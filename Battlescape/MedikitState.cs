@@ -308,7 +308,7 @@ internal class MedikitState : State
 	 * Closes the window on right-click.
 	 * @param action Pointer to an action.
 	 */
-	protected override void handle(Action action)
+	internal override void handle(Action action)
 	{
 		base.handle(action);
 		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)

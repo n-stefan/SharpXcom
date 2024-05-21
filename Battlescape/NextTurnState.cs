@@ -164,7 +164,7 @@ internal class NextTurnState : State
     /**
      * Keeps the timer running.
      */
-    protected override void think()
+    internal override void think()
     {
 	    if (_timer != null)
 	    {
@@ -176,7 +176,7 @@ internal class NextTurnState : State
      * Closes the window.
      * @param action Pointer to an action.
      */
-    protected override void handle(Action action)
+    internal override void handle(Action action)
     {
 	    base.handle(action);
 
@@ -186,7 +186,7 @@ internal class NextTurnState : State
 	    }
     }
 
-    protected override void resize(ref int dX, ref int dY)
+    internal override void resize(ref int dX, ref int dY)
     {
 	    base.resize(ref dX, ref dY);
 	    _bg.setX(0);

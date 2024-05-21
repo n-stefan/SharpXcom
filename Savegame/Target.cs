@@ -127,7 +127,7 @@ internal class Target
     }
 
     /// Gets the target's type.
-    protected virtual string getType() =>
+    internal virtual string getType() =>
         null;
 
     /// Gets the target's marker sprite.

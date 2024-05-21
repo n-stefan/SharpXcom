@@ -133,7 +133,7 @@ internal class ResearchState : State
      * Updates the research list
      * after going to other screens.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    fillProjectList();

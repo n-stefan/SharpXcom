@@ -51,7 +51,7 @@ internal class PsiAttackBState : BattleState
 	 * - from that point on, the explode state takes precedence.
 	 * - when that state pops, we'll do our first think()
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		if (_initialized) return;
 		_initialized = true;
@@ -100,7 +100,7 @@ internal class PsiAttackBState : BattleState
 	 * After the explosion animation is done doing its thing,
 	 * make the actual psi attack, and restore the camera/cursor.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		//make the psi attack.
 		psiAttack();

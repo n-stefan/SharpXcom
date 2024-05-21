@@ -317,7 +317,7 @@ internal class BuildNewBaseState : State
     /**
      * Stops the globe and adds radar hover effect.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    _globe.onMouseOver(globeHover);
@@ -339,7 +339,7 @@ internal class BuildNewBaseState : State
     /**
      * Runs the globe rotation timer.
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 	    _globe.think();
@@ -350,7 +350,7 @@ internal class BuildNewBaseState : State
      * Handles the globe.
      * @param action Pointer to an action.
      */
-    protected override void handle(Action action)
+    internal override void handle(Action action)
     {
 	    base.handle(action);
 	    _globe.handle(action, this);
@@ -361,7 +361,7 @@ internal class BuildNewBaseState : State
      * @param dX delta of X;
      * @param dY delta of Y;
      */
-    protected override void resize(ref int dX, ref int dY)
+    internal override void resize(ref int dX, ref int dY)
     {
 	    foreach (var i in _surfaces)
 	    {

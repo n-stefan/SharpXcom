@@ -47,7 +47,7 @@ internal class UnitTurnBState : BattleState
 	/**
 	 * Initializes the state.
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		_unit = _action.actor;
 		if (_unit.isOut())
@@ -92,7 +92,7 @@ internal class UnitTurnBState : BattleState
 	/**
 	 * Runs state functionality every cycle.
 	 */
-	protected override void think()
+	internal override void think()
 	{
 		int tu = _chargeTUs ? 1 : 0;
 
@@ -130,5 +130,5 @@ internal class UnitTurnBState : BattleState
 	/**
 	 * Unit turning cannot be cancelled.
 	 */
-	protected override void cancel() { }
+	internal override void cancel() { }
 }

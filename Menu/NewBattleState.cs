@@ -524,7 +524,7 @@ internal class NewBattleState : State
 	 * Resets the menu music and savegame
 	 * when coming back from the battlescape.
 	 */
-	protected override void init()
+	internal override void init()
 	{
 		base.init();
 

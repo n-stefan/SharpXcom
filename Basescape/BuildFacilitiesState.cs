@@ -126,7 +126,7 @@ internal class BuildFacilitiesState : State
      * The player can change the selected base
      * or change info on other screens.
      */
-    protected override void init()
+    internal override void init()
     {
 	    _state.init();
 	    base.init();

@@ -71,7 +71,7 @@ internal class ToggleTextButton : TextButton
     }
 
     /// handle mouse clicks by toggling the button state; use _fakeGroup to trick TextButton into drawing the right thing
-    protected override void mousePress(Action action, State state)
+    internal override void mousePress(Action action, State state)
     {
 	    if (action.getDetails().button.button == SDL_BUTTON_LEFT || action.getDetails().button.button == SDL_BUTTON_RIGHT)
 	    {

@@ -81,14 +81,14 @@ internal class InfoboxState : State
 	/**
 	 * Keeps the animation timers running.
 	 */
-	protected override void think() =>
+	internal override void think() =>
 		_timer.think(this, null);
 
 	/**
 	 * Closes the window.
 	 * @param action Pointer to an action.
 	 */
-	protected override void handle(Action action)
+	internal override void handle(Action action)
 	{
 		base.handle(action);
 

@@ -134,6 +134,6 @@ internal class SlideshowState : State
 	/**
 	 * Handle timers.
 	 */
-	protected override void think() =>
+	internal override void think() =>
 		_transitionTimer.think(this, null);
 }

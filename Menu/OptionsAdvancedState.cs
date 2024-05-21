@@ -225,7 +225,7 @@ internal class OptionsAdvancedState : OptionsBaseState
     /**
      * Fills the settings list based on category.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    _lstOptions.clearList();

@@ -169,7 +169,7 @@ internal class Window : Surface
     /**
      * Keeps the animation timers running.
      */
-    protected override void think()
+    internal override void think()
     {
 	    if (_hidden && _popupStep < 1.0)
 	    {

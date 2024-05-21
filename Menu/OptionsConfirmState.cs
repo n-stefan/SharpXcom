@@ -138,7 +138,7 @@ internal class OptionsConfirmState : State
     /**
      * Runs the countdown timer.
      */
-    protected override void think()
+    internal override void think()
     {
 	    base.think();
 

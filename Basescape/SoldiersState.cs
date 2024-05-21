@@ -145,7 +145,7 @@ internal class SoldiersState : State
      * Updates the soldiers list
      * after going to other screens.
      */
-    protected override void init()
+    internal override void init()
     {
 	    base.init();
 	    uint row = 0;
