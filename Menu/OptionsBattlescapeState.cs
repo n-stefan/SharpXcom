@@ -217,7 +217,7 @@ internal class OptionsBattlescapeState : OptionsBaseState
      * Shows a tooltip for the appropriate button.
      * @param action Pointer to an action.
      */
-    protected override void txtTooltipIn(Action action)
+    protected void txtTooltipIn(Action action)
     {
         _currentTooltip = action.getSender().getTooltip();
         _txtTooltip.setText(tr(_currentTooltip));
@@ -227,7 +227,7 @@ internal class OptionsBattlescapeState : OptionsBaseState
      * Clears the tooltip text.
      * @param action Pointer to an action.
      */
-    protected override void txtTooltipOut(Action action)
+    protected void txtTooltipOut(Action action)
     {
         if (_currentTooltip == action.getSender().getTooltip())
         {

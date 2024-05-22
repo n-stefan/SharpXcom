@@ -71,7 +71,7 @@ internal class State
      * @param ncolors Amount of colors to replace.
      * @param immediately Apply changes immediately, otherwise wait in case of multiple setPalettes.
      */
-    internal virtual void setPalette(Span<SDL_Color> colors, int firstcolor = 0, int ncolors = 256, bool immediately = true)
+    protected void setPalette(Span<SDL_Color> colors, int firstcolor = 0, int ncolors = 256, bool immediately = true)
     {
         if (colors != null)
         {
@@ -354,7 +354,7 @@ internal class State
      * @param dX delta of X;
      * @param dY delta of Y;
      */
-    internal void recenter(int dX, int dY)
+    internal virtual void recenter(int dX, int dY)
     {
         foreach (var i in _surfaces)
         {

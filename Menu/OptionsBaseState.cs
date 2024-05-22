@@ -270,7 +270,7 @@ internal class OptionsBaseState : State
      * Shows a tooltip for the appropriate button.
      * @param action Pointer to an action.
      */
-    protected virtual void txtTooltipIn(Action action)
+    protected void txtTooltipIn(Action action)
     {
         _currentTooltip = action.getSender().getTooltip();
         _txtTooltip.setText(tr(_currentTooltip));
@@ -280,7 +280,7 @@ internal class OptionsBaseState : State
      * Clears the tooltip text.
      * @param action Pointer to an action.
      */
-    protected virtual void txtTooltipOut(Action action)
+    protected void txtTooltipOut(Action action)
     {
         if (_currentTooltip == action.getSender().getTooltip())
         {

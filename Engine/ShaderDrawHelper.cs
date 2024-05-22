@@ -95,7 +95,7 @@ class ShaderBase<TPixel> : IShaderParam
     internal int pitch() =>
 		_pitch;
 
-    internal virtual GraphSubset getImage() =>
+    internal GraphSubset getImage() =>
 		_range_domain;
 }
 

@@ -1,9 +1,9 @@
 ﻿
 //TODO:
-// protected virtual/override methods
 // missing methods
 // yaml load defaults
 // string interpolation => StringBuilder
+// OpenXcom => SharpXcom
 
 /*
  * Copyright 2010-2016 OpenXcom Developers.
