@@ -556,4 +556,13 @@ internal class Projectile
 	 */
 	internal Surface getSprite() =>
 		_sprite;
+
+	/**
+	 * Gets the INTENDED target for this projectile
+	 * it is important to note that we do not use the final position of the projectile here,
+	 * but rather the targetted tile
+	 * @return target as a tile position.
+	 */
+	internal Position getTarget() =>
+		_action.target;
 }

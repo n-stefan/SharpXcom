@@ -59,35 +59,47 @@ internal class Position
     public static Position operator *(Position a, Position b) =>
         new(a.x * b.x, a.y * b.y, a.z * b.z);
 
+	public static Position operator *(Position a, int b) =>
+        new(a.x * b, a.y * b, a.z * b);
+
     public static Position operator /(Position a, Position b) =>
         new(a.x / b.x, a.y / b.y, a.z / b.z);
 
     public static Position operator /(Position a, int b) =>
         new(a.x / b, a.y / b, a.z / b);
 
+	/// == operator
+	public static bool operator ==(Position a, Position b) =>
+		a.x == b.x && a.y == b.y && a.z == b.z;
+
+	/// != operator
+	public static bool operator !=(Position a, Position b) =>
+		a.x != b.x || a.y != b.y || a.z != b.z;
+
+    public override string ToString() =>
+	    $"({x},{y},{z})";
+
     /**
 	 * Loads the Position from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node)
+    internal void decode(YamlNode node)
     {
-        x = int.Parse(node["x"].ToString());
-        y = int.Parse(node["y"].ToString());
-        z = int.Parse(node["z"].ToString());
+		if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 3)
+			return;
+
+        x = int.Parse(node[0].ToString());
+        y = int.Parse(node[1].ToString());
+        z = int.Parse(node[2].ToString());
     }
 
     /**
      * Saves the Position to a YAML file.
      * @return YAML node.
      */
-    internal YamlNode save()
+    internal YamlNode encode()
     {
-        var node = new YamlMappingNode
-        {
-            { "x", x.ToString() },
-            { "y", y.ToString() },
-            { "z", z.ToString() }
-        };
+        var node = new YamlSequenceNode(x.ToString(), y.ToString(), z.ToString());
         return node;
     }
 }

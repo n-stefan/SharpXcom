@@ -299,7 +299,7 @@ internal class BattleItem
 	    node.Add("inventoryY", _inventoryY.ToString());
 
 	    if (_tile != null)
-		    node.Add("position", _tile.getPosition().save());
+		    node.Add("position", _tile.getPosition().encode());
         if (_ammoQuantity != 0)
             node.Add("ammoqty", _ammoQuantity.ToString());
 	    if (_ammoItem != null)

@@ -99,7 +99,7 @@ internal class MapBlock
             var key = i.Key.ToString();
             var value = ((YamlSequenceNode)i.Value).Children.Select(x =>
 			{
-				var pos = new Position(); pos.load(x); return pos;
+				var pos = new Position(); pos.decode(x); return pos;
             }).ToList();
 			_items.Add(key, value);
         }

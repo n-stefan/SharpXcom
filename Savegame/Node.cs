@@ -132,7 +132,7 @@ internal class Node
         var node = new YamlMappingNode
         {
             { "id", _id.ToString() },
-            { "position", _pos.save() },
+            { "position", _pos.encode() },
             //node["segment"] = _segment;
             { "type", _type.ToString() },
             { "rank", _rank.ToString() },
@@ -201,7 +201,7 @@ internal class Node
     internal void load(YamlNode node)
     {
 	    _id = int.Parse(node["id"].ToString());
-        _pos.load(node["position"]);
+        _pos.decode(node["position"]);
 	    //_segment = node["segment"].as<int>(_segment);
 	    _type = int.Parse(node["type"].ToString());
 	    _rank = int.Parse(node["rank"].ToString());
