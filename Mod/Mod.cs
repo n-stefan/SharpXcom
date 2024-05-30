@@ -2499,7 +2499,7 @@ internal class Mod
 	    }
 	    if (doc["statGrowthMultipliers"] != null)
 	    {
-            _statAdjustment[0].statGrowth.load(doc["statGrowthMultipliers"]);
+            _statAdjustment[0].statGrowth = UnitStats.decode(doc["statGrowthMultipliers"]);
 		    for (var i = 1; i != 5; ++i)
 		    {
                 _statAdjustment[i].statGrowth = _statAdjustment[0].statGrowth;

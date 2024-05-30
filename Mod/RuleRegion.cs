@@ -42,14 +42,33 @@ struct MissionArea
      * Loads the MissionArea from a YAML file.
      * @param node YAML node.
      */
-    internal void load(YamlNode node)
+    internal static MissionArea decode(YamlNode node)
     {
-        lonMin = double.Parse(node["lonMin"].ToString());
-        lonMax = double.Parse(node["lonMax"].ToString());
-        latMin = double.Parse(node["latMin"].ToString());
-        latMax = double.Parse(node["latMax"].ToString());
-        texture = int.Parse(node["texture"].ToString());
-        name = node["name"].ToString();
+        if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() < 4)
+        	return default;
+
+        var ma = new MissionArea
+        {
+            lonMin = Deg2Rad(double.Parse(node[0].ToString())),
+            lonMax = Deg2Rad(double.Parse(node[1].ToString())),
+            latMin = Deg2Rad(double.Parse(node[2].ToString())),
+            latMax = Deg2Rad(double.Parse(node[3].ToString()))
+        };
+        if (ma.latMin > ma.latMax)
+            (ma.latMax, ma.latMin) = (ma.latMin, ma.latMax);
+        if (((YamlSequenceNode)node).Count() >= 5) ma.texture = int.Parse(node[4].ToString());
+        if (((YamlSequenceNode)node).Count() >= 6) ma.name = node[5].ToString();
+        return ma;
+    }
+
+    /**
+     * Saves the MissionArea to a YAML file.
+     * @return YAML node.
+     */
+    internal static YamlNode encode(MissionArea ma)
+    {
+        var node = new YamlSequenceNode(Rad2Deg(ma.lonMin).ToString(), Rad2Deg(ma.lonMax).ToString(), Rad2Deg(ma.latMin).ToString(), Rad2Deg(ma.latMax).ToString());
+        return node;
     }
 }
 
@@ -67,12 +86,26 @@ struct MissionZone
      * Loads the MissionZone from a YAML file.
      * @param node YAML node.
      */
-    internal void load(YamlNode node)
+    internal static MissionZone decode(YamlNode node)
     {
-        for (var i = 0; i < areas.Count; i++)
+        if (node.NodeType != YamlNodeType.Sequence)
+        	return default;
+
+        var mz = new MissionZone
         {
-            areas[i].load(node[i]);
-        }
+            areas = ((YamlSequenceNode)node).Children.Select(x => MissionArea.decode(x)).ToList()
+        };
+        return mz;
+    }
+
+    /**
+     * Saves the MissionZone to a YAML file.
+     * @return YAML node.
+     */
+    internal static YamlNode encode(MissionZone mz)
+    {
+    	var node = new YamlSequenceNode(mz.areas.Select(x => MissionArea.encode(x)));
+    	return node;
     }
 }
 
@@ -152,10 +185,7 @@ internal class RuleRegion : IRule
             if (_latMin[^1] > _latMax[^1])
                 (_latMax[^1], _latMin[^1]) = (_latMin[^1], _latMax[^1]);
         }
-        _missionZones = ((YamlSequenceNode)node["missionZones"]).Children.Select(x =>
-        {
-            var zone = new MissionZone(); zone.load(x); return zone;
-        }).ToList();
+        _missionZones = ((YamlSequenceNode)node["missionZones"]).Children.Select(x => MissionZone.decode(x)).ToList();
         if (node["missionWeights"] is YamlNode weights)
 	    {
 		    _missionWeights.load(weights);

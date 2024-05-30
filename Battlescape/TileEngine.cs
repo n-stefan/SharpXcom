@@ -2702,7 +2702,7 @@ internal class TileEngine
      * @param unit The unit to check for spotters of.
      * @return A vector of units that can see this unit.
      */
-    List<KeyValuePair<BattleUnit, int> > getSpottingUnits(BattleUnit unit)
+    List<KeyValuePair<BattleUnit, int>> getSpottingUnits(BattleUnit unit)
     {
 	    var spotters = new List<KeyValuePair<BattleUnit, int>>();
 	    Tile tile = unit.getTile();
@@ -3153,5 +3153,82 @@ internal class TileEngine
 		    if (voxelCheck(tmpVoxel, null) != VoxelType.V_EMPTY) break;
 	    }
 	    return z;
+    }
+
+    /**
+     * Checks for how exposed unit is for another unit.
+     * @param originVoxel Voxel of trace origin (eye or gun's barrel).
+     * @param tile The tile to check for.
+     * @param excludeUnit Is self (not to hit self).
+     * @param excludeAllBut [Optional] is unit which is the only one to be considered for ray hits.
+     * @return Degree of exposure (as percent).
+     */
+    int checkVoxelExposure(Position originVoxel, Tile tile, BattleUnit excludeUnit, BattleUnit excludeAllBut)
+    {
+	    Position targetVoxel = new Position((tile.getPosition().x * 16) + 7, (tile.getPosition().y * 16) + 8, tile.getPosition().z * 24);
+	    var scanVoxel = new Position();
+	    var _trajectory = new List<Position>();
+	    BattleUnit otherUnit = tile.getUnit();
+	    if (otherUnit == null) return 0; //no unit in this tile, even if it elevated and appearing in it.
+	    if (otherUnit == excludeUnit) return 0; //skip self
+
+	    int targetMinHeight = targetVoxel.z - tile.getTerrainLevel();
+	    if (otherUnit != null)
+		     targetMinHeight += otherUnit.getFloatHeight();
+
+	    // if there is an other unit on target tile, we assume we want to check against this unit's height
+	    int heightRange;
+
+	    int unitRadius = otherUnit.getLoftemps(); //width == loft in default loftemps set
+	    if (otherUnit.getArmor().getSize() > 1)
+	    {
+		    unitRadius = 3;
+	    }
+
+	    // vector manipulation to make scan work in view-space
+	    Position relPos = targetVoxel - originVoxel;
+	    float normal = (float)(unitRadius /Math.Sqrt((float)(relPos.x*relPos.x + relPos.y*relPos.y)));
+	    int relX = (int)Math.Floor(((float)relPos.y)*normal+0.5);
+	    int relY = (int)Math.Floor(((float)-relPos.x)*normal+0.5);
+
+	    int[] sliceTargets = {0,0, relX,relY, -relX,-relY};
+
+	    if (!otherUnit.isOut())
+	    {
+		    heightRange = otherUnit.getHeight();
+	    }
+	    else
+	    {
+		    heightRange = 12;
+	    }
+
+	    int targetMaxHeight=targetMinHeight+heightRange;
+	    // scan ray from top to bottom  plus different parts of target cylinder
+	    int total=0;
+	    int visible=0;
+	    for (int i = heightRange; i >=0; i-=2)
+	    {
+		    ++total;
+		    scanVoxel.z=targetMinHeight+i;
+		    for (int j = 0; j < 3; ++j)
+		    {
+			    scanVoxel.x=targetVoxel.x + sliceTargets[j*2];
+			    scanVoxel.y=targetVoxel.y + sliceTargets[j*2+1];
+			    _trajectory.Clear();
+			    int test = calculateLine(originVoxel, scanVoxel, false, _trajectory, excludeUnit, true, false, excludeAllBut);
+			    if (test == (int)VoxelType.V_UNIT)
+			    {
+				    //voxel of hit must be inside of scanned box
+				    if (_trajectory[0].x/16 == scanVoxel.x/16 &&
+                        _trajectory[0].y/16 == scanVoxel.y/16 &&
+                        _trajectory[0].z >= targetMinHeight &&
+                        _trajectory[0].z <= targetMaxHeight)
+				    {
+					    ++visible;
+				    }
+			    }
+		    }
+	    }
+	    return (visible*100)/total;
     }
 }

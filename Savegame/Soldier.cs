@@ -202,8 +202,8 @@ internal class Soldier
             { "type", _rules.getType() },
             { "id", _id.ToString() },
             { "name", _name },
-            { "initialStats", _initialStats.save() },
-            { "currentStats", _currentStats.save() },
+            { "initialStats", UnitStats.encode(_initialStats) },
+            { "currentStats", UnitStats.encode(_currentStats) },
             { "rank", ((int)_rank).ToString() }
         };
         if (_craft != null)
@@ -254,8 +254,8 @@ internal class Soldier
 	{
 		_id = int.Parse(node["id"].ToString());
 		_name = node["name"].ToString();
-		_initialStats.load(node["initialStats"]);
-		_currentStats.load(node["currentStats"]);
+		_initialStats = UnitStats.decode(node["initialStats"]);
+		_currentStats = UnitStats.decode(node["currentStats"]);
 		_rank = (SoldierRank)int.Parse(node["rank"].ToString());
 		_gender = (SoldierGender)int.Parse(node["gender"].ToString());
 		_look = (SoldierLook)int.Parse(node["look"].ToString());

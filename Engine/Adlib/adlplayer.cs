@@ -54,6 +54,7 @@ internal class adlplayer
     static byte[] iTweakedFMReg = new byte[256];
     static byte[] iCurrentTweakedBlock = new byte[12];
     static byte[] iCurrentFNum = new byte[12];
+	struc_instruments[][] saved_instruments;
 
     static FM_OPL[] opl = { default, default };
 
@@ -803,5 +804,22 @@ internal class adlplayer
 			adlib_channels[maxchan].cur_sample = (byte)sample_id;
 		adlib_channels[maxchan].duration = 0;
 		return maxchan;
+	}
+
+	void func_set_music_tempo(int value) =>
+		adl_gv_tempo_inc = value;
+
+	int func_get_polyphony() =>
+		adl_gv_polyphony_level;
+
+	//save music state
+	void func_save_music_state(int i) =>
+		saved_instruments[i] = instruments;
+
+	//load music state
+	void func_load_music_state(int i)
+	{
+		adlib_reset_channels();
+		instruments = saved_instruments[i];
 	}
 }

@@ -83,23 +83,27 @@ internal class Position
 	 * Loads the Position from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void decode(YamlNode node)
+    internal static Position decode(YamlNode node)
     {
 		if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 3)
-			return;
+			return null;
 
-        x = int.Parse(node[0].ToString());
-        y = int.Parse(node[1].ToString());
-        z = int.Parse(node[2].ToString());
+        var p = new Position
+        {
+            x = int.Parse(node[0].ToString()),
+            y = int.Parse(node[1].ToString()),
+            z = int.Parse(node[2].ToString())
+        };
+        return p;
     }
 
     /**
      * Saves the Position to a YAML file.
      * @return YAML node.
      */
-    internal YamlNode encode()
+    internal static YamlNode encode(Position p)
     {
-        var node = new YamlSequenceNode(x.ToString(), y.ToString(), z.ToString());
+        var node = new YamlSequenceNode(p.x.ToString(), p.y.ToString(), p.z.ToString());
         return node;
     }
 }

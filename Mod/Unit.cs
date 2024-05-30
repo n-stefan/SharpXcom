@@ -32,40 +32,47 @@ struct UnitStats
      * Loads the unit stats from a YAML file.
      * @param node YAML node.
      */
-    internal void load(YamlNode node)
+    internal static UnitStats decode(YamlNode node)
     {
-        tu = int.Parse(node["tu"].ToString());
-        stamina = int.Parse(node["stamina"].ToString());
-        health = int.Parse(node["health"].ToString());
-        bravery = int.Parse(node["bravery"].ToString());
-        reactions = int.Parse(node["reactions"].ToString());
-        firing = int.Parse(node["firing"].ToString());
-        throwing = int.Parse(node["throwing"].ToString());
-        strength = int.Parse(node["strength"].ToString());
-        psiStrength = int.Parse(node["psiStrength"].ToString());
-        psiSkill = int.Parse(node["psiSkill"].ToString());
-        melee = int.Parse(node["melee"].ToString());
+        if (node.NodeType != YamlNodeType.Mapping)
+        	return default;
+
+        var us = new UnitStats
+        {
+            tu = int.Parse(node["tu"].ToString()),
+            stamina = int.Parse(node["stamina"].ToString()),
+            health = int.Parse(node["health"].ToString()),
+            bravery = int.Parse(node["bravery"].ToString()),
+            reactions = int.Parse(node["reactions"].ToString()),
+            firing = int.Parse(node["firing"].ToString()),
+            throwing = int.Parse(node["throwing"].ToString()),
+            strength = int.Parse(node["strength"].ToString()),
+            psiStrength = int.Parse(node["psiStrength"].ToString()),
+            psiSkill = int.Parse(node["psiSkill"].ToString()),
+            melee = int.Parse(node["melee"].ToString())
+        };
+        return us;
     }
 
     /**
      * Saves the unit stats to a YAML file.
      * @return YAML node.
      */
-    internal YamlNode save()
+    internal static YamlNode encode(UnitStats us)
     {
         var node = new YamlMappingNode
         {
-            { "tu", tu.ToString() },
-            { "stamina", stamina.ToString() },
-            { "health", health.ToString() },
-            { "bravery", bravery.ToString() },
-            { "reactions", reactions.ToString() },
-            { "firing", firing.ToString() },
-            { "throwing", throwing.ToString() },
-            { "strength", strength.ToString() },
-            { "psiStrength", psiStrength.ToString() },
-            { "psiSkill", psiSkill.ToString() },
-            { "melee", melee.ToString() }
+            { "tu", us.tu.ToString() },
+            { "stamina", us.stamina.ToString() },
+            { "health", us.health.ToString() },
+            { "bravery", us.bravery.ToString() },
+            { "reactions", us.reactions.ToString() },
+            { "firing", us.firing.ToString() },
+            { "throwing", us.throwing.ToString() },
+            { "strength", us.strength.ToString() },
+            { "psiStrength", us.psiStrength.ToString() },
+            { "psiSkill", us.psiSkill.ToString() },
+            { "melee", us.melee.ToString() }
         };
         return node;
     }
@@ -182,8 +189,7 @@ internal class Unit : IRule
 	    _type = node["type"].ToString();
 	    _race = node["race"].ToString();
 	    _rank = node["rank"].ToString();
-        var stats = new UnitStats();
-        stats.load(node["stats"]);
+        var stats = UnitStats.decode(node["stats"]);
         _stats.merge(stats);
 	    _armor = node["armor"].ToString();
 	    _standHeight = int.Parse(node["standHeight"].ToString());

@@ -110,12 +110,11 @@ internal class RuleSoldier : IRule
 	    if (_type == "XCOM")
 		    _type = "STR_SOLDIER";
         _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
-        var stats = new UnitStats();
-        stats.load(node["minStats"]);
+        var stats = UnitStats.decode(node["minStats"]);
         _minStats.merge(stats);
-        stats.load(node["maxStats"]);
+        stats = UnitStats.decode(node["maxStats"]);
         _maxStats.merge(stats);
-        stats.load(node["statCaps"]);
+        stats = UnitStats.decode(node["statCaps"]);
         _statCaps.merge(stats);
 	    _armor = node["armor"].ToString();
 	    _costBuy = int.Parse(node["costBuy"].ToString());

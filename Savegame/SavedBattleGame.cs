@@ -1839,7 +1839,7 @@ internal class SavedBattleGame
 		    // binary tile data not found, load old-style text tiles :(
 		    foreach (var i in ((YamlSequenceNode)node["tiles"]).Children)
 		    {
-                Position pos = new Position(); pos.decode(i["position"]);
+                var pos = Position.decode(i["position"]);
 			    getTile(pos).load(i);
 		    }
 	    }
@@ -2003,8 +2003,7 @@ internal class SavedBattleGame
                         Position pos;
                         if (i["position"] != null)
                         {
-                            pos = new Position();
-                            pos.decode(i["position"]);
+                            pos = Position.decode(i["position"]);
                         }
                         else
                         {

@@ -991,7 +991,7 @@ internal class SaveConverter
                 initial.psiStrength = data[sdata + _rules.getOffset("SOLDIER.DAT_INITIAL_PST")];
                 initial.psiSkill = data[sdata + _rules.getOffset("SOLDIER.DAT_INITIAL_PSK")];
                 initial.bravery = 110 - (10 * data[sdata + _rules.getOffset("SOLDIER.DAT_INITIAL_BR")]);
-                node.Add("initialStats", initial.save());
+                node.Add("initialStats", UnitStats.encode(initial));
 
                 UnitStats current;
                 current.tu = data[sdata + _rules.getOffset("SOLDIER.DAT_IMPROVED_TU")];
@@ -1006,7 +1006,7 @@ internal class SaveConverter
                 current.psiSkill = 0;
                 current.bravery = 10 * data[sdata + _rules.getOffset("SOLDIER.DAT_IMPROVED_BR")];
                 current += initial;
-                node.Add("currentStats", current.save());
+                node.Add("currentStats", UnitStats.encode(current));
 
                 int armor = data[sdata + _rules.getOffset("SOLDIER.DAT_ARMOR")];
                 node.Add("armor", _rules.getArmor()[armor]);

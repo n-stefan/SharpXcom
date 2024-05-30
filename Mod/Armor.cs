@@ -162,8 +162,7 @@ internal class Armor : IRule
 	    _movementType = (MovementType)int.Parse(node["movementType"].ToString());
 	    _size = int.Parse(node["size"].ToString());
 	    _weight = int.Parse(node["weight"].ToString());
-        var stats = new UnitStats();
-        stats.load(node["stats"]);
+        var stats = UnitStats.decode(node["stats"]);
         _stats.merge(stats);
 	    if (node["damageModifier"] is YamlSequenceNode dmg)
 	    {

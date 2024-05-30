@@ -994,7 +994,7 @@ internal class Tile
     internal YamlNode save()
     {
 	    var node = new YamlMappingNode();
-	    node.Add("position", _pos.encode());
+	    node.Add("position", Position.encode(_pos));
         node.Add("mapDataID", new YamlSequenceNode());
         node.Add("mapDataSetID", new YamlSequenceNode());
         for (int i = 0; i < 4; i++)

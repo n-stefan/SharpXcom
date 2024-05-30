@@ -37,6 +37,9 @@ internal class FMath
     internal static double Deg2Rad(double deg) =>
         deg * M_PI / 180.0;
 
+    internal static double Rad2Deg(double rad) =>
+	    rad / M_PI * 180.0;
+
     internal static double Xcom2Rad(int deg) =>
         deg * 0.125 * M_PI / 180.0;
 

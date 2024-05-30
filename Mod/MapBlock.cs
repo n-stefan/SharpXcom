@@ -97,10 +97,7 @@ internal class MapBlock
         foreach (var i in ((YamlMappingNode)node["items"]).Children)
         {
             var key = i.Key.ToString();
-            var value = ((YamlSequenceNode)i.Value).Children.Select(x =>
-			{
-				var pos = new Position(); pos.decode(x); return pos;
-            }).ToList();
+            var value = ((YamlSequenceNode)i.Value).Children.Select(x => Position.decode(x)).ToList();
 			_items.Add(key, value);
         }
 	}

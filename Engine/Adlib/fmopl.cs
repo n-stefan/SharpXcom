@@ -122,12 +122,12 @@ record struct FM_OPL
     /* Keyboard / I/O interface unit (Y8950) */
     byte portDirection;
     byte portLatch;
-    OPL_PORTHANDLER_R porthandler_r;
-    OPL_PORTHANDLER_W porthandler_w;
-    int port_param;
-    OPL_PORTHANDLER_R keyboardhandler_r;
-    OPL_PORTHANDLER_W keyboardhandler_w;
-    int keyboard_param;
+    internal OPL_PORTHANDLER_R porthandler_r;
+    internal OPL_PORTHANDLER_W porthandler_w;
+    internal int port_param;
+    internal OPL_PORTHANDLER_R keyboardhandler_r;
+    internal OPL_PORTHANDLER_W keyboardhandler_w;
+    internal int keyboard_param;
     /* time tables */
     internal int[] AR_TABLE = new int[75]; /* attack rate tables */
     internal int[] DR_TABLE = new int[75]; /* decay rate tables   */
@@ -154,6 +154,13 @@ record struct FM_OPL
 
 internal class fmopl
 {
+    /* !!!!! here is private section , do not access there member direct !!!!! */
+
+    const int OPL_TYPE_WAVESEL = 0x01;  /* waveform select    */
+    const int OPL_TYPE_ADPCM = 0x02;  /* DELTA-T ADPCM unit */
+    const int OPL_TYPE_KEYBOARD = 0x04;  /* keyboard interface */
+    const int OPL_TYPE_IO = 0x08;  /* I/O port */
+
     const double PI = 3.14159265358979323846;
 
     /* --- system optimize --- */
@@ -215,7 +222,6 @@ internal class fmopl
     const int ENV_MOD_DR = 0x01;
     const int ENV_MOD_AR = 0x02;
 
-    const int OPL_TYPE_WAVESEL = 0x01; /* waveform select    */
     /* ---------- Generic interface section ---------- */
     internal const int OPL_TYPE_YM3812 = OPL_TYPE_WAVESEL;
 
@@ -1310,5 +1316,127 @@ internal class fmopl
 	    /* HH */
 	    if( env_hh  < EG_ENT-1 )
 		    outd[0] += OP_OUT(SLOT7_2,env_hh,tone8)*2;
+    }
+
+    /* ----------  Option handlers ----------       */
+
+    void OPLSetTimerHandler(FM_OPL OPL,OPL_TIMERHANDLER TimerHandler,int channelOffset)
+    {
+	    OPL.TimerHandler = TimerHandler;
+	    OPL.TimerParam = channelOffset;
+    }
+
+    void OPLSetIRQHandler(FM_OPL OPL,OPL_IRQHANDLER IRQHandler,int param)
+    {
+	    OPL.IRQHandler = IRQHandler;
+	    OPL.IRQParam = param;
+    }
+
+    void OPLSetUpdateHandler(FM_OPL OPL,OPL_UPDATEHANDLER UpdateHandler,int param)
+    {
+	    OPL.UpdateHandler = UpdateHandler;
+	    OPL.UpdateParam = param;
+    }
+
+#if BUILD_Y8950
+    void OPLSetPortHandler(FM_OPL OPL,OPL_PORTHANDLER_W PortHandler_w,OPL_PORTHANDLER_R PortHandler_r,int param)
+    {
+	    OPL.porthandler_w = PortHandler_w;
+	    OPL.porthandler_r = PortHandler_r;
+	    OPL.port_param = param;
+    }
+
+    void OPLSetKeyboardHandler(FM_OPL OPL,OPL_PORTHANDLER_W KeyboardHandler_w,OPL_PORTHANDLER_R KeyboardHandler_r,int param)
+    {
+	    OPL.keyboardhandler_w = KeyboardHandler_w;
+	    OPL.keyboardhandler_r = KeyboardHandler_r;
+	    OPL.keyboard_param = param;
+    }
+#endif
+
+    byte OPLRead(FM_OPL OPL,int a)
+    {
+	    if( !((a&1) != 0) )
+	    {	/* status port */
+		    return (byte)(OPL.status & (OPL.statusmask|0x80));
+	    }
+	    /* data port */
+	    switch(OPL.address)
+	    {
+	    case 0x05: /* KeyBoard IN */
+		    if((OPL.type&OPL_TYPE_KEYBOARD) != 0)
+		    {
+			    if(OPL.keyboardhandler_r != null)
+			    {
+				    return OPL.keyboardhandler_r(OPL.keyboard_param);
+			    }
+			    else
+			    {
+				    Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} OPL:read unmapped KEYBOARD port");
+			    }
+		    }
+		    return 0;
+//TODO
+//#if 0
+//	    case 0x0f: /* ADPCM-DATA  */
+//		    return 0;
+//#endif
+	    case 0x19: /* I/O DATA    */
+		    if((OPL.type&OPL_TYPE_IO) != 0)
+		    {
+			    if(OPL.porthandler_r != null)
+			    {
+				    return OPL.porthandler_r(OPL.port_param);
+			    }
+			    else
+			    {
+				    Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} OPL:read unmapped I/O port");
+			    }
+		    }
+		    return 0;
+	    case 0x1a: /* PCM-DATA    */
+		    return 0;
+	    }
+	    return 0;
+    }
+
+    int OPLTimerOver(FM_OPL OPL,int c)
+    {
+	    if( c != 0 )
+	    {	/* Timer B */
+		    OPL_STATUS_SET(OPL,0x20);
+	    }
+	    else
+	    {	/* Timer A */
+		    OPL_STATUS_SET(OPL,0x40);
+		    /* CSM mode key,TL control */
+		    if( (OPL.mode & 0x80) != 0 )
+		    {	/* CSM mode total level latch and auto key on */
+			    int ch;
+			    if(OPL.UpdateHandler != null) OPL.UpdateHandler(OPL.UpdateParam,0);
+			    for(ch=0;ch<9;ch++)
+				    CSMKeyControl( OPL.P_CH.Span[ch] );
+		    }
+	    }
+	    /* reload timer */
+	    if (OPL.TimerHandler != null) OPL.TimerHandler(OPL.TimerParam+c,(double)OPL.T[c]*OPL.TimerBase);
+	    return OPL.status>>7;
+    }
+
+    /* CSM Key Control */
+    void CSMKeyControl(OPL_CH CH)
+    {
+	    OPL_SLOT slot1 = CH.SLOT[SLOT1];
+	    OPL_SLOT slot2 = CH.SLOT[SLOT2];
+	    /* all key off */
+	    OPL_KEYOFF(slot1);
+	    OPL_KEYOFF(slot2);
+	    /* total level latch */
+	    slot1.TLL = (int)(slot1.TL + (CH.ksl_base>>slot1.ksl));
+	    slot1.TLL = (int)(slot1.TL + (CH.ksl_base>>slot1.ksl));
+	    /* key on */
+	    CH.op1_out[0] = CH.op1_out[1] = 0;
+	    OPL_KEYON(slot1);
+	    OPL_KEYON(slot2);
     }
 }

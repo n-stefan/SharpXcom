@@ -38,14 +38,38 @@ struct TerrainCriteria
 	 * Loads the TerrainCriteria from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node)
+    internal static TerrainCriteria decode(YamlNode node)
     {
-        name = node["name"].ToString();
-        weight = int.Parse(node["weight"].ToString());
-        lonMin = double.Parse(node["lonMin"].ToString());
-        lonMax = double.Parse(node["lonMax"].ToString());
-        latMin = double.Parse(node["latMin"].ToString());
-        latMax = double.Parse(node["latMax"].ToString());
+        if (node.NodeType != YamlNodeType.Mapping)
+        	return default;
+
+        var tc = new TerrainCriteria
+        {
+            name = node["name"].ToString(),
+            weight = int.Parse(node["weight"].ToString())
+        };
+        if (node["area"] != null)
+        {
+        	var area = ((YamlSequenceNode)node["area"]).Children.Select(x => double.Parse(x.ToString())).ToList();
+        	tc.lonMin = Deg2Rad(area[0]);
+        	tc.lonMax = Deg2Rad(area[1]);
+        	tc.latMin = Deg2Rad(area[2]);
+        	tc.latMax = Deg2Rad(area[3]);
+        }
+        return tc;
+    }
+
+    /**
+     * Saves the TerrainCriteria to a YAML file.
+     * @return YAML node.
+     */
+    internal static YamlNode encode(TerrainCriteria tc)
+    {
+        var node = new YamlMappingNode();
+        node.Add("name", tc.name);
+        node.Add("weight", tc.weight.ToString());
+        node.Add("area", new YamlSequenceNode([tc.lonMin.ToString(), tc.lonMax.ToString(), tc.latMin.ToString(), tc.latMax.ToString()]));
+        return node;
     }
 }
 
@@ -79,10 +103,7 @@ internal class Texture
     {
 	    _id = int.Parse(node["id"].ToString());
         _deployments = ((YamlMappingNode)node["deployments"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
-        _terrain = ((YamlSequenceNode)node["terrain"]).Children.Select(x =>
-        {
-            var terrain = new TerrainCriteria(); terrain.load(x); return terrain;
-        }).ToList();
+        _terrain = ((YamlSequenceNode)node["terrain"]).Children.Select(x => TerrainCriteria.decode(x)).ToList();
     }
 
     /**
