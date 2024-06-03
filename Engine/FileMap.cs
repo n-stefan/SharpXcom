@@ -86,7 +86,7 @@ internal class FileMap
 	{
 		string fullDir = basePath + (relPath.Length != 0 ? "/" + relPath : string.Empty);
 		List<string> files = CrossPlatform.getFolderContents(fullDir);
-		HashSet<string> rulesetFiles = filterFiles(files, "rul");
+		HashSet<string> rulesetFiles = _filterFiles(files, "rul");
 
 		if (!ignoreMods && rulesetFiles.Any())
 		{
@@ -153,7 +153,13 @@ internal class FileMap
 		return ret;
 	}
 
-	internal static HashSet<string> filterFiles(IEnumerable<string> files, string ext)
+	internal static HashSet<string> filterFiles(List<string> files, string ext) =>
+		_filterFiles(files, ext);
+
+	internal static HashSet<string> filterFiles(HashSet<string> files, string ext) =>
+		_filterFiles(files, ext);
+
+	static HashSet<string> _filterFiles<T>(T files, string ext) where T : IEnumerable<string>
 	{
 		var ret = new HashSet<string>();
         int extLen = ext.Length + 1; // +1 for the '.'

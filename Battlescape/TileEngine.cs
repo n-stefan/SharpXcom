@@ -2573,7 +2573,7 @@ internal class TileEngine
 		    return false;
 	    }
 
-	    List<KeyValuePair<BattleUnit, int> > spotters = getSpottingUnits(unit);
+	    List<KeyValuePair<BattleUnit, int>> spotters = getSpottingUnits(unit);
 	    bool result = false;
 
 	    // not mind controlled, or controlled by the player

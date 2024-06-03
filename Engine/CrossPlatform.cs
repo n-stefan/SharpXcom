@@ -615,4 +615,27 @@ internal class CrossPlatform
 		var localTime = timeinfo.ToString("HH:mm");
 		return KeyValuePair.Create(localDate, localTime);
 	}
+
+	/**
+	 * Returns the extension from a filename. Only the
+	 * last dot is considered.
+	 * @param filename Original filename.
+	 * @return Extension component, includes dot.
+	 */
+	internal static string getExt(string filename) =>
+		Path.GetExtension(filename);
+
+	/**
+	 * Opens a file or web path in the system default browser.
+	 */
+	bool openExplorer(string url)
+	{
+        var psi = new ProcessStartInfo
+        {
+            FileName = url,
+            UseShellExecute = true
+        };
+        var process = Process.Start(psi);
+		return process != null;
+	}
 }

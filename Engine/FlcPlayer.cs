@@ -326,6 +326,9 @@ internal class FlcPlayer
 		_headerSpeed = readU16(_fileBuf.AsSpan(16));
 	}
 
+	int readS32(Span<byte> src) =>
+		(src[3] << 24) | (src[2] << 16) | (src[1] << 8) | src[0];
+
 	uint readU32(Span<byte> src) =>
 		(uint)((src[3] << 24) | (src[2] << 16) | (src[1] << 8) | src[0]);
 
@@ -970,4 +973,7 @@ internal class FlcPlayer
 			pDst = pDst.Slice(_mainScreen.pitch);
 		}
 	}
+
+	void stop() =>
+		_playingState = (int)PlayingState.FINISHED;
 }

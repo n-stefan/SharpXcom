@@ -37,7 +37,7 @@ internal class AdlibMusic : Music
      * Initializes a new music track.
      * @param volume Music volume modifier (1.0 = 100%).
      */
-    internal AdlibMusic(float volume) : base()
+    internal AdlibMusic(float volume = 1.0f) : base()
     {
         _data = null;
         _size = 0;
@@ -180,5 +180,16 @@ internal class AdlibMusic : Music
 		    delay = delayRates[rate];
 	    }
 #endif
+    }
+
+    bool isPlaying()
+    {
+#if !__NO_MUSIC
+	    if (!Options.mute)
+	    {
+		    return func_is_music_playing();
+	    }
+#endif
+	    return false;
     }
 }
