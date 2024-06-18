@@ -255,6 +255,20 @@ internal class OptionInfo
     }
 
     /**
+     * Returns the pointer to the string option,
+     * or throws an exception if it's not a string.
+     * @return Pointer to the option.
+     */
+    ref string asString()
+    {
+	    if (_type != OptionType.OPTION_STRING)
+	    {
+		    throw new Exception(_id + " is not a string!");
+	    }
+	    return ref _ref.s;
+    }
+
+    /**
      * Saves an option value to the corresponding YAML.
      * @param node Options YAML node.
      */

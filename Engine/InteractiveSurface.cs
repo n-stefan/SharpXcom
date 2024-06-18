@@ -19,7 +19,7 @@
 
 namespace SharpXcom.Engine;
 
-delegate void ActionHandler(Action action);
+delegate void ActionHandler(Action _);
 
 /**
  * Surface that the user can interact with.

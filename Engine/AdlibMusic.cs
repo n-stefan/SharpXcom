@@ -145,7 +145,7 @@ internal class AdlibMusic : Music
      * @param stream Raw audio to output.
      * @param len Length of audio to output.
      */
-    unsafe void player(nint udata, nint stream, int len)
+    internal unsafe void player(nint udata, nint stream, int len)
     {
 #if !__NO_MUSIC
 	    // Check SDL volume for Background Mute functionality

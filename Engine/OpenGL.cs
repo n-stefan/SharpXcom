@@ -601,4 +601,10 @@ unsafe internal class OpenGL
 
         return shader;
     }
+
+    void @lock(ref nint data, ref uint pitch)
+    {
+	    pitch = iwidth * ibpp;
+	    data = buffer;
+    }
 }

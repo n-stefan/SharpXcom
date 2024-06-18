@@ -69,6 +69,22 @@ internal struct GraphSubset
 		return ret;
 	}
 
+	static GraphSubset intersection(GraphSubset a, GraphSubset b, GraphSubset c)
+	{
+		GraphSubset ret =  intersection(a, b);
+		intersection_range(ref ret.beg_x, ref ret.end_x, ref c.beg_x, ref c.end_x);
+		intersection_range(ref ret.beg_y, ref ret.end_y, ref c.beg_y, ref c.end_y);
+		return ret;
+	}
+
+	static GraphSubset intersection(GraphSubset a, GraphSubset b, GraphSubset c, GraphSubset d)
+	{
+		GraphSubset ret =  intersection(a, b, c);
+		intersection_range(ref ret.beg_x, ref ret.end_x, ref d.beg_x, ref d.end_x);
+		intersection_range(ref ret.beg_y, ref ret.end_y, ref d.beg_y, ref d.end_y);
+		return ret;
+	}
+
 	internal GraphSubset offset(int x, int y)
 	{
 		GraphSubset ret = this;

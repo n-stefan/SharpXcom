@@ -134,6 +134,15 @@ internal class Options
         _userFolder;
 
     /**
+     * Returns the game's Config folder where
+     * settings are stored in. Normally the same
+     * as the User folder.
+     * @return Full path to Config folder.
+     */
+    string getConfigFolder() =>
+	    _configFolder;
+
+    /**
      * Handles the initialization of setting up default options
      * and finding and loading any existing ones.
      * @param argc Number of arguments.

@@ -175,4 +175,7 @@ internal class ModInfo
 
     internal string getRequiredExtendedEngine() =>
         _requiredExtendedEngine;
+
+    string getRequiredExtendedVersion() =>
+        _requiredExtendedVersion;
 }

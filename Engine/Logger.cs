@@ -31,7 +31,7 @@ enum SeverityLevel
     LOG_INFO,       /**< Useful information for users/developers to help debug and figure stuff out. */
     LOG_DEBUG,      /**< Purely test stuff to help developers implement, not really relevant to users. */
     LOG_VERBOSE     /**< Extra details that even developers won't really need 90% of the time. */
-};
+}
 
 /**
  * A basic logging and debugging class, prints output to stdout/files.

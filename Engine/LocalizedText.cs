@@ -28,6 +28,10 @@ internal class LocalizedText
     string _text; ///< The actual localized text.
 	uint _nextArg; ///< The next argument ID.
 
+	/// Create the empty string.
+	LocalizedText() =>
+		_nextArg = 1;
+
     /**
 	 * Create a LocalizedText from a localized string.
 	 */
@@ -58,6 +62,18 @@ internal class LocalizedText
 
 	/**
 	 * Replace the next argument placeholder with @a val.
+	 * @param val The value to place in the next placeholder's position.
+	 * @return The translated string with all occurrences of the marker replaced by @a val.
+	 */
+	LocalizedText arg(string val)
+	{
+		_text = _text.Replace($"{{{_nextArg}}}", val);
+		++_nextArg;
+		return this;
+	}
+
+	/**
+	 * Replace the next argument placeholder with @a val.
 	 * @tparam T The type of the replacement value. It should be streamable to std::owstringstream.
 	 * @param val The value to place in the next placeholder's position.
 	 * @return The translated string with all occurrences of the marker replaced by @a val.
@@ -66,6 +82,6 @@ internal class LocalizedText
 	{
 		_text = _text.Replace($"{{{_nextArg}}}", val.ToString());
 		++_nextArg;
-        return this;
+		return this;
 	}
 }

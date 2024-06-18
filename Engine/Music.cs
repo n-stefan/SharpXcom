@@ -136,4 +136,48 @@ internal class Music
 	    }
 #endif
     }
+
+    /**
+     * Pauses music playback when game loses focus.
+     */
+    static void pause()
+    {
+#if !__NO_MUSIC
+	    if (!Options.mute)
+	    {
+		    Mix_PauseMusic();
+		    if (Mix_GetMusicType(0) == Mix_MusicType.MUS_NONE)
+			    Mix_HookMusic(null, nint.Zero);
+	    }
+#endif
+    }
+
+    /**
+     * Resumes music playback when game gains focus.
+     */
+    static void resume()
+    {
+#if !__NO_MUSIC
+	    if (!Options.mute)
+	    {
+		    Mix_ResumeMusic();
+		    if (Mix_GetMusicType(0) == Mix_MusicType.MUS_NONE)
+			    Mix_HookMusic(new AdlibMusic().player, nint.Zero);
+	    }
+#endif
+    }
+
+    /**
+     * Checks if any music is playing.
+     */
+    static bool isPlaying()
+    {
+#if !__NO_MUSIC
+	    if (!Options.mute)
+	    {
+		    return Mix_Playing(-1) != 0;
+	    }
+#endif
+	    return false;
+    }
 }

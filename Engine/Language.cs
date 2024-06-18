@@ -214,6 +214,27 @@ internal class Language
 	    }
     }
 
+    /**
+     * Returns the localized text with the specified ID, in the proper form for the gender.
+     * If it's not found, just returns the ID.
+     * @param id ID of the string.
+     * @param gender Current soldier gender.
+     * @return String with the requested ID.
+     */
+    LocalizedText getString(string id, SoldierGender gender)
+    {
+	    string genderId;
+	    if (gender == SoldierGender.GENDER_MALE)
+	    {
+		    genderId = id + "_MALE";
+	    }
+	    else
+	    {
+		    genderId = id + "_FEMALE";
+	    }
+	    return getString(genderId);
+    }
+
     /// Checks if a language is in the supported name list.
     internal static bool isSupported(string lang) =>
         _names.ContainsKey(lang);
@@ -349,4 +370,42 @@ internal class Language
      */
     internal TextDirection getTextDirection() =>
 	    _direction;
+
+    /**
+     * Outputs all the language IDs and strings
+     * to an HTML table.
+     * @param filename HTML file.
+     */
+    void toHtml(string filename)
+    {
+        try
+        {
+            using var htmlFile = new StreamWriter(filename);
+	        htmlFile.WriteLine("<table border=\"1\" width=\"100%\">");
+	        htmlFile.WriteLine("<tr><th>ID String</th><th>English String</th></tr>");
+	        foreach (var i in _strings)
+	        {
+		        htmlFile.WriteLine($"<tr><td>{i.Key}</td><td>");
+		        string s = i.Value;
+		        foreach (var j in s)
+		        {
+			        if (j == Unicode.TOK_NL_SMALL || j == '\n')
+			        {
+				        htmlFile.Write("<br />");
+			        }
+			        else
+			        {
+				        htmlFile.Write(j);
+			        }
+		        }
+		        htmlFile.WriteLine("</td></tr>");
+	        }
+	        htmlFile.WriteLine("</table>");
+	        htmlFile.Close();
+	    }
+	    catch (Exception e)
+	    {
+            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {e.Message}");
+	    }
+    }
 }

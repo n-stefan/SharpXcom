@@ -158,4 +158,36 @@ internal class Palette
         }
         _colors[0].a = 0;
     }
+
+    void savePal(string file)
+    {
+	    using var @out = new BinaryWriter(new FileStream(file, FileMode.Create));
+	    short count = (short)_count;
+
+	    // RIFF header
+	    @out.Write("RIFF");
+	    int length = 4 + 4 + 4 + 4 + 2 + 2 + count * 4;
+	    @out.Write(length);
+	    @out.Write("PAL ");
+
+	    // Data chunk
+	    @out.Write("data");
+	    int data = count * 4 + 4;
+	    @out.Write(data);
+	    short version = 0x0300;
+	    @out.Write(version);
+	    @out.Write(count);
+
+	    // Colors
+	    Span<SDL_Color> color = getColors();
+	    for (short i = 0; i < count; ++i)
+	    {
+		    byte c = 0;
+            @out.Write(color[i].r);
+            @out.Write(color[i].g);
+            @out.Write(color[i].b);
+		    @out.Write(c);
+	    }
+	    @out.Close();
+    }
 }

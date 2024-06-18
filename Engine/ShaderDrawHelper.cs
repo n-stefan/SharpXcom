@@ -109,13 +109,13 @@ class Scalar<T> : IShaderParam
 
     internal Scalar(T t) =>
 		@ref = t;
-};
+}
 
 /**
  * This is empty argument to `ShaderDraw`.
  * when used in `ShaderDraw` return always 0 to `ColorFunc::func` for every pixel
  */
-class Nothing : IShaderParam { };
+class Nothing : IShaderParam { }
 
 class controller_base<T, TPixel>
 	where T : ShaderBase<TPixel>
@@ -180,4 +180,4 @@ class controller<T, TPixel> : controller_base<T, TPixel>
 	where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
 {
 	internal controller(ShaderBase<TPixel> f) : base(f.ptr(), f.getDomain(), f.getImage(), KeyValuePair.Create(1, f.pitch())) { }
-};
+}

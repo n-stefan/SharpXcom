@@ -49,7 +49,7 @@ struct output_status
     internal uint delta;
     internal uint patch;
     internal byte prevcmd;
-};
+}
 
 /**
  * Subclass of CatFile to handle gm.cat files

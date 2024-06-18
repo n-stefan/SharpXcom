@@ -445,7 +445,7 @@ internal class Screen
      * Check whether a 32bpp scaler has been selected.
      * @return if it is enabled with a compatible resolution.
      */
-    bool use32bitScaler()
+    static bool use32bitScaler()
     {
         int w = Options.displayWidth;
         int h = Options.displayHeight;

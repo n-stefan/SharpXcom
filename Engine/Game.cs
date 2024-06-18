@@ -630,4 +630,23 @@ internal class Game
         if (currentLang != defaultLang)
             _lang.loadRule(_mod.getExtraStrings(), currentLang);
     }
+
+    /**
+     * Sets whether the mouse is activated.
+     * If it is, mouse events are processed, otherwise
+     * they are ignored and the cursor is hidden.
+     * @param active Is mouse activated?
+     */
+    void setMouseActive(bool active)
+    {
+	    _mouseActive = active;
+	    _cursor.setVisible(active);
+    }
+
+    /**
+     * Checks if the game is currently quitting.
+     * @return whether the game is shutting down or not.
+     */
+    bool isQuitting() =>
+	    _quit;
 }
