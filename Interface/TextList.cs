@@ -343,7 +343,7 @@ internal class TextList : InteractiveSurface
                 width = (int)_columns[i];
             }
             Text txt = new Text(width, _font.getHeight(), _margin + rowX, rowY);
-            txt.setPalette(this.getPaletteColors());
+            txt.setPalette(this.getPalette());
             txt.initText(_big, _small, _lang);
             txt.setColor(_color);
             txt.setSecondaryColor(_color2);
@@ -434,7 +434,7 @@ internal class TextList : InteractiveSurface
             }
             ArrowButton a1 = new ArrowButton(shape1, 11, 8, getX() + _arrowPos, getY());
             a1.setListButton();
-            a1.setPalette(this.getPaletteColors());
+            a1.setPalette(this.getPalette());
             a1.setColor(_up.getColor());
             a1.onMouseClick(_leftClick, 0);
             a1.onMousePress(_leftPress);
@@ -442,7 +442,7 @@ internal class TextList : InteractiveSurface
             _arrowLeft.Add(a1);
             ArrowButton a2 = new ArrowButton(shape2, 11, 8, getX() + _arrowPos + 12, getY());
             a2.setListButton();
-            a2.setPalette(this.getPaletteColors());
+            a2.setPalette(this.getPalette());
             a2.setColor(_up.getColor());
             a2.onMouseClick(_rightClick, 0);
             a2.onMousePress(_rightPress);
@@ -717,7 +717,7 @@ internal class TextList : InteractiveSurface
 
         _selector = null;
         _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
-        _selector.setPalette(getPaletteColors());
+        _selector.setPalette(getPalette());
         _selector.setVisible(false);
 
         updateVisible();
@@ -1038,7 +1038,7 @@ internal class TextList : InteractiveSurface
 				    // resizing doesn't work, but recreating does, so let's do that!
 				    _selector = null;
 				    _selector = new Surface(getWidth(), actualHeight, getX(), y);
-				    _selector.setPalette(getPaletteColors());
+				    _selector.setPalette(getPalette());
 			    }
 			    _selector.setY(y);
 			    _selector.copy(_bg);
@@ -1096,7 +1096,7 @@ internal class TextList : InteractiveSurface
 
 	    _selector = null;
 	    _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
-	    _selector.setPalette(getPaletteColors());
+	    _selector.setPalette(getPalette());
 	    _selector.setVisible(false);
 
 	    updateVisible();

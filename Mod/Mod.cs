@@ -1065,7 +1065,7 @@ internal class Mod
         {
             Surface surface1 = _sets["HANDOB2.PCK"].addFrame(item.Key);
             Surface surface2 = item.Value;
-            surface1.setPalette(surface2.getPaletteColors());
+            surface1.setPalette(surface2.getPalette());
             surface2.blit(surface1);
         }
     }
@@ -1627,7 +1627,7 @@ internal class Mod
             Surface tempSurface = new Surface(1, 1);
             tempSurface.loadImage(FileMap.getFilePath("UFOGRAPH/" + lbms[i]));
             _palettes[pals[i]] = new Palette();
-            SDL_Color[] colors = tempSurface.getPaletteColors();
+            SDL_Color[] colors = tempSurface.getPalette();
             colors[255] = backPal[i];
             _palettes[pals[i]].setColors(colors, 256);
             createTransparencyLUT(_palettes[pals[i]]);

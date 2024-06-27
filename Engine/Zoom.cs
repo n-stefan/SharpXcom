@@ -73,4 +73,11 @@ internal class Zoom
             SDL_FreeSurface(tmp);
         }
     }
+
+    /**
+     * Checks the SSE2 feature bit returned by the CPUID instruction
+     * @return Does the CPU support SSE2?
+     */
+    static bool haveSSE2() =>
+        Sse2.X64.IsSupported;
 }

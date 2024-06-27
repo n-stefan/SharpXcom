@@ -13,6 +13,7 @@ global using System.Globalization;
 global using System.Numerics;
 global using System.Runtime.CompilerServices;
 global using System.Runtime.InteropServices;
+global using System.Runtime.Intrinsics.X86;
 global using System.Text;
 global using YamlDotNet.Core;
 global using YamlDotNet.Core.Events;

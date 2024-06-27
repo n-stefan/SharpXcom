@@ -68,7 +68,7 @@ internal class Font
      * @return Pointer to the palette's colors.
      */
     internal SDL_Color[] getPalette() =>
-	    _images[0].surface.getPaletteColors();
+	    _images[0].surface.getPalette();
 
     /**
      * Replaces a certain amount of colors in the font's palette.

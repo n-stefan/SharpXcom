@@ -469,7 +469,7 @@ internal class Inventory : InteractiveSurface
                 }
             }
             Surface stackLayer = new Surface(getWidth(), getHeight(), 0, 0);
-            stackLayer.setPalette(getPaletteColors());
+            stackLayer.setPalette(getPalette());
             // Ground items
             foreach (var i in _selUnit.getTile().getInventory())
             {
@@ -533,7 +533,7 @@ internal class Inventory : InteractiveSurface
     {
 	    _grid.clear();
 	    Text text = new Text(80, 9, 0, 0);
-	    text.setPalette(_grid.getPaletteColors());
+	    text.setPalette(_grid.getPalette());
 	    text.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
 
 	    RuleInterface rule = _game.getMod().getInterface("inventory");
@@ -1029,6 +1029,6 @@ internal class Inventory : InteractiveSurface
 	    _items.setPalette(colors, firstcolor, ncolors);
 	    _selection.setPalette(colors, firstcolor, ncolors);
 	    _warning.setPalette(colors, firstcolor, ncolors);
-	    _stackNumber.setPalette(getPaletteColors());
+	    _stackNumber.setPalette(getPalette());
     }
 }

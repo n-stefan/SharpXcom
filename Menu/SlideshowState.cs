@@ -51,7 +51,7 @@ internal class SlideshowState : State
 			slide.onKeyboardPress(screenSkip, Options.keyCancel);
 			slide.setVisible(false);
 			_slides.Add(slide);
-			setPalette(slide.getPaletteColors());
+			setPalette(slide.getPalette());
 			add(slide);
 
 			// initialize with default rect; may get overridden by
@@ -103,7 +103,7 @@ internal class SlideshowState : State
 				transitionSeconds = _slideshowSlides[_curScreen].transitionSeconds;
 			_transitionTimer.setInterval((uint)(transitionSeconds * 1000));
 			_transitionTimer.start();
-			setPalette(_slides[_curScreen].getPaletteColors());
+			setPalette(_slides[_curScreen].getPalette());
 			_slides[_curScreen].setVisible(true);
 			_captions[_curScreen].setVisible(true);
 			init();

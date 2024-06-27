@@ -153,7 +153,7 @@ internal class Surface
             _surface = Marshal.PtrToStructure<SDL_Surface>(surfacePtr);
             SDL_SetColorKey(_surface.pixels, (int)SDL_bool.SDL_TRUE /* SDL_SRCCOLORKEY */, 0);
             //cant call `setPalette` because its virtual function and it dont work correctly in constructor
-            SDL_SetPaletteColors(_surface.pixels, other.getPaletteColors(), 0, 255);
+            SDL_SetPaletteColors(_surface.pixels, other.getPalette(), 0, 255);
             new Span<byte>((byte*)other._alignedBuffer, height * pitch).CopyTo(new Span<byte>((byte*)_alignedBuffer, height * pitch)); //memcpy(_alignedBuffer, other._alignedBuffer, height * pitch);
         }
         else
@@ -252,7 +252,7 @@ internal class Surface
 	 * Returns the surface's 8bpp palette.
 	 * @return Pointer to the palette's colors.
 	 */
-    internal SDL_Color[] getPaletteColors()
+    internal SDL_Color[] getPalette()
     {
         var format = Marshal.PtrToStructure<SDL_PixelFormat>(_surface.format);
         var palette = Marshal.PtrToStructure<SDL_Palette>(format.palette);
@@ -479,7 +479,7 @@ internal class Surface
      * @param color Color of the line.
      */
     internal void drawLine(short x1, short y1, short x2, short y2, byte color) =>
-        lineColor(_surface.pixels, x1, y1, x2, y2, Palette.getRGBA(getPaletteColors(), color));
+        lineColor(_surface.pixels, x1, y1, x2, y2, Palette.getRGBA(getPalette(), color));
 
     /**
      * This is a separate visibility setting intended
@@ -648,7 +648,7 @@ internal class Surface
 
         // Copy old contents
         SDL_SetColorKey(surface, (int)SDL_bool.SDL_TRUE, 0);
-        SDL_SetPaletteColors(surface, getPaletteColors(), 0, 256);
+        SDL_SetPaletteColors(surface, getPalette(), 0, 256);
         SDL_BlitSurface(_surface.pixels, nint.Zero, surface, nint.Zero);
 
         // Delete old surface
@@ -1026,7 +1026,7 @@ internal class Surface
      * @param color Color of the circle.
      */
     protected void drawCircle(short x, short y, short r, byte color) =>
-	    filledCircleColor(_surface.pixels, x, y, r, Palette.getRGBA(getPaletteColors(), color));
+	    filledCircleColor(_surface.pixels, x, y, r, Palette.getRGBA(getPalette(), color));
 
     /**
      * Draws a textured polygon on the surface.
@@ -1091,4 +1091,23 @@ internal class Surface
 	    // Unlock the surface
 	    unlock();
     }
+
+    /**
+     * Resets the cropping rectangle set for this surface,
+     * so the whole surface is blitted.
+     */
+    void resetCrop()
+    {
+	    _crop.w = 0;
+	    _crop.h = 0;
+	    _crop.x = 0;
+	    _crop.y = 0;
+    }
+
+    /**
+     * checks TFTD mode.
+     * @return TFTD mode.
+     */
+    bool isTFTDMode() =>
+	    _tftdMode;
 }

@@ -1417,7 +1417,7 @@ internal class Globe : InteractiveSurface
 	    if (_zoom >= 2)
 	    {
 		    Text label = new Text(100, 9, 0, 0);
-		    label.setPalette(getPaletteColors());
+		    label.setPalette(getPalette());
 		    label.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
 		    label.setAlign(TextHAlign.ALIGN_CENTER);
 		    label.setColor(COUNTRY_LABEL_COLOR);
@@ -1445,7 +1445,7 @@ internal class Globe : InteractiveSurface
 	    if (_zoom >= 3)
 	    {
 		    Text label = new Text(100, 9, 0, 0);
-		    label.setPalette(getPaletteColors());
+		    label.setPalette(getPalette());
 		    label.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
 		    label.setAlign(TextHAlign.ALIGN_CENTER);
 		    label.setColor(CITY_LABEL_COLOR);

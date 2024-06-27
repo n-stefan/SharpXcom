@@ -249,6 +249,26 @@ internal class State
 	    _game.getLanguage().getString(id);
 
     /**
+     * Get the localized text for dictionary key @a id.
+     * This function forwards the call to Language::getString(const std::string &, unsigned).
+     * @param id The dictionary key to search for.
+     * @param n The number to use for the proper version.
+     * @return The localized text.
+     */
+    protected LocalizedText tr(string id, uint n) =>
+	    _game.getLanguage().getString(id, n);
+
+    /**
+     * Get the localized text for dictionary key @a id.
+     * This function forwards the call to Language::getString(const std::string &, SoldierGender).
+     * @param id The dictionary key to search for.
+     * @param gender Current soldier gender.
+     * @return The localized text.
+     */
+    protected LocalizedText tr(string id, SoldierGender gender) =>
+	    _game.getLanguage().getString(id, (uint)gender);
+
+    /**
      * Takes care of any events from the core game engine,
      * and passes them on to its InteractiveSurface child elements.
      * @param action Pointer to an action.
@@ -486,16 +506,6 @@ internal class State
     }
 
     /**
-     * Get the localized text for dictionary key @a id.
-     * This function forwards the call to Language::getString(const std::string &, unsigned).
-     * @param id The dictionary key to search for.
-     * @param n The number to use for the proper version.
-     * @return The localized text.
-     */
-    protected LocalizedText tr(string id, uint n) =>
-	    _game.getLanguage().getString(id, n);
-
-    /**
      * Hides all the Surface child elements on display.
      */
     internal void hideAll()
@@ -514,4 +524,11 @@ internal class State
 		    i.setY(i.getY() + _game.getScreen().getDY() / 2);
 	    }
     }
+
+    /**
+     * Returns the state's 8bpp palette.
+     * @return Pointer to the palette's colors.
+     */
+    SDL_Color[] getPalette() =>
+	    _palette;
 }

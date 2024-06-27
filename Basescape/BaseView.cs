@@ -179,7 +179,7 @@ internal class BaseView : InteractiveSurface
         if (_selSize > 0)
         {
             _selector = new Surface(size * GRID_SIZE, size * GRID_SIZE, _x, _y);
-            _selector.setPalette(getPaletteColors());
+            _selector.setPalette(getPalette());
             SDL_Rect r;
             r.w = _selector.getWidth();
             r.h = _selector.getHeight();
@@ -468,7 +468,7 @@ internal class BaseView : InteractiveSurface
 		    if (i.getBuildTime() > 0)
 		    {
 			    Text text = new Text(GRID_SIZE * i.getRules().getSize(), 16, 0, 0);
-			    text.setPalette(getPaletteColors());
+			    text.setPalette(getPalette());
 			    text.initText(_big, _small, _lang);
 			    text.setX(i.getX() * GRID_SIZE);
 			    text.setY(i.getY() * GRID_SIZE + (GRID_SIZE * i.getRules().getSize() - 16) / 2);

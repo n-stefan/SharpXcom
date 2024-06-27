@@ -267,7 +267,7 @@ internal class Map : InteractiveSurface
     internal void cacheUnit(BattleUnit unit)
     {
 	    UnitSprite unitSprite = new UnitSprite(_spriteWidth * 2, _spriteHeight, 0, 0, _save.getDepth() != 0);
-	    unitSprite.setPalette(this.getPaletteColors());
+	    unitSprite.setPalette(this.getPalette());
 	    int numOfParts = unit.getArmor().getSize() * unit.getArmor().getSize();
 
 	    if (unit.isCacheInvalid())
@@ -279,7 +279,7 @@ internal class Map : InteractiveSurface
 			    if (cache == null) // no cache created yet
 			    {
 				    cache = new Surface(_spriteWidth * 2, _spriteHeight);
-				    cache.setPalette(this.getPaletteColors());
+				    cache.setPalette(this.getPalette());
 			    }
 
 			    unitSprite.setBattleUnit(unit, i);
@@ -351,7 +351,7 @@ internal class Map : InteractiveSurface
 					     0, 0, 0, 0, b, 0, 0, 0, 0 };
 
 	    _arrow = new Surface(9, 9);
-	    _arrow.setPalette(this.getPaletteColors());
+	    _arrow.setPalette(this.getPalette());
 	    _arrow.@lock();
 	    for (int y = 0; y < 9;++y)
 		    for (int x = 0; x < 9; ++x)
@@ -697,7 +697,7 @@ internal class Map : InteractiveSurface
 		if (_waypoints.Any() || (pathfinderTurnedOn && ((_previewSetting & PathPreview.PATH_TU_COST) != 0)))
 		{
 			_numWaypid = new NumberText(15, 15, 20, 30);
-			_numWaypid.setPalette(getPaletteColors());
+			_numWaypid.setPalette(getPalette());
 			_numWaypid.setColor((byte)(pathfinderTurnedOn ? _messageColor + 1 : Palette.blockOffset(1)));
 		}
 

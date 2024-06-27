@@ -67,7 +67,7 @@ internal class BattlescapeButton : InteractiveSurface
     internal void initSurfaces()
     {
         _altSurface = new Surface(_surface.w, _surface.h, _x, _y);
-        _altSurface.setPalette(getPaletteColors());
+        _altSurface.setPalette(getPalette());
 
         // Lock the surface
         _altSurface.@lock();

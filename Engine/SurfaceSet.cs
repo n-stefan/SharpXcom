@@ -218,7 +218,7 @@ internal class SurfaceSet
 	 * @param tab Filename of the TAB offsets.
 	 * @sa http://www.ufopaedia.org/index.php?title=Image_Formats#PCK
 	 */
-	internal void loadPck(string pck, string tab)
+	internal void loadPck(string pck, string tab = "")
 	{
 		int nframes = 0;
 
