@@ -614,7 +614,7 @@ internal class Screen
     {
         if (getWidth() != _baseWidth || getHeight() != _baseHeight || useOpenGL())
         {
-            Zoom.flipWithZoom(_surface.getSurface(), this, _topBlackBand, _bottomBlackBand, _leftBlackBand, _rightBlackBand, glOutput);
+            Zoom.flipWithZoom(_surface.getSurface(), getSurface().getSurface(), _topBlackBand, _bottomBlackBand, _leftBlackBand, _rightBlackBand, glOutput);
         }
         else
         {

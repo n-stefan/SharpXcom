@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ppy.SDL2-CS" Version="1.0.693-alpha" />
-    <PackageReference Include="YamlDotNet" Version="13.7.1" />
+    <PackageReference Include="ppy.SDL2-CS" Version="1.0.741-alpha" />
+    <PackageReference Include="YamlDotNet" Version="15.3.0" />
   </ItemGroup>
 
 </Project>
