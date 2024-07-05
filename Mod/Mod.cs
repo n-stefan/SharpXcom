@@ -1849,9 +1849,9 @@ internal class Mod
                 {
                     SDL_Color desiredColor;
 
-                    desiredColor.r = (byte)Math.Min(255, (int)Math.Round((palColors[currentColor].r * co) + (tint.r * to)));
-                    desiredColor.g = (byte)Math.Min(255, (int)Math.Round((palColors[currentColor].g * co) + (tint.g * to)));
-                    desiredColor.b = (byte)Math.Min(255, (int)Math.Round((palColors[currentColor].b * co) + (tint.b * to)));
+                    desiredColor.r = (byte)Math.Min(255, (int)Round((palColors[currentColor].r * co) + (tint.r * to)));
+                    desiredColor.g = (byte)Math.Min(255, (int)Round((palColors[currentColor].g * co) + (tint.g * to)));
+                    desiredColor.b = (byte)Math.Min(255, (int)Round((palColors[currentColor].b * co) + (tint.b * to)));
 
                     byte closest = (byte)currentColor;
                     int lowestDifference = int.MaxValue;

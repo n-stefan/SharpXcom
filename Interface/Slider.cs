@@ -166,7 +166,7 @@ internal class Slider : InteractiveSurface
 		    int cursorX = (int)action.getAbsoluteXMouse();
 		    double buttonX = Math.Clamp(cursorX + _offsetX, _minX, _maxX);
 		    double pos = (buttonX - _minX) / (_maxX - _minX);
-		    int value = _min + (int)Math.Round((_max - _min) * pos);
+		    int value = _min + (int)Round((_max - _min) * pos);
 		    setValue(value);
 		    if (_change != null)
 		    {

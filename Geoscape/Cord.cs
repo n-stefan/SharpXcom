@@ -23,18 +23,25 @@ internal struct Cord : IAdditionOperators<Cord, Cord, Cord>
 {
     internal double x, y, z;
 
-    public Cord()
-    {
-        x = 0.0;
-        y = 0.0;
-        z = 0.0;
-    }
-
     internal Cord(double px, double py, double pz)
     {
         x = px;
         y = py;
         z = pz;
+    }
+
+	Cord(Cord c)
+	{
+		x = c.x;
+		y = c.y;
+		z = c.z;
+	}
+
+    public Cord()
+    {
+        x = 0.0;
+        y = 0.0;
+        z = 0.0;
     }
 
     public static Cord operator +(Cord a, Cord b) =>

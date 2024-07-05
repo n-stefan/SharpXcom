@@ -53,7 +53,7 @@ internal class ArticleStateTFTDArmor : ArticleStateTFTD
 		for (int i = 0; i < Armor.DAMAGE_TYPES; ++i)
 		{
 			ItemDamageType dt = (ItemDamageType)i;
-			int percentage = (int)Math.Round(armor.getDamageModifier(dt) * 100.0f);
+			int percentage = (int)Round(armor.getDamageModifier(dt) * 100.0f);
 			string damage = getDamageTypeText(dt);
 			if (percentage != 100 && damage != "STR_UNKNOWN")
 			{

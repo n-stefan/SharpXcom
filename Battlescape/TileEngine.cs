@@ -187,7 +187,7 @@ internal class TileEngine
             {
                 for (int z = 0; z < _save.getMapSizeZ(); z++)
                 {
-                    int distance = (int)Math.Round(Math.Sqrt((float)(x * x + y * y)));
+                    int distance = (int)Round(Math.Sqrt((float)(x * x + y * y)));
 
                     if (_save.getTile(new Position(center.x + x, center.y + y, z)) != null)
                         _save.getTile(new Position(center.x + x, center.y + y, z)).addLight(power - distance, layer);
@@ -3187,7 +3187,7 @@ internal class TileEngine
 
 	    // vector manipulation to make scan work in view-space
 	    Position relPos = targetVoxel - originVoxel;
-	    float normal = (float)(unitRadius /Math.Sqrt((float)(relPos.x*relPos.x + relPos.y*relPos.y)));
+	    float normal = (float)(unitRadius / Math.Sqrt((float)(relPos.x*relPos.x + relPos.y*relPos.y)));
 	    int relX = (int)Math.Floor(((float)relPos.y)*normal+0.5);
 	    int relY = (int)Math.Floor(((float)-relPos.x)*normal+0.5);
 

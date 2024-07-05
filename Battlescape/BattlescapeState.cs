@@ -1591,10 +1591,10 @@ internal class BattlescapeState : State
 
 				int barWidth = _game.getScreen().getCursorLeftBlackBand();
 				int barHeight = _game.getScreen().getCursorTopBlackBand();
-				int cursorX = (int)(_cursorPosition.x + Math.Round(delta.x * action.getXScale()));
-				int cursorY = (int)(_cursorPosition.y + Math.Round(delta.y * action.getYScale()));
-				_cursorPosition.x = Math.Clamp(cursorX, barWidth, _game.getScreen().getWidth() - barWidth - (int)(Math.Round(action.getXScale())));
-				_cursorPosition.y = Math.Clamp(cursorY, barHeight, _game.getScreen().getHeight() - barHeight - (int)(Math.Round(action.getYScale())));
+				int cursorX = (int)(_cursorPosition.x + Round(delta.x * action.getXScale()));
+				int cursorY = (int)(_cursorPosition.y + Round(delta.y * action.getYScale()));
+				_cursorPosition.x = Math.Clamp(cursorX, barWidth, _game.getScreen().getWidth() - barWidth - (int)(Round(action.getXScale())));
+				_cursorPosition.y = Math.Clamp(cursorY, barHeight, _game.getScreen().getHeight() - barHeight - (int)(Round(action.getYScale())));
 
 				if (Options.touchEnabled == false)
 				{

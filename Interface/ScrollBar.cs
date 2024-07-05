@@ -108,7 +108,7 @@ internal class ScrollBar : InteractiveSurface
 		    int cursorY = (int)(action.getAbsoluteYMouse() - getY());
 		    int y = Math.Clamp(cursorY + _offset, 0, getHeight() - _thumbRect.h + 1);
 		    double scale = (double)_list.getRows() / getHeight();
-		    int scroll = (int)Math.Round(y * scale);
+		    int scroll = (int)Round(y * scale);
 		    _list.scrollTo((uint)scroll);
 	    }
     }

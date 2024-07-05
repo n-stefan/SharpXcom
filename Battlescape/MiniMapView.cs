@@ -424,8 +424,8 @@ internal class MiniMapView : InteractiveSurface
 					int barHeight = _game.getScreen().getCursorTopBlackBand();
 					int cursorX = _cursorPosition.x + delta.x;
 					int cursorY =_cursorPosition.y + delta.y;
-					_cursorPosition.x = Math.Clamp(cursorX, (int)Math.Round(getX() * action.getXScale()) + barWidth, (int)Math.Round((getX() + getWidth()) * action.getXScale()) + barWidth);
-					_cursorPosition.y = Math.Clamp(cursorY, (int)Math.Round(getY() * action.getYScale()) + barHeight, (int)Math.Round((getY() + getHeight()) * action.getYScale()) + barHeight);
+					_cursorPosition.x = Math.Clamp(cursorX, (int)Round(getX() * action.getXScale()) + barWidth, (int)Round((getX() + getWidth()) * action.getXScale()) + barWidth);
+					_cursorPosition.y = Math.Clamp(cursorY, (int)Round(getY() * action.getYScale()) + barHeight, (int)Round((getY() + getHeight()) * action.getYScale()) + barHeight);
 					action.getDetails().motion.x = _cursorPosition.x;
 					action.getDetails().motion.y = _cursorPosition.y;
 				}

@@ -25,12 +25,22 @@ internal class FMath
     internal const double M_PI_2 = 1.57079632679489661923;
     internal const double M_PI_4 = 0.785398163397448309616;
 
+    const float FLT_EPSILON = 1.192092896e-07F; // smallest such that 1.0+FLT_EPSILON != 1.0
     const double DBL_EPSILON = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
 
     // Float operations
 
+    internal static bool AreSame(float l, float r) =>
+	    Math.Abs(l - r) <= FLT_EPSILON * Math.Max(1.0f, Math.Max(Math.Abs(l), Math.Abs(r)));
+
     internal static bool AreSame(double l, double r) =>
         Math.Abs(l - r) <= DBL_EPSILON * Math.Max(1.0, Math.Max(Math.Abs(l), Math.Abs(r)));
+
+    internal static float Round(float x) =>
+        (float)(x < 0.0f ? Math.Ceiling(x - 0.5f) : Math.Floor(x + 0.5f));
+
+    internal static double Round(double x) =>
+	    x < 0.0 ? Math.Ceiling(x - 0.5) : Math.Floor(x + 0.5);
 
     // Degree operations
 
