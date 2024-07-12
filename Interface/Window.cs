@@ -287,4 +287,18 @@ internal class Window : Surface
 		    _bg.blit(this);
 	    }
     }
+
+    /**
+     * Returns the color used to draw the shaded border.
+     * @return Color value.
+     */
+    byte getColor() =>
+	    _color;
+
+    /**
+     * Changes the horizontal offset of the surface in the X axis.
+     * @param dx X position in pixels.
+     */
+    void setDX(int dx) =>
+	    _dx = dx;
 }

@@ -292,4 +292,18 @@ internal class NumberText : Surface
 
 	    this.offset(_color);
     }
+
+    /**
+     * Returns the value used to render the number.
+     * @return Number value.
+     */
+    uint getValue() =>
+	    _value;
+
+    /**
+     * Returns the color used to render the number.
+     * @return Color value.
+     */
+    byte getColor() =>
+	    _color;
 }

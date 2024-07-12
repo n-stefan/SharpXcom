@@ -1208,4 +1208,34 @@ internal class TextList : InteractiveSurface
 	    }
 	    _scrollbar.setHighContrast(contrast);
     }
+
+    /**
+     * Changes the text list to use the small-size font.
+     */
+    void setSmall()
+    {
+	    _font = _small;
+
+	    _selector = null;
+	    _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
+	    _selector.setPalette(getPalette());
+	    _selector.setVisible(false);
+
+	    updateVisible();
+    }
+
+    /**
+     * If enabled, the columns will match the text width.
+     * Otherwise, they will have a fixed width.
+     * @param condensed True for condensed layout, False for table layout.
+     */
+    void setCondensed(bool condensed) =>
+	    _condensed = condensed;
+
+    /**
+     * Returns the margin of the text in the list.
+     * @return Margin in pixels.
+     */
+    int getMargin() =>
+	    _margin;
 }

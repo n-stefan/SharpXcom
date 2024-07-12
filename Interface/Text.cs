@@ -616,4 +616,11 @@ internal class Text : InteractiveSurface
 		    }
 	    }
     }
+
+    /**
+     * Returns the secondary color used to render the text.
+     * @return Color value.
+     */
+    internal byte getSecondaryColor() =>
+	    _color2;
 }

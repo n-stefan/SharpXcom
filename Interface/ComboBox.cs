@@ -432,4 +432,18 @@ internal class ComboBox : InteractiveSurface
 	    _window.setHighContrast(contrast);
 	    _list.setHighContrast(contrast);
     }
+
+    /**
+     * Changes the surface used to draw the background of the combo box.
+     * @param bg New background.
+     */
+    void setBackground(Surface bg) =>
+	    _window.setBackground(bg);
+
+    /**
+     * Returns the color used to draw the combo box.
+     * @return Color value.
+     */
+    byte getColor() =>
+	    _color;
 }

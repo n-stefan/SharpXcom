@@ -170,4 +170,46 @@ internal class Bar : Surface
      */
     internal override void setBorderColor(byte bc) =>
 	    _borderColor = bc;
+
+    /**
+     * Returns the second color used to draw the bar.
+     * @return Color value.
+     */
+    byte getSecondaryColor() =>
+	    _color2;
+
+    /**
+     * Returns the scale factor used to draw the bar values.
+     * @return Scale in pixels/unit.
+     */
+    double getScale() =>
+	    _scale;
+
+    /**
+     * Returns the maximum value used to draw the outer border.
+     * @return Maximum value.
+     */
+    double getMax() =>
+	    _max;
+
+    /**
+     * Returns the value used to draw the inner contents.
+     * @return Current value.
+     */
+    double getValue() =>
+	    _value;
+
+    /**
+     * Returns the value used to draw the second inner contents.
+     * @return Current value.
+     */
+    double getValue2() =>
+	    _value2;
+
+    /**
+     * Defines whether the second value should be drawn on top. Default this is true.
+     * @param onTop Second value on top?
+     */
+    void setSecondValueOnTop(bool onTop) =>
+	    _secondOnTop = onTop;
 }

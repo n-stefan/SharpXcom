@@ -135,4 +135,37 @@ internal class TestState : State
 
 		_set.getFrame(0).blit(_game.getScreen().getSurface());
 	}
+
+	/**
+	 * Generates a surface with a row of every single color currently
+	 * loaded in the game palette (like a rainbow). First used for
+	 * testing 8bpp functionality, still useful for debugging palette issues.
+	 * @return Test surface.
+	 */
+	SDL_Surface testSurface()
+	{
+		SDL_Surface surface;
+
+		// Create surface
+		surface = Marshal.PtrToStructure<SDL_Surface>(SDL_CreateRGBSurface(/* SDL_HWSURFACE */ SDL_SWSURFACE, 256, 25, 8, 0, 0, 0, 0));
+
+		if (surface.Equals(default))
+		{
+			throw new Exception(SDL_GetError());
+		}
+
+		// Lock the surface
+		SDL_LockSurface(surface.pixels);
+
+		nint index = surface.pixels;
+
+		for (byte j = 0; j < 25; ++j)
+			for (byte i = 0; i <= 255; i++, nint.Add(index, 1))
+				Marshal.WriteByte(index, i);
+
+		// Unlock the surface
+		SDL_UnlockSurface(surface.pixels);
+
+		return surface;
+	}
 }

@@ -243,4 +243,11 @@ internal class BattlescapeButton : InteractiveSurface
      */
     internal override void setColor(byte color) =>
 	    _color = color;
+
+    /**
+     * Returns the color for the battlescape button.
+     * @return Color value.
+     */
+    byte getColor() =>
+	    _color;
 }

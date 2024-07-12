@@ -301,4 +301,11 @@ internal class Slider : InteractiveSurface
 	    _frame.setHighContrast(contrast);
 	    _button.setHighContrast(contrast);
     }
+
+    /**
+     * Returns the color used to render the slider.
+     * @return Color value.
+     */
+    byte getColor() =>
+	    _button.getColor();
 }

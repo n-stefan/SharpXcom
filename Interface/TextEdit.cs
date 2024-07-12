@@ -528,4 +528,38 @@ internal class TextEdit : InteractiveSurface
 		_text.setHighContrast(contrast);
 		_caret.setHighContrast(contrast);
 	}
+
+	/**
+	 * Changes the text edit to use the small-size font.
+	 */
+	void setSmall()
+	{
+		_text.setSmall();
+		_caret.setSmall();
+	}
+
+	/**
+	 * Enables/disables color inverting. Mostly used to make
+	 * button text look pressed along with the button.
+	 * @param invert Invert setting.
+	 */
+	void setInvert(bool invert)
+	{
+		_text.setInvert(invert);
+		_caret.setInvert(invert);
+	}
+
+	/**
+	 * Returns the color used to render the text.
+	 * @return Color value.
+	 */
+	byte getColor() =>
+		_text.getColor();
+
+	/**
+	 * Returns the secondary color used to render the text.
+	 * @return Color value.
+	 */
+	byte getSecondaryColor() =>
+		_text.getSecondaryColor();
 }

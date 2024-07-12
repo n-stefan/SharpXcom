@@ -116,4 +116,17 @@ internal class ImageButton : InteractiveSurface
 	    }
 	    base.mouseRelease(action, state);
     }
+
+    /**
+     * Invert a button explicitly either ON or OFF and keep track of the state using our internal variables.
+     * @param press Set this button as pressed.
+     */
+    void toggle(bool press)
+    {
+	    if (_inverted != press)
+	    {
+		    _inverted = !_inverted;
+		    invert((byte)(_color + 3));
+	    }
+    }
 }

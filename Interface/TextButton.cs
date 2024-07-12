@@ -327,4 +327,40 @@ internal class TextButton : InteractiveSurface
 	    base.setHeight(height);
 	    _text.setHeight(height);
     }
+
+    /**
+     * Changes the color for the text only.
+     * @param color Color value.
+     */
+    void setTextColor(byte color)
+    {
+	    _text.setColor(color);
+	    _redraw = true;
+    }
+
+	void setSecondaryColor(byte color) =>
+        setTextColor(color);
+
+    /**
+     * Returns the color for the button and text.
+     * @return Color value.
+     */
+    internal byte getColor() =>
+	    _color;
+
+    /**
+     * Changes the text to use the small-size font.
+     */
+    void setSmall()
+    {
+	    _text.setSmall();
+	    _redraw = true;
+    }
+
+    /**
+     * Returns the text of the button label.
+     * @return Text string.
+     */
+    string getText() =>
+	    _text.getText();
 }

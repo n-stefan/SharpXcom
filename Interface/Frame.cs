@@ -156,4 +156,11 @@ internal class Frame : Surface
 	    _contrast = contrast;
 	    _redraw = true;
     }
+
+    /**
+     * Returns the color used to draw the shaded border.
+     * @return Color value.
+     */
+    byte getColor() =>
+	    _color;
 }
