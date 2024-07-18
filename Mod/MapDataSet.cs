@@ -152,10 +152,8 @@ internal class MapDataSet
     /**
      * MapDataSet destruction.
      */
-    ~MapDataSet()
-    {
+    ~MapDataSet() =>
         unloadData();
-    }
 
     /**
      * Unloads the terrain data.
@@ -364,4 +362,11 @@ internal class MapDataSet
      */
     internal SurfaceSet getSurfaceset() =>
 	    _surfaceSet;
+
+    /**
+     * Gets a blank floor tile.
+     * @return Pointer to a blank tile.
+     */
+    static MapData getBlankFloorTile() =>
+	    _blankTile;
 }

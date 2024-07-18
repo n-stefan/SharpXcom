@@ -225,7 +225,7 @@ internal class ExtraSprites
 	 * @param filename Image filename.
 	 * @return True/false
 	 */
-	bool isImageFile(string filename)
+	static bool isImageFile(string filename)
 	{
 		for (var i = 0; i < exts.Length; ++i)
 		{
@@ -251,4 +251,39 @@ internal class ExtraSprites
 		_subY = int.Parse(node["subY"].ToString());
 		_current = current;
 	}
+
+	/**
+	 * Gets the list of sprites defined my this mod.
+	 * @return The list of sprites.
+	 */
+	Dictionary<int, string> getSprites() =>
+		_sprites;
+
+	/**
+	 * Gets the width of the surfaces (used for single images and new spritesets).
+	 * @return The width of the surfaces.
+	 */
+	int getWidth() =>
+		_width;
+
+	/**
+	 * Gets the height of the surfaces (used for single images and new spritesets).
+	 * @return The height of the surfaces.
+	 */
+	int getHeight() =>
+		_height;
+
+	/**
+	 * Gets the x subdivision.
+	 * @return The x subdivision.
+	 */
+	int getSubX() =>
+		_subX;
+
+	/**
+	 * Gets the y subdivision.
+	 * @return The y subdivision.
+	 */
+	int getSubY() =>
+		_subY;
 }

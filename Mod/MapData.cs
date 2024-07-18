@@ -36,7 +36,7 @@ enum SpecialTileType
     DEAD_TILE,
     END_POINT,
     MUST_DESTROY
-};
+}
 
 enum VoxelType { V_EMPTY = -1, V_FLOOR, V_WESTWALL, V_NORTHWALL, V_OBJECT, V_UNIT, V_OUTOFBOUNDS };
 

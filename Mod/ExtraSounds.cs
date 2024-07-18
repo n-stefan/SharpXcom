@@ -130,4 +130,11 @@ internal class ExtraSounds
 	 */
 	internal string getType() =>
 		_type;
+
+	/**
+	 * Gets the list of sounds defined by this mod.
+	 * @return The list of sounds defined my this mod.
+	 */
+	Dictionary<int, string> getSounds() =>
+		_sounds;
 }

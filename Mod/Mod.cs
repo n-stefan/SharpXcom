@@ -254,38 +254,38 @@ internal class Mod
     /// Reduction of size allocated for transparcey LUTs.
     const uint ModTransparceySizeReduction = 100;
 
-    internal static int GEOSCAPE_CURSOR;
-    internal static int BASESCAPE_CURSOR;
-    internal static int UFOPAEDIA_CURSOR;
-    internal static int GRAPHS_CURSOR;
-    internal static int BATTLESCAPE_CURSOR;
-    internal static int DOOR_OPEN;
-    internal static int SLIDING_DOOR_OPEN;
-    internal static int SLIDING_DOOR_CLOSE;
-    internal static int SMALL_EXPLOSION;
-    internal static int LARGE_EXPLOSION;
-    internal static int EXPLOSION_OFFSET;
-    internal static int SMOKE_OFFSET;
-    internal static int UNDERWATER_SMOKE_OFFSET;
-    internal static int ITEM_DROP;
-    internal static int ITEM_THROW;
-    internal static int ITEM_RELOAD;
-    internal static int WALK_OFFSET;
-    internal static int FLYING_SOUND;
-    static int BUTTON_PRESS;
-    internal static int UFO_FIRE;
-    internal static int UFO_HIT;
-    internal static int UFO_CRASH;
-    internal static int UFO_EXPLODE;
-    internal static int INTERCEPTOR_HIT;
-    internal static int INTERCEPTOR_EXPLODE;
-    internal static int DAMAGE_RANGE;
-    internal static int EXPLOSIVE_DAMAGE_RANGE;
-    static int[] WINDOW_POPUP = new int[3];
-    internal static int[] FIRE_DAMAGE_RANGE = new int[2];
-    internal static int[] DIFFICULTY_COEFFICIENT = new int[5];
-    internal static string DEBRIEF_MUSIC_GOOD;
-    internal static string DEBRIEF_MUSIC_BAD;
+	internal static int DOOR_OPEN;
+	internal static int SLIDING_DOOR_OPEN;
+	internal static int SLIDING_DOOR_CLOSE;
+	internal static int SMALL_EXPLOSION;
+	internal static int LARGE_EXPLOSION;
+	internal static int EXPLOSION_OFFSET;
+	internal static int SMOKE_OFFSET;
+	internal static int UNDERWATER_SMOKE_OFFSET;
+	internal static int ITEM_DROP;
+	internal static int ITEM_THROW;
+	internal static int ITEM_RELOAD;
+	internal static int WALK_OFFSET;
+	internal static int FLYING_SOUND;
+	static int BUTTON_PRESS;
+	static int[] WINDOW_POPUP = new int[3];
+	internal static int UFO_FIRE;
+	internal static int UFO_HIT;
+	internal static int UFO_CRASH;
+	internal static int UFO_EXPLODE;
+	internal static int INTERCEPTOR_HIT;
+	internal static int INTERCEPTOR_EXPLODE;
+	internal static int GEOSCAPE_CURSOR;
+	internal static int BASESCAPE_CURSOR;
+	internal static int BATTLESCAPE_CURSOR;
+	internal static int UFOPAEDIA_CURSOR;
+	internal static int GRAPHS_CURSOR;
+	internal static int DAMAGE_RANGE;
+	internal static int EXPLOSIVE_DAMAGE_RANGE;
+	internal static int[] FIRE_DAMAGE_RANGE = new int[2];
+	internal static string DEBRIEF_MUSIC_GOOD;
+	internal static string DEBRIEF_MUSIC_BAD;
+	internal static int[] DIFFICULTY_COEFFICIENT = new int[5];
 
     Music _muteMusic;
     Sound _muteSound;
@@ -3434,4 +3434,38 @@ internal class Mod
      */
     internal Dictionary<string, RuleInventory> getInventories() =>
 	    _invs;
+
+    /**
+     * Returns the current mod-based offset for resources.
+     * @return Mod offset.
+     */
+    int getModOffset() =>
+        (int)_modCurrent.offset;
+
+    /**
+     * Gets the list of external sprites.
+     * @return The list of external sprites.
+     */
+    Dictionary<string, List<ExtraSprites>> getExtraSprites() =>
+	    _extraSprites;
+
+    /**
+     * Gets the list of external sounds.
+     * @return The list of external sounds.
+     */
+    List<KeyValuePair<string, ExtraSounds>> getExtraSounds() =>
+	    _extraSounds;
+
+    /**
+     * Gets name of font collection.
+     * @return the name of YAML-file with font data
+     */
+    string getFontName() =>
+	    _fontName;
+
+    List<SDL_Color> getTransparencies() =>
+	    _transparencies;
+
+    Dictionary<string, RuleMusic> getMusic() =>
+	    _musicDefs;
 }

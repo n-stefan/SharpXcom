@@ -35,10 +35,10 @@ internal class AlienRace : IRule
     AlienRace(string id) =>
         _id = id;
 
+    ~AlienRace() { }
+
     public IRule Create(string type) =>
         new AlienRace(type);
-
-    ~AlienRace() { }
 
     /**
      * Loads the alien race from a YAML file.
@@ -57,4 +57,12 @@ internal class AlienRace : IRule
      */
     internal string getMember(int id) =>
 	    _members[id];
+
+    /**
+     * Returns the language string that names
+     * this alien race. Each race has a unique name.
+     * @return Race name.
+     */
+    string getId() =>
+	    _id;
 }
