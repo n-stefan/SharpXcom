@@ -213,4 +213,11 @@ internal class RuleCraftWeapon : IRule
      */
     internal int getProjectileSpeed() =>
 	    _projectileSpeed;
+
+    /**
+     * Can this item be used on land or is it underwater only?
+     * @return if this is an underwater weapon or not.
+     */
+    bool isWaterOnly() =>
+	    _underwaterOnly;
 }

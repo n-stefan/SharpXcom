@@ -221,7 +221,7 @@ internal class AlienMission
 		int waveNumber = (int)(_nextWave - 1);
 		if (waveNumber < 0)
 		{
-			waveNumber = _rule.getWaveCount() - 1;
+			waveNumber = (int)(_rule.getWaveCount() - 1);
 		}
 
 		MissionWave wave = _rule.getWave((uint)waveNumber);
@@ -361,7 +361,7 @@ internal class AlienMission
 		int waveNumber = (int)(_nextWave - 1);
 		if (waveNumber < 0)
 		{
-			waveNumber = _rule.getWaveCount() - 1;
+			waveNumber = (int)(_rule.getWaveCount() - 1);
 		}
 		if (trajectory.getZone(nextWaypoint) >= region.getMissionZones().Count)
 		{

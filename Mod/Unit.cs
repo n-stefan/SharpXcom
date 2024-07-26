@@ -28,6 +28,36 @@ struct UnitStats
 {
     internal int tu, stamina, health, bravery, reactions, firing, throwing, strength, psiStrength, psiSkill, melee;
 
+    public UnitStats()
+    {
+        tu = 0;
+        stamina = 0;
+        health = 0;
+        bravery = 0;
+        reactions = 0;
+        firing = 0;
+        throwing = 0;
+        strength = 0;
+        psiStrength = 0;
+        psiSkill = 0;
+        melee = 0;
+    }
+
+	UnitStats(int tu_, int stamina_, int health_, int bravery_, int reactions_, int firing_, int throwing_, int strength_, int psiStrength_, int psiSkill_, int melee_)
+    {
+        tu = tu_;
+        stamina = stamina_;
+        health = health_;
+        bravery = bravery_;
+        reactions = reactions_;
+        firing = firing_;
+        throwing = throwing_;
+        strength = strength_;
+        psiStrength = psiStrength_;
+        psiSkill = psiSkill_;
+        melee = melee_;
+    }
+
     /**
      * Loads the unit stats from a YAML file.
      * @param node YAML node.
@@ -95,6 +125,9 @@ struct UnitStats
     public static UnitStats operator +(UnitStats a, UnitStats b) =>
         new() { tu = a.tu + b.tu, stamina = a.stamina + b.stamina, health = a.health + b.health, bravery = a.bravery + b.bravery, reactions = a.reactions + b.reactions, firing = a.firing + b.firing, throwing = a.throwing + b.throwing, strength = a.strength + b.strength, psiStrength = a.psiStrength + b.psiStrength, psiSkill = a.psiSkill + b.psiSkill, melee = a.melee + b.melee };
 
+    public static UnitStats operator -(UnitStats a) =>
+        new() { tu = -a.tu, stamina = -a.stamina, health = -a.health, bravery = -a.bravery, reactions = -a.reactions, firing = -a.firing, throwing = -a.throwing, strength = -a.strength, psiStrength = -a.psiStrength, psiSkill = -a.psiSkill, melee = -a.melee };
+
     public static UnitStats operator -(UnitStats a, UnitStats b) =>
         new() { tu = a.tu - b.tu, stamina = a.stamina - b.stamina, health = a.health - b.health, bravery = a.bravery - b.bravery, reactions = a.reactions - b.reactions, firing = a.firing - b.firing, throwing = a.throwing - b.throwing, strength = a.strength - b.strength, psiStrength = a.psiStrength - b.psiStrength, psiSkill = a.psiSkill - b.psiSkill, melee = a.melee - b.melee };
 }
@@ -104,7 +137,7 @@ struct StatAdjustment
     internal UnitStats statGrowth;
     internal int growthMultiplier;
     internal double aimAndArmorMultiplier;
-};
+}
 
 /**
  * Represents the static data for a unit that is generated on the battlescape, this includes: HWPs, aliens and civilians.

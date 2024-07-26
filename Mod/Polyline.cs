@@ -94,4 +94,20 @@ internal class Polyline
      */
     internal int getPoints() =>
 	    _points;
+
+    /**
+     * Changes the latitude of a given point.
+     * @param i Point number (0-max).
+     * @param lat Point's latitude.
+     */
+    void setLatitude(int i, double lat) =>
+	    _lat[i] = lat;
+
+    /**
+     * Changes the latitude of a given point.
+     * @param i Point number (0-max).
+     * @param lon Point's longitude.
+     */
+    void setLongitude(int i, double lon) =>
+	    _lon[i] = lon;
 }

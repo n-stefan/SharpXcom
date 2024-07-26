@@ -184,8 +184,8 @@ internal class RuleAlienMission : IRule
 	}
 
     /// Gets the number of waves.
-    internal int getWaveCount() =>
-        _waves.Count;
+    internal uint getWaveCount() =>
+        (uint)_waves.Count;
 
     /// Gets the full wave information.
     internal MissionWave getWave(uint index) =>

@@ -69,4 +69,18 @@ internal class StatStringCondition
 	    }
 	    return conditionMet;
     }
+
+    /**
+     * Gets the minimum value for the condition (default is 0).
+     * @return The minimum value.
+     */
+    int getMinVal() =>
+	    _minVal;
+
+    /**
+     * Gets the maximum value for the condition (default is 255).
+     * @return The maximum value.
+     */
+    int getMaxVal() =>
+	    _maxVal;
 }

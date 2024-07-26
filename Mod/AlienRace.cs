@@ -35,10 +35,10 @@ internal class AlienRace : IRule
     AlienRace(string id) =>
         _id = id;
 
-    ~AlienRace() { }
-
     public IRule Create(string type) =>
         new AlienRace(type);
+
+    ~AlienRace() { }
 
     /**
      * Loads the alien race from a YAML file.

@@ -135,7 +135,7 @@ internal class StatString
 	 * @param node YAML node.
 	 * @return New StatStringCondition.
 	 */
-	StatStringCondition getCondition(string conditionName, YamlNode node)
+	static StatStringCondition getCondition(string conditionName, YamlNode node)
 	{
 		// These are the defaults from xcomutil
 		int minValue = 0, maxValue = 255;

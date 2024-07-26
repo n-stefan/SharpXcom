@@ -55,8 +55,6 @@ internal class UfoTrajectory : IRule
     uint _groundTimer;
     List<TrajectoryWaypoint> _waypoints;
 
-    internal UfoTrajectory() { }
-
     UfoTrajectory(string id)
     {
         _id = id;
