@@ -95,7 +95,8 @@ internal class AlienMission
 		_rule;
 
 	/// Increase number of live UFOs.
-	internal void increaseLiveUfos() { ++_liveUfos; }
+	internal void increaseLiveUfos() =>
+		++_liveUfos;
 
 	/**
      * Loads the alien mission from a YAML file.
@@ -365,7 +366,7 @@ internal class AlienMission
 		}
 		if (trajectory.getZone(nextWaypoint) >= region.getMissionZones().Count)
 		{
-			logMissionError(trajectory.getZone(nextWaypoint), region);
+			logMissionError((int)trajectory.getZone(nextWaypoint), region);
 		}
 
 		if (_missionSiteZone != -1 && _rule.getWave((uint)waveNumber).objective && trajectory.getZone(nextWaypoint) == (uint)(_rule.getSpawnZone()))
@@ -393,7 +394,7 @@ internal class AlienMission
 	{
 		if (zone >= region.getMissionZones().Count || region.getMissionZones()[(int)zone].areas.Count == 0)
 		{
-			logMissionError(zone, region);
+			logMissionError((int)zone, region);
 		}
 
 		KeyValuePair<double, double> pos;
@@ -422,7 +423,7 @@ internal class AlienMission
 		return pos;
 	}
 
-	void logMissionError(uint zone, RuleRegion region)
+	void logMissionError(int zone, RuleRegion region)
 	{
 		if (region.getMissionZones().Any())
 		{
@@ -825,4 +826,8 @@ internal class AlienMission
 	 */
 	internal AlienBase getAlienBase() =>
 		_base;
+
+	/// Gets the minutes until next wave spawns.
+	uint getWaveCountdown() =>
+		_spawnCountdown;
 }

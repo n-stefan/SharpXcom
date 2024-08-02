@@ -37,7 +37,9 @@ struct SerializationKey
  */
 internal class Tile
 {
+    const int NOT_CALCULATED = -1;
     protected const int LIGHTLAYERS = 3;
+
     protected int _smoke;
     protected int _fire;
     protected int _explosive;

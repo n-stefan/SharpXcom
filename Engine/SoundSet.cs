@@ -73,7 +73,7 @@ internal class SoundSet
 	 * @param wav Are the sounds in WAV format?
 	 * @sa http://www.ufopaedia.org/index.php?title=SOUND
 	 */
-	internal void loadCat(string filename, bool wav)
+	internal void loadCat(string filename, bool wav = true)
 	{
 		// Load CAT file
 		var sndFile = new CatFile(filename);

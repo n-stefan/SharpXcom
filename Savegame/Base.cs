@@ -196,7 +196,7 @@ internal class Base : Target
      * Mark the base as a valid alien retaliation target.
      * @param mark Mark (if @c true) or unmark (if @c false) the base.
      */
-    internal void setRetaliationTarget(bool mark) =>
+    internal void setRetaliationTarget(bool mark = true) =>
         _retaliationTarget = mark;
 
     /**

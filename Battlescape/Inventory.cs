@@ -48,7 +48,7 @@ internal class Inventory : InteractiveSurface
      * @param y Y position in pixels.
      * @param base Is the inventory being called from the basescape?
      */
-    internal Inventory(Game game, int width, int height, int x, int y, bool @base) : base(width, height, x, y)
+    internal Inventory(Game game, int width, int height, int x = 0, int y = 0, bool @base = false) : base(width, height, x, y)
     {
         _game = game;
         _selUnit = null;
@@ -117,7 +117,7 @@ internal class Inventory : InteractiveSurface
      * @param y Y position in slot.
      * @return If there's overlap.
      */
-    internal static bool overlapItems(BattleUnit unit, BattleItem item, RuleInventory slot, int x, int y)
+    internal static bool overlapItems(BattleUnit unit, BattleItem item, RuleInventory slot, int x = 0, int y = 0)
     {
         if (slot.getType() != InventoryType.INV_GROUND)
         {

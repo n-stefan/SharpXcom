@@ -19,6 +19,8 @@
 
 namespace SharpXcom.Mod;
 
+enum AlienRank { AR_HUMAN = -1, AR_COMMANDER, AR_LEADER, AR_ENGINEER, AR_MEDIC, AR_NAVIGATOR, AR_SOLDIER, AR_TERRORIST, AR_TERRORIST2 };
+
 /**
  * Represents a specific race "family", or a "main race" if you wish.
  * Here is defined which ranks it contains and also which accompanying terror units.

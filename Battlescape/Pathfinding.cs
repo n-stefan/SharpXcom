@@ -29,6 +29,7 @@ internal class Pathfinding
     internal const int DIR_UP = 8;
     internal const int DIR_DOWN = 9;
     const int O_BIGWALL = -1;
+
     internal static int red = 3;
     internal static int yellow = 10;
     internal static int green = 4;
@@ -979,7 +980,7 @@ internal class Pathfinding
      * @param maxTUCost Maximum time units the path can cost.
      * @return True if a path exists, false otherwise.
      */
-    bool aStarPath(Position startPosition, Position endPosition, BattleUnit target, bool sneak, int maxTUCost)
+    bool aStarPath(Position startPosition, Position endPosition, BattleUnit target, bool sneak = false, int maxTUCost = 1000)
     {
 	    // reset every node, so we have to check them all
 	    foreach (var it in _nodes)

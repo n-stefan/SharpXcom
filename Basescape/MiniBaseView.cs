@@ -41,7 +41,7 @@ internal class MiniBaseView : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal MiniBaseView(int width, int height, int x, int y) : base(width, height, x, y)
+    internal MiniBaseView(int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _bases = null;
         _texture = null;

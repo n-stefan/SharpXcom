@@ -457,7 +457,7 @@ internal class InteractiveSurface : Surface
      * @param handler Action handler.
      * @param key Keyboard button to check for (note: ignores key modifiers). Set to SDLK_ANY for any key.
      */
-    internal void onKeyboardRelease(ActionHandler handler, SDL_Keycode key)
+    internal void onKeyboardRelease(ActionHandler handler, SDL_Keycode key = SDLK_ANY)
     {
         if (key == SDL_Keycode.SDLK_UNKNOWN)
         {

@@ -35,7 +35,7 @@ internal class BattlescapeMessage : Surface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal BattlescapeMessage(int width, int height, int x, int y) : base(width, height, x, y)
+    internal BattlescapeMessage(int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _window = new Window(null, width, height, x, y, WindowPopup.POPUP_NONE);
         _window.setColor((byte)(Palette.blockOffset(0) - 1));

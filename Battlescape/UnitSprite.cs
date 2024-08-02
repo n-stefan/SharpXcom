@@ -66,7 +66,7 @@ internal class UnitSprite : Surface
 	 * @param unit Pointer to the BattleUnit.
 	 * @param part The part number for large units.
 	 */
-	internal void setBattleUnit(BattleUnit unit, int part)
+	internal void setBattleUnit(BattleUnit unit, int part = 0)
 	{
 		_unit = unit;
 		_drawingRoutine = _unit.getArmor().getDrawingRoutine();
