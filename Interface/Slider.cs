@@ -40,7 +40,7 @@ internal class Slider : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal Slider(int width, int height, int x, int y) : base(width, height, x, y)
+    internal Slider(int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _pos = 0.0;
         _min = 0;

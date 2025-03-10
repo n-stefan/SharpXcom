@@ -46,7 +46,7 @@ internal class TextEdit : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal TextEdit(State state, int width, int height, int x, int y) : base(width, height, x, y)
+    internal TextEdit(State state, int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _blink = true;
         _modal = true;

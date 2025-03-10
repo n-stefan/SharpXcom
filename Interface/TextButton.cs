@@ -43,7 +43,7 @@ internal class TextButton : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal TextButton(int width, int height, int x, int y) : base(width, height, x, y)
+    internal TextButton(int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _color = 0;
         _group = null;

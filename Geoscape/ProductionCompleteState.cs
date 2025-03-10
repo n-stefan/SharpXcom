@@ -40,7 +40,7 @@ internal class ProductionCompleteState : State
      * @param state Pointer to the Geoscape state.
      * @param endType What ended the production.
      */
-    internal ProductionCompleteState(Base @base, string item, GeoscapeState state, productionProgress_e endType)
+    internal ProductionCompleteState(Base @base, string item, GeoscapeState state, productionProgress_e endType = productionProgress_e.PROGRESS_COMPLETE)
     {
         _base = @base;
         _state = state;

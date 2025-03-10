@@ -43,7 +43,7 @@ internal class BattlescapeButton : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal BattlescapeButton(int width, int height, int x, int y) : base(width, height, x, y)
+    internal BattlescapeButton(int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _color = 0;
         _group = null;

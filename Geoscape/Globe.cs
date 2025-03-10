@@ -239,7 +239,7 @@ internal class Globe : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal Globe(Game game, int cenX, int cenY, int width, int height, int x, int y) : base(width, height, x, y)
+    internal Globe(Game game, int cenX, int cenY, int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _cenX = (short)cenX;
         _cenY = (short)cenY;

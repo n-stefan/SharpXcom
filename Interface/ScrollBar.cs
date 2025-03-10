@@ -39,7 +39,7 @@ internal class ScrollBar : InteractiveSurface
      * @param x X position in pixels.
      * @param y Y position in pixels.
      */
-    internal ScrollBar(int width, int height, int x, int y) : base(width, height, x, y)
+    internal ScrollBar(int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
         _list = null;
         _color = 0;
