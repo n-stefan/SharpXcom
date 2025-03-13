@@ -251,8 +251,8 @@ internal class Unit : IRule
             _builtInWeapons.Add(((YamlSequenceNode)node["builtInWeapons"]).Children.Select(x => x.ToString()).ToList());
 	    }
 	    mod.loadSoundOffset(_type, _deathSound, node["deathSound"], "BATTLE.CAT");
-	    mod.loadSoundOffset(_type, _aggroSound, node["aggroSound"], "BATTLE.CAT");
-	    mod.loadSoundOffset(_type, _moveSound, node["moveSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, ref _aggroSound, node["aggroSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, ref _moveSound, node["moveSound"], "BATTLE.CAT");
     }
 
     /**

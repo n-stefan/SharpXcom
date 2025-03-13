@@ -38,7 +38,7 @@ internal class SoldierCommendations
     /**
      * Initializes a soldier commendation.
      */
-    internal SoldierCommendations(string commendationName, string noun)
+    internal SoldierCommendations(string commendationName, string noun = "noNoun")
     {
         _type = commendationName;
         _noun = noun;
@@ -1256,5 +1256,28 @@ internal class SoldierDiary
 		}
 
 		return countryTotal;
+	}
+
+	/**
+	 * Award commendations to the soldier.
+	 * @param type string
+	 * @param noun string
+	 */
+	void awardCommendation(string type, string noun = "noNoun")
+	{
+		bool newCommendation = true;
+		foreach (var i in _commendations)
+		{
+			if ( i.getType() == type && i.getNoun() == noun)
+			{
+				i.addDecoration();
+				newCommendation = false;
+				break;
+			}
+		}
+		if (newCommendation)
+		{
+			_commendations.Add(new SoldierCommendations(type, noun));
+		}
 	}
 }

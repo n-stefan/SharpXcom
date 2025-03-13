@@ -25,11 +25,11 @@ namespace SharpXcom.Ufopaedia;
  */
 internal class ArticleStateArmor : ArticleState
 {
-	uint _row;
-	Text _txtTitle;
-	Surface _image;
-	TextList _lstInfo;
-	Text _txtInfo;
+	protected uint _row;
+	protected Text _txtTitle;
+	protected Surface _image;
+	protected TextList _lstInfo;
+	protected Text _txtInfo;
 
 	internal ArticleStateArmor(ArticleDefinitionArmor defs) : base(defs.id)
 	{
@@ -126,7 +126,7 @@ internal class ArticleStateArmor : ArticleState
 
 	~ArticleStateArmor() { }
 
-	void addStat(string label, int stat, bool plus = false)
+	protected void addStat(string label, int stat, bool plus = false)
 	{
 		if (stat != 0)
 		{
@@ -140,7 +140,7 @@ internal class ArticleStateArmor : ArticleState
 		}
 	}
 
-	void addStat(string label, string stat)
+	protected void addStat(string label, string stat)
 	{
 		_lstInfo.addRow(2, tr(label), stat);
 		_lstInfo.setCellColor(_row, 1, (byte)(Palette.blockOffset(15)+4));

@@ -89,7 +89,7 @@ internal class RuleCraftWeapon : IRule
 		    // Final index in surfaceset is `baseOffset + sprite + (sprite > 5 ? modOffset : 0)`
 		    _sprite = mod.getOffset(int.Parse(node["sprite"].ToString()), 5);
 	    }
-	    mod.loadSoundOffset(_type, _sound, node["sound"], "GEO.CAT");
+	    mod.loadSoundOffset(_type, ref _sound, node["sound"], "GEO.CAT");
 	    _damage = int.Parse(node["damage"].ToString());
 	    _range = int.Parse(node["range"].ToString());
 	    _accuracy = int.Parse(node["accuracy"].ToString());

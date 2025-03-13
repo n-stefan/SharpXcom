@@ -1110,7 +1110,7 @@ internal class SavedBattleGame
      * @param checkInventory Whether to check if the unit has an inventory.
      * @return Pointer to new selected BattleUnit, NULL if none can be selected.
      */
-    BattleUnit selectPlayerUnit(int dir, bool checkReselect, bool setReselect, bool checkInventory)
+    BattleUnit selectPlayerUnit(int dir, bool checkReselect = false, bool setReselect = false, bool checkInventory = false)
     {
         if (_selectedUnit != null && setReselect)
         {
@@ -1178,7 +1178,7 @@ internal class SavedBattleGame
      * @return Pointer to new selected BattleUnit, NULL if none can be selected.
      * @sa selectPlayerUnit
      */
-    internal BattleUnit selectPreviousPlayerUnit(bool checkReselect, bool setReselect, bool checkInventory) =>
+    internal BattleUnit selectPreviousPlayerUnit(bool checkReselect = false, bool setReselect = false, bool checkInventory = false) =>
         selectPlayerUnit(-1, checkReselect, setReselect, checkInventory);
 
     /**

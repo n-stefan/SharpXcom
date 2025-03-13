@@ -21,8 +21,8 @@ namespace SharpXcom.Ufopaedia;
 
 internal class ArticleStateTFTDArmor : ArticleStateTFTD
 {
-	uint _row;
-	TextList _lstInfo;
+	protected uint _row;
+	protected TextList _lstInfo;
 
 	internal ArticleStateTFTDArmor(ArticleDefinitionTFTD defs) : base(defs)
 	{
@@ -82,7 +82,7 @@ internal class ArticleStateTFTDArmor : ArticleStateTFTD
 
 	~ArticleStateTFTDArmor() { }
 
-	void addStat(string label, int stat, bool plus = false)
+	protected void addStat(string label, int stat, bool plus = false)
 	{
 		if (stat != 0)
 		{
@@ -96,7 +96,7 @@ internal class ArticleStateTFTDArmor : ArticleStateTFTD
 		}
 	}
 
-	void addStat(string label, string stat)
+	protected void addStat(string label, string stat)
 	{
 		_lstInfo.addRow(2, tr(label), stat);
 		_lstInfo.setCellColor(_row, 1, (byte)(Palette.blockOffset(15)+4));

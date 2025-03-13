@@ -122,8 +122,8 @@ internal class RuleBaseFacility : IListOrder, IRule
 	    _type = node["type"].ToString();
 	    _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
 
-	    mod.loadSpriteOffset(_type, _spriteShape, node["spriteShape"], "BASEBITS.PCK");
-	    mod.loadSpriteOffset(_type, _spriteFacility, node["spriteFacility"], "BASEBITS.PCK");
+	    mod.loadSpriteOffset(_type, ref _spriteShape, node["spriteShape"], "BASEBITS.PCK");
+	    mod.loadSpriteOffset(_type, ref _spriteFacility, node["spriteFacility"], "BASEBITS.PCK");
 
 	    _lift = bool.Parse(node["lift"].ToString());
 	    _hyper = bool.Parse(node["hyper"].ToString());
@@ -145,8 +145,8 @@ internal class RuleBaseFacility : IListOrder, IRule
 	    _defense = int.Parse(node["defense"].ToString());
 	    _hitRatio = int.Parse(node["hitRatio"].ToString());
 
-	    mod.loadSoundOffset(_type, _fireSound, node["fireSound"], "GEO.CAT");
-	    mod.loadSoundOffset(_type, _hitSound, node["hitSound"], "GEO.CAT");
+	    mod.loadSoundOffset(_type, ref _fireSound, node["fireSound"], "GEO.CAT");
+	    mod.loadSoundOffset(_type, ref _hitSound, node["hitSound"], "GEO.CAT");
 
 	    _mapName = node["mapName"].ToString();
 	    _listOrder = int.Parse(node["listOrder"].ToString());

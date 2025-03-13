@@ -356,18 +356,18 @@ internal class RuleItem : IListOrder, IRule
 	    _transferTime = int.Parse(node["transferTime"].ToString());
 	    _weight = int.Parse(node["weight"].ToString());
 
-	    mod.loadSpriteOffset(_type, _bigSprite, node["bigSprite"], "BIGOBS.PCK");
-	    mod.loadSpriteOffset(_type, _floorSprite, node["floorSprite"], "FLOOROB.PCK");
-	    mod.loadSpriteOffset(_type, _handSprite, node["handSprite"], "HANDOB.PCK");
+	    mod.loadSpriteOffset(_type, ref _bigSprite, node["bigSprite"], "BIGOBS.PCK");
+	    mod.loadSpriteOffset(_type, ref _floorSprite, node["floorSprite"], "FLOOROB.PCK");
+	    mod.loadSpriteOffset(_type, ref _handSprite, node["handSprite"], "HANDOB.PCK");
 	    // Projectiles: 0-384 entries ((105*33) / (3*3)) (35 sprites per projectile(0-34), 11 projectiles (0-10))
-	    mod.loadSpriteOffset(_type, _bulletSprite, node["bulletSprite"], "Projectiles", 35);
+	    mod.loadSpriteOffset(_type, ref _bulletSprite, node["bulletSprite"], "Projectiles", 35);
 
-	    mod.loadSoundOffset(_type, _fireSound, node["fireSound"], "BATTLE.CAT");
-	    mod.loadSoundOffset(_type, _hitSound, node["hitSound"], "BATTLE.CAT");
-	    mod.loadSoundOffset(_type, _meleeSound, node["meleeSound"], "BATTLE.CAT");
-	    mod.loadSpriteOffset(_type, _hitAnimation, node["hitAnimation"], "SMOKE.PCK");
-	    mod.loadSpriteOffset(_type, _meleeAnimation, node["meleeAnimation"], "HIT.PCK");
-	    mod.loadSoundOffset(_type, _meleeHitSound, node["meleeHitSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, ref _fireSound, node["fireSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, ref _hitSound, node["hitSound"], "BATTLE.CAT");
+	    mod.loadSoundOffset(_type, ref _meleeSound, node["meleeSound"], "BATTLE.CAT");
+	    mod.loadSpriteOffset(_type, ref _hitAnimation, node["hitAnimation"], "SMOKE.PCK");
+	    mod.loadSpriteOffset(_type, ref _meleeAnimation, node["meleeAnimation"], "HIT.PCK");
+	    mod.loadSoundOffset(_type, ref _meleeHitSound, node["meleeHitSound"], "BATTLE.CAT");
 
 	    _power = int.Parse(node["power"].ToString());
         _compatibleAmmo = ((YamlSequenceNode)node["compatibleAmmo"]).Children.Select(x => x.ToString()).ToList();
@@ -428,7 +428,7 @@ internal class RuleItem : IListOrder, IRule
 	    _underwaterOnly = bool.Parse(node["underwaterOnly"].ToString());
 	    _landOnly = bool.Parse(node["landOnly"].ToString());
 	    _specialType = int.Parse(node["specialType"].ToString());
-	    mod.loadTransparencyOffset(_type, _vaporColor, node["vaporColor"]);
+	    mod.loadTransparencyOffset(_type, ref _vaporColor, node["vaporColor"]);
 	    _vaporDensity = int.Parse(node["vaporDensity"].ToString());
 	    _vaporProbability = int.Parse(node["vaporProbability"].ToString());
 	    if (_listOrder == 0)

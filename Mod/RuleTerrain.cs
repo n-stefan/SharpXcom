@@ -102,7 +102,7 @@ internal class RuleTerrain : IRule
 			_minDepth = int.Parse(node["depth"][0].ToString());
 			_maxDepth = int.Parse(node["depth"][1].ToString());
 		}
-		mod.loadSoundOffset(_name, _ambience, node["ambience"], "BATTLE.CAT");
+		mod.loadSoundOffset(_name, ref _ambience, node["ambience"], "BATTLE.CAT");
 		_ambientVolume = double.Parse(node["ambientVolume"].ToString());
 		_script = node["script"].ToString();
 	}

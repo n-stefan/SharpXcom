@@ -1607,7 +1607,7 @@ internal class BattleUnit
      * @param stt Type of exit tile to check for.
      * @return Is in the exit area?
      */
-    internal bool isInExitArea(SpecialTileType stt) =>
+    internal bool isInExitArea(SpecialTileType stt = SpecialTileType.START_POINT) =>
 	    _tile != null && _tile.getMapData(TilePart.O_FLOOR) != null && (_tile.getMapData(TilePart.O_FLOOR).getSpecialType() == stt);
 
     /**
@@ -1794,7 +1794,7 @@ internal class BattleUnit
      * @param stt Type of exit tile to check for.
      * @return Is in the exit area?
      */
-    internal bool liesInExitArea(Tile tile, SpecialTileType stt) =>
+    internal bool liesInExitArea(Tile tile, SpecialTileType stt = SpecialTileType.START_POINT) =>
 	    tile != null && tile.getMapData(TilePart.O_FLOOR) != null && (tile.getMapData(TilePart.O_FLOOR).getSpecialType() == stt);
 
     /**
@@ -1979,7 +1979,7 @@ internal class BattleUnit
      * @param y Y position in slot.
      * @return Item in the slot, or NULL if none.
      */
-    internal BattleItem getItem(RuleInventory slot, int x, int y)
+    internal BattleItem getItem(RuleInventory slot, int x = 0, int y = 0)
     {
 	    // Soldier items
 	    if (slot.getType() != InventoryType.INV_GROUND)
@@ -2164,7 +2164,7 @@ internal class BattleUnit
      * @param part Unit part to check.
      * @return Pointer to cache surface used.
      */
-    internal Surface getCache(int part)
+    internal Surface getCache(int part = 0)
     {
 	    if (part < 0) part = 0;
 	    return _cache[part];

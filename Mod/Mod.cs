@@ -2515,11 +2515,11 @@ internal class Mod
      * @param node Node with data
      * @param set Name of the soundset to lookup.
      */
-    internal void loadSoundOffset(string parent, int sound, YamlNode node, string set)
+    internal void loadSoundOffset(string parent, ref int sound, YamlNode node, string set)
     {
 	    if (node != null)
 	    {
-		    loadOffsetNode(parent, sound, node, getSoundSet(set).getMaxSharedSounds(), set, 1);
+		    loadOffsetNode(parent, ref sound, node, getSoundSet(set).getMaxSharedSounds(), set, 1);
 	    }
     }
 
@@ -2541,13 +2541,15 @@ internal class Mod
 			    foreach (var item in ((YamlSequenceNode)node).Children)
 			    {
 				    sounds.Add(-1);
-				    loadOffsetNode(parent, sounds.Last(), item, maxShared, set, 1);
+                    var last = sounds.Last();
+				    loadOffsetNode(parent, ref last, item, maxShared, set, 1);
 			    }
 		    }
 		    else
 		    {
 			    sounds.Add(-1);
-			    loadOffsetNode(parent, sounds.Last(), node, maxShared, set, 1);
+                var last = sounds.Last();
+			    loadOffsetNode(parent, ref last, node, maxShared, set, 1);
 		    }
 	    }
     }
@@ -2561,11 +2563,11 @@ internal class Mod
      * @param set Name of the surfaceset to lookup.
      * @param multiplier Value used by `projectile` surface set to convert projectile offset to index offset in surface.
      */
-    internal void loadSpriteOffset(string parent, int sprite, YamlNode node, string set, uint multiplier = 1)
+    internal void loadSpriteOffset(string parent, ref int sprite, YamlNode node, string set, uint multiplier = 1)
     {
 	    if (node != null)
 	    {
-            loadOffsetNode(parent, sprite, node, getRule(set, "Sprite Set", _sets, true).getMaxSharedFrames(), set, multiplier);
+            loadOffsetNode(parent, ref sprite, node, getRule(set, "Sprite Set", _sets, true).getMaxSharedFrames(), set, multiplier);
 	    }
     }
 
@@ -2575,11 +2577,11 @@ internal class Mod
      * @param index Member to load new transparency index.
      * @param node Node with data.
      */
-    internal void loadTransparencyOffset(string parent, int index, YamlNode node)
+    internal void loadTransparencyOffset(string parent, ref int index, YamlNode node)
     {
 	    if (node != null)
 	    {
-            loadOffsetNode(parent, index, node, 0, "TransparencyLUTs", 1, ModTransparceySizeReduction);
+            loadOffsetNode(parent, ref index, node, 0, "TransparencyLUTs", 1, ModTransparceySizeReduction);
 	    }
     }
 
@@ -2626,7 +2628,7 @@ internal class Mod
      * @param multiplier Value used by `projectile` surface set to convert projectile offset to index offset in surface.
      * @param sizeScale Value used by transparency colors, reduce total number of avaialbe space for offset.
      */
-    void loadOffsetNode(string parent, int offset, YamlNode node, int shared, string set, uint multiplier, uint sizeScale = 1)
+    void loadOffsetNode(string parent, ref int offset, YamlNode node, int shared, string set, uint multiplier, uint sizeScale = 1)
     {
         Debug.Assert(_modCurrent != null);
         ModData curr = _modCurrent;
@@ -2700,37 +2702,37 @@ internal class Mod
      */
     void loadConstants(YamlNode node)
     {
-	    loadSoundOffset("constants", DOOR_OPEN, node["doorSound"], "BATTLE.CAT");
-	    loadSoundOffset("constants", SLIDING_DOOR_OPEN, node["slidingDoorSound"], "BATTLE.CAT");
-	    loadSoundOffset("constants", SLIDING_DOOR_CLOSE, node["slidingDoorClose"], "BATTLE.CAT");
-	    loadSoundOffset("constants", SMALL_EXPLOSION, node["smallExplosion"], "BATTLE.CAT");
-	    loadSoundOffset("constants", LARGE_EXPLOSION, node["largeExplosion"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref DOOR_OPEN, node["doorSound"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref SLIDING_DOOR_OPEN, node["slidingDoorSound"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref SLIDING_DOOR_CLOSE, node["slidingDoorClose"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref SMALL_EXPLOSION, node["smallExplosion"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref LARGE_EXPLOSION, node["largeExplosion"], "BATTLE.CAT");
 
-	    loadSpriteOffset("constants", EXPLOSION_OFFSET, node["explosionOffset"], "X1.PCK");
-	    loadSpriteOffset("constants", SMOKE_OFFSET, node["smokeOffset"], "SMOKE.PCK");
-	    loadSpriteOffset("constants", UNDERWATER_SMOKE_OFFSET, node["underwaterSmokeOffset"], "SMOKE.PCK");
+	    loadSpriteOffset("constants", ref EXPLOSION_OFFSET, node["explosionOffset"], "X1.PCK");
+	    loadSpriteOffset("constants", ref SMOKE_OFFSET, node["smokeOffset"], "SMOKE.PCK");
+	    loadSpriteOffset("constants", ref UNDERWATER_SMOKE_OFFSET, node["underwaterSmokeOffset"], "SMOKE.PCK");
 
-	    loadSoundOffset("constants", ITEM_DROP, node["itemDrop"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ITEM_THROW, node["itemThrow"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ITEM_RELOAD, node["itemReload"], "BATTLE.CAT");
-	    loadSoundOffset("constants", WALK_OFFSET, node["walkOffset"], "BATTLE.CAT");
-	    loadSoundOffset("constants", FLYING_SOUND, node["flyingSound"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref ITEM_DROP, node["itemDrop"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref ITEM_THROW, node["itemThrow"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref ITEM_RELOAD, node["itemReload"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref WALK_OFFSET, node["walkOffset"], "BATTLE.CAT");
+	    loadSoundOffset("constants", ref FLYING_SOUND, node["flyingSound"], "BATTLE.CAT");
 
-	    loadSoundOffset("constants", BUTTON_PRESS, node["buttonPress"], "GEO.CAT");
+	    loadSoundOffset("constants", ref BUTTON_PRESS, node["buttonPress"], "GEO.CAT");
 	    if (node["windowPopup"] != null)
 	    {
             var k = 0;
 		    for (var j = 0; j < ((YamlSequenceNode)node["windowPopup"]).Children.Count && k < 3; ++j, ++k)
 		    {
-			    loadSoundOffset("constants", WINDOW_POPUP[k], ((YamlSequenceNode)node["windowPopup"]).Children[j], "GEO.CAT");
+			    loadSoundOffset("constants", ref WINDOW_POPUP[k], ((YamlSequenceNode)node["windowPopup"]).Children[j], "GEO.CAT");
 		    }
 	    }
-	    loadSoundOffset("constants", UFO_FIRE, node["ufoFire"], "GEO.CAT");
-	    loadSoundOffset("constants", UFO_HIT, node["ufoHit"], "GEO.CAT");
-	    loadSoundOffset("constants", UFO_CRASH, node["ufoCrash"], "GEO.CAT");
-	    loadSoundOffset("constants", UFO_EXPLODE, node["ufoExplode"], "GEO.CAT");
-	    loadSoundOffset("constants", INTERCEPTOR_HIT, node["interceptorHit"], "GEO.CAT");
-	    loadSoundOffset("constants", INTERCEPTOR_EXPLODE, node["interceptorExplode"], "GEO.CAT");
+	    loadSoundOffset("constants", ref UFO_FIRE, node["ufoFire"], "GEO.CAT");
+	    loadSoundOffset("constants", ref UFO_HIT, node["ufoHit"], "GEO.CAT");
+	    loadSoundOffset("constants", ref UFO_CRASH, node["ufoCrash"], "GEO.CAT");
+	    loadSoundOffset("constants", ref UFO_EXPLODE, node["ufoExplode"], "GEO.CAT");
+	    loadSoundOffset("constants", ref INTERCEPTOR_HIT, node["interceptorHit"], "GEO.CAT");
+	    loadSoundOffset("constants", ref INTERCEPTOR_EXPLODE, node["interceptorExplode"], "GEO.CAT");
 	    GEOSCAPE_CURSOR = int.Parse(node["geoscapeCursor"].ToString());
 	    BASESCAPE_CURSOR = int.Parse(node["basescapeCursor"].ToString());
 	    BATTLESCAPE_CURSOR = int.Parse(node["battlescapeCursor"].ToString());
@@ -3145,7 +3147,7 @@ internal class Mod
      * @param type The soldier type to generate.
      * @return Newly generated soldier.
      */
-    internal Soldier genSoldier(SavedGame save, string type)
+    internal Soldier genSoldier(SavedGame save, string type = "")
     {
 	    Soldier soldier = null;
 	    int newId = save.getId("STR_SOLDIER");
