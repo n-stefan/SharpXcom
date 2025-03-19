@@ -257,4 +257,11 @@ internal class GameTime
      */
     internal int getMonth() =>
 	    _month;
+
+    /**
+     * Returns the current ingame weekday.
+     * @return Weekday (1-7), starts on Sunday.
+     */
+    int getWeekday() =>
+	    _weekday;
 }

@@ -81,6 +81,9 @@ struct BattleUnitStatistics
         slaveKills = 0;
     }
 
+	BattleUnitStatistics(YamlNode node) =>
+		load(node);
+
     /// Duplicate entry check
     internal bool duplicateEntry(UnitStatus status, int id)
 	{

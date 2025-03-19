@@ -3205,4 +3205,20 @@ internal class BattleUnit
 	    }
 	    _mindControllerID = int.Parse(node["mindControllerID"].ToString());
     }
+
+    /**
+     * Gets the BattleUnit's turret To direction.
+     * @return toDirectionTurret
+     */
+    int getTurretToDirection() =>
+	    _toDirectionTurret;
+
+    /**
+     * invalidate cache; call after copying object :(
+     */
+    void invalidateCache()
+    {
+	    for (int i = 0; i < 5; ++i) { _cache[i] = null; }
+	    _cacheInvalid = true;
+    }
 }

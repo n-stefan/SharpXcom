@@ -1018,4 +1018,12 @@ internal class Craft : MovingTarget
 		    node.Add("takeoff", _takeoff.ToString());
 	    return node;
     }
+
+    /**
+     * Returns the current distance between the craft
+     * and the base it belongs to.
+     * @return Distance in radian.
+     */
+    double getDistanceFromBase() =>
+	    getDistance(_base);
 }

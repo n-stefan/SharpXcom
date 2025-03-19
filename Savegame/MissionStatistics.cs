@@ -43,7 +43,7 @@ internal struct MissionStatistics
     {
         id = 0;
         markerId = 0;
-        time = null;
+		time = new GameTime(0, 0, 0, 0, 0, 0, 0);
         region = "STR_REGION_UNKNOWN";
         country = "STR_UNKNOWN";
         ufo = "NO_UFO";
@@ -54,6 +54,12 @@ internal struct MissionStatistics
         valiantCrux = false;
         lootValue = 0;
     }
+
+	MissionStatistics(YamlNode node)
+	{
+		time = new GameTime(0, 0, 0, 0, 0, 0, 0);
+		load(node);
+	}
 
 	/// Save
 	internal YamlNode save()

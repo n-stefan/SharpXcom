@@ -108,7 +108,7 @@ internal class MovingTarget : Target
      * @param speed Speed in degrees.
      * @return Speed in radians.
      */
-    internal double calculateRadianSpeed(int speed) =>
+    internal static double calculateRadianSpeed(int speed) =>
         Nautical(speed) / 720.0;
 
     /**

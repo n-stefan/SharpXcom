@@ -201,4 +201,11 @@ internal class MissionSite : Target
 	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
 	    _detected = bool.Parse(node["detected"].ToString());
     }
+
+    /**
+     * Returns the ruleset for the mission's type.
+     * @return Pointer to ruleset.
+     */
+    RuleAlienMission getRules() =>
+	    _rules;
 }
