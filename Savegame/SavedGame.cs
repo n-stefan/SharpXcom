@@ -917,7 +917,7 @@ internal class SavedGame
      * @param mod the Game Mod
      * @param base a pointer to a Base
      */
-    internal void getDependableManufacture(List<RuleManufacture> dependables, RuleResearch research, Mod.Mod mod, Base _)
+    internal void getDependableManufacture(List<RuleManufacture> dependables, RuleResearch research, Mod.Mod mod, Base @base)
     {
 	    List<string> mans = mod.getManufactureList();
 	    foreach (var iter in mans)

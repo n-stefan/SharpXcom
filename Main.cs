@@ -4,6 +4,7 @@
 // yaml load defaults
 // string interpolation => StringBuilder
 // OpenXcom => SharpXcom
+// Path.Combine
 
 /*
  * Copyright 2010-2016 OpenXcom Developers.

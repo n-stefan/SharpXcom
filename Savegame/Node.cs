@@ -212,4 +212,10 @@ internal class Node
         _nodeLinks = ((YamlSequenceNode)node["links"]).Children.Select(x => int.Parse(x.ToString())).ToList();
 	    _dummy = bool.Parse(node["dummy"].ToString());
     }
+
+	public static bool operator <(Node a, Node b) =>
+        a.getFlags() < b.getFlags();
+
+	public static bool operator >(Node a, Node b) =>
+        a.getFlags() > b.getFlags();
 }

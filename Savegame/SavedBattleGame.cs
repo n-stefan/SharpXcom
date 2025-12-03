@@ -2065,4 +2065,28 @@ internal class SavedBattleGame
 	    _chronoTrigger = (ChronoTrigger)int.Parse(node["chronoTrigger"].ToString());
 	    _cheatTurn = int.Parse(node["cheatTurn"].ToString());
     }
+
+    /**
+     * @brief Checks whether anyone on a particular faction is looking at the unit.
+     *
+     * Similar to getSpottingUnits() but returns a bool and stops searching if one positive hit is found.
+     *
+     * @param faction Faction to check through.
+     * @param unit Whom to spot.
+     * @return True when the unit can be seen
+     */
+    bool eyesOnTarget(UnitFaction faction, BattleUnit unit)
+    {
+        var units = getUnits();
+	    for (var i = 0; i < units.Count; ++i)
+	    {
+		    if (units[i].getFaction() != faction) continue;
+
+		    List<BattleUnit> vis = units[i].getVisibleUnits();
+		    if (vis.Contains(unit)) return true;
+		    // aliens know the location of all XCom agents sighted by all other aliens due to sharing locations over their space-walkie-talkies
+	    }
+
+	    return false;
+    }
 }

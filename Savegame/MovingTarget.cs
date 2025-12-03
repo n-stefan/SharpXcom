@@ -305,4 +305,18 @@ internal class MovingTarget : Target
 
     internal bool isMeetCalculated() =>
 	    _meetCalculated;
+
+    /**
+     * Returns the latitude of the meeting point.
+     * @return Angle in rad.
+     */
+    double getMeetLatitude() =>
+	    _meetPointLat;
+
+    /**
+     * Returns the longitude of the meeting point.
+     * @return Angle in rad.
+     */
+    double getMeetLongitude() =>
+	    _meetPointLon;
 }
