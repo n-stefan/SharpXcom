@@ -97,4 +97,16 @@ internal class Vehicle
 	    node.Add("size", _size.ToString());
 	    return node;
     }
+
+    /**
+     * Changes the ammo contained in this vehicle.
+     * @param ammo Weapon ammo.
+     */
+    void setAmmo(int ammo)
+    {
+	    if (_ammo != -1)
+	    {
+		    _ammo = ammo;
+	    }
+    }
 }

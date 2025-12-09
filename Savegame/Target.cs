@@ -114,7 +114,7 @@ internal class Target
      * Saves the target's unique identifiers to a YAML file.
      * @return YAML node.
      */
-    internal YamlMappingNode saveId()
+    internal YamlNode saveId()
     {
         var node = new YamlMappingNode
         {

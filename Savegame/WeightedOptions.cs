@@ -107,7 +107,11 @@ internal class WeightedOptions
 		0 == _totalWeight;
 
     /// Remove all entries.
-    internal void clear() { _totalWeight = 0; _choices.Clear(); }
+    internal void clear()
+	{
+		_totalWeight = 0;
+		_choices.Clear();
+	}
 
 	/**
 	 * Select a random choice from among the contents.
@@ -131,4 +135,8 @@ internal class WeightedOptions
 		// We always have a valid iterator here.
 		return string.Empty;
 	}
+
+	/// Create an empty set.
+	WeightedOptions() =>
+		_totalWeight = 0;
 }

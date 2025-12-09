@@ -136,4 +136,8 @@ internal class ArticleState : State
 		}
 		return type;
 	}
+
+	/// return the article id
+	string getId() =>
+		_id;
 }

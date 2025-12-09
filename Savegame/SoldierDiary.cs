@@ -1280,4 +1280,58 @@ internal class SoldierDiary
 			_commendations.Add(new SoldierCommendations(type, noun));
 		}
 	}
+
+	/**
+	 *
+	 */
+	Dictionary<string, int> getWeaponAmmoTotal()
+	{
+		var list = new Dictionary<string, int>();
+		foreach (var kill in _killList)
+		{
+			if (kill.faction == UnitFaction.FACTION_HOSTILE)
+				list[kill.weaponAmmo]++;
+		}
+		return list;
+	}
+
+	/**
+	 *
+	 */
+	int getPanickTotal()
+	{
+		int panickTotal = 0;
+
+		foreach (var i in _killList)
+		{
+			if (i.status == UnitStatus.STATUS_PANICKING && i.faction == UnitFaction.FACTION_HOSTILE)
+			{
+				panickTotal++;
+			}
+		}
+
+		return panickTotal;
+	}
+
+	/**
+	 *  Get the loot value total.
+	 *  @param Mission Statistics
+	 */
+	int getLootValueTotal(List<MissionStatistics> missionStatistics)
+	{
+		int lootValueTotal = 0;
+
+		foreach (var i in missionStatistics)
+		{
+			foreach (var j in _missionIdList)
+			{
+				if (j == i.id)
+				{
+					lootValueTotal += i.lootValue;
+				}
+			}
+		}
+
+		return lootValueTotal;
+	}
 }
