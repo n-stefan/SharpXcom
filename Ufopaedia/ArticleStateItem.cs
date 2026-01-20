@@ -38,7 +38,6 @@ internal class ArticleStateItem : ArticleState
 	Text _txtDamage;
 	Text _txtAmmo;
 
-
 	internal ArticleStateItem(ArticleDefinitionItem defs) : base(defs.id)
 	{
 		RuleItem item = _game.getMod().getItem(defs.id, true);

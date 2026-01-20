@@ -137,6 +137,6 @@ internal class WeightedOptions
 	}
 
 	/// Create an empty set.
-	WeightedOptions() =>
+	internal WeightedOptions() =>
 		_totalWeight = 0;
 }
