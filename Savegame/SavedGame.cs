@@ -1763,4 +1763,28 @@ internal class SavedGame
 			_battleGame.load(battle, mod, this);
 		}
 	}
+
+	/**
+	 * Get the list of newly available research projects once a ResearchProject has been completed.
+	 * @param before the list of available RuleResearch before completing new research.
+	 * @param after the list of available RuleResearch after completing new research.
+	 * @param diff the list of newly available RuleResearch after completing new research (after - before).
+	 */
+	internal void getNewlyAvailableResearchProjects(ref List<RuleResearch> before, ref List<RuleResearch> after, ref List<RuleResearch> diff)
+	{
+		// History lesson:
+		// Completely rewritten the original recursive algorithm, because it was inefficient, unreadable and wrong
+		// a/ inefficient: it could call SavedGame::getAvailableResearchProjects() way too many times
+		// b/ unreadable: because of recursion
+		// c/ wrong: could end in an endless loop! in two different ways! (not in vanilla, but in mods)
+
+		// Note:
+		// We could move the sorting of "before" vector right after its creation to optimize a little bit more.
+		// But sorting a short list is negligible compared to other operations we had to do to get to this point.
+		// So I decided to leave it here, so that it's 100% clear what's going on.
+		var comparer = new CompareRuleResearch();
+		before.Sort(comparer);
+		after.Sort(comparer);
+		diff = (List<RuleResearch>)after.Except(before, new EqualRuleResearch());
+	}
 }

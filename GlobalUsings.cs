@@ -9,6 +9,7 @@ global using SharpXcom.Mod;
 global using SharpXcom.Savegame;
 global using System.Collections.Specialized;
 global using System.Diagnostics;
+global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
 global using System.Numerics;
 global using System.Runtime.CompilerServices;

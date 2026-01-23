@@ -1045,7 +1045,7 @@ internal class GeoscapeState : State
                 var after = new List<RuleResearch>();
                 _game.getSavedGame().getAvailableResearchProjects(after, _game.getMod(), i);
                 var newPossibleResearch = new List<RuleResearch>();
-                _game.getSavedGame().getNewlyAvailableResearchProjects(before, after, newPossibleResearch);
+                _game.getSavedGame().getNewlyAvailableResearchProjects(ref before, ref after, ref newPossibleResearch);
                 popup(new NewPossibleResearchState(i, newPossibleResearch));
                 // 3i. inform about new possible manufacture
                 var newPossibleManufacture = new List<RuleManufacture>();

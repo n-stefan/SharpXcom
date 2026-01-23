@@ -166,3 +166,21 @@ internal class RuleResearch : IListOrder, IRule
     internal string getCutscene() =>
 	    _cutscene;
 }
+
+/**
+ * Compares RuleResearch pointers based on the research name.
+ */
+class CompareRuleResearch : IComparer<RuleResearch>
+{
+    public int Compare(RuleResearch a, RuleResearch b) =>
+        string.Compare(a.getName(), b.getName());
+}
+
+class EqualRuleResearch : IEqualityComparer<RuleResearch>
+{
+    public bool Equals(RuleResearch a, RuleResearch b) =>
+        string.Equals(a.getName(), b.getName());
+
+    public int GetHashCode([DisallowNull] RuleResearch a) =>
+        a.getName().GetHashCode();
+}
