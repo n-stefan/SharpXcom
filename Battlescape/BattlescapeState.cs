@@ -1141,13 +1141,14 @@ internal class BattlescapeState : State
     void saveVoxelMap()
     {
 	    string ss;
-	    var image = new List<byte>();
+	    var image = new byte[_save.getMapSizeX()*16 * _save.getMapSizeY()*16];
+		var ptr = 0;
 
 	    Tile tile;
 
 	    for (int z = 0; z < _save.getMapSizeZ()*12; ++z)
 	    {
-		    image.Clear();
+		    Array.Clear(image);
 
 		    for (int y = 0; y < _save.getMapSizeY()*16; ++y)
 		    {
@@ -1185,19 +1186,22 @@ internal class BattlescapeState : State
 					    }
 				    }
 
-				    image.Add((byte)((float)pal[test*3+0]*dist));
-				    image.Add((byte)((float)pal[test*3+1]*dist));
-				    image.Add((byte)((float)pal[test*3+2]*dist));
+					image[ptr++] = (byte)((float)pal[test*3+0]*dist);
+					image[ptr++] = (byte)((float)pal[test*3+1]*dist);
+					image[ptr++] = (byte)((float)pal[test*3+2]*dist);
 			    }
 		    }
 
 		    ss = $"{Options.getMasterUserFolder()}voxel{z:D2}.png";
 
-		    uint error = lodepng.encode(ss, image, _save.getMapSizeX()*16, _save.getMapSizeY()*16, LCT_RGB);
+			var surface = Marshal.AllocHGlobal(image.Length);
+			Marshal.Copy(image, 0, surface, image.Length);
+			int error = IMG_SavePNG(surface, ss);
 		    if (error != 0)
 		    {
-                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {lodepng_error_text(error)}");
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {IMG_GetError()}");
 		    }
+			Marshal.FreeHGlobal(surface);
 	    }
 	    return;
     }
@@ -1340,7 +1344,8 @@ internal class BattlescapeState : State
 		bool black;
 		Tile tile = null;
 		string ss;
-		var image = new List<byte>();
+		var image = new byte[512 * 512];
+		var ptr = 0;
 		int test;
 		Position originVoxel = getBattleGame().getTileEngine().getSightOriginVoxel(bu);
 
@@ -1348,7 +1353,7 @@ internal class BattlescapeState : State
 		double dist = 0;
 		bool _debug = _save.getDebugMode();
 		double dir = ((double)bu.getDirection()+4)/4*M_PI;
-		image.Clear();
+		//Array.Clear(image);
 		for (int y = -256+32; y < 256+32; ++y)
 		{
 			ang_y = (((double)y)/640*M_PI+M_PI/2);
@@ -1426,9 +1431,9 @@ internal class BattlescapeState : State
 					if (tile != null) dist *= (16 - (double)tile.getShade())/16;
 				}
 
-				image.Add((byte)((double)(pal2[test*3+0])*dist));
-				image.Add((byte)((double)(pal2[test*3+1])*dist));
-				image.Add((byte)((double)(pal2[test*3+2])*dist));
+				image[ptr++] = (byte)((double)(pal2[test*3+0])*dist);
+				image[ptr++] = (byte)((double)(pal2[test*3+1])*dist);
+				image[ptr++] = (byte)((double)(pal2[test*3+2])*dist);
 			}
 		}
 
@@ -1440,11 +1445,14 @@ internal class BattlescapeState : State
 		}
 		while (CrossPlatform.fileExists(ss));
 
-		uint error = lodepng.encode(ss, image, 512, 512, LCT_RGB);
+		var surface = Marshal.AllocHGlobal(image.Length);
+		Marshal.Copy(image, 0, surface, image.Length);
+		int error = IMG_SavePNG(surface, ss);
 		if (error != 0)
 		{
-            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {lodepng_error_text(error)}");
+            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {IMG_GetError()}");
 		}
+		Marshal.FreeHGlobal(surface);
 
 		return;
 	}
