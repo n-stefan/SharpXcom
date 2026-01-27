@@ -88,22 +88,22 @@ internal class OptionsBaseState : State
         _window.setBackground(_game.getMod().getSurface("BACK01.SCR"));
 
         _btnVideo.setText(tr("STR_VIDEO"));
-        _btnVideo.onMousePress(btnGroupPress, (byte)SDL_BUTTON_LEFT);
+        _btnVideo.onMousePress(btnGroupPress, SDL_BUTTON_LEFT);
 
         _btnAudio.setText(tr("STR_AUDIO"));
-        _btnAudio.onMousePress(btnGroupPress, (byte)SDL_BUTTON_LEFT);
+        _btnAudio.onMousePress(btnGroupPress, SDL_BUTTON_LEFT);
 
         _btnControls.setText(tr("STR_CONTROLS"));
-        _btnControls.onMousePress(btnGroupPress, (byte)SDL_BUTTON_LEFT);
+        _btnControls.onMousePress(btnGroupPress, SDL_BUTTON_LEFT);
 
         _btnGeoscape.setText(tr("STR_GEOSCAPE_UC"));
-        _btnGeoscape.onMousePress(btnGroupPress, (byte)SDL_BUTTON_LEFT);
+        _btnGeoscape.onMousePress(btnGroupPress, SDL_BUTTON_LEFT);
 
         _btnBattlescape.setText(tr("STR_BATTLESCAPE_UC"));
-        _btnBattlescape.onMousePress(btnGroupPress, (byte)SDL_BUTTON_LEFT);
+        _btnBattlescape.onMousePress(btnGroupPress, SDL_BUTTON_LEFT);
 
         _btnAdvanced.setText(tr("STR_ADVANCED"));
-        _btnAdvanced.onMousePress(btnGroupPress, (byte)SDL_BUTTON_LEFT);
+        _btnAdvanced.onMousePress(btnGroupPress, SDL_BUTTON_LEFT);
 
         _btnOk.setText(tr("STR_OK"));
         _btnOk.onMouseClick(btnOkClick);

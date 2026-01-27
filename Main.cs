@@ -1,10 +1,10 @@
 ﻿
 //TODO:
-// missing methods
+// OpenXcom => SharpXcom
 // yaml load defaults
 // string interpolation => StringBuilder
-// OpenXcom => SharpXcom
 // Path.Combine
+// SDL_Surface => SDL_Texture
 
 /*
  * Copyright 2010-2016 OpenXcom Developers.

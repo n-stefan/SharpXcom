@@ -79,8 +79,9 @@ internal class UfopaediaStartState : State
             add(button, "button1", "ufopaedia");
 
             button.onMouseClick(btnSectionClick);
-            button.onMousePress(btnScrollUpClick, SDL_BUTTON_WHEELUP);
-            button.onMousePress(btnScrollDownClick, SDL_BUTTON_WHEELDOWN);
+            //button.onMousePress(btnScrollUpClick, SDL_BUTTON_WHEELUP);
+            //button.onMousePress(btnScrollDownClick, SDL_BUTTON_WHEELDOWN);
+            button.onMousePress(btnScrollClick, (uint)SDL_EventType.SDL_MOUSEWHEEL);
 
             _btnSections.Add(button);
         }
@@ -132,6 +133,19 @@ internal class UfopaediaStartState : State
                 break;
             }
         }
+    }
+
+    /**
+	 * Scrolls the section buttons.
+	 * @param action Pointer to an action.
+	 */
+    void btnScrollClick(Action action)
+    {
+        if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
+            _scroll = -1;
+        else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+            _scroll = 1;
+        scroll();
     }
 
     /**

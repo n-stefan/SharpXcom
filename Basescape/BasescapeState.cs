@@ -88,8 +88,8 @@ internal class BasescapeState : State
 
         // Set up objects
         _view.setTexture(_game.getMod().getSurfaceSet("BASEBITS.PCK"));
-        _view.onMouseClick(viewLeftClick, (byte)SDL_BUTTON_LEFT);
-        _view.onMouseClick(viewRightClick, (byte)SDL_BUTTON_RIGHT);
+        _view.onMouseClick(viewLeftClick, SDL_BUTTON_LEFT);
+        _view.onMouseClick(viewRightClick, SDL_BUTTON_RIGHT);
         _view.onMouseOver(viewMouseOver);
         _view.onMouseOut(viewMouseOut);
 

@@ -396,7 +396,7 @@ internal class BattlescapeState : State
 		_btnReserveKneel.onMouseOut(txtTooltipOut);
 		_btnReserveKneel.allowToggleInversion();
 
-		_btnZeroTUs.onMouseClick(btnZeroTUsClick, (byte)SDL_BUTTON_RIGHT);
+		_btnZeroTUs.onMouseClick(btnZeroTUsClick, SDL_BUTTON_RIGHT);
 		_btnZeroTUs.onKeyboardPress(btnZeroTUsClick, Options.keyBattleZeroTUs);
 		_btnZeroTUs.setTooltip("STR_EXPEND_ALL_TIME_UNITS");
 		_btnZeroTUs.onMouseIn(txtTooltipIn);

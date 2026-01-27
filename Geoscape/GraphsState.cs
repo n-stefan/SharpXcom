@@ -71,8 +71,9 @@ internal class GraphsState : State
 
         // Create objects
         _bg = new InteractiveSurface(320, 200, 0, 0);
-        _bg.onMousePress(shiftButtons, SDL_BUTTON_WHEELUP);
-        _bg.onMousePress(shiftButtons, SDL_BUTTON_WHEELDOWN);
+        //_bg.onMousePress(shiftButtons, SDL_BUTTON_WHEELUP);
+        //_bg.onMousePress(shiftButtons, SDL_BUTTON_WHEELDOWN);
+        _bg.onMousePress(shiftButtons, (uint)SDL_EventType.SDL_MOUSEWHEEL);
         _btnUfoRegion = new InteractiveSurface(32, 24, 96, 0);
         _btnUfoCountry = new InteractiveSurface(32, 24, 128, 0);
         _btnXcomRegion = new InteractiveSurface(32, 24, 160, 0);

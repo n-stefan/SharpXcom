@@ -100,12 +100,12 @@ internal class SelectDestinationState : State
         _btnRotateDown.onKeyboardPress(btnRotateDownPress, Options.keyGeoDown);
         _btnRotateDown.onKeyboardRelease(btnRotateDownRelease, Options.keyGeoDown);
 
-        _btnZoomIn.onMouseClick(btnZoomInLeftClick, (byte)SDL_BUTTON_LEFT);
-        _btnZoomIn.onMouseClick(btnZoomInRightClick, (byte)SDL_BUTTON_RIGHT);
+        _btnZoomIn.onMouseClick(btnZoomInLeftClick, SDL_BUTTON_LEFT);
+        _btnZoomIn.onMouseClick(btnZoomInRightClick, SDL_BUTTON_RIGHT);
         _btnZoomIn.onKeyboardPress(btnZoomInLeftClick, Options.keyGeoZoomIn);
 
-        _btnZoomOut.onMouseClick(btnZoomOutLeftClick, (byte)SDL_BUTTON_LEFT);
-        _btnZoomOut.onMouseClick(btnZoomOutRightClick, (byte)SDL_BUTTON_RIGHT);
+        _btnZoomOut.onMouseClick(btnZoomOutLeftClick, SDL_BUTTON_LEFT);
+        _btnZoomOut.onMouseClick(btnZoomOutRightClick, SDL_BUTTON_RIGHT);
         _btnZoomOut.onKeyboardPress(btnZoomOutLeftClick, Options.keyGeoZoomOut);
 
         // dirty hacks to get the rotate buttons to work in "classic" style

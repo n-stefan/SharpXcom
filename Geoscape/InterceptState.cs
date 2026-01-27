@@ -104,7 +104,7 @@ internal class InterceptState : State
         _lstCrafts.setBackground(_window);
         _lstCrafts.setMargin(6);
         _lstCrafts.onMouseClick(lstCraftsLeftClick);
-        _lstCrafts.onMouseClick(lstCraftsRightClick, (byte)SDL_BUTTON_RIGHT);
+        _lstCrafts.onMouseClick(lstCraftsRightClick, SDL_BUTTON_RIGHT);
 
         uint row = 0;
         foreach (var i in _game.getSavedGame().getBases())

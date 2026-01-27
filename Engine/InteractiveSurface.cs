@@ -36,7 +36,7 @@ internal class InteractiveSurface : Surface
     byte _buttonsPressed;
     protected ActionHandler _in, _over, _out;
     protected bool _isHovered, _isFocused, _listButton;
-    protected Dictionary<byte, ActionHandler> _click, _press, _release;
+    protected Dictionary<uint, ActionHandler> _click, _press, _release;
     protected Dictionary<SDL_Keycode, ActionHandler> _keyPress, _keyRelease;
 
     /**
@@ -363,7 +363,7 @@ internal class InteractiveSurface : Surface
      * @param handler Action handler.
      * @param button Mouse button to check for. Set to 0 for any button.
      */
-    internal void onMouseClick(ActionHandler handler, byte button = (byte)SDL_BUTTON_LEFT)
+    internal void onMouseClick(ActionHandler handler, uint button = SDL_BUTTON_LEFT)
     {
         if (handler != null)
         {
@@ -380,7 +380,7 @@ internal class InteractiveSurface : Surface
      * @param handler Action handler.
      * @param button Mouse button to check for. Set to 0 for any button.
      */
-    internal void onMousePress(ActionHandler handler, byte button = 0)
+    internal void onMousePress(ActionHandler handler, uint button = 0)
     {
         if (handler != null)
         {
@@ -397,7 +397,7 @@ internal class InteractiveSurface : Surface
      * @param handler Action handler.
      * @param button Mouse button to check for. Set to 0 for any button.
      */
-    internal void onMouseRelease(ActionHandler handler, byte button = 0)
+    internal void onMouseRelease(ActionHandler handler, uint button = 0)
     {
 	    if (handler != null)
 	    {
