@@ -32,7 +32,7 @@ internal class PathfindingNode
     /// Approximate cost to reach goal position.
     int _tuGuess;
     // Invasive field needed by PathfindingOpenSet
-    internal OpenSetEntry? _openentry;
+    internal OpenSetEntry _openentry;
 
     /**
      * Sets up a PathfindingNode.

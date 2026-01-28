@@ -19,7 +19,7 @@
 
 namespace SharpXcom.Battlescape;
 
-struct OpenSetEntry
+/* struct */ class OpenSetEntry
 {
     internal int _cost;
     internal PathfindingNode _node;
@@ -65,7 +65,7 @@ internal class PathfindingOpenSet
 		entry._node = node;
 		entry._cost = node.getTUCost(false) + node.getTUGuess();
 		if (node._openentry != null)
-			node._openentry.Value._node = 0;
+			node._openentry._node = null;
 		node._openentry = entry;
 		_queue.Enqueue(entry, new EntryCompare());
 	}
