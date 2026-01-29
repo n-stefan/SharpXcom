@@ -76,7 +76,7 @@ partial class Shader
 {
     /**
 	 * Create warper from Surface
-	 * @param s standard 8bit OpenXcom surface
+	 * @param s standard 8bit SharpXcom surface
 	 * @return
 	 */
     internal static ShaderMove<byte> ShaderSurface(Surface s) =>
@@ -84,7 +84,7 @@ partial class Shader
 
 	/**
 	 * Create warper from Surface and provided offset
-	 * @param s standard 8bit OpenXcom surface
+	 * @param s standard 8bit SharpXcom surface
 	 * @param x offset on x
 	 * @param y offset on y
 	 * @return
@@ -94,7 +94,7 @@ partial class Shader
 
 	/**
 	 * Create warper from cropped Surface and provided offset
-	 * @param s standard 8bit OpenXcom surface
+	 * @param s standard 8bit SharpXcom surface
 	 * @param x offset on x
 	 * @param y offset on y
 	 * @return
@@ -114,7 +114,7 @@ partial class Shader
 
 	/**
 	 * Create warper from cropped Surface
-	 * @param s standard 8bit OpenXcom surface
+	 * @param s standard 8bit SharpXcom surface
 	 * @return
 	 */
 	internal static ShaderMove<byte> ShaderCrop(Surface s) =>

@@ -44,7 +44,7 @@ internal class ModInfo
      * List of engines that current version support.
      */
     static EngineData[] supportedEngines = {
-	    new() { name = OPENXCOM_VERSION_ENGINE, version = OPENXCOM_VERSION_NUMBER },
+	    new() { name = SHARPXCOM_VERSION_ENGINE, version = SHARPXCOM_VERSION_NUMBER },
         new() { name = string.Empty, version = new[] { 0, 0, 0, 0 } } // assume that every engine support mods from base game, remove if its not true.
     };
 

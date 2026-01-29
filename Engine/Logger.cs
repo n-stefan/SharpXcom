@@ -77,7 +77,7 @@ internal class Logger
         else return get(level);
     }
 
-    internal static string _logFile = "openxcom.log";
+    internal static string _logFile = "sharpxcom.log";
     internal static string logFile() =>
         _logFile;
 }

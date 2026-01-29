@@ -219,10 +219,10 @@ internal class SavedGame
 			var brief = new YamlMappingNode
 			{
 				{ "name", _name },
-				{ "version", OPENXCOM_VERSION_SHORT },
-				{ "engine", OPENXCOM_VERSION_ENGINE }
+				{ "version", SHARPXCOM_VERSION_SHORT },
+				{ "engine", SHARPXCOM_VERSION_ENGINE }
 			};
-			string git_sha = OPENXCOM_VERSION_GIT;
+			string git_sha = SHARPXCOM_VERSION_GIT;
 			if (!string.IsNullOrEmpty(git_sha) && git_sha[0] == '.')
 			{
 				git_sha = git_sha.Remove(0, 1);

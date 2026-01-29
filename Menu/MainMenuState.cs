@@ -93,7 +93,7 @@ internal class MainMenuState : State
 
 		_txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
 		_txtTitle.setBig();
-		string title = $"{tr("STR_OPENXCOM")}{Unicode.TOK_NL_SMALL}{OPENXCOM_VERSION_SHORT}{OPENXCOM_VERSION_GIT}";
+		string title = $"{tr("STR_SHARPXCOM")}{Unicode.TOK_NL_SMALL}{SHARPXCOM_VERSION_SHORT}{SHARPXCOM_VERSION_GIT}";
 		_txtTitle.setText(title);
 	}
 

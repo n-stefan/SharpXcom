@@ -161,7 +161,7 @@ internal class Options
         updateOptions();
 
         string s = getUserFolder();
-        s += "openxcom.log";
+        s += "sharpxcom.log";
         Logger._logFile = s;
         using var file = new FileStream(Logger.logFile(), FileMode.Create, FileAccess.Write);
         if (file != null)
@@ -174,7 +174,7 @@ internal class Options
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} Couldn't create log file, switching to stderr");
         }
 
-        Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} OpenXcom Version: {OPENXCOM_VERSION_SHORT}{OPENXCOM_VERSION_GIT}");
+        Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} SharpXcom Version: {SHARPXCOM_VERSION_SHORT}{SHARPXCOM_VERSION_GIT}");
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Platform: {Environment.OSVersion}");
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Data folder is: {_dataFolder}");
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Data search is: ");
@@ -197,8 +197,8 @@ internal class Options
     static bool showHelp(string[] args)
     {
         var help = new StringBuilder();
-        help.AppendLine($"OpenXcom v{OPENXCOM_VERSION_SHORT}");
-        help.AppendLine($"Usage: openxcom [OPTION]...{Environment.NewLine}");
+        help.AppendLine($"SharpXcom v{SHARPXCOM_VERSION_SHORT}");
+        help.AppendLine($"Usage: sharpxcom [OPTION]...{Environment.NewLine}");
         help.AppendLine("-data PATH");
         help.AppendLine($"        use PATH as the default Data Folder instead of auto-detecting{Environment.NewLine}");
         help.AppendLine("-user PATH");

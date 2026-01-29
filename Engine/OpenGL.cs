@@ -450,7 +450,7 @@ unsafe internal class OpenGL
         iwidth = width;
         iheight = height;
         if (buffer_surface != null) buffer_surface = null;
-        buffer_surface = new Surface((int)iwidth, (int)iheight, 0, 0, (int)ibpp); // use OpenXcom's Surface class to get an aligned buffer with bonus SDL_Surface
+        buffer_surface = new Surface((int)iwidth, (int)iheight, 0, 0, (int)ibpp); // use SharpXcom's Surface class to get an aligned buffer with bonus SDL_Surface
         buffer = buffer_surface.getSurface().pixels;
 
         glBindTexture(GL_TEXTURE_2D, gltexture);

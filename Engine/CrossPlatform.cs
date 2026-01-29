@@ -111,7 +111,7 @@ internal class CrossPlatform
         }
         else
         {
-            path = "C:\\GAMES\\OPENXCOM";
+            path = "C:\\GAMES\\SHARPXCOM";
         }
         return path;
     }
@@ -150,7 +150,7 @@ internal class CrossPlatform
 		//{
 			Console.WriteLine($"{Log(SeverityLevel.LOG_FATAL)} No crash dump generated.");
 		//}
-		string msg = $"OpenXcom has crashed: {error}{Environment.NewLine}More details here: {Logger.logFile()}{Environment.NewLine}If this error was unexpected, please report it to the developers.";
+		string msg = $"SharpXcom has crashed: {error}{Environment.NewLine}More details here: {Logger.logFile()}{Environment.NewLine}If this error was unexpected, please report it to the developers.";
 		showError(msg);
 	}
 
@@ -160,7 +160,7 @@ internal class CrossPlatform
 	 */
 	static void showError(string error)
 	{
-        //MessageBoxA(NULL, error.c_str(), "OpenXcom Error", MB_ICONERROR | MB_OK);
+        //MessageBoxA(NULL, error.c_str(), "SharpXcom Error", MB_ICONERROR | MB_OK);
         Console.WriteLine($"{Log(SeverityLevel.LOG_FATAL)} {error}");
 	}
 
@@ -305,7 +305,7 @@ internal class CrossPlatform
 			// Get Documents folder
 			if (!string.IsNullOrEmpty(path = Environment.GetFolderPath(Environment.SpecialFolder.Personal)))
 			{
-				path = Path.Combine(path, "OpenXcom\\");
+				path = Path.Combine(path, "SharpXcom\\");
 				list.Add(path);
 			}
 
@@ -331,11 +331,11 @@ internal class CrossPlatform
 			string xdg_data_home;
 			if (!string.IsNullOrEmpty(xdg_data_home = Environment.GetEnvironmentVariable("XDG_DATA_HOME")))
 			{
-				path = $"{xdg_data_home}/openxcom/";
+				path = $"{xdg_data_home}/sharpxcom/";
 			}
 			else
 			{
-				path = $"{home}/.local/share/openxcom/";
+				path = $"{home}/.local/share/sharpxcom/";
 			}
 			list.Add(path);
 
@@ -346,12 +346,12 @@ internal class CrossPlatform
 				var xdg_data_dirs_copy = xdg_data_dirs.Split(':');
 				foreach (var dir in xdg_data_dirs_copy)
 				{
-					path = $"{dir}/openxcom/";
+					path = $"{dir}/sharpxcom/";
 					list.Add(path);
 				}
 			}
-			list.Add("/usr/local/share/openxcom/");
-			list.Add("/usr/share/openxcom/");
+			list.Add("/usr/local/share/sharpxcom/");
+			list.Add("/usr/share/sharpxcom/");
 #if DATADIR
 			path = $"{DATADIR}/";
 			list.Add(path);
@@ -382,12 +382,12 @@ internal class CrossPlatform
 			string xdg_config_home;
 			if (!string.IsNullOrEmpty(xdg_config_home = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME")))
 			{
-				path = $"{xdg_config_home}/openxcom/";
+				path = $"{xdg_config_home}/sharpxcom/";
 				return path;
 			}
 			else
 			{
-				path = $"{home}/.config/openxcom/";
+				path = $"{home}/.config/sharpxcom/";
 				return path;
 			}
 		}
@@ -410,7 +410,7 @@ internal class CrossPlatform
 			// Get Documents folder
 			if (!string.IsNullOrEmpty(path = Environment.GetFolderPath(Environment.SpecialFolder.Personal)))
 			{
-				path = Path.Combine(path, "OpenXcom\\");
+				path = Path.Combine(path, "SharpXcom\\");
 				list.Add(path);
 			}
 
@@ -438,16 +438,16 @@ internal class CrossPlatform
 			string xdg_data_home;
 			if (!string.IsNullOrEmpty(xdg_data_home = Environment.GetEnvironmentVariable("XDG_DATA_HOME")))
 			{
-				path = $"{xdg_data_home}/openxcom/";
+				path = $"{xdg_data_home}/sharpxcom/";
 			}
 			else
 			{
-				path = $"{home}/.local/share/openxcom/";
+				path = $"{home}/.local/share/sharpxcom/";
 			}
 			list.Add(path);
 
 			// Get old-style folder
-			path = $"{home}/.openxcom/";
+			path = $"{home}/.sharpxcom/";
 			list.Add(path);
 
 			// Get working directory

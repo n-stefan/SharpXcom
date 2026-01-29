@@ -87,7 +87,7 @@ internal class ListLoadOriginalState : State
         // Set up objects
         _window.setBackground(_game.getMod().getSurface("BACK01.SCR"));
 
-        _btnNew.setText(tr("STR_OPENXCOM"));
+        _btnNew.setText(tr("STR_SHARPXCOM"));
         _btnNew.onMouseClick(btnNewClick);
         _btnNew.onKeyboardPress(btnNewClick, Options.keyCancel);
 
@@ -125,7 +125,7 @@ internal class ListLoadOriginalState : State
     ~ListLoadOriginalState() { }
 
     /**
-     * Switches to OpenXcom saves.
+     * Switches to SharpXcom saves.
      * @param action Pointer to an action.
      */
     void btnNewClick(Action _) =>

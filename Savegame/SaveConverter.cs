@@ -131,8 +131,8 @@ internal class SaveConverter
     }
 
     /**
-     * Converts an original X-COM save into an OpenXcom save.
-     * @return New OpenXcom save.
+     * Converts an original X-COM save into a SharpXcom save.
+     * @return New SharpXcom save.
      */
     internal SavedGame loadOriginal()
     {
@@ -464,7 +464,7 @@ internal class SaveConverter
     /**
      * Corrects vectors of graph data.
      * Original X-COM uses months as array indexes,
-     * while OpenXcom stores month data in a linear fashion.
+     * while SharpXcom stores month data in a linear fashion.
      * @param vector Vector of graph data.
      * @param month Current month.
      * @param year Has game gone longer than a year?

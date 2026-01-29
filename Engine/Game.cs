@@ -87,7 +87,7 @@ internal class Game
         SDL_SetRelativeMouseMode(Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
 
         // Set the window icon
-        CrossPlatform.setWindowIcon(/* IDI_ICON1, */ FileMap.getFilePath("openxcom.png"));
+        CrossPlatform.setWindowIcon(/* IDI_ICON1, */ FileMap.getFilePath("sharpxcom.png"));
 
         // Set the window caption
         SDL_SetWindowTitle(nint.Zero, title); //SDL_WM_SetCaption(title, 0);

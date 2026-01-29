@@ -1,6 +1,5 @@
 ﻿
 //TODO:
-// OpenXcom => SharpXcom
 // yaml load defaults
 // string interpolation => StringBuilder
 // Path.Combine
@@ -55,7 +54,7 @@ CrossPlatform.getErrorDialog();
 #endif
 if (!Options.init(args))
     Environment.Exit(0); //EXIT_SUCCESS
-string title = $"OpenXcom {OPENXCOM_VERSION_SHORT}{OPENXCOM_VERSION_GIT}";
+string title = $"SharpXcom {SHARPXCOM_VERSION_SHORT}{SHARPXCOM_VERSION_GIT}";
 if (Options.verboseLogging)
     Logger.reportingLevel = SeverityLevel.LOG_VERBOSE;
 Options.baseXResolution = Options.displayWidth;

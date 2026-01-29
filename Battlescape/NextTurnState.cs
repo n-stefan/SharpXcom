@@ -90,7 +90,7 @@ internal class NextTurnState : State
         _txtTitle.setBig();
         _txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
         _txtTitle.setHighContrast(true);
-        _txtTitle.setText(tr("STR_OPENXCOM"));
+        _txtTitle.setText(tr("STR_SHARPXCOM"));
 
         _txtTurn.setBig();
         _txtTurn.setAlign(TextHAlign.ALIGN_CENTER);

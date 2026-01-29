@@ -139,7 +139,7 @@ internal class Surface
     unsafe internal Surface(Surface other)
     {
         nint surfacePtr;
-        //if is native OpenXcom aligned surface
+        //if is native SharpXcom aligned surface
 	    if (other._alignedBuffer != nint.Zero)
 	    {
             //TODO

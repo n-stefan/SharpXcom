@@ -21,9 +21,9 @@ namespace SharpXcom;
 
 internal class Version
 {
-    internal const string OPENXCOM_VERSION_ENGINE = "";
-    internal const string OPENXCOM_VERSION_SHORT = "1.0";
-    internal const string OPENXCOM_VERSION_LONG = "1.0.0.0";
-    internal const string OPENXCOM_VERSION_GIT = " Dev";
-    internal static int[] OPENXCOM_VERSION_NUMBER = { 1, 0, 0, 0 };
+    internal const string SHARPXCOM_VERSION_ENGINE = "";
+    internal const string SHARPXCOM_VERSION_SHORT = "1.0";
+    internal const string SHARPXCOM_VERSION_LONG = "1.0.0.0";
+    internal const string SHARPXCOM_VERSION_GIT = " Dev";
+    internal static int[] SHARPXCOM_VERSION_NUMBER = { 1, 0, 0, 0 };
 }

@@ -97,7 +97,7 @@ internal class StartState : State
         }
         else
         {
-            addLine(CrossPlatform.getDosPath() + ">openxcom");
+            addLine(CrossPlatform.getDosPath() + ">sharpxcom");
         }
     }
 
@@ -137,7 +137,7 @@ internal class StartState : State
 
         if (loading == LoadingPhase.LOADING_STARTED)
         {
-            string ss = $"Loading OpenXcom {OPENXCOM_VERSION_SHORT} {OPENXCOM_VERSION_GIT}...";
+            string ss = $"Loading SharpXcom {SHARPXCOM_VERSION_SHORT} {SHARPXCOM_VERSION_GIT}...";
             if (Options.reload)
             {
                 if (_anim == 2)
@@ -153,7 +153,7 @@ internal class StartState : State
                         break;
                     case 6:
                         addLine(string.Empty);
-                        addLine("OpenXcom initialisation");
+                        addLine("SharpXcom initialisation");
                         break;
                     case 7:
                         addLine(string.Empty);
@@ -248,14 +248,14 @@ internal class StartState : State
                 addLine("ERROR: " + error);
                 addLine(string.Empty);
                 addLine("More details here: " + Logger.logFile());
-                addLine("Make sure OpenXcom and any mods are installed correctly.");
+                addLine("Make sure SharpXcom and any mods are installed correctly.");
                 addLine(string.Empty);
                 addLine("Press any key to continue.");
                 loading = LoadingPhase.LOADING_DONE;
                 break;
             case LoadingPhase.LOADING_SUCCESSFUL:
                 CrossPlatform.flashWindow(_game.getScreen().getWindow());
-                Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} OpenXcom started successfully!");
+                Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} SharpXcom started successfully!");
                 _game.setState(new GoToMainMenuState());
                 if (_oldMaster != Options.getActiveMaster() && Options.playIntro)
                 {
