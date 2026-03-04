@@ -288,7 +288,6 @@ internal class MapScript
 			}
 		}
 
-
 		_executionChances = int.Parse(node["executionChances"].ToString());
 		_executions = int.Parse(node["executions"].ToString());
 		_ufoName = node["UFOName"].ToString();

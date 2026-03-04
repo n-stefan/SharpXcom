@@ -52,7 +52,6 @@ internal class FastLineClip
 		FC_xn= x0;  FC_yn= y0;
 		FC_xk= x1;  FC_yk= y1;
 
-
 	// "Code" evaluation - bits 0..3 - end point, bits 4..7 - start point.
 
 						//start point is
@@ -92,10 +91,6 @@ internal class FastLineClip
 					if (FC_yk > Wybot) Clip1_Bottom();
 					++visible;  break;
 
-
-
-
-
 		 //From left
 
 		 case 0x10: Clip0_Left();   ++visible; goto case 0x11;
@@ -125,10 +120,6 @@ internal class FastLineClip
 					++visible;
 					break;
 
-
-
-
-
 		 // From right
 
 		 case 0x20: Clip0_Right(); ++visible;  break;
@@ -156,10 +147,6 @@ internal class FastLineClip
 					if (FC_xk < Wxlef) Clip1_Left();
 					++visible; goto case 0x2A;
 		 case 0x2A: break;
-
-
-
-
 
 		 // From down
 
@@ -194,10 +181,6 @@ internal class FastLineClip
 					++visible;
 					break;
 
-
-
-
-
 		 // From bottom-left
 
 		 case 0x50: Clip0_Left();
@@ -226,10 +209,6 @@ internal class FastLineClip
 					if (FC_yk > Wybot) Clip1_Bottom();
 					++visible;
 					break;
-
-
-
-
 
 		 // From bottom-right
 
@@ -260,10 +239,6 @@ internal class FastLineClip
 					if (FC_yn < Wytop) Clip0_Top();
 					++visible; goto case 0x6A;
 		 case 0x6A: break;
-
-
-
-
 
 		 // From top
 
@@ -299,10 +274,6 @@ internal class FastLineClip
 		 case 0x89:
 		 case 0x8A: break;
 
-
-
-
-
 		 // From top-left
 
 		 case 0x90: Clip0_Left();
@@ -331,10 +302,6 @@ internal class FastLineClip
 		 case 0x98:
 		 case 0x99:
 		 case 0x9A: break;
-
-
-
-
 
 		 // From top-right
 
@@ -365,9 +332,6 @@ internal class FastLineClip
 		 case 0xA8:
 		 case 0xA9:
 		 case 0xAA: break;
-
-
-
 
 		 // Error
 

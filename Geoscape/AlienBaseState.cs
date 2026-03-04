@@ -54,7 +54,6 @@ internal class AlienBaseState : State
 
         centerAllSurfaces();
 
-
         // Set up objects
         _window.setBackground(_game.getMod().getSurface("BACK13.SCR"));
 

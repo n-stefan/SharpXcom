@@ -1058,7 +1058,6 @@ internal class UnitSprite : Surface
 		leftArm = _unitSurface.getFrame(larmStand + unitDir);
 		rightArm = _unitSurface.getFrame(rarmStand + unitDir);
 
-
 		// when walking, torso(fixed sprite) has to be animated up/down
 		if (_unit.getStatus() == UnitStatus.STATUS_WALKING)
 		{
@@ -1104,7 +1103,6 @@ internal class UnitSprite : Surface
 				}
 			}
 
-
 			// draw arms holding the item
 			if (_itemR.getRules().isTwoHanded())
 			{
@@ -1122,7 +1120,6 @@ internal class UnitSprite : Surface
 			{
 				rightArm = _unitSurface.getFrame(rarm1H + unitDir);
 			}
-
 
 			// the fixed arm(s) have to be animated up/down when walking
 			if (_unit.getStatus() == UnitStatus.STATUS_WALKING)

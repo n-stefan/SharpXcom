@@ -319,7 +319,6 @@ internal class Pathfinding
                 }
                 startTile = _save.getTile(startTile.getPosition() + verticalOffset);
 
-
                 if (direction < DIR_UP && numberOfPartsGoingUp != 0)
                 {
                     // check if we can go this way

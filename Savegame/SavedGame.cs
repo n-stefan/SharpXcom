@@ -1019,7 +1019,6 @@ internal class SavedGame
      * Sets the last selected armour.
      * @param value The new value for last selected armor - Armor type string.
      */
-
     internal void setLastSelectedArmor(string value) =>
 	    _lastselectedArmor = value;
 
