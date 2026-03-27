@@ -1860,7 +1860,7 @@ internal class SavedBattleGame
 
 		    // load binary tile data!
 		    string binTiles = node["binTiles"].ToString();
-            binTiles = binTiles[..9]; // skip "!!binary "
+            binTiles = binTiles[9..]; // skip "!!binary "
 
 		    byte[] r = Convert.FromBase64String(binTiles);
 		    uint size = totalTiles * serKey.totalBytes;
@@ -2000,16 +2000,8 @@ internal class SavedBattleGame
 				    // match up items and tiles
 				    if (item.getSlot() != null && item.getSlot().getType() == InventoryType.INV_GROUND)
 				    {
-                        Position pos;
-                        if (i["position"] != null)
-                        {
-                            pos = Position.decode(i["position"]);
-                        }
-                        else
-                        {
-                            pos = new Position(-1, -1, -1);
-                        }
-					    if (pos.x != -1)
+                        Position pos = i["position"] != null ? Position.decode(i["position"]) : new Position(-1, -1, -1);
+                        if (pos.x != -1)
 						    getTile(pos).addItem(item, mod.getInventory("STR_GROUND", true));
 				    }
                     switch (pass)

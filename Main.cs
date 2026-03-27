@@ -1,9 +1,8 @@
 ﻿
 //TODO:
-// yaml load defaults
 // string interpolation => StringBuilder
-// Path.Combine
 // SDL_Surface => SDL_Texture
+// Path.Combine
 
 /*
  * Copyright 2010-2016 OpenXcom Developers.

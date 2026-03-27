@@ -541,7 +541,7 @@ internal class CrossPlatform
 		// Correct folder separator
 		string name = filename;
 		if (OperatingSystem.IsWindows())
-		name = name.Replace('/', Path.PathSeparator);
+			name = name.Replace('/', Path.PathSeparator);
 
 		// Check current data path
 		string path = Options.getDataFolder() + name;

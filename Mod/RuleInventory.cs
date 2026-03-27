@@ -31,8 +31,8 @@ struct RuleSlot
 	 */
     internal void load(YamlNode node)
     {
-        x = int.Parse(node["x"].ToString());
-        y = int.Parse(node["y"].ToString());
+        x = int.Parse(node[0].ToString());
+        y = int.Parse(node[1].ToString());
     }
 }
 

@@ -37,9 +37,9 @@ struct TrajectoryWaypoint
 	 */
     internal void load(YamlNode node)
     {
-        zone = uint.Parse(node["zone"].ToString());
-        altitude = uint.Parse(node["altitude"].ToString());
-        speed = uint.Parse(node["speed"].ToString());
+        zone = uint.Parse(node[0].ToString());
+        altitude = uint.Parse(node[1].ToString());
+        speed = uint.Parse(node[2].ToString());
     }
 }
 
