@@ -29,10 +29,17 @@ struct RuleSlot
 	 * Loads the RuleSlot from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node)
+    internal static RuleSlot decode(YamlNode node)
     {
-        x = int.Parse(node[0].ToString());
-        y = int.Parse(node[1].ToString());
+        if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 2)
+    		return default;
+
+        var rs = new RuleSlot
+        {
+            x = int.Parse(node[0].ToString()),
+            y = int.Parse(node[1].ToString())
+        };
+    	return rs;
     }
 }
 
@@ -106,10 +113,7 @@ internal class RuleInventory : IListOrder, IRule
 	    _x = int.Parse(node["x"].ToString());
 	    _y = int.Parse(node["y"].ToString());
 	    _type = (InventoryType)int.Parse(node["type"].ToString());
-        _slots = ((YamlSequenceNode)node["slots"]).Children.Select(x =>
-        {
-            var slot = new RuleSlot(); slot.load(x); return slot;
-        }).ToList();
+        _slots = ((YamlSequenceNode)node["slots"]).Children.Select(x => RuleSlot.decode(x)).ToList();
         _costs = ((YamlMappingNode)node["costs"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
 	    _listOrder = node["listOrder"] != null ? int.Parse(node["listOrder"].ToString()) : listOrder;
     }

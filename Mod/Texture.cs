@@ -41,21 +41,21 @@ struct TerrainCriteria
     internal static TerrainCriteria decode(YamlNode node)
     {
         if (node.NodeType != YamlNodeType.Mapping)
-        	return default;
-
+            return default;
+    
         var tc = new TerrainCriteria
         {
             name = node["name"].ToString(),
             weight = int.Parse(node["weight"].ToString())
         };
         if (node["area"] != null)
-        {
-        	var area = ((YamlSequenceNode)node["area"]).Children.Select(x => double.Parse(x.ToString())).ToList();
-        	tc.lonMin = Deg2Rad(area[0]);
-        	tc.lonMax = Deg2Rad(area[1]);
-        	tc.latMin = Deg2Rad(area[2]);
-        	tc.latMax = Deg2Rad(area[3]);
-        }
+    	{
+            var area = ((YamlSequenceNode)node["area"]).Children.Select(x => double.Parse(x.ToString())).ToList();
+            tc.lonMin = Deg2Rad(area[0]);
+            tc.lonMax = Deg2Rad(area[1]);
+            tc.latMin = Deg2Rad(area[2]);
+            tc.latMax = Deg2Rad(area[3]);
+    	}
         return tc;
     }
 

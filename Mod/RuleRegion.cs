@@ -42,11 +42,11 @@ struct MissionArea
      * Loads the MissionArea from a YAML file.
      * @param node YAML node.
      */
-    internal static MissionArea decode(YamlNode node)
-    {
+	internal static MissionArea decode(YamlNode node)
+	{
         if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() < 4)
         	return default;
-
+        
         var ma = new MissionArea
         {
             lonMin = Deg2Rad(double.Parse(node[0].ToString())),
@@ -59,7 +59,7 @@ struct MissionArea
         if (((YamlSequenceNode)node).Count() >= 5) ma.texture = int.Parse(node[4].ToString());
         if (((YamlSequenceNode)node).Count() >= 6) ma.name = node[5].ToString();
         return ma;
-    }
+	}
 
     /**
      * Saves the MissionArea to a YAML file.
@@ -89,8 +89,8 @@ struct MissionZone
     internal static MissionZone decode(YamlNode node)
     {
         if (node.NodeType != YamlNodeType.Sequence)
-        	return default;
-
+            return default;
+    
         var mz = new MissionZone
         {
             areas = ((YamlSequenceNode)node).Children.Select(x => MissionArea.decode(x)).ToList()

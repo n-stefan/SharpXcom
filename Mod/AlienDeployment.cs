@@ -31,8 +31,17 @@ struct ItemSet
 	 * Loads the ItemSet from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node) =>
-        items = ((YamlSequenceNode)node["items"]).Children.Select(x => x.ToString()).ToList();
+	internal static ItemSet decode(YamlNode node)
+	{
+		if (node.NodeType != YamlNodeType.Sequence)
+			return default;
+
+        var @is = new ItemSet
+        {
+            items = ((YamlSequenceNode)node).Children.Select(x => x.ToString()).ToList()
+        };
+        return @is;
+	}
 }
 
 struct DeploymentData
@@ -46,19 +55,23 @@ struct DeploymentData
 	 * Loads the DeploymentData from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node)
-    {
-        alienRank = int.Parse(node["alienRank"].ToString());
-        lowQty = int.Parse(node["lowQty"].ToString());
-        highQty = int.Parse(node["highQty"].ToString());
-        dQty = int.Parse(node["dQty"].ToString());
-        extraQty = int.Parse(node["extraQty"].ToString());
-        percentageOutsideUfo = int.Parse(node["percentageOutsideUfo"].ToString());
-        itemSets = ((YamlSequenceNode)node["itemSets"]).Children.Select(x =>
+	internal static DeploymentData decode(YamlNode node)
+	{
+		if (node.NodeType != YamlNodeType.Mapping)
+			return default;
+
+        var dd = new DeploymentData
         {
-            var set = new ItemSet(); set.load(x); return set;
-        }).ToList();
-    }
+            alienRank = int.Parse(node["alienRank"].ToString()),
+            lowQty = int.Parse(node["lowQty"].ToString()),
+            highQty = int.Parse(node["highQty"].ToString()),
+            dQty = int.Parse(node["dQty"].ToString()),
+            extraQty = int.Parse(node["extraQty"].ToString()), // give this a default, as it's not 100% needed, unlike the others.
+            percentageOutsideUfo = int.Parse(node["percentageOutsideUfo"].ToString()),
+            itemSets = ((YamlSequenceNode)node["itemSets"]).Children.Select(x => ItemSet.decode(x)).ToList()
+        };
+        return dd;
+	}
 }
 
 struct BriefingData
@@ -81,18 +94,25 @@ struct BriefingData
 	 * Loads the BriefingData from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node)
-    {
-        palette = int.Parse(node["palette"].ToString());
-        textOffset = int.Parse(node["textOffset"].ToString());
-        title = node["title"].ToString();
-        desc = node["desc"].ToString();
-        music = node["music"].ToString();
-        background = node["background"].ToString();
-        cutscene = node["cutscene"].ToString();
-        showCraft = bool.Parse(node["showCraft"].ToString());
-        showTarget = bool.Parse(node["showTarget"].ToString());
-    }
+	internal static BriefingData decode(YamlNode node)
+	{
+		if (node.NodeType != YamlNodeType.Mapping)
+			return default;
+
+        var bd = new BriefingData
+        {
+            palette = int.Parse(node["palette"].ToString()),
+            textOffset = int.Parse(node["textOffset"].ToString()),
+            title = node["title"].ToString(),
+            desc = node["desc"].ToString(),
+            music = node["music"].ToString(),
+            cutscene = node["cutscene"].ToString(),
+            background = node["background"].ToString(),
+            showCraft = bool.Parse(node["showCraft"].ToString()),
+            showTarget = bool.Parse(node["showTarget"].ToString())
+        };
+        return bd;
+	}
 }
 
 /**
@@ -191,10 +211,7 @@ internal class AlienDeployment : IRule
     internal void load(YamlNode node, Mod mod)
     {
 	    _type = node["type"].ToString();
-        _data = ((YamlSequenceNode)node["data"]).Children.Select(x =>
-        {
-            var data = new DeploymentData(); data.load(x); return data;
-        }).ToList();
+        _data = ((YamlSequenceNode)node["data"]).Children.Select(x => DeploymentData.decode(x)).ToList();
 	    _width = int.Parse(node["width"].ToString());
 	    _length = int.Parse(node["length"].ToString());
 	    _height = int.Parse(node["height"].ToString());
@@ -210,7 +227,7 @@ internal class AlienDeployment : IRule
 	    _script = node["script"].ToString();
 	    _alert = node["alert"].ToString();
 	    _alertBackground = node["alertBackground"].ToString();
-        _briefingData.load(node["briefing"]);
+        _briefingData = BriefingData.decode(node["briefing"]);
 	    _markerName = node["markerName"].ToString();
 	    if (node["markerIcon"] != null)
 	    {

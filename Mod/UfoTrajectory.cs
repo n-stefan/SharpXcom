@@ -35,11 +35,18 @@ struct TrajectoryWaypoint
 	 * Loads the TrajectoryWaypoint from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node)
+    internal static TrajectoryWaypoint decode(YamlNode node)
     {
-        zone = uint.Parse(node[0].ToString());
-        altitude = uint.Parse(node[1].ToString());
-        speed = uint.Parse(node[2].ToString());
+    	if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 3)
+    		return default;
+
+        var tw = new TrajectoryWaypoint
+        {
+            zone = uint.Parse(node[0].ToString()),
+            altitude = uint.Parse(node[1].ToString()),
+            speed = uint.Parse(node[2].ToString())
+        };
+    	return tw;
     }
 }
 
@@ -80,10 +87,7 @@ internal class UfoTrajectory : IRule
     {
 	    _id = node["id"].ToString();
 	    _groundTimer = uint.Parse(node["groundTimer"].ToString());
-        _waypoints = ((YamlSequenceNode)node["waypoints"]).Children.Select(x =>
-        {
-            var waypoint = new TrajectoryWaypoint(); waypoint.load(x); return waypoint;
-        }).ToList();
+        _waypoints = ((YamlSequenceNode)node["waypoints"]).Children.Select(x => TrajectoryWaypoint.decode(x)).ToList();
     }
 
     /**

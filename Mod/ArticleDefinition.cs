@@ -142,13 +142,20 @@ class ArticleDefinitionRect
 	 * Loads the ArticleDefinitionRect from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node)
-    {
-        x = int.Parse(node["x"].ToString());
-        y = int.Parse(node["y"].ToString());
-        width = int.Parse(node["width"].ToString());
-        height = int.Parse(node["height"].ToString());
-    }
+	internal static ArticleDefinitionRect decode(YamlNode node)
+	{
+		if (node.NodeType != YamlNodeType.Mapping)
+			return null;
+
+		var adr = new ArticleDefinitionRect
+		{
+			x = int.Parse(node["x"].ToString()),
+			y = int.Parse(node["y"].ToString()),
+			width = int.Parse(node["width"].ToString()),
+			height = int.Parse(node["height"].ToString())
+		};
+		return adr;
+	}
 }
 
 /**
@@ -176,10 +183,8 @@ class ArticleDefinitionCraft : ArticleDefinition
 	{
 		base.load(node, listOrder);
 		image_id = node["image_id"].ToString();
-		rect_stats = new ArticleDefinitionRect();
-		rect_stats.load(node["rect_stats"]);
-		rect_text = new ArticleDefinitionRect();
-		rect_text.load(node["rect_text"]);
+		rect_stats = ArticleDefinitionRect.decode(node["rect_stats"]);
+		rect_text = ArticleDefinitionRect.decode(node["rect_text"]);
 		text = node["text"].ToString();
 	}
 }

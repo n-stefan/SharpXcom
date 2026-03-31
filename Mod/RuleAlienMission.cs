@@ -54,15 +54,22 @@ struct MissionWave
 	 * Loads the MissionWave from a YAML file.
 	 * @param node YAML node.
 	 */
-    internal void load(YamlNode node)
+    internal static MissionWave decode(YamlNode node)
     {
-        ufoType = node["ufoType"].ToString();
-        ufoCount = uint.Parse(node["ufoCount"].ToString());
-        trajectory = node["trajectory"].ToString();
-        spawnTimer = uint.Parse(node["spawnTimer"].ToString());
-        objective = bool.Parse(node["objective"].ToString());
+        if (node.NodeType != YamlNodeType.Mapping)
+    		return default;
+
+        var mw = new MissionWave
+        {
+            ufoType = node["ufo"].ToString(),
+            ufoCount = uint.Parse(node["count"].ToString()),
+            trajectory = node["trajectory"].ToString(),
+            spawnTimer = uint.Parse(node["timer"].ToString()),
+            objective = bool.Parse(node["objective"].ToString())
+        };
+    	return mw;
     }
-};
+}
 
 /**
  * Stores fixed information about a mission type.
@@ -126,10 +133,7 @@ internal class RuleAlienMission : IRule
 	{
 		_type = node["type"].ToString();
 		_points = int.Parse(node["points"].ToString());
-        _waves = ((YamlSequenceNode)node["waves"]).Children.Select(x =>
-        {
-            var wave = new MissionWave(); wave.load(x); return wave;
-        }).ToList();
+        _waves = ((YamlSequenceNode)node["waves"]).Children.Select(x => MissionWave.decode(x)).ToList();
         _objective = (MissionObjective)int.Parse(node["objective"].ToString());
 		_spawnUfo = node["spawnUfo"].ToString();
 		_spawnZone = int.Parse(node["spawnZone"].ToString());

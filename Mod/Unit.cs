@@ -65,7 +65,7 @@ struct UnitStats
     internal static UnitStats decode(YamlNode node)
     {
         if (node.NodeType != YamlNodeType.Mapping)
-        	return default;
+            return default;
 
         var us = new UnitStats
         {
