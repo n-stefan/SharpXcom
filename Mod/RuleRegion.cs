@@ -102,7 +102,7 @@ struct MissionZone
      * Saves the MissionZone to a YAML file.
      * @return YAML node.
      */
-    internal static YamlNode encode(MissionZone mz)
+    static YamlNode encode(MissionZone mz)
     {
     	var node = new YamlSequenceNode(mz.areas.Select(x => MissionArea.encode(x)));
     	return node;

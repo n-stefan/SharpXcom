@@ -48,6 +48,16 @@ struct TrajectoryWaypoint
         };
     	return tw;
     }
+
+    /**
+     * Saves the TrajectoryWaypoint to a YAML file.
+     * @return YAML node.
+     */
+    static YamlNode encode(TrajectoryWaypoint tw)
+    {
+        var node = new YamlSequenceNode(tw.zone.ToString(), tw.altitude.ToString(), tw.speed.ToString());
+    	return node;
+    }
 }
 
 /**

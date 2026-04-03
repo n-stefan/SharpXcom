@@ -41,6 +41,16 @@ struct RuleSlot
         };
     	return rs;
     }
+
+    /**
+     * Saves the RuleSlot to a YAML file.
+     * @return YAML node.
+     */
+    static YamlNode encode(RuleSlot rs)
+    {
+    	var node = new YamlSequenceNode(rs.x.ToString(), rs.y.ToString());
+    	return node;
+    }
 }
 
 /**

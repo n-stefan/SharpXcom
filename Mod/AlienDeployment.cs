@@ -42,6 +42,16 @@ struct ItemSet
         };
         return @is;
 	}
+
+    /**
+     * Saves the ItemSet to a YAML file.
+     * @return YAML node.
+     */
+    internal static YamlNode encode(ItemSet @is)
+    {
+        var node = new YamlSequenceNode(@is.items.Select(x => new YamlScalarNode(x)));
+        return node;
+    }
 }
 
 struct DeploymentData
@@ -72,6 +82,25 @@ struct DeploymentData
         };
         return dd;
 	}
+
+    /**
+     * Saves the DeploymentData to a YAML file.
+     * @return YAML node.
+     */
+    static YamlNode encode(DeploymentData dd)
+    {
+        var node = new YamlMappingNode
+        {
+			{ "alienRank", dd.alienRank.ToString() },
+			{ "lowQty", dd.lowQty.ToString() },
+			{ "highQty", dd.highQty.ToString() },
+			{ "dQty", dd.dQty.ToString() },
+			{ "extraQty", dd.extraQty.ToString() },
+			{ "percentageOutsideUfo", dd.percentageOutsideUfo.ToString() },
+			{ "itemSets", new YamlSequenceNode(dd.itemSets.Select(x => ItemSet.encode(x))) }
+        };
+    	return node;
+    }
 }
 
 struct BriefingData
@@ -113,6 +142,27 @@ struct BriefingData
         };
         return bd;
 	}
+
+    /**
+     * Saves the BriefingData to a YAML file.
+     * @return YAML node.
+     */
+    static YamlNode encode(BriefingData bd)
+    {
+        var node = new YamlMappingNode
+        {
+            { "palette", bd.palette.ToString() },
+            { "textOffset", bd.textOffset.ToString() },
+            { "title", bd.title },
+            { "desc", bd.desc },
+            { "music", bd.music },
+            { "cutscene", bd.cutscene },
+            { "background", bd.background },
+            { "showCraft", bd.showCraft.ToString() },
+            { "showTarget", bd.showTarget.ToString() }
+        };
+    	return node;
+    }
 }
 
 /**

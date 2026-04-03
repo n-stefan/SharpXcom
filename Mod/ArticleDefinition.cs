@@ -156,6 +156,22 @@ class ArticleDefinitionRect
 		};
 		return adr;
 	}
+
+    /**
+     * Saves the ArticleDefinitionRect to a YAML file.
+     * @return YAML node.
+     */
+	static YamlNode encode(ArticleDefinitionRect adr)
+	{
+		var node = new YamlMappingNode
+		{
+			{ "x", adr.x.ToString() },
+			{ "y", adr.y.ToString() },
+			{ "width", adr.width.ToString() },
+			{ "height", adr.height.ToString() }
+		};
+		return node;
+	}
 }
 
 /**

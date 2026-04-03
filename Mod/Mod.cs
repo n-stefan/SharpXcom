@@ -2286,7 +2286,7 @@ internal class Mod
 	    {
 		    foreach (var i in @base.Children)
 		    {
-                _startingBase = new YamlMappingNode([i.Key.ToString(), i.Value]);
+                _startingBase = new YamlMappingNode(i.Key.ToString(), i.Value);
 		    }
 	    }
 	    if (doc["startingTime"] != null)

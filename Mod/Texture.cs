@@ -63,12 +63,14 @@ struct TerrainCriteria
      * Saves the TerrainCriteria to a YAML file.
      * @return YAML node.
      */
-    internal static YamlNode encode(TerrainCriteria tc)
+    static YamlNode encode(TerrainCriteria tc)
     {
-        var node = new YamlMappingNode();
-        node.Add("name", tc.name);
-        node.Add("weight", tc.weight.ToString());
-        node.Add("area", new YamlSequenceNode([tc.lonMin.ToString(), tc.lonMax.ToString(), tc.latMin.ToString(), tc.latMax.ToString()]));
+        var node = new YamlMappingNode
+        {
+            { "name", tc.name },
+            { "weight", tc.weight.ToString() },
+            { "area", new YamlSequenceNode(tc.lonMin.ToString(), tc.lonMax.ToString(), tc.latMin.ToString(), tc.latMax.ToString()) }
+        };
         return node;
     }
 }

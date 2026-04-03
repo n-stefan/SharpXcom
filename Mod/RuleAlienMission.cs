@@ -69,6 +69,23 @@ struct MissionWave
         };
     	return mw;
     }
+
+    /**
+     * Saves the MissionWave to a YAML file.
+     * @return YAML node.
+     */
+    static YamlNode encode(MissionWave mw)
+    {
+        var node = new YamlMappingNode
+        {
+            { "ufo", mw.ufoType },
+            { "count", mw.ufoCount.ToString() },
+            { "trajectory", mw.trajectory },
+            { "timer", mw.spawnTimer.ToString() },
+            { "objective", mw.objective.ToString() }
+        };
+    	return node;
+    }
 }
 
 /**
