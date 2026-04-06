@@ -31,37 +31,37 @@ internal class FileMap
     static List<KeyValuePair<string, List<string>>> _rulesets;
 
     static string _canonicalize(string @in) =>
-		@in.ToLower();
+        @in.ToLower();
 
     internal static string getFilePath(string relativeFilePath)
-	{
-		string canonicalRelativeFilePath = _canonicalize(relativeFilePath);
-		if (!_resources.ContainsKey(canonicalRelativeFilePath))
-		{
+    {
+        string canonicalRelativeFilePath = _canonicalize(relativeFilePath);
+        if (!_resources.ContainsKey(canonicalRelativeFilePath))
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} requested file not found: {relativeFilePath}");
-			return relativeFilePath;
-		}
+            return relativeFilePath;
+        }
 
-		return _resources[canonicalRelativeFilePath];
-	}
+        return _resources[canonicalRelativeFilePath];
+    }
 
     internal static HashSet<string> getVFolderContents(string relativePath)
-	{
-		string canonicalRelativePath = _canonicalize(relativePath);
+    {
+        string canonicalRelativePath = _canonicalize(relativePath);
 
-		// trim of trailing '/' characters
-		if (!string.IsNullOrEmpty(canonicalRelativePath) && canonicalRelativePath.EndsWith('/'))
-		{
-			canonicalRelativePath = canonicalRelativePath.TrimEnd('/');
-		}
+        // trim of trailing '/' characters
+        if (!string.IsNullOrEmpty(canonicalRelativePath) && canonicalRelativePath.EndsWith('/'))
+        {
+            canonicalRelativePath = canonicalRelativePath.TrimEnd('/');
+        }
 
-		if (!_vdirs.ContainsKey(canonicalRelativePath))
-		{
-			return _emptySet;
-		}
+        if (!_vdirs.ContainsKey(canonicalRelativePath))
+        {
+            return _emptySet;
+        }
 
-		return _vdirs[canonicalRelativePath];
-	}
+        return _vdirs[canonicalRelativePath];
+    }
 
     internal static bool isResourcesEmpty() =>
         !_resources.Any();
@@ -73,106 +73,106 @@ internal class FileMap
         _vdirs.Clear();
     }
 
-	internal static void load(string modId, string path, bool ignoreMods)
-	{
+    internal static void load(string modId, string path, bool ignoreMods)
+    {
         Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   mapping resources in: {path}");
-		_mapFiles(modId, path, string.Empty, ignoreMods);
-	}
+        _mapFiles(modId, path, string.Empty, ignoreMods);
+    }
 
     internal static List<KeyValuePair<string, List<string>>> getRulesets() =>
         _rulesets;
 
-	static void _mapFiles(string modId, string basePath, string relPath, bool ignoreMods)
-	{
-		string fullDir = basePath + (relPath.Length != 0 ? "/" + relPath : string.Empty);
-		List<string> files = CrossPlatform.getFolderContents(fullDir);
-		HashSet<string> rulesetFiles = _filterFiles(files, "rul");
+    static void _mapFiles(string modId, string basePath, string relPath, bool ignoreMods)
+    {
+        string fullDir = basePath + (relPath.Length != 0 ? "/" + relPath : string.Empty);
+        List<string> files = CrossPlatform.getFolderContents(fullDir);
+        HashSet<string> rulesetFiles = _filterFiles(files, "rul");
 
-		if (!ignoreMods && rulesetFiles.Any())
-		{
+        if (!ignoreMods && rulesetFiles.Any())
+        {
             _rulesets.Insert(0, KeyValuePair.Create(modId, new List<string>()));
-			foreach (var rulesetFile in rulesetFiles)
-			{
-				string fullpath = fullDir + "/" + rulesetFile;
+            foreach (var rulesetFile in rulesetFiles)
+            {
+                string fullpath = fullDir + "/" + rulesetFile;
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   recording ruleset: {fullpath}");
-				_rulesets.First().Value.Add(fullpath);
-			}
-		}
+                _rulesets.First().Value.Add(fullpath);
+            }
+        }
 
-		foreach (var file in files)
-		{
-			string fullpath = fullDir + "/" + file;
+        foreach (var file in files)
+        {
+            string fullpath = fullDir + "/" + file;
 
-			if (CrossPlatform.folderExists(fullpath))
-			{
+            if (CrossPlatform.folderExists(fullpath))
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   recursing into: {fullpath}");
-				_mapFiles(modId, basePath, _combinePath(relPath, file), ignoreMods);
-				continue;
-			}
+                _mapFiles(modId, basePath, _combinePath(relPath, file), ignoreMods);
+                continue;
+            }
 
-			string canonicalFile = _canonicalize(file);
-			if (canonicalFile == "metadata.yml" || rulesetFiles.Contains(file))
-			{
+            string canonicalFile = _canonicalize(file);
+            if (canonicalFile == "metadata.yml" || rulesetFiles.Contains(file))
+            {
                 // no need to map mod metadata files or ruleset files
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   ignoring non-resource file: {fullpath}");
-				continue;
-			}
+                continue;
+            }
 
-			// populate resource map
-			string canonicalRelativeFilePath = _canonicalize(_combinePath(relPath, file));
-			if (_resources.TryAdd(canonicalRelativeFilePath, fullpath))
-			{
+            // populate resource map
+            string canonicalRelativeFilePath = _canonicalize(_combinePath(relPath, file));
+            if (_resources.TryAdd(canonicalRelativeFilePath, fullpath))
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   mapped resource: {canonicalRelativeFilePath} -> {fullpath}");
-			}
-			else
-			{
+            }
+            else
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   resource already mapped by higher-priority mod; ignoring: {fullpath}");
-			}
+            }
 
-			// populate vdir map
-			string canonicalRelativePath = _canonicalize(relPath);
-			if (!_vdirs.ContainsKey(canonicalRelativePath))
-			{
-				_vdirs.Add(canonicalRelativePath, new HashSet<string>());
-			}
-			if (_vdirs[canonicalRelativePath].Add(canonicalFile))
-			{
+            // populate vdir map
+            string canonicalRelativePath = _canonicalize(relPath);
+            if (!_vdirs.ContainsKey(canonicalRelativePath))
+            {
+                _vdirs.Add(canonicalRelativePath, new HashSet<string>());
+            }
+            if (_vdirs[canonicalRelativePath].Add(canonicalFile))
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   mapped file to virtual directory: {canonicalRelativePath} -> {canonicalFile}");
-			}
-		}
-	}
+            }
+        }
+    }
 
-	static string _combinePath(string prefixPath, string appendPath)
-	{
-		var ret = string.Empty;
-		if (!string.IsNullOrEmpty(prefixPath))
-		{
-			ret += prefixPath + "/";
-		}
-		ret += appendPath;
-		return ret;
-	}
+    static string _combinePath(string prefixPath, string appendPath)
+    {
+        var ret = string.Empty;
+        if (!string.IsNullOrEmpty(prefixPath))
+        {
+            ret += prefixPath + "/";
+        }
+        ret += appendPath;
+        return ret;
+    }
 
-	internal static HashSet<string> filterFiles(List<string> files, string ext) =>
-		_filterFiles(files, ext);
+    internal static HashSet<string> filterFiles(List<string> files, string ext) =>
+        _filterFiles(files, ext);
 
-	internal static HashSet<string> filterFiles(HashSet<string> files, string ext) =>
-		_filterFiles(files, ext);
+    internal static HashSet<string> filterFiles(HashSet<string> files, string ext) =>
+        _filterFiles(files, ext);
 
-	static HashSet<string> _filterFiles<T>(T files, string ext) where T : IEnumerable<string>
-	{
-		var ret = new HashSet<string>();
+    static HashSet<string> _filterFiles<T>(T files, string ext) where T : IEnumerable<string>
+    {
+        var ret = new HashSet<string>();
         int extLen = ext.Length + 1; // +1 for the '.'
-		string canonicalExt = _canonicalize(ext);
-		foreach (var file in files)
-		{
-			// less-than not less-than-or-equal since we should have at least
-			// one character in the filename that is not part of the extension
-			if (extLen < file.Length && 0 == _canonicalize(file.Substring(file.Length - (extLen - 1))).CompareTo(canonicalExt))
-			{
-				ret.Add(file);
-			}
-		}
-		return ret;
-	}
+        string canonicalExt = _canonicalize(ext);
+        foreach (var file in files)
+        {
+            // less-than not less-than-or-equal since we should have at least
+            // one character in the filename that is not part of the extension
+            if (extLen < file.Length && 0 == _canonicalize(file.Substring(file.Length - (extLen - 1))).CompareTo(canonicalExt))
+            {
+                ret.Add(file);
+            }
+        }
+        return ret;
+    }
 }

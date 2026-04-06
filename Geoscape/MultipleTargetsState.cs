@@ -153,13 +153,13 @@ internal class MultipleTargetsState : State
      */
     internal override void init()
     {
-	    if (_targets.Count == 1)
-	    {
-		    popupTarget(_targets.First());
-	    }
-	    else
-	    {
-		    base.init();
-	    }
+        if (_targets.Count == 1)
+        {
+            popupTarget(_targets.First());
+        }
+        else
+        {
+            base.init();
+        }
     }
 }

@@ -128,7 +128,7 @@ internal class BuildFacilitiesState : State
      */
     internal override void init()
     {
-	    _state.init();
-	    base.init();
+        _state.init();
+        base.init();
     }
 }

@@ -38,7 +38,7 @@ internal class OptionInfo
 {
     string _id, _desc, _cat;
     OptionType _type;
-	OptionDef _ref, _def;
+    OptionDef _ref, _def;
 
     /**
      * Creates info for a boolean option.
@@ -121,20 +121,20 @@ internal class OptionInfo
      */
     internal void reset()
     {
-	    switch (_type)
-	    {
-	        case OptionType.OPTION_BOOL:
-		        _ref.b = _def.b;
-		        break;
-	        case OptionType.OPTION_INT:
-		        _ref.i = _def.i;
-		        break;
-	        case OptionType.OPTION_KEY:
-		        _ref.k = _def.k;
-		        break;
-	        case OptionType.OPTION_STRING:
-		        _ref.s = _def.s;
-		        break;
+        switch (_type)
+        {
+            case OptionType.OPTION_BOOL:
+                _ref.b = _def.b;
+                break;
+            case OptionType.OPTION_INT:
+                _ref.i = _def.i;
+                break;
+            case OptionType.OPTION_KEY:
+                _ref.k = _def.k;
+                break;
+            case OptionType.OPTION_STRING:
+                _ref.s = _def.s;
+                break;
         }
     }
 
@@ -146,24 +146,24 @@ internal class OptionInfo
     internal void load(Dictionary<string, string> map)
     {
         string id = _id.ToLower();
-	    if (map.TryGetValue(id, out var value))
-	    {
-		    switch (_type)
-		    {
-		        case OptionType.OPTION_BOOL:
+        if (map.TryGetValue(id, out var value))
+        {
+            switch (_type)
+            {
+                case OptionType.OPTION_BOOL:
                     _ref.b = bool.Parse(value);
-			        break;
-		        case OptionType.OPTION_INT:
-                    _ref.i = int.Parse(value);
-			        break;
-		        case OptionType.OPTION_KEY:
-			        _ref.k = Enum.Parse<SDL_Keycode>(value);
-			        break;
-		        case OptionType.OPTION_STRING:
-			        _ref.s = value;
                     break;
-		    }
-	    }
+                case OptionType.OPTION_INT:
+                    _ref.i = int.Parse(value);
+                    break;
+                case OptionType.OPTION_KEY:
+                    _ref.k = Enum.Parse<SDL_Keycode>(value);
+                    break;
+                case OptionType.OPTION_STRING:
+                    _ref.s = value;
+                    break;
+            }
+        }
     }
 
     /**
@@ -172,21 +172,21 @@ internal class OptionInfo
      */
     internal void load(YamlNode node)
     {
-	    switch (_type)
-	    {
-	        case OptionType.OPTION_BOOL:
+        switch (_type)
+        {
+            case OptionType.OPTION_BOOL:
                 _ref.b = node[_id] != null ? bool.Parse(node[_id].ToString()) : _def.b;
-		        break;
-	        case OptionType.OPTION_INT:
+                break;
+            case OptionType.OPTION_INT:
                 _ref.i = node[_id] != null ? int.Parse(node[_id].ToString()) : _def.i;
-		        break;
-	        case OptionType.OPTION_KEY:
+                break;
+            case OptionType.OPTION_KEY:
                 _ref.k = node[_id] != null ? (SDL_Keycode)int.Parse(node[_id].ToString()) : _def.k;
-		        break;
-	        case OptionType.OPTION_STRING:
+                break;
+            case OptionType.OPTION_STRING:
                 _ref.s = node[_id] != null ? node[_id].ToString() : _def.s;
-		        break;
-	    }
+                break;
+        }
     }
 
     /**
@@ -194,7 +194,7 @@ internal class OptionInfo
      * @return Option type.
      */
     internal OptionType type() =>
-	    _type;
+        _type;
 
     /**
      * Returns the description of the option. Options with
@@ -202,7 +202,7 @@ internal class OptionInfo
      * @return Language string ID for the description.
      */
     internal string description() =>
-	    _desc;
+        _desc;
 
     /**
      * Returns the category of the option. Options with
@@ -210,7 +210,7 @@ internal class OptionInfo
      * @return Language string ID for the category.
      */
     internal string category() =>
-	    _cat;
+        _cat;
 
     /**
      * Returns the pointer to the key option,
@@ -219,11 +219,11 @@ internal class OptionInfo
      */
     internal ref SDL_Keycode asKey()
     {
-	    if (_type != OptionType.OPTION_KEY)
-	    {
-		    throw new Exception(_id + " is not a key!");
-	    }
-	    return ref _ref.k;
+        if (_type != OptionType.OPTION_KEY)
+        {
+            throw new Exception(_id + " is not a key!");
+        }
+        return ref _ref.k;
     }
 
     /**
@@ -233,11 +233,11 @@ internal class OptionInfo
      */
     internal ref bool asBool()
     {
-	    if (_type != OptionType.OPTION_BOOL)
-	    {
-		    throw new Exception(_id + " is not a boolean!");
-	    }
-	    return ref _ref.b;
+        if (_type != OptionType.OPTION_BOOL)
+        {
+            throw new Exception(_id + " is not a boolean!");
+        }
+        return ref _ref.b;
     }
 
     /**
@@ -247,11 +247,11 @@ internal class OptionInfo
      */
     internal ref int asInt()
     {
-	    if (_type != OptionType.OPTION_INT)
-	    {
-		    throw new Exception(_id + " is not an integer!");
-	    }
-	    return ref _ref.i;
+        if (_type != OptionType.OPTION_INT)
+        {
+            throw new Exception(_id + " is not an integer!");
+        }
+        return ref _ref.i;
     }
 
     /**
@@ -261,11 +261,11 @@ internal class OptionInfo
      */
     ref string asString()
     {
-	    if (_type != OptionType.OPTION_STRING)
-	    {
-		    throw new Exception(_id + " is not a string!");
-	    }
-	    return ref _ref.s;
+        if (_type != OptionType.OPTION_STRING)
+        {
+            throw new Exception(_id + " is not a string!");
+        }
+        return ref _ref.s;
     }
 
     /**
@@ -274,20 +274,20 @@ internal class OptionInfo
      */
     internal void save(YamlNode node)
     {
-	    switch (_type)
-	    {
-	        case OptionType.OPTION_BOOL:
-		        ((YamlMappingNode)node).Add(_id, _ref.b.ToString());
-		        break;
-	        case OptionType.OPTION_INT:
-		        ((YamlMappingNode)node).Add(_id, _ref.i.ToString());
-		        break;
-	        case OptionType.OPTION_KEY:
-		        ((YamlMappingNode)node).Add(_id, ((int)_ref.k).ToString());
-		        break;
-	        case OptionType.OPTION_STRING:
-		        ((YamlMappingNode)node).Add(_id, _ref.s);
-		        break;
-	    }
+        switch (_type)
+        {
+            case OptionType.OPTION_BOOL:
+                ((YamlMappingNode)node).Add(_id, _ref.b.ToString());
+                break;
+            case OptionType.OPTION_INT:
+                ((YamlMappingNode)node).Add(_id, _ref.i.ToString());
+                break;
+            case OptionType.OPTION_KEY:
+                ((YamlMappingNode)node).Add(_id, ((int)_ref.k).ToString());
+                break;
+            case OptionType.OPTION_STRING:
+                ((YamlMappingNode)node).Add(_id, _ref.s);
+                break;
+        }
     }
 }

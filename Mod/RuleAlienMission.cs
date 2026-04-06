@@ -57,7 +57,7 @@ struct MissionWave
     internal static MissionWave decode(YamlNode node)
     {
         if (node.NodeType != YamlNodeType.Mapping)
-    		return default;
+            return default;
 
         var mw = new MissionWave
         {
@@ -67,7 +67,7 @@ struct MissionWave
             spawnTimer = uint.Parse(node["timer"].ToString()),
             objective = bool.Parse(node["objective"].ToString())
         };
-    	return mw;
+        return mw;
     }
 
     /**
@@ -84,7 +84,7 @@ struct MissionWave
             { "timer", mw.spawnTimer.ToString() },
             { "objective", mw.objective.ToString() }
         };
-    	return node;
+        return node;
     }
 }
 
@@ -142,67 +142,67 @@ internal class RuleAlienMission : IRule
     internal MissionObjective getObjective() =>
         _objective;
 
-	/**
+    /**
 	 * Loads the mission data from a YAML node.
 	 * @param node YAML node.
 	 */
-	internal void load(YamlNode node)
-	{
-		_type = node["type"].ToString();
-		_points = int.Parse(node["points"].ToString());
+    internal void load(YamlNode node)
+    {
+        _type = node["type"].ToString();
+        _points = int.Parse(node["points"].ToString());
         _waves = ((YamlSequenceNode)node["waves"]).Children.Select(x => MissionWave.decode(x)).ToList();
         _objective = (MissionObjective)int.Parse(node["objective"].ToString());
-		_spawnUfo = node["spawnUfo"].ToString();
-		_spawnZone = int.Parse(node["spawnZone"].ToString());
+        _spawnUfo = node["spawnUfo"].ToString();
+        _spawnZone = int.Parse(node["spawnZone"].ToString());
         _weights = ((YamlMappingNode)node["missionWeights"]).Children.ToDictionary(x => uint.Parse(x.Key.ToString()), x => int.Parse(x.Value.ToString()));
-		_retaliationOdds = int.Parse(node["retaliationOdds"].ToString());
-		_siteType = node["siteType"].ToString();
-		//Only allow full replacement of mission racial distribution.
-		if (node["raceWeights"] is YamlNode weights)
-		{
+        _retaliationOdds = int.Parse(node["retaliationOdds"].ToString());
+        _siteType = node["siteType"].ToString();
+        //Only allow full replacement of mission racial distribution.
+        if (node["raceWeights"] is YamlNode weights)
+        {
             var assoc = new Dictionary<uint, WeightedOptions>();
-			//Place in the associative container so we can index by month and keep entries sorted.
-			foreach (var ii in _raceDistribution)
-			{
-				assoc.Add(ii.Key, ii.Value);
-			}
+            //Place in the associative container so we can index by month and keep entries sorted.
+            foreach (var ii in _raceDistribution)
+            {
+                assoc.Add(ii.Key, ii.Value);
+            }
 
-			// Now go through the node contents and merge with existing data.
-			foreach (var nn in ((YamlMappingNode)weights).Children)
-			{
-				uint month = uint.Parse(nn.Key.ToString());
-				if (!assoc.ContainsKey(month))
-				{
-					// New entry, load and add it.
-					WeightedOptions nw = new WeightedOptions();
-					nw.load(nn.Value);
-					assoc.Add(month, nw);
-				}
-				else
-				{
-					// Existing entry, update it.
-					assoc[month].load(nn.Value);
-				}
-			}
+            // Now go through the node contents and merge with existing data.
+            foreach (var nn in ((YamlMappingNode)weights).Children)
+            {
+                uint month = uint.Parse(nn.Key.ToString());
+                if (!assoc.ContainsKey(month))
+                {
+                    // New entry, load and add it.
+                    WeightedOptions nw = new WeightedOptions();
+                    nw.load(nn.Value);
+                    assoc.Add(month, nw);
+                }
+                else
+                {
+                    // Existing entry, update it.
+                    assoc[month].load(nn.Value);
+                }
+            }
 
-			// Now replace values in our actual member variable!
-			_raceDistribution.Clear();
-			_raceDistribution = new List<KeyValuePair<uint, WeightedOptions>>(assoc.Count);
-			foreach (var ii in assoc)
-			{
-				if (ii.Value.empty())
-				{
-					// Don't keep empty lists.
-					assoc.Remove(ii.Key);
-				}
-				else
-				{
-					// Place it
-					_raceDistribution.Add(ii);
-				}
-			}
-		}
-	}
+            // Now replace values in our actual member variable!
+            _raceDistribution.Clear();
+            _raceDistribution = new List<KeyValuePair<uint, WeightedOptions>>(assoc.Count);
+            foreach (var ii in assoc)
+            {
+                if (ii.Value.empty())
+                {
+                    // Don't keep empty lists.
+                    assoc.Remove(ii.Key);
+                }
+                else
+                {
+                    // Place it
+                    _raceDistribution.Add(ii);
+                }
+            }
+        }
+    }
 
     /// Gets the number of waves.
     internal uint getWaveCount() =>
@@ -225,7 +225,7 @@ internal class RuleAlienMission : IRule
      * @return Amount of points.
      */
     internal int getPoints() =>
-	    _points;
+        _points;
 
     /// Gets the UFO type for special spawns.
     internal string getSpawnUfo() =>
@@ -240,10 +240,10 @@ internal class RuleAlienMission : IRule
     internal string generateRace(uint monthsPassed)
     {
         int rc;
-        for (rc = _raceDistribution.Count - 1; rc >= 0 && monthsPassed < _raceDistribution[rc].Key; --rc);
+        for (rc = _raceDistribution.Count - 1; rc >= 0 && monthsPassed < _raceDistribution[rc].Key; --rc) ;
         if (rc < 0)
-		    return string.Empty;
-	    return _raceDistribution[rc].Value.choose();
+            return string.Empty;
+        return _raceDistribution[rc].Value.choose();
     }
 
     /**
@@ -253,20 +253,20 @@ internal class RuleAlienMission : IRule
      */
     internal int getWeight(uint monthsPassed)
     {
-	    if (!_weights.Any())
-	    {
-		    return 1;
-	    }
-	    int weight = 0;
-	    foreach (var i in _weights)
-	    {
-		    if (i.Key > monthsPassed)
-		    {
-			    break;
-		    }
-		    weight = i.Value;
-	    }
-	    return weight;
+        if (!_weights.Any())
+        {
+            return 1;
+        }
+        int weight = 0;
+        foreach (var i in _weights)
+        {
+            if (i.Key > monthsPassed)
+            {
+                break;
+            }
+            weight = i.Value;
+        }
+        return weight;
     }
 
     /**
@@ -274,5 +274,5 @@ internal class RuleAlienMission : IRule
      * @return Amount of points.
      */
     internal int getRetaliationOdds() =>
-	    _retaliationOdds;
+        _retaliationOdds;
 }

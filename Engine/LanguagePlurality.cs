@@ -27,56 +27,56 @@ delegate LanguagePlurality PFCreate();
  */
 internal class LanguagePlurality
 {
-	static Dictionary<string, PFCreate> s_factoryFunctions;
+    static Dictionary<string, PFCreate> s_factoryFunctions;
 
     protected LanguagePlurality() { /* Empty by design. */ }
 
     /// Allow proper destruction through base pointer.
     ~LanguagePlurality() { /* Empty by design. */ }
 
-	/**
+    /**
 	 * Search and create a handler for the plurality rules of @a language.
 	 * If the language was not found, a default with the same rules as English is returned.
 	 * @param language The target language.
 	 * @return A newly created LanguagePlurality instance for the given language.
 	 * @internal The first time this is called, we populate the language => rules mapping.
 	 */
-	internal static LanguagePlurality create(string language)
-	{
-		// Populate factory the first time we are called.
-		if (!s_factoryFunctions.Any())
-		{
+    internal static LanguagePlurality create(string language)
+    {
+        // Populate factory the first time we are called.
+        if (!s_factoryFunctions.Any())
+        {
             s_factoryFunctions.Add("fr", ZeroOneSingular.create);
-			s_factoryFunctions.Add("fr-CA", ZeroOneSingular.create);
-			s_factoryFunctions.Add("hu", NoSingular.create);
-			s_factoryFunctions.Add("tr", NoSingular.create);
-			s_factoryFunctions.Add("cs", CzechPlurality.create);
-			s_factoryFunctions.Add("pl", PolishPlurality.create);
-			s_factoryFunctions.Add("ro", RomanianPlurality.create);
-			s_factoryFunctions.Add("ru", CyrillicPlurality.create);
-			s_factoryFunctions.Add("sk", CzechPlurality.create);
-			s_factoryFunctions.Add("uk", CyrillicPlurality.create);
-			s_factoryFunctions.Add("ja", NoSingular.create);
-			s_factoryFunctions.Add("ko", NoSingular.create);
-			s_factoryFunctions.Add("zh-CN", NoSingular.create);
-			s_factoryFunctions.Add("zh-TW", NoSingular.create);
-			s_factoryFunctions.Add("hr", CroatianPlurality.create);
-		}
-		PFCreate creator = OneSingular.create;
-		if (s_factoryFunctions.ContainsKey(language))
-		{
-			creator = s_factoryFunctions[language];
-		}
-		return creator();
-	}
+            s_factoryFunctions.Add("fr-CA", ZeroOneSingular.create);
+            s_factoryFunctions.Add("hu", NoSingular.create);
+            s_factoryFunctions.Add("tr", NoSingular.create);
+            s_factoryFunctions.Add("cs", CzechPlurality.create);
+            s_factoryFunctions.Add("pl", PolishPlurality.create);
+            s_factoryFunctions.Add("ro", RomanianPlurality.create);
+            s_factoryFunctions.Add("ru", CyrillicPlurality.create);
+            s_factoryFunctions.Add("sk", CzechPlurality.create);
+            s_factoryFunctions.Add("uk", CyrillicPlurality.create);
+            s_factoryFunctions.Add("ja", NoSingular.create);
+            s_factoryFunctions.Add("ko", NoSingular.create);
+            s_factoryFunctions.Add("zh-CN", NoSingular.create);
+            s_factoryFunctions.Add("zh-TW", NoSingular.create);
+            s_factoryFunctions.Add("hr", CroatianPlurality.create);
+        }
+        PFCreate creator = OneSingular.create;
+        if (s_factoryFunctions.ContainsKey(language))
+        {
+            creator = s_factoryFunctions[language];
+        }
+        return creator();
+    }
 
-	/// Get dictionary key suffix for value of @a n.
-	/**
+    /// Get dictionary key suffix for value of @a n.
+    /**
 	 * @param n The number controlling the plurality.
 	 * @return Pointer to the zero-terminated suffix string.
 	*/
-	internal virtual string getSuffix(uint n) =>
-		null;
+    internal virtual string getSuffix(uint n) =>
+        null;
 }
 
 /**
@@ -86,17 +86,17 @@ internal class LanguagePlurality
  */
 class ZeroOneSingular : LanguagePlurality
 {
-	internal override string getSuffix(uint n)
-	{
-		if (n == 0 || n == 1)
-		{
-			return "_one";
-		}
-		return "_other";
-	}
-	
-	internal static LanguagePlurality create() =>
-		new ZeroOneSingular();
+    internal override string getSuffix(uint n)
+    {
+        if (n == 0 || n == 1)
+        {
+            return "_one";
+        }
+        return "_other";
+    }
+
+    internal static LanguagePlurality create() =>
+        new ZeroOneSingular();
 }
 
 /**
@@ -106,11 +106,11 @@ class ZeroOneSingular : LanguagePlurality
  */
 class NoSingular : LanguagePlurality
 {
-	internal override string getSuffix(uint _) =>
-		"_other";
+    internal override string getSuffix(uint _) =>
+        "_other";
 
-	internal static LanguagePlurality create() =>
-		new NoSingular();
+    internal static LanguagePlurality create() =>
+        new NoSingular();
 }
 
 /**
@@ -119,21 +119,21 @@ class NoSingular : LanguagePlurality
  */
 class CzechPlurality : LanguagePlurality
 {
-	internal override string getSuffix(uint n)
-	{
-		if (n == 1)
-		{
-			return "_one";
-		}
-		else if (n >= 2 && n <= 4)
-		{
-			return "_few";
-		}
-		return "_other";
-	}
+    internal override string getSuffix(uint n)
+    {
+        if (n == 1)
+        {
+            return "_one";
+        }
+        else if (n >= 2 && n <= 4)
+        {
+            return "_few";
+        }
+        return "_other";
+    }
 
-	internal static LanguagePlurality create() =>
-		new CzechPlurality();
+    internal static LanguagePlurality create() =>
+        new CzechPlurality();
 }
 
 /**
@@ -142,28 +142,28 @@ class CzechPlurality : LanguagePlurality
  */
 class CyrillicPlurality : LanguagePlurality
 {
-	internal override string getSuffix(uint n)
-	{
-		if (n % 10 == 1 && n % 100 != 11)
-		{
-			return "_one";
-		}
-		else if ((n % 10 >= 2 && n % 10 <= 4) &&
-				!(n % 100 >= 12 && n % 100 <= 14))
-		{
-			return "_few";
-		}
-		else if (n % 10 == 0 ||
-				(n % 10 >= 5 && n % 10 <= 9) ||
-				(n % 100 >= 11 && n % 100 <= 14))
-		{
-			return "_many";
-		}
-		return "_other";
-	}
+    internal override string getSuffix(uint n)
+    {
+        if (n % 10 == 1 && n % 100 != 11)
+        {
+            return "_one";
+        }
+        else if ((n % 10 >= 2 && n % 10 <= 4) &&
+                !(n % 100 >= 12 && n % 100 <= 14))
+        {
+            return "_few";
+        }
+        else if (n % 10 == 0 ||
+                (n % 10 >= 5 && n % 10 <= 9) ||
+                (n % 100 >= 11 && n % 100 <= 14))
+        {
+            return "_many";
+        }
+        return "_other";
+    }
 
-	internal static LanguagePlurality create() =>
-		new CyrillicPlurality();
+    internal static LanguagePlurality create() =>
+        new CyrillicPlurality();
 }
 
 /**
@@ -172,28 +172,28 @@ class CyrillicPlurality : LanguagePlurality
  */
 class PolishPlurality : LanguagePlurality
 {
-	internal override string getSuffix(uint n)
-	{
-		if (n == 1)
-		{
-			return "_one";
-		}
-		else if ((n % 10 >= 2 && n % 10 <= 4) &&
-				!(n % 100 >= 12 && n % 100 <= 14))
-		{
-			return "_few";
-		}
-		else if ((n % 10 <= 1) ||
-				(n % 10 >= 5 && n % 10 <= 9) ||
-				(n % 100 >= 12 && n % 100 <= 14))
-		{
-			return "_many";
-		}
-		return "_other";
-	}
+    internal override string getSuffix(uint n)
+    {
+        if (n == 1)
+        {
+            return "_one";
+        }
+        else if ((n % 10 >= 2 && n % 10 <= 4) &&
+                !(n % 100 >= 12 && n % 100 <= 14))
+        {
+            return "_few";
+        }
+        else if ((n % 10 <= 1) ||
+                (n % 10 >= 5 && n % 10 <= 9) ||
+                (n % 100 >= 12 && n % 100 <= 14))
+        {
+            return "_many";
+        }
+        return "_other";
+    }
 
-	internal static LanguagePlurality create() =>
-		new PolishPlurality();
+    internal static LanguagePlurality create() =>
+        new PolishPlurality();
 }
 
 /**
@@ -202,22 +202,22 @@ class PolishPlurality : LanguagePlurality
  */
 class RomanianPlurality : LanguagePlurality
 {
-	internal override string getSuffix(uint n)
-	{
-		if (n == 1)
-		{
-			return "_one";
-		}
-		else if (n == 0 ||
-				(n % 100 >= 1 && n % 100 <= 19))
-		{
-			return "_few";
-		}
-		return "_other";
-	}
+    internal override string getSuffix(uint n)
+    {
+        if (n == 1)
+        {
+            return "_one";
+        }
+        else if (n == 0 ||
+                (n % 100 >= 1 && n % 100 <= 19))
+        {
+            return "_few";
+        }
+        return "_other";
+    }
 
-	internal static LanguagePlurality create() =>
-		new RomanianPlurality();
+    internal static LanguagePlurality create() =>
+        new RomanianPlurality();
 }
 
 /**
@@ -226,22 +226,22 @@ class RomanianPlurality : LanguagePlurality
  */
 class CroatianPlurality : LanguagePlurality
 {
-	internal override string getSuffix(uint n)
-	{
-		if (n % 10 == 1 && n % 100 != 11)
-		{
-			return "_one";
-		}
-		else if ((n % 10 >= 2 && n % 10 <= 4) &&
-				!(n % 100 >= 12 && n % 100 <= 14))
-		{
-			return "_few";
-		}
-		return "_other";
-	}
+    internal override string getSuffix(uint n)
+    {
+        if (n % 10 == 1 && n % 100 != 11)
+        {
+            return "_one";
+        }
+        else if ((n % 10 >= 2 && n % 10 <= 4) &&
+                !(n % 100 >= 12 && n % 100 <= 14))
+        {
+            return "_few";
+        }
+        return "_other";
+    }
 
-	internal static LanguagePlurality create() =>
-		new CroatianPlurality();
+    internal static LanguagePlurality create() =>
+        new CroatianPlurality();
 }
 
 /**
@@ -251,15 +251,15 @@ class CroatianPlurality : LanguagePlurality
  */
 class OneSingular : LanguagePlurality
 {
-	internal override string getSuffix(uint n)
-	{
-		if (n == 1)
-		{
-			return "_one";
-		}
-		return "_other";
-	}
+    internal override string getSuffix(uint n)
+    {
+        if (n == 1)
+        {
+            return "_one";
+        }
+        return "_other";
+    }
 
-	internal static LanguagePlurality create() =>
-		new OneSingular();
+    internal static LanguagePlurality create() =>
+        new OneSingular();
 }

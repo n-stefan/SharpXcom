@@ -61,10 +61,10 @@ internal class PathfindingNode
      */
     internal int getTUCost(bool missile)
     {
-	    if (missile)
-		    return 0;
-	    else
-		    return _tuCost;
+        if (missile)
+            return 0;
+        else
+            return _tuCost;
     }
 
     /**
@@ -72,31 +72,31 @@ internal class PathfindingNode
      * @return Pointer to the previous node.
      */
     internal PathfindingNode getPrevNode() =>
-	    _prevNode;
+        _prevNode;
 
     /**
      * Gets the previous walking direction for how we got on this node.
      * @return Previous vector.
      */
     internal int getPrevDir() =>
-	    _prevDir;
+        _prevDir;
 
     /**
      * Gets the node position.
      * @return Node position.
      */
     internal Position getPosition() =>
-	    _pos;
+        _pos;
 
     /**
      * Gets the checked status of this node.
      * @return True, if this node was checked.
      */
     internal bool isChecked() =>
-	    _checked;
+        _checked;
 
-	/// Marks the node as checked.
-	internal void setChecked() =>
+    /// Marks the node as checked.
+    internal void setChecked() =>
         _checked = true;
 
     /**
@@ -109,19 +109,19 @@ internal class PathfindingNode
      */
     internal void connect(int tuCost, PathfindingNode prevNode, int prevDir, Position target)
     {
-	    _tuCost = tuCost;
-	    _prevNode = prevNode;
-	    _prevDir = prevDir;
-	    if (!inOpenSet()) // Otherwise we have this already.
-	    {
-		    Position d = target - _pos;
-		    d *= d;
-		    _tuGuess = (int)(4 * Math.Sqrt((double)(d.x + d.y + d.z)));
-	    }
+        _tuCost = tuCost;
+        _prevNode = prevNode;
+        _prevDir = prevDir;
+        if (!inOpenSet()) // Otherwise we have this already.
+        {
+            Position d = target - _pos;
+            d *= d;
+            _tuGuess = (int)(4 * Math.Sqrt((double)(d.x + d.y + d.z)));
+        }
     }
 
-	/// Is this node already in a PathfindingOpenSet?
-	internal bool inOpenSet() =>
+    /// Is this node already in a PathfindingOpenSet?
+    internal bool inOpenSet() =>
         _openentry != null;
 
     /**
@@ -129,12 +129,12 @@ internal class PathfindingNode
      */
     internal void reset()
     {
-	    _checked = false;
-	    _openentry = null;
+        _checked = false;
+        _openentry = null;
     }
 
-	/// Gets the approximate cost to reach the target position.
-	internal int getTUGuess() =>
+    /// Gets the approximate cost to reach the target position.
+    internal int getTUGuess() =>
         _tuGuess;
 
     /**
@@ -145,9 +145,9 @@ internal class PathfindingNode
      */
     internal void connect(int tuCost, PathfindingNode prevNode, int prevDir)
     {
-	    _tuCost = tuCost;
-	    _prevNode = prevNode;
-	    _prevDir = prevDir;
-	    _tuGuess = 0;
+        _tuCost = tuCost;
+        _prevNode = prevNode;
+        _prevDir = prevDir;
+        _tuGuess = 0;
     }
 }

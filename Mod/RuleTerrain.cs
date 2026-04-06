@@ -58,99 +58,99 @@ internal class RuleTerrain : IRule
     ~RuleTerrain() =>
         _mapBlocks.Clear();
 
-	/**
+    /**
 	 * Loads the terrain from a YAML file.
 	 * @param node YAML node.
 	 * @param mod Mod for the terrain.
 	 */
-	internal void load(YamlNode node, Mod mod)
-	{
-		if (node["mapDataSets"] is YamlSequenceNode map1)
-		{
-			_mapDataSets.Clear();
-			foreach (var i in map1.Children)
-			{
-				_mapDataSets.Add(mod.getMapDataSet(i.ToString()));
-			}
-		}
-		if (node["mapBlocks"] is YamlSequenceNode map2)
-		{
-			_mapBlocks.Clear();
-			foreach (var i in map2.Children)
-			{
-				MapBlock mapBlock = new MapBlock(i["name"].ToString());
-				mapBlock.load(i);
-				_mapBlocks.Add(mapBlock);
-			}
-		}
-		_name = node["name"].ToString();
-		if (node["civilianTypes"] is YamlSequenceNode civs)
-		{
+    internal void load(YamlNode node, Mod mod)
+    {
+        if (node["mapDataSets"] is YamlSequenceNode map1)
+        {
+            _mapDataSets.Clear();
+            foreach (var i in map1.Children)
+            {
+                _mapDataSets.Add(mod.getMapDataSet(i.ToString()));
+            }
+        }
+        if (node["mapBlocks"] is YamlSequenceNode map2)
+        {
+            _mapBlocks.Clear();
+            foreach (var i in map2.Children)
+            {
+                MapBlock mapBlock = new MapBlock(i["name"].ToString());
+                mapBlock.load(i);
+                _mapBlocks.Add(mapBlock);
+            }
+        }
+        _name = node["name"].ToString();
+        if (node["civilianTypes"] is YamlSequenceNode civs)
+        {
             _civilianTypes = civs.Children.Select(x => x.ToString()).ToList();
-		}
-		else
-		{
-			_civilianTypes.Add("MALE_CIVILIAN");
-			_civilianTypes.Add("FEMALE_CIVILIAN");
-		}
-		foreach (var i in ((YamlSequenceNode)node["music"]).Children)
-		{
-			_music.Add(i != null ? i.ToString() : string.Empty);
-		}
-		if (node["depth"] != null)
-		{
-			_minDepth = int.Parse(node["depth"][0].ToString());
-			_maxDepth = int.Parse(node["depth"][1].ToString());
-		}
-		mod.loadSoundOffset(_name, ref _ambience, node["ambience"], "BATTLE.CAT");
-		_ambientVolume = double.Parse(node["ambientVolume"].ToString());
-		_script = node["script"].ToString();
-	}
+        }
+        else
+        {
+            _civilianTypes.Add("MALE_CIVILIAN");
+            _civilianTypes.Add("FEMALE_CIVILIAN");
+        }
+        foreach (var i in ((YamlSequenceNode)node["music"]).Children)
+        {
+            _music.Add(i != null ? i.ToString() : string.Empty);
+        }
+        if (node["depth"] != null)
+        {
+            _minDepth = int.Parse(node["depth"][0].ToString());
+            _maxDepth = int.Parse(node["depth"][1].ToString());
+        }
+        mod.loadSoundOffset(_name, ref _ambience, node["ambience"], "BATTLE.CAT");
+        _ambientVolume = double.Parse(node["ambientVolume"].ToString());
+        _script = node["script"].ToString();
+    }
 
-	/**
+    /**
 	 * Gets The generation script name.
 	 * @return The name of the script to use.
 	 */
-	internal string getScript() =>
-		_script;
+    internal string getScript() =>
+        _script;
 
-	/**
+    /**
 	 * Gets the max depth.
 	 * @return max depth.
 	 */
-	internal int getMaxDepth() =>
-		_maxDepth;
+    internal int getMaxDepth() =>
+        _maxDepth;
 
-	/**
+    /**
 	 * Gets the min depth.
 	 * @return The min depth.
 	 */
-	internal int getMinDepth() =>
-		_minDepth;
+    internal int getMinDepth() =>
+        _minDepth;
 
-	/**
+    /**
 	 * Gets The list of musics this terrain has to choose from.
 	 * @return The list of track names.
 	 */
-	internal List<string> getMusic() =>
-		_music;
+    internal List<string> getMusic() =>
+        _music;
 
-	/**
+    /**
 	 * Gets the list of civilian types to use on this terrain (default MALE_CIVILIAN and FEMALE_CIVILIAN)
 	 * @return list of civilian types to use.
 	 */
-	internal List<string> getCivilianTypes() =>
-		_civilianTypes;
+    internal List<string> getCivilianTypes() =>
+        _civilianTypes;
 
-	/**
+    /**
 	 * Gets The ambient sound effect.
 	 * @return The ambient sound effect.
 	 */
-	internal int getAmbience() =>
-		_ambience;
+    internal int getAmbience() =>
+        _ambience;
 
-	internal double getAmbientVolume() =>
-		_ambientVolume;
+    internal double getAmbientVolume() =>
+        _ambientVolume;
 
     /**
      * Gets the array of mapdatafiles.
@@ -196,56 +196,56 @@ internal class RuleTerrain : IRule
     internal List<MapBlock> getMapBlocks() =>
         _mapBlocks;
 
-	/**
+    /**
 	 * Gets a mapdata object.
 	 * @param id The id in the terrain.
 	 * @param mapDataSetID The id of the map data set.
 	 * @return Pointer to MapData object.
 	 */
-	internal MapData getMapData(ref uint id, ref int mapDataSetID)
-	{
-		MapDataSet mdf = null;
-		int i;
-		for (i = 0; i < _mapDataSets.Count; ++i)
-		{
-			mdf = _mapDataSets[i];
-			if (id < mdf.getSize())
-			{
-				break;
-			}
-			id -= mdf.getSize();
-			(mapDataSetID)++;
-		}
-		if (i >= _mapDataSets.Count)
-		{
-			// oops! someone at microprose made an error in the map!
-			// set this broken tile reference to BLANKS 0.
-			mdf = _mapDataSets.First();
-			id = 0;
-			mapDataSetID = 0;
-		}
-		return mdf.getObject(id);
-	}
+    internal MapData getMapData(ref uint id, ref int mapDataSetID)
+    {
+        MapDataSet mdf = null;
+        int i;
+        for (i = 0; i < _mapDataSets.Count; ++i)
+        {
+            mdf = _mapDataSets[i];
+            if (id < mdf.getSize())
+            {
+                break;
+            }
+            id -= mdf.getSize();
+            (mapDataSetID)++;
+        }
+        if (i >= _mapDataSets.Count)
+        {
+            // oops! someone at microprose made an error in the map!
+            // set this broken tile reference to BLANKS 0.
+            mdf = _mapDataSets.First();
+            id = 0;
+            mapDataSetID = 0;
+        }
+        return mdf.getObject(id);
+    }
 
-	/**
+    /**
 	 * Gets a mapblock with a given name.
 	 * @param name The name of the mapblock.
 	 * @return Pointer to mapblock.
 	 */
-	internal MapBlock getMapBlock(string name)
-	{
-		foreach (var i in _mapBlocks)
-		{
-			if (i.getName() == name)
-				return i;
-		}
-		return null;
-	}
+    internal MapBlock getMapBlock(string name)
+    {
+        foreach (var i in _mapBlocks)
+        {
+            if (i.getName() == name)
+                return i;
+        }
+        return null;
+    }
 
-	/**
+    /**
 	 * Gets the terrain name.
 	 * @return The terrain name.
 	 */
-	internal string getName() =>
-		_name;
+    internal string getName() =>
+        _name;
 }

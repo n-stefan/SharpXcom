@@ -145,35 +145,35 @@ internal class Game
      * @return Pointer to the cursor.
      */
     internal Interface.Cursor getCursor() =>
-	    _cursor;
+        _cursor;
 
     /**
      * Returns the display screen used by the game.
      * @return Pointer to the screen.
      */
     internal Screen getScreen() =>
-	    _screen;
+        _screen;
 
     /**
      * Returns the FpsCounter used by the game.
      * @return Pointer to the FpsCounter.
      */
     internal FpsCounter getFpsCounter() =>
-	    _fpsCounter;
+        _fpsCounter;
 
     /**
      * Returns the mod currently in use by the game.
      * @return Pointer to the mod.
      */
     internal Mod.Mod getMod() =>
-	    _mod;
+        _mod;
 
     /**
      * Returns the language currently in use by the game.
      * @return Pointer to the language.
      */
     internal Language getLanguage() =>
-	    _lang;
+        _lang;
 
     /**
      * Initializes the audio subsystem.
@@ -256,7 +256,7 @@ internal class Game
      * @return Pointer to the saved game.
      */
     internal SavedGame getSavedGame() =>
-	    _save;
+        _save;
 
     /**
      * Sets a new saved game for the game to use.
@@ -317,39 +317,39 @@ internal class Game
         var runningState = ApplicationState.RUNNING;
         // this will avoid processing SDL's resize event on startup, workaround for the heap allocation error it causes.
         bool startupEvent = Options.allowResize;
-	    while (!_quit)
-	    {
+        while (!_quit)
+        {
             // Clean up states
             _deleted.Clear();
 
-		    // Initialize active state
-		    if (!_init)
-		    {
-			    _init = true;
-			    _states.Last().init();
+            // Initialize active state
+            if (!_init)
+            {
+                _init = true;
+                _states.Last().init();
 
                 // Unpress buttons
                 _states.Last().resetAll();
 
-			    // Refresh mouse position
-			    var ev = new SDL_Event();
+                // Refresh mouse position
+                var ev = new SDL_Event();
                 int x, y;
-			    SDL_GetMouseState(out x, out y);
-			    ev.type = SDL_EventType.SDL_MOUSEMOTION;
-			    ev.motion.x = x;
+                SDL_GetMouseState(out x, out y);
+                ev.type = SDL_EventType.SDL_MOUSEMOTION;
+                ev.motion.x = x;
                 ev.motion.y = y;
-			    Action action = new Action(ev, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
+                Action action = new Action(ev, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
                 _states.Last().handle(action);
-		    }
+            }
 
             // Process events
             while (SDL_PollEvent(out _event) != 0)
-		    {
+            {
                 if (CrossPlatform.isQuitShortcut(_event))
                     _event.type = SDL_EventType.SDL_QUIT;
-			    switch (_event.type)
-			    {
-				    case SDL_EventType.SDL_QUIT:
+                switch (_event.type)
+                {
+                    case SDL_EventType.SDL_QUIT:
                         quit();
                         break;
                     // An event other than SDL_APPMOUSEFOCUS change happened.
@@ -360,7 +360,7 @@ internal class Game
                             runningState = stateRun[Options.pauseMode];
                             if (Options.backgroundMute)
                             {
-                        	    setVolume(0, 0, 0);
+                                setVolume(0, 0, 0);
                             }
                         }
                         // Game is not minimized but has no keyboard focus.
@@ -369,7 +369,7 @@ internal class Game
                             runningState = kbFocusRun[Options.pauseMode];
                             if (Options.backgroundMute)
                             {
-                        	    setVolume(0, 0, 0);
+                                setVolume(0, 0, 0);
                             }
                         }
                         // Game has keyboard focus.
@@ -378,105 +378,105 @@ internal class Game
                             runningState = ApplicationState.RUNNING;
                             if (Options.backgroundMute)
                             {
-                        	    setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
+                                setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
                             }
                         }
                         else if (_event.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED) //SDL_VIDEORESIZE
                         {
-					        if (Options.allowResize)
-					        {
-						        if (!startupEvent)
-						        {
+                            if (Options.allowResize)
+                            {
+                                if (!startupEvent)
+                                {
                                     Options.newDisplayWidth = Options.displayWidth = Math.Max(Screen.ORIGINAL_WIDTH, _event.window.data1);
-							        Options.newDisplayHeight = Options.displayHeight = Math.Max(Screen.ORIGINAL_HEIGHT, _event.window.data2);
-							        int dX = 0, dY = 0;
-							        Screen.updateScale(Options.battlescapeScale, ref Options.baseXBattlescape, ref Options.baseYBattlescape, false);
-							        Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, false);
-							        foreach (var state in _states)
-							        {
+                                    Options.newDisplayHeight = Options.displayHeight = Math.Max(Screen.ORIGINAL_HEIGHT, _event.window.data2);
+                                    int dX = 0, dY = 0;
+                                    Screen.updateScale(Options.battlescapeScale, ref Options.baseXBattlescape, ref Options.baseYBattlescape, false);
+                                    Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, false);
+                                    foreach (var state in _states)
+                                    {
                                         state.resize(ref dX, ref dY);
-							        }
-							        _screen.resetDisplay();
-						        }
-						        else
-						        {
+                                    }
+                                    _screen.resetDisplay();
+                                }
+                                else
+                                {
                                     startupEvent = false;
-						        }
-					        }
+                                }
+                            }
                         }
-					    break;
-				    case SDL_EventType.SDL_MOUSEMOTION:
-				    case SDL_EventType.SDL_MOUSEBUTTONDOWN:
-				    case SDL_EventType.SDL_MOUSEBUTTONUP:
-					    // Skip mouse events if they're disabled
-					    if (!_mouseActive) continue;
-					    // re-gain focus on mouse-over or keypress.
-					    runningState = ApplicationState.RUNNING;
+                        break;
+                    case SDL_EventType.SDL_MOUSEMOTION:
+                    case SDL_EventType.SDL_MOUSEBUTTONDOWN:
+                    case SDL_EventType.SDL_MOUSEBUTTONUP:
+                        // Skip mouse events if they're disabled
+                        if (!_mouseActive) continue;
+                        // re-gain focus on mouse-over or keypress.
+                        runningState = ApplicationState.RUNNING;
                         // Go on, feed the event to others
                         goto default;
-				    default:
-					    Action action = new Action(_event, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
+                    default:
+                        Action action = new Action(_event, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
                         _screen.handle(action);
                         _cursor.handle(action);
-					    _fpsCounter.handle(action);
-					    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
-					    {
-						    // "ctrl-g" grab input
-						    if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_g && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
-						    {
+                        _fpsCounter.handle(action);
+                        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+                        {
+                            // "ctrl-g" grab input
+                            if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_g && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                            {
                                 Options.captureMouse = Options.captureMouse == SDL_bool.SDL_TRUE ? SDL_bool.SDL_FALSE : SDL_bool.SDL_TRUE;
                                 SDL_SetRelativeMouseMode(Options.captureMouse);
                             }
-						    else if (Options.debug)
-						    {
-							    if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_t && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
-							    {
-								    setState(new TestState());
-							    }
-							    // "ctrl-u" debug UI
-							    else if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_u && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
-							    {
-								    Options.debugUi = !Options.debugUi;
-								    _states.Last().redrawText();
-							    }
-						    }
-					    }
+                            else if (Options.debug)
+                            {
+                                if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_t && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                                {
+                                    setState(new TestState());
+                                }
+                                // "ctrl-u" debug UI
+                                else if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_u && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                                {
+                                    Options.debugUi = !Options.debugUi;
+                                    _states.Last().redrawText();
+                                }
+                            }
+                        }
                         _states.Last().handle(action);
                         break;
-			    }
-			    if (!_init)
-			    {
-				    // States stack was changed, break the loop so new state
-				    // can be initialized before processing new events
-				    break;
-			    }
-		    }
-		
-		    // Process rendering
-		    if (runningState != ApplicationState.PAUSED)
-		    {
-			    // Process logic
-			    _states.Last().think();
+                }
+                if (!_init)
+                {
+                    // States stack was changed, break the loop so new state
+                    // can be initialized before processing new events
+                    break;
+                }
+            }
+
+            // Process rendering
+            if (runningState != ApplicationState.PAUSED)
+            {
+                // Process logic
+                _states.Last().think();
                 _fpsCounter.think();
-			    if (Options.FPS > 0 && !(Options.useOpenGL && Options.vSyncForOpenGL))
-			    {
+                if (Options.FPS > 0 && !(Options.useOpenGL && Options.vSyncForOpenGL))
+                {
                     // Update our FPS delay time based on the time of the last draw.
                     // SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED && _event.window.windowEvent != SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST
                     int fps = _event.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED ? Options.FPS : Options.FPSInactive;
 
-				    _timeUntilNextFrame = (int)((1000.0f / fps) - (SDL_GetTicks() - _timeOfLastFrame));
-			    }
-			    else
-			    {
+                    _timeUntilNextFrame = (int)((1000.0f / fps) - (SDL_GetTicks() - _timeOfLastFrame));
+                }
+                else
+                {
                     _timeUntilNextFrame = 0;
-			    }
+                }
 
-			    if (_init && _timeUntilNextFrame <= 0)
-			    {
-				    // make a note of when this frame update occurred.
-				    _timeOfLastFrame = SDL_GetTicks();
-				    _fpsCounter.addFrame();
-				    _screen.clear();
+                if (_init && _timeUntilNextFrame <= 0)
+                {
+                    // make a note of when this frame update occurred.
+                    _timeOfLastFrame = SDL_GetTicks();
+                    _fpsCounter.addFrame();
+                    _screen.clear();
                     var i = _states.Count - 1;
                     do
                     {
@@ -484,26 +484,27 @@ internal class Game
                     }
                     while (i >= 0 && !_states[i].isScreen());
 
-				    for (; i < _states.Count; ++i)
-				    {
-					    _states[i].blit();
-				    }
-				    _fpsCounter.blit(_screen.getSurface());
-				    _cursor.blit(_screen.getSurface());
+                    for (; i < _states.Count; ++i)
+                    {
+                        _states[i].blit();
+                    }
+                    _fpsCounter.blit(_screen.getSurface());
+                    _cursor.blit(_screen.getSurface());
                     _screen.flip();
-			    }
-		    }
+                }
+            }
 
-		    // Save on CPU
-		    switch (runningState)
-		    {
-			    case ApplicationState.RUNNING: 
-				    SDL_Delay(1); //Save CPU from going 100%
-				    break;
-			    case ApplicationState.SLOWED: case ApplicationState.PAUSED:
-				    SDL_Delay(100); break; //More slowing down.
-		    }
-	    }
+            // Save on CPU
+            switch (runningState)
+            {
+                case ApplicationState.RUNNING:
+                    SDL_Delay(1); //Save CPU from going 100%
+                    break;
+                case ApplicationState.SLOWED:
+                case ApplicationState.PAUSED:
+                    SDL_Delay(100); break; //More slowing down.
+            }
+        }
 
         Options.save();
     }
@@ -620,7 +621,7 @@ internal class Game
 
         List<ModInfo> activeMods = Options.getActiveMods();
         foreach (var activeMod in activeMods)
-	    {
+        {
             _lang.loadFile(activeMod.getPath() + ssDefault);
             if (currentLang != defaultLang)
                 _lang.loadFile(activeMod.getPath() + ssCurrent);
@@ -639,8 +640,8 @@ internal class Game
      */
     void setMouseActive(bool active)
     {
-	    _mouseActive = active;
-	    _cursor.setVisible(active);
+        _mouseActive = active;
+        _cursor.setVisible(active);
     }
 
     /**
@@ -648,5 +649,5 @@ internal class Game
      * @return whether the game is shutting down or not.
      */
     bool isQuitting() =>
-	    _quit;
+        _quit;
 }

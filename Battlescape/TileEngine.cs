@@ -68,64 +68,64 @@ internal class TileEngine
      */
     internal int distanceSq(Position pos1, Position pos2, bool considerZ = true)
     {
-	    int x = pos1.x - pos2.x;
-	    int y = pos1.y - pos2.y;
-	    int z = considerZ ? (pos1.z - pos2.z) : 0;
+        int x = pos1.x - pos2.x;
+        int y = pos1.y - pos2.y;
+        int z = considerZ ? (pos1.z - pos2.z) : 0;
         return x * x + y * y + z * z;
     }
 
-	/**
+    /**
 	 * Drops an item to the floor and affects it with gravity.
 	 * @param position Position to spawn the item.
 	 * @param item Pointer to the item.
 	 * @param newItem Bool whether this is a new item.
 	 * @param removeItem Bool whether to remove the item from the owner.
 	 */
-	internal void itemDrop(Tile t, BattleItem item, Mod.Mod mod, bool newItem = false, bool removeItem = false)
-	{
-		// don't spawn anything outside of bounds
-		if (t == null)
-			return;
+    internal void itemDrop(Tile t, BattleItem item, Mod.Mod mod, bool newItem = false, bool removeItem = false)
+    {
+        // don't spawn anything outside of bounds
+        if (t == null)
+            return;
 
-		Position p = t.getPosition();
+        Position p = t.getPosition();
 
-		// don't ever drop fixed items
-		if (item.getRules().isFixed())
-			return;
+        // don't ever drop fixed items
+        if (item.getRules().isFixed())
+            return;
 
-		t.addItem(item, mod.getInventory("STR_GROUND", true));
+        t.addItem(item, mod.getInventory("STR_GROUND", true));
 
-		if (item.getUnit() != null)
-		{
-			item.getUnit().setPosition(p);
-		}
+        if (item.getUnit() != null)
+        {
+            item.getUnit().setPosition(p);
+        }
 
-		if (newItem)
-		{
-			_save.getItems().Add(item);
-		}
-		else if (_save.getSide() != UnitFaction.FACTION_PLAYER)
-		{
-			item.setTurnFlag(true);
-		}
+        if (newItem)
+        {
+            _save.getItems().Add(item);
+        }
+        else if (_save.getSide() != UnitFaction.FACTION_PLAYER)
+        {
+            item.setTurnFlag(true);
+        }
 
-		if (removeItem)
-		{
-			item.moveToOwner(null);
-		}
-		else if (item.getRules().getBattleType() != BattleType.BT_GRENADE && item.getRules().getBattleType() != BattleType.BT_PROXIMITYGRENADE)
-		{
-			item.setOwner(null);
-		}
+        if (removeItem)
+        {
+            item.moveToOwner(null);
+        }
+        else if (item.getRules().getBattleType() != BattleType.BT_GRENADE && item.getRules().getBattleType() != BattleType.BT_PROXIMITYGRENADE)
+        {
+            item.setOwner(null);
+        }
 
-		applyGravity(_save.getTile(p));
+        applyGravity(_save.getTile(p));
 
-		if (item.getRules().getBattleType() == BattleType.BT_FLARE)
-		{
-			calculateTerrainLighting();
+        if (item.getRules().getBattleType() == BattleType.BT_FLARE)
+        {
+            calculateTerrainLighting();
             calculateFOV(p);
-		}
-	}
+        }
+    }
 
     /**
       * Recalculates lighting for the terrain: objects,items,fire.
@@ -526,8 +526,8 @@ internal class TileEngine
      */
     internal int distance(Position pos1, Position pos2)
     {
-	    int x = pos1.x - pos2.x;
-	    int y = pos1.y - pos2.y;
+        int x = pos1.x - pos2.x;
+        int y = pos1.y - pos2.y;
         return (int)Math.Ceiling(Math.Sqrt((float)(x * x + y * y)));
     }
 
@@ -856,133 +856,133 @@ internal class TileEngine
      */
     int blockage(Tile tile, TilePart part, ItemDamageType type, int direction = -1, bool checkingFromOrigin = false)
     {
-	    int blockage = 0;
+        int blockage = 0;
 
-	    if (tile == null) return 0; // probably outside the map here
-	    if (tile.getMapData(part) != null)
-	    {
-		    bool check = true;
+        if (tile == null) return 0; // probably outside the map here
+        if (tile.getMapData(part) != null)
+        {
+            bool check = true;
             bigWallTypes wall = (bigWallTypes)(-1);
-		    if (direction != -1)
-		    {
-			    wall = (bigWallTypes)tile.getMapData(TilePart.O_OBJECT).getBigWall();
+            if (direction != -1)
+            {
+                wall = (bigWallTypes)tile.getMapData(TilePart.O_OBJECT).getBigWall();
 
-			    if (type != ItemDamageType.DT_SMOKE &&
-				    checkingFromOrigin &&
-				    (wall == bigWallTypes.BIGWALLNESW ||
-				    wall == bigWallTypes.BIGWALLNWSE))
-			    {
-				    check = false;
-			    }
-			    switch (direction)
-			    {
-			    case 0: // north
-				    if (wall == bigWallTypes.BIGWALLWEST ||
-					    wall == bigWallTypes.BIGWALLEAST ||
-					    wall == bigWallTypes.BIGWALLSOUTH ||
-					    wall == bigWallTypes.BIGWALLEASTANDSOUTH)
-				    {
-					    check = false;
-				    }
-				    break;
-			    case 1: // north east
-				    if (wall == bigWallTypes.BIGWALLWEST ||
-					    wall == bigWallTypes.BIGWALLSOUTH)
-				    {
-					    check = false;
-				    }
-				    break;
-			    case 2: // east
-				    if (wall == bigWallTypes.BIGWALLNORTH ||
-					    wall == bigWallTypes.BIGWALLSOUTH ||
-					    wall == bigWallTypes.BIGWALLWEST ||
-					    wall == bigWallTypes.BIGWALLWESTANDNORTH)
-				    {
-					    check = false;
-				    }
-				    break;
-			    case 3: // south east
-				    if (wall == bigWallTypes.BIGWALLNORTH ||
-					    wall == bigWallTypes.BIGWALLWEST ||
-					    wall == bigWallTypes.BIGWALLWESTANDNORTH)
-				    {
-					    check = false;
-				    }
-				    break;
-			    case 4: // south
-				    if (wall == bigWallTypes.BIGWALLWEST ||
-					    wall == bigWallTypes.BIGWALLEAST ||
-					    wall == bigWallTypes.BIGWALLNORTH ||
-					    wall == bigWallTypes.BIGWALLWESTANDNORTH)
-				    {
-					    check = false;
-				    }
-				    break;
-			    case 5: // south west
-				    if (wall == bigWallTypes.BIGWALLNORTH ||
-					    wall == bigWallTypes.BIGWALLEAST)
-				    {
-					    check = false;
-				    }
-				    break;
-			    case 6: // west
-				    if (wall == bigWallTypes.BIGWALLNORTH ||
-					    wall == bigWallTypes.BIGWALLSOUTH ||
-					    wall == bigWallTypes.BIGWALLEAST ||
-					    wall == bigWallTypes.BIGWALLEASTANDSOUTH)
-				    {
-					    check = false;
-				    }
-				    break;
-			    case 7: // north west
-				    if (wall == bigWallTypes.BIGWALLSOUTH ||
-					    wall == bigWallTypes.BIGWALLEAST ||
-					    wall == bigWallTypes.BIGWALLEASTANDSOUTH)
-				    {
-					    check = false;
-				    }
-				    break;
-			    case 8: // up
-			    case 9: // down
-				    if (wall != 0 && wall != bigWallTypes.BLOCK)
-				    {
-					    check = false;
-				    }
-				    break;
-			    default:
-				    break;
-			    }
-		    }
-		    else if (part == TilePart.O_FLOOR &&
-					    tile.getMapData(part).getBlock(type) == 0)
-		    {
-			    if (type != ItemDamageType.DT_NONE)
-			    {
-				    blockage += tile.getMapData(part).getArmor();
-			    }
-			    else if (!tile.getMapData(part).isNoFloor())
-			    {
-				    return 256;
-			    }
-		    }
+                if (type != ItemDamageType.DT_SMOKE &&
+                    checkingFromOrigin &&
+                    (wall == bigWallTypes.BIGWALLNESW ||
+                    wall == bigWallTypes.BIGWALLNWSE))
+                {
+                    check = false;
+                }
+                switch (direction)
+                {
+                    case 0: // north
+                        if (wall == bigWallTypes.BIGWALLWEST ||
+                            wall == bigWallTypes.BIGWALLEAST ||
+                            wall == bigWallTypes.BIGWALLSOUTH ||
+                            wall == bigWallTypes.BIGWALLEASTANDSOUTH)
+                        {
+                            check = false;
+                        }
+                        break;
+                    case 1: // north east
+                        if (wall == bigWallTypes.BIGWALLWEST ||
+                            wall == bigWallTypes.BIGWALLSOUTH)
+                        {
+                            check = false;
+                        }
+                        break;
+                    case 2: // east
+                        if (wall == bigWallTypes.BIGWALLNORTH ||
+                            wall == bigWallTypes.BIGWALLSOUTH ||
+                            wall == bigWallTypes.BIGWALLWEST ||
+                            wall == bigWallTypes.BIGWALLWESTANDNORTH)
+                        {
+                            check = false;
+                        }
+                        break;
+                    case 3: // south east
+                        if (wall == bigWallTypes.BIGWALLNORTH ||
+                            wall == bigWallTypes.BIGWALLWEST ||
+                            wall == bigWallTypes.BIGWALLWESTANDNORTH)
+                        {
+                            check = false;
+                        }
+                        break;
+                    case 4: // south
+                        if (wall == bigWallTypes.BIGWALLWEST ||
+                            wall == bigWallTypes.BIGWALLEAST ||
+                            wall == bigWallTypes.BIGWALLNORTH ||
+                            wall == bigWallTypes.BIGWALLWESTANDNORTH)
+                        {
+                            check = false;
+                        }
+                        break;
+                    case 5: // south west
+                        if (wall == bigWallTypes.BIGWALLNORTH ||
+                            wall == bigWallTypes.BIGWALLEAST)
+                        {
+                            check = false;
+                        }
+                        break;
+                    case 6: // west
+                        if (wall == bigWallTypes.BIGWALLNORTH ||
+                            wall == bigWallTypes.BIGWALLSOUTH ||
+                            wall == bigWallTypes.BIGWALLEAST ||
+                            wall == bigWallTypes.BIGWALLEASTANDSOUTH)
+                        {
+                            check = false;
+                        }
+                        break;
+                    case 7: // north west
+                        if (wall == bigWallTypes.BIGWALLSOUTH ||
+                            wall == bigWallTypes.BIGWALLEAST ||
+                            wall == bigWallTypes.BIGWALLEASTANDSOUTH)
+                        {
+                            check = false;
+                        }
+                        break;
+                    case 8: // up
+                    case 9: // down
+                        if (wall != 0 && wall != bigWallTypes.BLOCK)
+                        {
+                            check = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if (part == TilePart.O_FLOOR &&
+                        tile.getMapData(part).getBlock(type) == 0)
+            {
+                if (type != ItemDamageType.DT_NONE)
+                {
+                    blockage += tile.getMapData(part).getArmor();
+                }
+                else if (!tile.getMapData(part).isNoFloor())
+                {
+                    return 256;
+                }
+            }
 
-		    if (check)
-		    {
-			    // -1 means we have a regular wall, and anything over 0 means we have a bigwall.
-			    if (type == ItemDamageType.DT_SMOKE && wall != 0 && !tile.isUfoDoorOpen(part))
-			    {
-				    return 256;
-			    }
-			    blockage += tile.getMapData(part).getBlock(type);
-		    }
-	    }
+            if (check)
+            {
+                // -1 means we have a regular wall, and anything over 0 means we have a bigwall.
+                if (type == ItemDamageType.DT_SMOKE && wall != 0 && !tile.isUfoDoorOpen(part))
+                {
+                    return 256;
+                }
+                blockage += tile.getMapData(part).getBlock(type);
+            }
+        }
 
-	    // open ufo doors are actually still closed behind the scenes
-	    // so a special trick is needed to see if they are open, if they are, they obviously don't block anything
-	    if (tile.isUfoDoorOpen(part))
-		    blockage = 0;
+        // open ufo doors are actually still closed behind the scenes
+        // so a special trick is needed to see if they are open, if they are, they obviously don't block anything
+        if (tile.isUfoDoorOpen(part))
+            blockage = 0;
 
-	    return blockage;
+        return blockage;
     }
 
     /**
@@ -1911,17 +1911,17 @@ internal class TileEngine
      */
     internal int distanceUnitToPositionSq(BattleUnit unit, Position pos, bool considerZ)
     {
-	    int x = unit.getPosition().x - pos.x;
-	    int y = unit.getPosition().y - pos.y;
-	    int z = considerZ ? (unit.getPosition().z - pos.z) : 0;
-	    if (unit.getArmor().getSize() > 1)
-	    {
-		    if (unit.getPosition().x < pos.x)
-			    x++;
-		    if (unit.getPosition().y < pos.y)
-			    y++;
-	    }
-	    return x*x + y*y + z*z;
+        int x = unit.getPosition().x - pos.x;
+        int y = unit.getPosition().y - pos.y;
+        int z = considerZ ? (unit.getPosition().z - pos.z) : 0;
+        if (unit.getArmor().getSize() > 1)
+        {
+            if (unit.getPosition().x < pos.x)
+                x++;
+            if (unit.getPosition().y < pos.y)
+                y++;
+        }
+        return x * x + y * y + z * z;
     }
 
     /**
@@ -1932,68 +1932,68 @@ internal class TileEngine
      */
     internal Position getOriginVoxel(BattleAction action, Tile tile)
     {
-	    int[] dirYshift = {1, 1, 8, 15,15,15,8, 1};
-	    int[] dirXshift = {8, 14,15,15,8, 1, 1, 1};
-	    if (tile == null)
-	    {
-		    tile = action.actor.getTile();
-	    }
+        int[] dirYshift = { 1, 1, 8, 15, 15, 15, 8, 1 };
+        int[] dirXshift = { 8, 14, 15, 15, 8, 1, 1, 1 };
+        if (tile == null)
+        {
+            tile = action.actor.getTile();
+        }
 
-	    Position origin = tile.getPosition();
-	    Tile tileAbove = _save.getTile(origin + new Position(0,0,1));
-	    Position originVoxel = new Position(origin.x*16, origin.y*16, origin.z*24);
+        Position origin = tile.getPosition();
+        Tile tileAbove = _save.getTile(origin + new Position(0, 0, 1));
+        Position originVoxel = new Position(origin.x * 16, origin.y * 16, origin.z * 24);
 
-	    // take into account soldier height and terrain level if the projectile is launched from a soldier
-	    if (action.actor.getPosition() == origin || action.type != BattleActionType.BA_LAUNCH)
-	    {
-		    // calculate offset of the starting point of the projectile
-		    originVoxel.z += -tile.getTerrainLevel();
+        // take into account soldier height and terrain level if the projectile is launched from a soldier
+        if (action.actor.getPosition() == origin || action.type != BattleActionType.BA_LAUNCH)
+        {
+            // calculate offset of the starting point of the projectile
+            originVoxel.z += -tile.getTerrainLevel();
 
-		    originVoxel.z += action.actor.getHeight() + action.actor.getFloatHeight();
+            originVoxel.z += action.actor.getHeight() + action.actor.getFloatHeight();
 
-		    if (action.type == BattleActionType.BA_THROW)
-		    {
-			    originVoxel.z -= 3;
-		    }
-		    else
-		    {
-			    originVoxel.z -= 4;
-		    }
+            if (action.type == BattleActionType.BA_THROW)
+            {
+                originVoxel.z -= 3;
+            }
+            else
+            {
+                originVoxel.z -= 4;
+            }
 
-		    if (originVoxel.z >= (origin.z + 1)*24)
-		    {
-			    if (tileAbove != null && tileAbove.hasNoFloor(null))
-			    {
-				    origin.z++;
-			    }
-			    else
-			    {
-				    while (originVoxel.z >= (origin.z + 1)*24)
-				    {
-					    originVoxel.z--;
-				    }
-				    originVoxel.z -= 4;
-			    }
-		    }
-		    int direction = getDirectionTo(origin, action.target);
-		    originVoxel.x += dirXshift[direction]*action.actor.getArmor().getSize();
-		    originVoxel.y += dirYshift[direction]*action.actor.getArmor().getSize();
-	    }
-	    else
-	    {
-		    // don't take into account soldier height and terrain level if the projectile is not launched from a soldier(from a waypoint)
-		    originVoxel.x += 8;
-		    originVoxel.y += 8;
-		    originVoxel.z += 16;
-	    }
-	    return originVoxel;
+            if (originVoxel.z >= (origin.z + 1) * 24)
+            {
+                if (tileAbove != null && tileAbove.hasNoFloor(null))
+                {
+                    origin.z++;
+                }
+                else
+                {
+                    while (originVoxel.z >= (origin.z + 1) * 24)
+                    {
+                        originVoxel.z--;
+                    }
+                    originVoxel.z -= 4;
+                }
+            }
+            int direction = getDirectionTo(origin, action.target);
+            originVoxel.x += dirXshift[direction] * action.actor.getArmor().getSize();
+            originVoxel.y += dirYshift[direction] * action.actor.getArmor().getSize();
+        }
+        else
+        {
+            // don't take into account soldier height and terrain level if the projectile is not launched from a soldier(from a waypoint)
+            originVoxel.x += 8;
+            originVoxel.y += 8;
+            originVoxel.z += 16;
+        }
+        return originVoxel;
     }
 
     static int[] sliceObjectSpiral = {8,8, 8,6, 10,6, 10,8, 10,10, 8,10, 6,10, 6,8, 6,6, //first circle
         8,4, 10,4, 12,4, 12,6, 12,8, 12,10, 12,12, 10,12, 8,12, 6,12, 4,12, 4,10, 4,8, 4,6, 4,4, 6,4, //second circle
         8,1, 12,1, 15,1, 15,4, 15,8, 15,12, 15,15, 12,15, 8,15, 4,15, 1,15, 1,12, 1,8, 1,4, 1,1, 4,1}; //third circle
-    static int[] westWallSpiral = {0,7, 0,9, 0,6, 0,11, 0,4, 0,13, 0,2};
-    static int[] northWallSpiral = {7,0, 9,0, 6,0, 11,0, 4,0, 13,0, 2,0};
+    static int[] westWallSpiral = { 0, 7, 0, 9, 0, 6, 0, 11, 0, 4, 0, 13, 0, 2 };
+    static int[] northWallSpiral = { 7, 0, 9, 0, 6, 0, 11, 0, 4, 0, 13, 0, 2, 0 };
     /**
      * Checks for a tile part available for targeting and what particular voxel.
      * @param originVoxel Voxel of trace origin (gun's barrel).
@@ -2006,159 +2006,159 @@ internal class TileEngine
      */
     internal bool canTargetTile(Position originVoxel, Tile tile, int part, Position scanVoxel, BattleUnit excludeUnit, bool rememberObstacles)
     {
-	    Position targetVoxel = new Position((tile.getPosition().x * 16), (tile.getPosition().y * 16), tile.getPosition().z * 24);
-	    var _trajectory = new List<Position>();
+        Position targetVoxel = new Position((tile.getPosition().x * 16), (tile.getPosition().y * 16), tile.getPosition().z * 24);
+        var _trajectory = new List<Position>();
 
-	    int[] spiralArray;
-	    int spiralCount;
+        int[] spiralArray;
+        int spiralCount;
 
-	    int minZ = 0, maxZ = 0;
-	    bool minZfound = false, maxZfound = false;
-	    bool dummy = false;
+        int minZ = 0, maxZ = 0;
+        bool minZfound = false, maxZfound = false;
+        bool dummy = false;
 
-	    if (part == (int)TilePart.O_OBJECT)
-	    {
-		    spiralArray = sliceObjectSpiral;
-		    spiralCount = 41;
-	    }
-	    else
-	    if (part == (int)TilePart.O_NORTHWALL)
-	    {
-		    spiralArray = northWallSpiral;
-		    spiralCount = 7;
-	    }
-	    else
-	    if (part == (int)TilePart.O_WESTWALL)
-	    {
-		    spiralArray = westWallSpiral;
-		    spiralCount = 7;
-	    }
-	    else if (part == (int)TilePart.O_FLOOR)
-	    {
-		    spiralArray = sliceObjectSpiral;
-		    spiralCount = 41;
-		    minZfound = true; minZ=0;
-		    maxZfound = true; maxZ=0;
-	    }
-	    else if (part == MapData.O_DUMMY) // used only for no line of fire indicator
-	    {
-		    spiralArray = sliceObjectSpiral;
-		    spiralCount = 41;
-		    minZfound = true; minZ = 12;
-		    maxZfound = true; maxZ = 12;
-	    }
-	    else
-	    {
-		    return false;
-	    }
-	    voxelCheckFlush();
-    // find out height range
+        if (part == (int)TilePart.O_OBJECT)
+        {
+            spiralArray = sliceObjectSpiral;
+            spiralCount = 41;
+        }
+        else
+            if (part == (int)TilePart.O_NORTHWALL)
+            {
+                spiralArray = northWallSpiral;
+                spiralCount = 7;
+            }
+            else
+                if (part == (int)TilePart.O_WESTWALL)
+                {
+                    spiralArray = westWallSpiral;
+                    spiralCount = 7;
+                }
+                else if (part == (int)TilePart.O_FLOOR)
+                {
+                    spiralArray = sliceObjectSpiral;
+                    spiralCount = 41;
+                    minZfound = true; minZ = 0;
+                    maxZfound = true; maxZ = 0;
+                }
+                else if (part == MapData.O_DUMMY) // used only for no line of fire indicator
+                {
+                    spiralArray = sliceObjectSpiral;
+                    spiralCount = 41;
+                    minZfound = true; minZ = 12;
+                    maxZfound = true; maxZ = 12;
+                }
+                else
+                {
+                    return false;
+                }
+        voxelCheckFlush();
+        // find out height range
 
-	    if (!minZfound)
-	    {
-		    for (int j = 1; j < 12; ++j)
-		    {
-			    if (minZfound) break;
-			    for (int i = 0; i < spiralCount; ++i)
-			    {
-				    int tX = spiralArray[i*2];
-				    int tY = spiralArray[i*2+1];
-				    if (voxelCheck(new Position(targetVoxel.x + tX, targetVoxel.y + tY, targetVoxel.z + j*2),null,true) == (VoxelType)part) //bingo
-				    {
-					    if (!minZfound)
-					    {
-						    minZ = j*2;
-						    minZfound = true;
-						    break;
-					    }
-				    }
-			    }
-		    }
-	    }
+        if (!minZfound)
+        {
+            for (int j = 1; j < 12; ++j)
+            {
+                if (minZfound) break;
+                for (int i = 0; i < spiralCount; ++i)
+                {
+                    int tX = spiralArray[i * 2];
+                    int tY = spiralArray[i * 2 + 1];
+                    if (voxelCheck(new Position(targetVoxel.x + tX, targetVoxel.y + tY, targetVoxel.z + j * 2), null, true) == (VoxelType)part) //bingo
+                    {
+                        if (!minZfound)
+                        {
+                            minZ = j * 2;
+                            minZfound = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
-	    if (!minZfound)
-	    {
-		    if (rememberObstacles)
-		    {
-			    // dummy attempt (only to highlight obstacles)
-			    minZfound = true;
-			    minZ = 10;
-			    dummy = true;
-		    }
-		    else
-		    {
-			    return false;//empty object!!!
-		    }
-	    }
+        if (!minZfound)
+        {
+            if (rememberObstacles)
+            {
+                // dummy attempt (only to highlight obstacles)
+                minZfound = true;
+                minZ = 10;
+                dummy = true;
+            }
+            else
+            {
+                return false;//empty object!!!
+            }
+        }
 
-	    if (!maxZfound)
-	    {
-		    for (int j = 10; j >= 0; --j)
-		    {
-			    if (maxZfound) break;
-			    for (int i = 0; i < spiralCount; ++i)
-			    {
-				    int tX = spiralArray[i*2];
-				    int tY = spiralArray[i*2+1];
-				    if (voxelCheck(new Position(targetVoxel.x + tX, targetVoxel.y + tY, targetVoxel.z + j*2),null,true) == (VoxelType)part) //bingo
-				    {
-					    if (!maxZfound)
-					    {
-						    maxZ = j*2;
-						    maxZfound = true;
-						    break;
-					    }
-				    }
-			    }
-		    }
-	    }
+        if (!maxZfound)
+        {
+            for (int j = 10; j >= 0; --j)
+            {
+                if (maxZfound) break;
+                for (int i = 0; i < spiralCount; ++i)
+                {
+                    int tX = spiralArray[i * 2];
+                    int tY = spiralArray[i * 2 + 1];
+                    if (voxelCheck(new Position(targetVoxel.x + tX, targetVoxel.y + tY, targetVoxel.z + j * 2), null, true) == (VoxelType)part) //bingo
+                    {
+                        if (!maxZfound)
+                        {
+                            maxZ = j * 2;
+                            maxZfound = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
-	    if (!maxZfound)
-	    {
-		    if (rememberObstacles)
-		    {
-			    // dummy attempt (only to highlight obstacles)
-			    maxZfound = true;
-			    maxZ = 10;
-			    dummy = true;
-		    }
-		    else
-		    {
-			    return false;//it's impossible to get there
-		    }
-	    }
+        if (!maxZfound)
+        {
+            if (rememberObstacles)
+            {
+                // dummy attempt (only to highlight obstacles)
+                maxZfound = true;
+                maxZ = 10;
+                dummy = true;
+            }
+            else
+            {
+                return false;//it's impossible to get there
+            }
+        }
 
-	    if (minZ > maxZ) minZ = maxZ;
-	    int rangeZ = maxZ - minZ;
-	    if (rangeZ>10) rangeZ = 10; //as above, clamping height range to prevent buffer overflow
-	    int centerZ = (maxZ + minZ)/2;
+        if (minZ > maxZ) minZ = maxZ;
+        int rangeZ = maxZ - minZ;
+        if (rangeZ > 10) rangeZ = 10; //as above, clamping height range to prevent buffer overflow
+        int centerZ = (maxZ + minZ) / 2;
 
-	    for (int j = 0; j <= rangeZ; ++j)
-	    {
-		    scanVoxel.z = targetVoxel.z + centerZ + heightFromCenter[j];
-		    for (int i = 0; i < spiralCount; ++i)
-		    {
-			    scanVoxel.x = targetVoxel.x + spiralArray[i*2];
-			    scanVoxel.y = targetVoxel.y + spiralArray[i*2+1];
-			    _trajectory.Clear();
-			    int test = calculateLine(originVoxel, scanVoxel, false, _trajectory, excludeUnit, true);
-			    if (test == part && !dummy) //bingo
-			    {
-				    if (_trajectory[0].x/16 == scanVoxel.x/16 &&
-                        _trajectory[0].y/16 == scanVoxel.y/16 &&
-                        _trajectory[0].z/24 == scanVoxel.z/24)
-				    {
-					    return true;
-				    }
-			    }
-			    if (rememberObstacles && _trajectory.Count>0)
-			    {
-				    Tile tileObstacle = _save.getTile(new Position(_trajectory[0].x / 16, _trajectory[0].y / 16, _trajectory[0].z / 24));
-				    if (tileObstacle != null) tileObstacle.setObstacle(test);
-			    }
-		    }
-	    }
-	    return false;
+        for (int j = 0; j <= rangeZ; ++j)
+        {
+            scanVoxel.z = targetVoxel.z + centerZ + heightFromCenter[j];
+            for (int i = 0; i < spiralCount; ++i)
+            {
+                scanVoxel.x = targetVoxel.x + spiralArray[i * 2];
+                scanVoxel.y = targetVoxel.y + spiralArray[i * 2 + 1];
+                _trajectory.Clear();
+                int test = calculateLine(originVoxel, scanVoxel, false, _trajectory, excludeUnit, true);
+                if (test == part && !dummy) //bingo
+                {
+                    if (_trajectory[0].x / 16 == scanVoxel.x / 16 &&
+                        _trajectory[0].y / 16 == scanVoxel.y / 16 &&
+                        _trajectory[0].z / 24 == scanVoxel.z / 24)
+                    {
+                        return true;
+                    }
+                }
+                if (rememberObstacles && _trajectory.Count > 0)
+                {
+                    Tile tileObstacle = _save.getTile(new Position(_trajectory[0].x / 16, _trajectory[0].y / 16, _trajectory[0].z / 24));
+                    if (tileObstacle != null) tileObstacle.setObstacle(test);
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -2169,46 +2169,46 @@ internal class TileEngine
      */
     internal int getDirectionTo(Position origin, Position target)
     {
-	    double ox = target.x - origin.x;
-	    double oy = target.y - origin.y;
-	    double angle = Math.Atan2(ox, -oy);
-	    // divide the pie in 4 angles each at 1/8th before each quarter
-	    double[] pie = {(M_PI_4 * 4.0) - M_PI_4 / 2.0, (M_PI_4 * 3.0) - M_PI_4 / 2.0, (M_PI_4 * 2.0) - M_PI_4 / 2.0, (M_PI_4 * 1.0) - M_PI_4 / 2.0};
-	    int dir = 0;
+        double ox = target.x - origin.x;
+        double oy = target.y - origin.y;
+        double angle = Math.Atan2(ox, -oy);
+        // divide the pie in 4 angles each at 1/8th before each quarter
+        double[] pie = { (M_PI_4 * 4.0) - M_PI_4 / 2.0, (M_PI_4 * 3.0) - M_PI_4 / 2.0, (M_PI_4 * 2.0) - M_PI_4 / 2.0, (M_PI_4 * 1.0) - M_PI_4 / 2.0 };
+        int dir = 0;
 
-	    if (angle > pie[0] || angle < -pie[0])
-	    {
-		    dir = 4;
-	    }
-	    else if (angle > pie[1])
-	    {
-		    dir = 3;
-	    }
-	    else if (angle > pie[2])
-	    {
-		    dir = 2;
-	    }
-	    else if (angle > pie[3])
-	    {
-		    dir = 1;
-	    }
-	    else if (angle < -pie[1])
-	    {
-		    dir = 5;
-	    }
-	    else if (angle < -pie[2])
-	    {
-		    dir = 6;
-	    }
-	    else if (angle < -pie[3])
-	    {
-		    dir = 7;
-	    }
-	    else if (angle < pie[0])
-	    {
-		    dir = 0;
-	    }
-	    return dir;
+        if (angle > pie[0] || angle < -pie[0])
+        {
+            dir = 4;
+        }
+        else if (angle > pie[1])
+        {
+            dir = 3;
+        }
+        else if (angle > pie[2])
+        {
+            dir = 2;
+        }
+        else if (angle > pie[3])
+        {
+            dir = 1;
+        }
+        else if (angle < -pie[1])
+        {
+            dir = 5;
+        }
+        else if (angle < -pie[2])
+        {
+            dir = 6;
+        }
+        else if (angle < -pie[3])
+        {
+            dir = 7;
+        }
+        else if (angle < pie[0])
+        {
+            dir = 0;
+        }
+        return dir;
     }
 
     /**
@@ -2222,81 +2222,81 @@ internal class TileEngine
      */
     internal bool validateThrow(BattleAction action, Position originVoxel, Position targetVoxel, ref double curve /*= 0*/, ref int voxelType /*= 0*/, bool forced = false)
     {
-	    bool foundCurve = false;
-	    double curvature = 0.5;
-	    if (action.type == BattleActionType.BA_THROW)
-	    {
-		    curvature = Math.Max(0.48, 1.73 / Math.Sqrt(Math.Sqrt((double)(action.actor.getBaseStats().strength) / (double)(action.weapon.getRules().getWeight()))) + (action.actor.isKneeled()? 0.1 : 0.0));
-	    }
-	    else
-	    {
-		    // arcing projectile weapons assume a fixed strength and weight.(70 and 10 respectively)
-		    // curvature should be approximately 1.06358350461 at this point.
-		    curvature = 1.73 / Math.Sqrt(Math.Sqrt(70.0 / 10.0)) + (action.actor.isKneeled()? 0.1 : 0.0);
-	    }
+        bool foundCurve = false;
+        double curvature = 0.5;
+        if (action.type == BattleActionType.BA_THROW)
+        {
+            curvature = Math.Max(0.48, 1.73 / Math.Sqrt(Math.Sqrt((double)(action.actor.getBaseStats().strength) / (double)(action.weapon.getRules().getWeight()))) + (action.actor.isKneeled() ? 0.1 : 0.0));
+        }
+        else
+        {
+            // arcing projectile weapons assume a fixed strength and weight.(70 and 10 respectively)
+            // curvature should be approximately 1.06358350461 at this point.
+            curvature = 1.73 / Math.Sqrt(Math.Sqrt(70.0 / 10.0)) + (action.actor.isKneeled() ? 0.1 : 0.0);
+        }
 
-	    Tile targetTile = _save.getTile(action.target);
-	    Position targetPos = (targetVoxel / new Position(16, 16, 24));
-	    // object blocking - can't throw here
-	    if (action.type == BattleActionType.BA_THROW
-		    && targetTile != null
-		    && targetTile.getMapData(TilePart.O_OBJECT) != null
-		    && targetTile.getMapData(TilePart.O_OBJECT).getTUCost(MovementType.MT_WALK) == 255
-		    && !(targetTile.isBigWall()
-		    && (targetTile.getMapData(TilePart.O_OBJECT).getBigWall()<1
-		    || targetTile.getMapData(TilePart.O_OBJECT).getBigWall()>3)))
-	    {
-		    return false;
-	    }
-	    // out of range - can't throw here
-	    if (ProjectileFlyBState.validThrowRange(action, originVoxel, targetTile) == false)
-	    {
-		    return false;
-	    }
+        Tile targetTile = _save.getTile(action.target);
+        Position targetPos = (targetVoxel / new Position(16, 16, 24));
+        // object blocking - can't throw here
+        if (action.type == BattleActionType.BA_THROW
+            && targetTile != null
+            && targetTile.getMapData(TilePart.O_OBJECT) != null
+            && targetTile.getMapData(TilePart.O_OBJECT).getTUCost(MovementType.MT_WALK) == 255
+            && !(targetTile.isBigWall()
+            && (targetTile.getMapData(TilePart.O_OBJECT).getBigWall() < 1
+            || targetTile.getMapData(TilePart.O_OBJECT).getBigWall() > 3)))
+        {
+            return false;
+        }
+        // out of range - can't throw here
+        if (ProjectileFlyBState.validThrowRange(action, originVoxel, targetTile) == false)
+        {
+            return false;
+        }
 
-	    var trajectory = new List<Position>(16*20);
-	    // thows should be around 10 tiles far, make one allocation that fit 99% cases with some margin
-	    // we try 8 different curvatures to try and reach our goal.
-	    int test = (int)VoxelType.V_OUTOFBOUNDS;
-	    while (!foundCurve && curvature < 5.0)
-	    {
-		    trajectory.Clear();
-		    test = calculateParabola(originVoxel, targetVoxel, true, trajectory, action.actor, curvature, new Position(0,0,0));
-		    //position that item hit
-		    Position hitPos = (trajectory.Last() + new Position(0,0,1)) / new Position(16, 16, 24);
-		    //position where item will land
-		    Position tilePos = Projectile.getPositionFromEnd(trajectory, Projectile.ItemDropVoxelOffset) / new Position(16, 16, 24);
-		    if (forced || (test != (int)VoxelType.V_OUTOFBOUNDS && tilePos == targetPos))
-		    {
-			    if (voxelType != 0)
-			    {
-				    voxelType = test;
-			    }
-			    foundCurve = true;
-		    }
-		    else
-		    {
-			    curvature += 0.5;
-			    if (test != (int)VoxelType.V_OUTOFBOUNDS && action.actor.getFaction() == UnitFaction.FACTION_PLAYER) //obstacle indicator is only for player
-			    {
-				    Tile hitTile = _save.getTile(hitPos);
-				    if (hitTile != null)
-				    {
-					    hitTile.setObstacle(test);
-				    }
-			    }
-		    }
-	    }
-	    if (curvature >= 5.0)
-	    {
-		    return false;
-	    }
-	    if (curve != 0.0)
-	    {
-		    curve = curvature;
-	    }
+        var trajectory = new List<Position>(16 * 20);
+        // thows should be around 10 tiles far, make one allocation that fit 99% cases with some margin
+        // we try 8 different curvatures to try and reach our goal.
+        int test = (int)VoxelType.V_OUTOFBOUNDS;
+        while (!foundCurve && curvature < 5.0)
+        {
+            trajectory.Clear();
+            test = calculateParabola(originVoxel, targetVoxel, true, trajectory, action.actor, curvature, new Position(0, 0, 0));
+            //position that item hit
+            Position hitPos = (trajectory.Last() + new Position(0, 0, 1)) / new Position(16, 16, 24);
+            //position where item will land
+            Position tilePos = Projectile.getPositionFromEnd(trajectory, Projectile.ItemDropVoxelOffset) / new Position(16, 16, 24);
+            if (forced || (test != (int)VoxelType.V_OUTOFBOUNDS && tilePos == targetPos))
+            {
+                if (voxelType != 0)
+                {
+                    voxelType = test;
+                }
+                foundCurve = true;
+            }
+            else
+            {
+                curvature += 0.5;
+                if (test != (int)VoxelType.V_OUTOFBOUNDS && action.actor.getFaction() == UnitFaction.FACTION_PLAYER) //obstacle indicator is only for player
+                {
+                    Tile hitTile = _save.getTile(hitPos);
+                    if (hitTile != null)
+                    {
+                        hitTile.setObstacle(test);
+                    }
+                }
+            }
+        }
+        if (curvature >= 5.0)
+        {
+            return false;
+        }
+        if (curve != 0.0)
+        {
+            curve = curvature;
+        }
 
-	    return true;
+        return true;
     }
 
     /**
@@ -2312,58 +2312,58 @@ internal class TileEngine
      */
     internal int calculateParabola(Position origin, Position target, bool storeTrajectory, List<Position> trajectory, BattleUnit excludeUnit, double curvature, Position delta)
     {
-	    double ro = Math.Sqrt((double)((target.x - origin.x) * (target.x - origin.x) + (target.y - origin.y) * (target.y - origin.y) + (target.z - origin.z) * (target.z - origin.z)));
+        double ro = Math.Sqrt((double)((target.x - origin.x) * (target.x - origin.x) + (target.y - origin.y) * (target.y - origin.y) + (target.z - origin.z) * (target.z - origin.z)));
 
-	    if (AreSame(ro, 0.0)) return (int)VoxelType.V_EMPTY;//just in case
+        if (AreSame(ro, 0.0)) return (int)VoxelType.V_EMPTY;//just in case
 
-	    double fi = Math.Acos((double)(target.z - origin.z) / ro);
-	    double te = Math.Atan2((double)(target.y - origin.y), (double)(target.x - origin.x));
+        double fi = Math.Acos((double)(target.z - origin.z) / ro);
+        double te = Math.Atan2((double)(target.y - origin.y), (double)(target.x - origin.x));
 
-	    te += (delta.x / ro) / 2 * M_PI; //horizontal magic value
-	    fi += ((delta.z + delta.y) / ro) / 14 * M_PI * curvature; //another magic value (vertical), to make it in line with fire spread
+        te += (delta.x / ro) / 2 * M_PI; //horizontal magic value
+        fi += ((delta.z + delta.y) / ro) / 14 * M_PI * curvature; //another magic value (vertical), to make it in line with fire spread
 
-	    double zA = Math.Sqrt(ro)*curvature;
-	    double zK = 4.0 * zA / ro / ro;
+        double zA = Math.Sqrt(ro) * curvature;
+        double zK = 4.0 * zA / ro / ro;
 
-	    int x = origin.x;
-	    int y = origin.y;
-	    int z = origin.z;
-	    int i = 8;
-	    int result = (int)VoxelType.V_EMPTY;
-	    Position lastPosition = new Position(x,y,z);
-	    Position nextPosition = lastPosition;
+        int x = origin.x;
+        int y = origin.y;
+        int z = origin.z;
+        int i = 8;
+        int result = (int)VoxelType.V_EMPTY;
+        Position lastPosition = new Position(x, y, z);
+        Position nextPosition = lastPosition;
 
-	    if (storeTrajectory && trajectory != null)
-	    {
-		    //initla value for small hack to glue `calculateLine` into one continuous arc
-		    trajectory.Add(lastPosition);
-	    }
-	    while (z > 0)
-	    {
-		    x = (int)((double)origin.x + (double)i * Math.Cos(te) * Math.Sin(fi));
-		    y = (int)((double)origin.y + (double)i * Math.Sin(te) * Math.Sin(fi));
-		    z = (int)((double)origin.z + (double)i * Math.Cos(fi) - zK * ((double)i - ro / 2.0) * ((double)i - ro / 2.0) + zA);
-		    //passes through this point?
-		    nextPosition = new Position(x,y,z);
+        if (storeTrajectory && trajectory != null)
+        {
+            //initla value for small hack to glue `calculateLine` into one continuous arc
+            trajectory.Add(lastPosition);
+        }
+        while (z > 0)
+        {
+            x = (int)((double)origin.x + (double)i * Math.Cos(te) * Math.Sin(fi));
+            y = (int)((double)origin.y + (double)i * Math.Sin(te) * Math.Sin(fi));
+            z = (int)((double)origin.z + (double)i * Math.Cos(fi) - zK * ((double)i - ro / 2.0) * ((double)i - ro / 2.0) + zA);
+            //passes through this point?
+            nextPosition = new Position(x, y, z);
 
-		    if (storeTrajectory && trajectory != null)
-		    {
-			    //remove end point of previus trajectory part, becasue next one will add this point again
-			    trajectory.RemoveAt(trajectory.Count - 1);
-		    }
-		    result = calculateLine(lastPosition, nextPosition, storeTrajectory, storeTrajectory ? trajectory : null, excludeUnit);
-		    if (result != (int)VoxelType.V_EMPTY)
-		    {
-			    if (!storeTrajectory && trajectory != null)
-			    {
-				    result = calculateLine(lastPosition, nextPosition, false, trajectory, excludeUnit); //pick the INSIDE position of impact
-			    }
-			    break;
-		    }
-		    lastPosition = nextPosition;
-		    ++i;
-	    }
-	    return result;
+            if (storeTrajectory && trajectory != null)
+            {
+                //remove end point of previus trajectory part, becasue next one will add this point again
+                trajectory.RemoveAt(trajectory.Count - 1);
+            }
+            result = calculateLine(lastPosition, nextPosition, storeTrajectory, storeTrajectory ? trajectory : null, excludeUnit);
+            if (result != (int)VoxelType.V_EMPTY)
+            {
+                if (!storeTrajectory && trajectory != null)
+                {
+                    result = calculateLine(lastPosition, nextPosition, false, trajectory, excludeUnit); //pick the INSIDE position of impact
+                }
+                break;
+            }
+            lastPosition = nextPosition;
+            ++i;
+        }
+        return result;
     }
 
     /**
@@ -2380,151 +2380,151 @@ internal class TileEngine
      */
     internal int unitOpensDoor(BattleUnit unit, bool rClick = false, int dir = -1)
     {
-	    int door = -1;
-	    int TUCost = 0;
-	    int size = unit.getArmor().getSize();
-	    int z = unit.getTile().getTerrainLevel() < -12 ? 1 : 0; // if we're standing on stairs, check the tile above instead.
-	    if (dir == -1)
-	    {
-		    dir = unit.getDirection();
-	    }
-	    Tile tile;
-	    for (int x = 0; x < size && door == -1; x++)
-	    {
-		    for (int y = 0; y < size && door == -1; y++)
-		    {
-			    var checkPositions = new List<KeyValuePair<Position, TilePart>>();
-			    tile = _save.getTile(unit.getPosition() + new Position(x,y,z));
-			    if (tile == null) continue;
+        int door = -1;
+        int TUCost = 0;
+        int size = unit.getArmor().getSize();
+        int z = unit.getTile().getTerrainLevel() < -12 ? 1 : 0; // if we're standing on stairs, check the tile above instead.
+        if (dir == -1)
+        {
+            dir = unit.getDirection();
+        }
+        Tile tile;
+        for (int x = 0; x < size && door == -1; x++)
+        {
+            for (int y = 0; y < size && door == -1; y++)
+            {
+                var checkPositions = new List<KeyValuePair<Position, TilePart>>();
+                tile = _save.getTile(unit.getPosition() + new Position(x, y, z));
+                if (tile == null) continue;
 
-			    switch (dir)
-			    {
-			    case 0: // north
-				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
-				    if (x != 0)
-				    {
-					    checkPositions.Add(KeyValuePair.Create(new Position(0, -1, 0), TilePart.O_WESTWALL)); // one tile north
-				    }
-				    break;
-			    case 1: // north east
-				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
-				    checkPositions.Add(KeyValuePair.Create(new Position(1, -1, 0), TilePart.O_WESTWALL)); // one tile north-east
-				    if (rClick)
-				    {
-					    checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
-					    checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_NORTHWALL)); // one tile east
-				    }
-				    break;
-			    case 2: // east
-				    checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
-				    break;
-			    case 3: // south-east
-				    if (y == 0)
-					    checkPositions.Add(KeyValuePair.Create(new Position(1, 1, 0), TilePart.O_WESTWALL)); // one tile south-east
-				    if (x == 0)
-					    checkPositions.Add(KeyValuePair.Create(new Position(1, 1, 0), TilePart.O_NORTHWALL)); // one tile south-east
-				    if (rClick)
-				    {
-					    checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
-					    checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
-				    }
-				    break;
-			    case 4: // south
-				    checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
-				    break;
-			    case 5: // south-west
-				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
-				    checkPositions.Add(KeyValuePair.Create(new Position(-1, 1, 0), TilePart.O_NORTHWALL)); // one tile south-west
-				    if (rClick)
-				    {
-					    checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_WESTWALL)); // one tile south
-					    checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
-				    }
-				    break;
-			    case 6: // west
-				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
-				    if (y != 0)
-				    {
-					    checkPositions.Add(KeyValuePair.Create(new Position(-1, 0, 0), TilePart.O_NORTHWALL)); // one tile west
-				    }
-				    break;
-			    case 7: // north-west
-				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
-				    checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
-				    if (x != 0)
-				    {
-					    checkPositions.Add(KeyValuePair.Create(new Position(-1, -1, 0), TilePart.O_WESTWALL)); // one tile north
-				    }
-				    if (y != 0)
-				    {
-					    checkPositions.Add(KeyValuePair.Create(new Position(-1, -1, 0), TilePart.O_NORTHWALL)); // one tile north
-				    }
-				    if (rClick)
-				    {
-					    checkPositions.Add(KeyValuePair.Create(new Position(0, -1, 0), TilePart.O_WESTWALL)); // one tile north
-					    checkPositions.Add(KeyValuePair.Create(new Position(-1, 0, 0), TilePart.O_NORTHWALL)); // one tile west
-				    }
-				    break;
-			    default:
-				    break;
-			    }
+                switch (dir)
+                {
+                    case 0: // north
+                        checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
+                        if (x != 0)
+                        {
+                            checkPositions.Add(KeyValuePair.Create(new Position(0, -1, 0), TilePart.O_WESTWALL)); // one tile north
+                        }
+                        break;
+                    case 1: // north east
+                        checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
+                        checkPositions.Add(KeyValuePair.Create(new Position(1, -1, 0), TilePart.O_WESTWALL)); // one tile north-east
+                        if (rClick)
+                        {
+                            checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
+                            checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_NORTHWALL)); // one tile east
+                        }
+                        break;
+                    case 2: // east
+                        checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
+                        break;
+                    case 3: // south-east
+                        if (y == 0)
+                            checkPositions.Add(KeyValuePair.Create(new Position(1, 1, 0), TilePart.O_WESTWALL)); // one tile south-east
+                        if (x == 0)
+                            checkPositions.Add(KeyValuePair.Create(new Position(1, 1, 0), TilePart.O_NORTHWALL)); // one tile south-east
+                        if (rClick)
+                        {
+                            checkPositions.Add(KeyValuePair.Create(new Position(1, 0, 0), TilePart.O_WESTWALL)); // one tile east
+                            checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
+                        }
+                        break;
+                    case 4: // south
+                        checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
+                        break;
+                    case 5: // south-west
+                        checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
+                        checkPositions.Add(KeyValuePair.Create(new Position(-1, 1, 0), TilePart.O_NORTHWALL)); // one tile south-west
+                        if (rClick)
+                        {
+                            checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_WESTWALL)); // one tile south
+                            checkPositions.Add(KeyValuePair.Create(new Position(0, 1, 0), TilePart.O_NORTHWALL)); // one tile south
+                        }
+                        break;
+                    case 6: // west
+                        checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
+                        if (y != 0)
+                        {
+                            checkPositions.Add(KeyValuePair.Create(new Position(-1, 0, 0), TilePart.O_NORTHWALL)); // one tile west
+                        }
+                        break;
+                    case 7: // north-west
+                        checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_WESTWALL)); // origin
+                        checkPositions.Add(KeyValuePair.Create(new Position(0, 0, 0), TilePart.O_NORTHWALL)); // origin
+                        if (x != 0)
+                        {
+                            checkPositions.Add(KeyValuePair.Create(new Position(-1, -1, 0), TilePart.O_WESTWALL)); // one tile north
+                        }
+                        if (y != 0)
+                        {
+                            checkPositions.Add(KeyValuePair.Create(new Position(-1, -1, 0), TilePart.O_NORTHWALL)); // one tile north
+                        }
+                        if (rClick)
+                        {
+                            checkPositions.Add(KeyValuePair.Create(new Position(0, -1, 0), TilePart.O_WESTWALL)); // one tile north
+                            checkPositions.Add(KeyValuePair.Create(new Position(-1, 0, 0), TilePart.O_NORTHWALL)); // one tile west
+                        }
+                        break;
+                    default:
+                        break;
+                }
 
-			    TilePart part = TilePart.O_FLOOR;
-			    for (var i = 0; i < checkPositions.Count && door == -1; ++i)
-			    {
-				    tile = _save.getTile(unit.getPosition() + new Position(x,y,z) + checkPositions[i].Key);
-				    if (tile != null)
-				    {
-					    door = tile.openDoor(checkPositions[i].Value, unit, _save.getBattleGame().getReservedAction());
-					    if (door != -1)
-					    {
-						    part = checkPositions[i].Value;
-						    if (door == 1)
-						    {
-							    checkAdjacentDoors(unit.getPosition() + new Position(x,y,z) + checkPositions[i].Key, checkPositions[i].Value);
-						    }
-					    }
-				    }
-			    }
-			    if (door == 0 && rClick)
-			    {
-				    if (part == TilePart.O_WESTWALL)
-				    {
-					    part = TilePart.O_NORTHWALL;
-				    }
-				    else
-				    {
-					    part = TilePart.O_WESTWALL;
-				    }
-				    TUCost = tile.getTUCost((int)part, unit.getMovementType());
-			    }
-			    else if (door == 1 || door == 4)
-			    {
-				    TUCost = tile.getTUCost((int)part, unit.getMovementType());
-			    }
-		    }
-	    }
+                TilePart part = TilePart.O_FLOOR;
+                for (var i = 0; i < checkPositions.Count && door == -1; ++i)
+                {
+                    tile = _save.getTile(unit.getPosition() + new Position(x, y, z) + checkPositions[i].Key);
+                    if (tile != null)
+                    {
+                        door = tile.openDoor(checkPositions[i].Value, unit, _save.getBattleGame().getReservedAction());
+                        if (door != -1)
+                        {
+                            part = checkPositions[i].Value;
+                            if (door == 1)
+                            {
+                                checkAdjacentDoors(unit.getPosition() + new Position(x, y, z) + checkPositions[i].Key, checkPositions[i].Value);
+                            }
+                        }
+                    }
+                }
+                if (door == 0 && rClick)
+                {
+                    if (part == TilePart.O_WESTWALL)
+                    {
+                        part = TilePart.O_NORTHWALL;
+                    }
+                    else
+                    {
+                        part = TilePart.O_WESTWALL;
+                    }
+                    TUCost = tile.getTUCost((int)part, unit.getMovementType());
+                }
+                else if (door == 1 || door == 4)
+                {
+                    TUCost = tile.getTUCost((int)part, unit.getMovementType());
+                }
+            }
+        }
 
-	    if (TUCost != 0)
-	    {
-		    if (_save.getBattleGame().checkReservedTU(unit, TUCost))
-		    {
-			    if (unit.spendTimeUnits(TUCost))
-			    {
-				    calculateFOV(unit.getPosition());
-				    // look from the other side (may be need check reaction fire?)
-				    List<BattleUnit> vunits = unit.getVisibleUnits();
-				    foreach (var i in vunits)
-				    {
+        if (TUCost != 0)
+        {
+            if (_save.getBattleGame().checkReservedTU(unit, TUCost))
+            {
+                if (unit.spendTimeUnits(TUCost))
+                {
+                    calculateFOV(unit.getPosition());
+                    // look from the other side (may be need check reaction fire?)
+                    List<BattleUnit> vunits = unit.getVisibleUnits();
+                    foreach (var i in vunits)
+                    {
                         calculateFOV(i);
-				    }
-			    }
-			    else return 4;
-		    }
-		    else return 5;
-	    }
+                    }
+                }
+                else return 4;
+            }
+            else return 5;
+        }
 
-	    return door;
+        return door;
     }
 
     /**
@@ -2535,28 +2535,28 @@ internal class TileEngine
      */
     void checkAdjacentDoors(Position pos, TilePart part)
     {
-	    Position offset;
-	    bool westSide = (part == TilePart.O_WESTWALL);
-	    for (int i = 1;; ++i)
-	    {
-		    offset = westSide ? new Position(0,i,0):new Position(i,0,0);
-		    Tile tile = _save.getTile(pos + offset);
-		    if (tile != null && tile.getMapData(part) != null && tile.getMapData(part).isUFODoor())
-		    {
-			    tile.openDoor(part);
-		    }
-		    else break;
-	    }
-	    for (int i = -1;; --i)
-	    {
-		    offset = westSide ? new Position(0,i,0):new Position(i,0,0);
-		    Tile tile = _save.getTile(pos + offset);
-		    if (tile != null && tile.getMapData(part) != null && tile.getMapData(part).isUFODoor())
-		    {
-			    tile.openDoor(part);
-		    }
-		    else break;
-	    }
+        Position offset;
+        bool westSide = (part == TilePart.O_WESTWALL);
+        for (int i = 1; ; ++i)
+        {
+            offset = westSide ? new Position(0, i, 0) : new Position(i, 0, 0);
+            Tile tile = _save.getTile(pos + offset);
+            if (tile != null && tile.getMapData(part) != null && tile.getMapData(part).isUFODoor())
+            {
+                tile.openDoor(part);
+            }
+            else break;
+        }
+        for (int i = -1; ; --i)
+        {
+            offset = westSide ? new Position(0, i, 0) : new Position(i, 0, 0);
+            Tile tile = _save.getTile(pos + offset);
+            if (tile != null && tile.getMapData(part) != null && tile.getMapData(part).isUFODoor())
+            {
+                tile.openDoor(part);
+            }
+            else break;
+        }
     }
 
     /**
@@ -2567,46 +2567,46 @@ internal class TileEngine
      */
     internal bool checkReactionFire(BattleUnit unit)
     {
-	    // reaction fire only triggered when the actioning unit is of the currently playing side, and is still on the map (alive)
-	    if (unit.getFaction() != _save.getSide() || unit.getTile() == null)
-	    {
-		    return false;
-	    }
+        // reaction fire only triggered when the actioning unit is of the currently playing side, and is still on the map (alive)
+        if (unit.getFaction() != _save.getSide() || unit.getTile() == null)
+        {
+            return false;
+        }
 
-	    List<KeyValuePair<BattleUnit, int>> spotters = getSpottingUnits(unit);
-	    bool result = false;
+        List<KeyValuePair<BattleUnit, int>> spotters = getSpottingUnits(unit);
+        bool result = false;
 
-	    // not mind controlled, or controlled by the player
-	    if (unit.getFaction() == unit.getOriginalFaction()
-		    || unit.getFaction() != UnitFaction.FACTION_HOSTILE)
-	    {
-		    // get the first man up to bat.
-		    int attackType;
-		    BattleUnit reactor = getReactor(spotters, out attackType, unit);
-		    // start iterating through the possible reactors until the current unit is the one with the highest score.
-		    while (reactor != unit)
-		    {
-			    if (!tryReaction(reactor, unit, attackType))
-			    {
-				    // can't make a reaction snapshot for whatever reason, boot this guy from the vector.
-				    foreach (var i in spotters)
-				    {
-					    if (i.Key == reactor)
-					    {
-						    spotters.Remove(i);
-						    break;
-					    }
-				    }
-				    // avoid setting result to true, but carry on, just cause one unit can't react doesn't mean the rest of the units in the vector (if any) can't
-				    reactor = getReactor(spotters, out attackType, unit);
-				    continue;
-			    }
-			    // nice shot, kid. don't get cocky.
-			    reactor = getReactor(spotters, out attackType, unit);
-			    result = true;
-		    }
-	    }
-	    return result;
+        // not mind controlled, or controlled by the player
+        if (unit.getFaction() == unit.getOriginalFaction()
+            || unit.getFaction() != UnitFaction.FACTION_HOSTILE)
+        {
+            // get the first man up to bat.
+            int attackType;
+            BattleUnit reactor = getReactor(spotters, out attackType, unit);
+            // start iterating through the possible reactors until the current unit is the one with the highest score.
+            while (reactor != unit)
+            {
+                if (!tryReaction(reactor, unit, attackType))
+                {
+                    // can't make a reaction snapshot for whatever reason, boot this guy from the vector.
+                    foreach (var i in spotters)
+                    {
+                        if (i.Key == reactor)
+                        {
+                            spotters.Remove(i);
+                            break;
+                        }
+                    }
+                    // avoid setting result to true, but carry on, just cause one unit can't react doesn't mean the rest of the units in the vector (if any) can't
+                    reactor = getReactor(spotters, out attackType, unit);
+                    continue;
+                }
+                // nice shot, kid. don't get cocky.
+                reactor = getReactor(spotters, out attackType, unit);
+                result = true;
+            }
+        }
+        return result;
     }
 
     /**
@@ -2617,46 +2617,46 @@ internal class TileEngine
      */
     internal void setDangerZone(Position pos, int radius, BattleUnit unit)
     {
-	    Tile tile = _save.getTile(pos);
-	    if (tile == null)
-	    {
-		    return;
-	    }
-	    // set the epicenter as dangerous
-	    tile.setDangerous(true);
-	    Position originVoxel = (pos * new Position(16,16,24)) + new Position(8,8,12 + -tile.getTerrainLevel());
-	    Position targetVoxel;
-	    for (int x = -radius; x != radius; ++x)
-	    {
-		    for (int y = -radius; y != radius; ++y)
-		    {
-			    // we can skip the epicenter
-			    if (x != 0 || y != 0)
-			    {
-				    // make sure we're within the radius
-				    if ((x*x)+(y*y) <= (radius*radius))
-				    {
-					    tile = _save.getTile(pos + new Position(x,y,0));
-					    if (tile != null)
-					    {
-						    targetVoxel = ((pos + new Position(x,y,0)) * new Position(16,16,24)) + new Position(8,8,12 + -tile.getTerrainLevel());
-						    var trajectory = new List<Position>();
-						    // we'll trace a line here, ignoring all units, to check if the explosion will reach this point
-						    // granted this won't properly account for explosions tearing through walls, but then we can't really
-						    // know that kind of information before the fact, so let's have the AI assume that the wall (or tree)
-						    // is enough to protect them.
-						    if (calculateLine(originVoxel, targetVoxel, false, trajectory, unit, true, false, unit) == (int)VoxelType.V_EMPTY)
-						    {
-							    if (trajectory.Count != 0 && (trajectory.Last() / new Position(16,16,24)) == pos + new Position(x,y,0))
-							    {
-								    tile.setDangerous(true);
-							    }
-						    }
-					    }
-				    }
-			    }
-		    }
-	    }
+        Tile tile = _save.getTile(pos);
+        if (tile == null)
+        {
+            return;
+        }
+        // set the epicenter as dangerous
+        tile.setDangerous(true);
+        Position originVoxel = (pos * new Position(16, 16, 24)) + new Position(8, 8, 12 + -tile.getTerrainLevel());
+        Position targetVoxel;
+        for (int x = -radius; x != radius; ++x)
+        {
+            for (int y = -radius; y != radius; ++y)
+            {
+                // we can skip the epicenter
+                if (x != 0 || y != 0)
+                {
+                    // make sure we're within the radius
+                    if ((x * x) + (y * y) <= (radius * radius))
+                    {
+                        tile = _save.getTile(pos + new Position(x, y, 0));
+                        if (tile != null)
+                        {
+                            targetVoxel = ((pos + new Position(x, y, 0)) * new Position(16, 16, 24)) + new Position(8, 8, 12 + -tile.getTerrainLevel());
+                            var trajectory = new List<Position>();
+                            // we'll trace a line here, ignoring all units, to check if the explosion will reach this point
+                            // granted this won't properly account for explosions tearing through walls, but then we can't really
+                            // know that kind of information before the fact, so let's have the AI assume that the wall (or tree)
+                            // is enough to protect them.
+                            if (calculateLine(originVoxel, targetVoxel, false, trajectory, unit, true, false, unit) == (int)VoxelType.V_EMPTY)
+                            {
+                                if (trajectory.Count != 0 && (trajectory.Last() / new Position(16, 16, 24)) == pos + new Position(x, y, 0))
+                                {
+                                    tile.setDangerous(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -2669,32 +2669,32 @@ internal class TileEngine
     {
         attackType = 0;
         int bestScore = -1;
-	    BattleUnit bu = null;
-	    foreach (var i in spotters)
-	    {
-		    if (!i.Key.isOut() &&
-		    !i.Key.getRespawn() &&
-		    determineReactionType(i.Key, unit) != (int)BattleActionType.BA_NONE &&
-		    i.Key.getReactionScore() > bestScore)
-		    {
-			    bestScore = (int)i.Key.getReactionScore();
-			    bu = i.Key;
-			    attackType = i.Value;
-		    }
-	    }
-	    if (unit.getReactionScore() <= bestScore)
-	    {
-		    if (bu.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
-		    {
-			    bu.addReactionExp();
-		    }
-	    }
-	    else
-	    {
-		    bu = unit;
-		    attackType = (int)BattleActionType.BA_NONE;
-	    }
-	    return bu;
+        BattleUnit bu = null;
+        foreach (var i in spotters)
+        {
+            if (!i.Key.isOut() &&
+            !i.Key.getRespawn() &&
+            determineReactionType(i.Key, unit) != (int)BattleActionType.BA_NONE &&
+            i.Key.getReactionScore() > bestScore)
+            {
+                bestScore = (int)i.Key.getReactionScore();
+                bu = i.Key;
+                attackType = i.Value;
+            }
+        }
+        if (unit.getReactionScore() <= bestScore)
+        {
+            if (bu.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
+            {
+                bu.addReactionExp();
+            }
+        }
+        else
+        {
+            bu = unit;
+            attackType = (int)BattleActionType.BA_NONE;
+        }
+        return bu;
     }
 
     /**
@@ -2704,74 +2704,74 @@ internal class TileEngine
      */
     List<KeyValuePair<BattleUnit, int>> getSpottingUnits(BattleUnit unit)
     {
-	    var spotters = new List<KeyValuePair<BattleUnit, int>>();
-	    Tile tile = unit.getTile();
+        var spotters = new List<KeyValuePair<BattleUnit, int>>();
+        Tile tile = unit.getTile();
 
-	    // no reaction on civilian turn.
-	    if (_save.getSide() != UnitFaction.FACTION_NEUTRAL)
-	    {
-		    foreach (var i in _save.getUnits())
-		    {
-				    // not dead/unconscious
-			    if (!i.isOut() &&
-				    // not dying
-				    i.getHealth() != 0 &&
-				    // not about to pass out
-				    i.getStunlevel() < i.getHealth() &&
-				    // not a friend
-				    i.getFaction() != _save.getSide() &&
-				    // not a civilian
-				    i.getFaction() != UnitFaction.FACTION_NEUTRAL &&
-				    // closer than 20 tiles
-				    distanceSq(unit.getPosition(), i.getPosition()) <= MAX_VIEW_DISTANCE_SQR)
-			    {
-				    BattleAction falseAction = default;
-				    falseAction.type = BattleActionType.BA_SNAPSHOT;
-				    falseAction.actor = i;
-				    falseAction.target = unit.getPosition();
-				    Position originVoxel = getOriginVoxel(falseAction, null);
-				    var targetVoxel = new Position();
-				    AIModule ai = i.getAIModule();
+        // no reaction on civilian turn.
+        if (_save.getSide() != UnitFaction.FACTION_NEUTRAL)
+        {
+            foreach (var i in _save.getUnits())
+            {
+                // not dead/unconscious
+                if (!i.isOut() &&
+                    // not dying
+                    i.getHealth() != 0 &&
+                    // not about to pass out
+                    i.getStunlevel() < i.getHealth() &&
+                    // not a friend
+                    i.getFaction() != _save.getSide() &&
+                    // not a civilian
+                    i.getFaction() != UnitFaction.FACTION_NEUTRAL &&
+                    // closer than 20 tiles
+                    distanceSq(unit.getPosition(), i.getPosition()) <= MAX_VIEW_DISTANCE_SQR)
+                {
+                    BattleAction falseAction = default;
+                    falseAction.type = BattleActionType.BA_SNAPSHOT;
+                    falseAction.actor = i;
+                    falseAction.target = unit.getPosition();
+                    Position originVoxel = getOriginVoxel(falseAction, null);
+                    var targetVoxel = new Position();
+                    AIModule ai = i.getAIModule();
 
-				    // Inquisitor's note regarding 'gotHit' variable
-				    // in vanilla, the 'hitState' flag is the only part of this equation that comes into play.
-				    // any time a unit takes damage, this flag is set, then it would be reset by a call to
-				    // a function analogous to SavedBattleGame.resetUnitHitStates(), any time:
-				    // 1: a unit was selected by being clicked on.
-				    // 2: either "next unit" button was pressed.
-				    // 3: the inventory screen was accessed. (i didn't look too far into this one, it's possible it's only called in the pre-mission equip screen)
-				    // 4: the same place where we call it, immediately before every move the AI makes.
-				    // this flag is responsible for units turning around to respond to hits, and is in keeping with the details listed on http://www.ufopaedia.org/index.php/Reaction_fire_triggers
-				    // we've gone for a slightly different implementation: AI units keep a list of which units have hit them and don't forget until the end of the player's turn.
-				    // this method is in keeping with the spirit of the original feature, but much less exploitable by players.
-				    // the hitState flag in our implementation allows player units to turn and react as they did in the original, (which is far less cumbersome than giving them all an AI module)
-				    // we don't extend the same "enhanced aggressor memory" courtesy to players, because in the original, they could only turn and react to damage immediately after it happened.
-				    // this is because as much as we want the player's soldiers dead, we don't want them to feel like we're being unfair about it.
+                    // Inquisitor's note regarding 'gotHit' variable
+                    // in vanilla, the 'hitState' flag is the only part of this equation that comes into play.
+                    // any time a unit takes damage, this flag is set, then it would be reset by a call to
+                    // a function analogous to SavedBattleGame.resetUnitHitStates(), any time:
+                    // 1: a unit was selected by being clicked on.
+                    // 2: either "next unit" button was pressed.
+                    // 3: the inventory screen was accessed. (i didn't look too far into this one, it's possible it's only called in the pre-mission equip screen)
+                    // 4: the same place where we call it, immediately before every move the AI makes.
+                    // this flag is responsible for units turning around to respond to hits, and is in keeping with the details listed on http://www.ufopaedia.org/index.php/Reaction_fire_triggers
+                    // we've gone for a slightly different implementation: AI units keep a list of which units have hit them and don't forget until the end of the player's turn.
+                    // this method is in keeping with the spirit of the original feature, but much less exploitable by players.
+                    // the hitState flag in our implementation allows player units to turn and react as they did in the original, (which is far less cumbersome than giving them all an AI module)
+                    // we don't extend the same "enhanced aggressor memory" courtesy to players, because in the original, they could only turn and react to damage immediately after it happened.
+                    // this is because as much as we want the player's soldiers dead, we don't want them to feel like we're being unfair about it.
 
-				    bool gotHit = (ai != null && ai.getWasHitBy(unit.getId())) || (ai == null && i.getHitState());
+                    bool gotHit = (ai != null && ai.getWasHitBy(unit.getId())) || (ai == null && i.getHitState());
 
-					    // can actually see the target Tile, or we got hit
-				    if ((i.checkViewSector(unit.getPosition()) || gotHit) &&
-					    // can actually target the unit
-					    canTargetUnit(originVoxel, tile, targetVoxel, i, false) &&
-					    // can actually see the unit
-					    visible(i, tile))
-				    {
-					    if (i.getFaction() == UnitFaction.FACTION_PLAYER)
-					    {
-						    unit.setVisible(true);
-					    }
-					    i.addToVisibleUnits(unit);
-					    int attackType = determineReactionType(i, unit);
-					    if (attackType != (int)BattleActionType.BA_NONE)
-					    {
-						    spotters.Add(KeyValuePair.Create(i, attackType));
-					    }
-				    }
-			    }
-		    }
-	    }
-	    return spotters;
+                    // can actually see the target Tile, or we got hit
+                    if ((i.checkViewSector(unit.getPosition()) || gotHit) &&
+                        // can actually target the unit
+                        canTargetUnit(originVoxel, tile, targetVoxel, i, false) &&
+                        // can actually see the unit
+                        visible(i, tile))
+                    {
+                        if (i.getFaction() == UnitFaction.FACTION_PLAYER)
+                        {
+                            unit.setVisible(true);
+                        }
+                        i.addToVisibleUnits(unit);
+                        int attackType = determineReactionType(i, unit);
+                        if (attackType != (int)BattleActionType.BA_NONE)
+                        {
+                            spotters.Add(KeyValuePair.Create(i, attackType));
+                        }
+                    }
+                }
+            }
+        }
+        return spotters;
     }
 
     /**
@@ -2782,39 +2782,39 @@ internal class TileEngine
      */
     int determineReactionType(BattleUnit unit, BattleUnit target)
     {
-	    // prioritize melee
-	    BattleItem meleeWeapon = unit.getMeleeWeapon();
-	    if (meleeWeapon != null &&
-		    // has a melee weapon and is in melee range
-		    validMeleeRange(unit, target, unit.getDirection()) &&
-		    unit.getActionTUs(BattleActionType.BA_HIT, meleeWeapon) > 0 &&
-		    unit.getTimeUnits() > unit.getActionTUs(BattleActionType.BA_HIT, meleeWeapon) &&
-		    (unit.getOriginalFaction() != UnitFaction.FACTION_PLAYER ||
-		    _save.getGeoscapeSave().isResearched(meleeWeapon.getRules().getRequirements())) &&
-		    _save.isItemUsable(meleeWeapon))
-	    {
-		    return (int)BattleActionType.BA_HIT;
-	    }
+        // prioritize melee
+        BattleItem meleeWeapon = unit.getMeleeWeapon();
+        if (meleeWeapon != null &&
+            // has a melee weapon and is in melee range
+            validMeleeRange(unit, target, unit.getDirection()) &&
+            unit.getActionTUs(BattleActionType.BA_HIT, meleeWeapon) > 0 &&
+            unit.getTimeUnits() > unit.getActionTUs(BattleActionType.BA_HIT, meleeWeapon) &&
+            (unit.getOriginalFaction() != UnitFaction.FACTION_PLAYER ||
+            _save.getGeoscapeSave().isResearched(meleeWeapon.getRules().getRequirements())) &&
+            _save.isItemUsable(meleeWeapon))
+        {
+            return (int)BattleActionType.BA_HIT;
+        }
 
-	    BattleItem weapon = unit.getMainHandWeapon(unit.getFaction() != UnitFaction.FACTION_PLAYER);
-	    // has a weapon
-	    if (weapon != null &&
-		    // has a gun capable of snap shot with ammo
-		    (weapon.getRules().getBattleType() != BattleType.BT_MELEE &&
-		    weapon.getRules().getTUSnap() != 0 &&
-		    // Note: distance calculation isn't precise for 2x2 units here, but changing it would likely require also changing the targeting of 2x2 units
-		    distanceSq(unit.getPosition(), target.getPosition(), false) < weapon.getRules().getMaxRangeSq() &&
-		    weapon.getAmmoItem() != null &&
-		    unit.getActionTUs(BattleActionType.BA_SNAPSHOT, weapon) > 0 &&
-		    unit.getTimeUnits() > unit.getActionTUs(BattleActionType.BA_SNAPSHOT, weapon)) &&
-		    (unit.getOriginalFaction() != UnitFaction.FACTION_PLAYER ||
-		    _save.getGeoscapeSave().isResearched(weapon.getRules().getRequirements())) &&
-		    _save.isItemUsable(weapon))
-	    {
-		    return (int)BattleActionType.BA_SNAPSHOT;
-	    }
+        BattleItem weapon = unit.getMainHandWeapon(unit.getFaction() != UnitFaction.FACTION_PLAYER);
+        // has a weapon
+        if (weapon != null &&
+            // has a gun capable of snap shot with ammo
+            (weapon.getRules().getBattleType() != BattleType.BT_MELEE &&
+            weapon.getRules().getTUSnap() != 0 &&
+            // Note: distance calculation isn't precise for 2x2 units here, but changing it would likely require also changing the targeting of 2x2 units
+            distanceSq(unit.getPosition(), target.getPosition(), false) < weapon.getRules().getMaxRangeSq() &&
+            weapon.getAmmoItem() != null &&
+            unit.getActionTUs(BattleActionType.BA_SNAPSHOT, weapon) > 0 &&
+            unit.getTimeUnits() > unit.getActionTUs(BattleActionType.BA_SNAPSHOT, weapon)) &&
+            (unit.getOriginalFaction() != UnitFaction.FACTION_PLAYER ||
+            _save.getGeoscapeSave().isResearched(weapon.getRules().getRequirements())) &&
+            _save.isItemUsable(weapon))
+        {
+            return (int)BattleActionType.BA_SNAPSHOT;
+        }
 
-	    return (int)BattleActionType.BA_NONE;
+        return (int)BattleActionType.BA_NONE;
     }
 
     /**
@@ -2825,7 +2825,7 @@ internal class TileEngine
      * @return True when the range is valid.
      */
     internal bool validMeleeRange(BattleUnit attacker, BattleUnit target, int dir) =>
-	    validMeleeRange(attacker.getPosition(), dir, attacker, target, out _);
+        validMeleeRange(attacker.getPosition(), dir, attacker, target, out _);
 
     /**
      * Validates the melee range between a tile and a unit.
@@ -2839,85 +2839,85 @@ internal class TileEngine
     internal bool validMeleeRange(Position pos, int direction, BattleUnit attacker, BattleUnit target, out Position dest, bool preferEnemy = true)
     {
         dest = null;
-	    if (direction < 0 || direction > 7)
-	    {
-		    return false;
-	    }
-	    var potentialTargets = new List<BattleUnit>();
-	    BattleUnit chosenTarget = null;
-	    Position p;
-	    int size = attacker.getArmor().getSize() - 1;
-	    Pathfinding.directionToVector(direction, out p);
-	    for (int x = 0; x <= size; ++x)
-	    {
-		    for (int y = 0; y <= size; ++y)
-		    {
-			    Tile origin = _save.getTile(new Position(pos + new Position(x, y, 0)));
-			    Tile targetTile = _save.getTile(new Position(pos + new Position(x, y, 0) + p));
-			    Tile aboveTargetTile = _save.getTile(new Position(pos + new Position(x, y, 1) + p));
-			    Tile belowTargetTile = _save.getTile(new Position(pos + new Position(x, y, -1) + p));
+        if (direction < 0 || direction > 7)
+        {
+            return false;
+        }
+        var potentialTargets = new List<BattleUnit>();
+        BattleUnit chosenTarget = null;
+        Position p;
+        int size = attacker.getArmor().getSize() - 1;
+        Pathfinding.directionToVector(direction, out p);
+        for (int x = 0; x <= size; ++x)
+        {
+            for (int y = 0; y <= size; ++y)
+            {
+                Tile origin = _save.getTile(new Position(pos + new Position(x, y, 0)));
+                Tile targetTile = _save.getTile(new Position(pos + new Position(x, y, 0) + p));
+                Tile aboveTargetTile = _save.getTile(new Position(pos + new Position(x, y, 1) + p));
+                Tile belowTargetTile = _save.getTile(new Position(pos + new Position(x, y, -1) + p));
 
-			    if (targetTile != null && origin != null)
-			    {
-				    if (origin.getTerrainLevel() <= -16 && aboveTargetTile != null && !aboveTargetTile.hasNoFloor(targetTile))
-				    {
-					    targetTile = aboveTargetTile;
-				    }
-				    else if (belowTargetTile != null && targetTile.hasNoFloor(belowTargetTile) && targetTile.getUnit() == null && belowTargetTile.getTerrainLevel() <= -16)
-				    {
-					    targetTile = belowTargetTile;
-				    }
-				    if (targetTile.getUnit() != null)
-				    {
-					    if (target == null || targetTile.getUnit() == target)
-					    {
-						    Position originVoxel = new Position(origin.getPosition() * new Position(16,16,24))
-							    + new Position(8,8,attacker.getHeight() + attacker.getFloatHeight() - 4 -origin.getTerrainLevel());
-						    var targetVoxel = new Position();
-						    if (canTargetUnit(originVoxel, targetTile, targetVoxel, attacker, false))
-						    {
-							    if (dest != null)
-							    {
-								    dest = targetTile.getPosition();
-							    }
-							    if (target != null)
-							    {
-								    return true;
-							    }
-							    else
-							    {
-								    potentialTargets.Add(targetTile.getUnit());
-							    }
-						    }
-					    }
-				    }
-			    }
-		    }
-	    }
+                if (targetTile != null && origin != null)
+                {
+                    if (origin.getTerrainLevel() <= -16 && aboveTargetTile != null && !aboveTargetTile.hasNoFloor(targetTile))
+                    {
+                        targetTile = aboveTargetTile;
+                    }
+                    else if (belowTargetTile != null && targetTile.hasNoFloor(belowTargetTile) && targetTile.getUnit() == null && belowTargetTile.getTerrainLevel() <= -16)
+                    {
+                        targetTile = belowTargetTile;
+                    }
+                    if (targetTile.getUnit() != null)
+                    {
+                        if (target == null || targetTile.getUnit() == target)
+                        {
+                            Position originVoxel = new Position(origin.getPosition() * new Position(16, 16, 24))
+                                + new Position(8, 8, attacker.getHeight() + attacker.getFloatHeight() - 4 - origin.getTerrainLevel());
+                            var targetVoxel = new Position();
+                            if (canTargetUnit(originVoxel, targetTile, targetVoxel, attacker, false))
+                            {
+                                if (dest != null)
+                                {
+                                    dest = targetTile.getPosition();
+                                }
+                                if (target != null)
+                                {
+                                    return true;
+                                }
+                                else
+                                {
+                                    potentialTargets.Add(targetTile.getUnit());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-	    foreach (var i in potentialTargets)
-	    {
-		    // if there's actually something THERE, we'll chalk this up as a success.
-		    if (chosenTarget == null)
-		    {
-			    chosenTarget = i;
-		    }
-		    // but if there's a target of a different faction, we'll prioritize them.
-		    else if ((preferEnemy && i.getFaction() != attacker.getFaction())
-		    // or, if we're using a medikit, prioritize whichever friend is wounded the most.
-		    || (!preferEnemy && i.getFaction() == attacker.getFaction() &&
-		    i.getFatalWounds() > chosenTarget.getFatalWounds()))
-		    {
-			    chosenTarget = i;
-		    }
-	    }
+        foreach (var i in potentialTargets)
+        {
+            // if there's actually something THERE, we'll chalk this up as a success.
+            if (chosenTarget == null)
+            {
+                chosenTarget = i;
+            }
+            // but if there's a target of a different faction, we'll prioritize them.
+            else if ((preferEnemy && i.getFaction() != attacker.getFaction())
+            // or, if we're using a medikit, prioritize whichever friend is wounded the most.
+            || (!preferEnemy && i.getFaction() == attacker.getFaction() &&
+            i.getFatalWounds() > chosenTarget.getFatalWounds()))
+            {
+                chosenTarget = i;
+            }
+        }
 
-	    if (dest != null && chosenTarget != null)
-	    {
-		    dest = chosenTarget.getPosition();
-	    }
+        if (dest != null && chosenTarget != null)
+        {
+            dest = chosenTarget.getPosition();
+        }
 
-	    return chosenTarget != null;
+        return chosenTarget != null;
     }
 
     /**
@@ -2928,62 +2928,62 @@ internal class TileEngine
      */
     bool tryReaction(BattleUnit unit, BattleUnit target, int attackType)
     {
-	    var action = new BattleAction();
-	    action.cameraPosition = _save.getBattleState().getMap().getCamera().getMapOffset();
-	    action.actor = unit;
-	    if (attackType == (int)BattleActionType.BA_HIT)
-	    {
-		    action.weapon = unit.getMeleeWeapon();
-	    }
-	    else
-	    {
-		    action.weapon = unit.getMainHandWeapon(unit.getFaction() != UnitFaction.FACTION_PLAYER);
-	    }
-	    if (action.weapon == null)
-	    {
-		    return false;
-	    }
-	    action.type = (BattleActionType)(attackType);
-	    action.target = target.getPosition();
-	    action.TU = unit.getActionTUs(action.type, action.weapon);
+        var action = new BattleAction();
+        action.cameraPosition = _save.getBattleState().getMap().getCamera().getMapOffset();
+        action.actor = unit;
+        if (attackType == (int)BattleActionType.BA_HIT)
+        {
+            action.weapon = unit.getMeleeWeapon();
+        }
+        else
+        {
+            action.weapon = unit.getMainHandWeapon(unit.getFaction() != UnitFaction.FACTION_PLAYER);
+        }
+        if (action.weapon == null)
+        {
+            return false;
+        }
+        action.type = (BattleActionType)(attackType);
+        action.target = target.getPosition();
+        action.TU = unit.getActionTUs(action.type, action.weapon);
 
-	    if (action.weapon.getAmmoItem() != null && action.weapon.getAmmoItem().getAmmoQuantity() != 0 && unit.getTimeUnits() >= action.TU)
-	    {
-		    action.targeting = true;
+        if (action.weapon.getAmmoItem() != null && action.weapon.getAmmoItem().getAmmoQuantity() != 0 && unit.getTimeUnits() >= action.TU)
+        {
+            action.targeting = true;
 
-		    // hostile units will go into an "aggro" state when they react.
-		    if (unit.getFaction() == UnitFaction.FACTION_HOSTILE)
-		    {
-			    AIModule ai = unit.getAIModule();
-			    if (ai == null)
-			    {
-				    // should not happen, but just in case...
-				    ai = new AIModule(_save, unit, null);
-				    unit.setAIModule(ai);
-			    }
+            // hostile units will go into an "aggro" state when they react.
+            if (unit.getFaction() == UnitFaction.FACTION_HOSTILE)
+            {
+                AIModule ai = unit.getAIModule();
+                if (ai == null)
+                {
+                    // should not happen, but just in case...
+                    ai = new AIModule(_save, unit, null);
+                    unit.setAIModule(ai);
+                }
 
-			    if (action.type != BattleActionType.BA_HIT && action.weapon.getAmmoItem().getRules().getExplosionRadius() != 0 &&
-				    ai.explosiveEfficacy(action.target, unit, action.weapon.getAmmoItem().getRules().getExplosionRadius(), -1) == false)
-			    {
-				    action.targeting = false;
-			    }
-		    }
+                if (action.type != BattleActionType.BA_HIT && action.weapon.getAmmoItem().getRules().getExplosionRadius() != 0 &&
+                    ai.explosiveEfficacy(action.target, unit, action.weapon.getAmmoItem().getRules().getExplosionRadius(), -1) == false)
+                {
+                    action.targeting = false;
+                }
+            }
 
-		    if (action.targeting && unit.spendTimeUnits(action.TU))
-		    {
-			    action.TU = 0;
-			    if (action.type == BattleActionType.BA_HIT)
-			    {
-				    _save.getBattleGame().statePushBack(new MeleeAttackBState(_save.getBattleGame(), action));
-			    }
-			    else
-			    {
-				    _save.getBattleGame().statePushBack(new ProjectileFlyBState(_save.getBattleGame(), action));
-			    }
-			    return true;
-		    }
-	    }
-	    return false;
+            if (action.targeting && unit.spendTimeUnits(action.TU))
+            {
+                action.TU = 0;
+                if (action.type == BattleActionType.BA_HIT)
+                {
+                    _save.getBattleGame().statePushBack(new MeleeAttackBState(_save.getBattleGame(), action));
+                }
+                else
+                {
+                    _save.getBattleGame().statePushBack(new ProjectileFlyBState(_save.getBattleGame(), action));
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -2998,96 +2998,96 @@ internal class TileEngine
      */
     internal BattleUnit hit(Position center, int power, ItemDamageType type, BattleUnit unit)
     {
-	    Tile tile = _save.getTile(new Position(center.x/16, center.y/16, center.z/24));
-	    if (tile == null)
-	    {
-		    return null;
-	    }
+        Tile tile = _save.getTile(new Position(center.x / 16, center.y / 16, center.z / 24));
+        if (tile == null)
+        {
+            return null;
+        }
 
-	    BattleUnit bu = tile.getUnit();
-	    int adjustedDamage = 0;
-	    voxelCheckFlush();
-	    var part = voxelCheck(center, unit);
-	    if (part >= VoxelType.V_FLOOR && part <= VoxelType.V_OBJECT)
-	    {
-		    // power 25% to 75%
-		    int rndPower = RNG.generate(power/4, (power*3)/4);
-		    if (part == VoxelType.V_OBJECT && rndPower >= tile.getMapData(TilePart.O_OBJECT).getArmor() &&
-			    _save.getMissionType() == "STR_BASE_DEFENSE" && tile.getMapData(TilePart.O_OBJECT).isBaseModule())
-		    {
-			    var moduleMap = _save.getModuleMap()[(center.x/16)/10][(center.y/16)/10];
-			    _save.getModuleMap()[(center.x/16)/10][(center.y/16)/10] = KeyValuePair.Create(moduleMap.Key, moduleMap.Value - 1);
-		    }
-		    if (tile.damage((TilePart)part, rndPower, _save.getObjectiveType()))
-		    {
-			    _save.addDestroyedObjective();
-		    }
-	    }
-	    else if (part == VoxelType.V_UNIT)
-	    {
-		    int dmgRng = type == ItemDamageType.DT_HE ? Mod.Mod.EXPLOSIVE_DAMAGE_RANGE : Mod.Mod.DAMAGE_RANGE;
-		    int min = power * (100 - dmgRng) / 100;
-		    int max = power * (100 + dmgRng) / 100;
-		    int rndPower = RNG.generate(min, max);
-		    int verticaloffset = 0;
-		    if (bu == null)
-		    {
-			    // it's possible we have a unit below the actual tile, when he stands on a stairs and sticks his head out to the next tile
-			    Tile below = _save.getTile(new Position(center.x/16, center.y/16, (center.z/24)-1));
-			    if (below != null)
-			    {
-				    BattleUnit buBelow = below.getUnit();
-				    if (buBelow != null)
-				    {
-					    bu = buBelow;
-					    verticaloffset = 24;
-				    }
-			    }
-		    }
-		    if (bu != null && bu.getHealth() != 0 && bu.getStunlevel() < bu.getHealth())
-		    {
-			    int sz = bu.getArmor().getSize() * 8;
-			    Position target = bu.getPosition() * new Position(16,16,24) + new Position(sz,sz, bu.getFloatHeight() - tile.getTerrainLevel());
-			    Position relative = (center - target) - new Position(0,0,verticaloffset);
-			    int wounds = bu.getFatalWounds();
+        BattleUnit bu = tile.getUnit();
+        int adjustedDamage = 0;
+        voxelCheckFlush();
+        var part = voxelCheck(center, unit);
+        if (part >= VoxelType.V_FLOOR && part <= VoxelType.V_OBJECT)
+        {
+            // power 25% to 75%
+            int rndPower = RNG.generate(power / 4, (power * 3) / 4);
+            if (part == VoxelType.V_OBJECT && rndPower >= tile.getMapData(TilePart.O_OBJECT).getArmor() &&
+                _save.getMissionType() == "STR_BASE_DEFENSE" && tile.getMapData(TilePart.O_OBJECT).isBaseModule())
+            {
+                var moduleMap = _save.getModuleMap()[(center.x / 16) / 10][(center.y / 16) / 10];
+                _save.getModuleMap()[(center.x / 16) / 10][(center.y / 16) / 10] = KeyValuePair.Create(moduleMap.Key, moduleMap.Value - 1);
+            }
+            if (tile.damage((TilePart)part, rndPower, _save.getObjectiveType()))
+            {
+                _save.addDestroyedObjective();
+            }
+        }
+        else if (part == VoxelType.V_UNIT)
+        {
+            int dmgRng = type == ItemDamageType.DT_HE ? Mod.Mod.EXPLOSIVE_DAMAGE_RANGE : Mod.Mod.DAMAGE_RANGE;
+            int min = power * (100 - dmgRng) / 100;
+            int max = power * (100 + dmgRng) / 100;
+            int rndPower = RNG.generate(min, max);
+            int verticaloffset = 0;
+            if (bu == null)
+            {
+                // it's possible we have a unit below the actual tile, when he stands on a stairs and sticks his head out to the next tile
+                Tile below = _save.getTile(new Position(center.x / 16, center.y / 16, (center.z / 24) - 1));
+                if (below != null)
+                {
+                    BattleUnit buBelow = below.getUnit();
+                    if (buBelow != null)
+                    {
+                        bu = buBelow;
+                        verticaloffset = 24;
+                    }
+                }
+            }
+            if (bu != null && bu.getHealth() != 0 && bu.getStunlevel() < bu.getHealth())
+            {
+                int sz = bu.getArmor().getSize() * 8;
+                Position target = bu.getPosition() * new Position(16, 16, 24) + new Position(sz, sz, bu.getFloatHeight() - tile.getTerrainLevel());
+                Position relative = (center - target) - new Position(0, 0, verticaloffset);
+                int wounds = bu.getFatalWounds();
 
-			    adjustedDamage = bu.damage(relative, rndPower, type);
+                adjustedDamage = bu.damage(relative, rndPower, type);
 
-			    // if it's going to bleed to death and it's not a player, give credit for the kill.
-			    if (unit != null && bu.getFaction() != UnitFaction.FACTION_PLAYER && wounds < bu.getFatalWounds())
-			    {
-				    bu.killedBy(unit.getFaction());
-			    }
-			    int bravery = (110 - bu.getBaseStats().bravery) / 10;
-			    int modifier = bu.getFaction() == UnitFaction.FACTION_PLAYER ? _save.getMoraleModifier() : 100;
-			    int morale_loss = 100 * (adjustedDamage * bravery / 10) / modifier;
+                // if it's going to bleed to death and it's not a player, give credit for the kill.
+                if (unit != null && bu.getFaction() != UnitFaction.FACTION_PLAYER && wounds < bu.getFatalWounds())
+                {
+                    bu.killedBy(unit.getFaction());
+                }
+                int bravery = (110 - bu.getBaseStats().bravery) / 10;
+                int modifier = bu.getFaction() == UnitFaction.FACTION_PLAYER ? _save.getMoraleModifier() : 100;
+                int morale_loss = 100 * (adjustedDamage * bravery / 10) / modifier;
 
-			    bu.moraleChange(-morale_loss);
+                bu.moraleChange(-morale_loss);
 
-			    if ((bu.getSpecialAbility() == (int)SpecialAbility.SPECAB_EXPLODEONDEATH || bu.getSpecialAbility() == (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE) && !bu.isOut() && (bu.getHealth() == 0 || bu.getStunlevel() >= bu.getHealth()))
-			    {
-				    if (type != ItemDamageType.DT_STUN && type != ItemDamageType.DT_HE && type != ItemDamageType.DT_IN && type != ItemDamageType.DT_MELEE)
-				    {
-					    Position p = new Position(bu.getPosition().x * 16, bu.getPosition().y * 16, bu.getPosition().z * 24);
-					    _save.getBattleGame().statePushNext(new ExplosionBState(_save.getBattleGame(), p, null, bu, null));
-				    }
-			    }
+                if ((bu.getSpecialAbility() == (int)SpecialAbility.SPECAB_EXPLODEONDEATH || bu.getSpecialAbility() == (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE) && !bu.isOut() && (bu.getHealth() == 0 || bu.getStunlevel() >= bu.getHealth()))
+                {
+                    if (type != ItemDamageType.DT_STUN && type != ItemDamageType.DT_HE && type != ItemDamageType.DT_IN && type != ItemDamageType.DT_MELEE)
+                    {
+                        Position p = new Position(bu.getPosition().x * 16, bu.getPosition().y * 16, bu.getPosition().z * 24);
+                        _save.getBattleGame().statePushNext(new ExplosionBState(_save.getBattleGame(), p, null, bu, null));
+                    }
+                }
 
-			    if (bu.getOriginalFaction() == UnitFaction.FACTION_HOSTILE &&
-				    unit != null &&
-				    unit.getOriginalFaction() == UnitFaction.FACTION_PLAYER &&
-				    type != ItemDamageType.DT_NONE &&
-				    _save.getBattleGame().getCurrentAction().type != BattleActionType.BA_HIT)
-			    {
-				    unit.addFiringExp();
-			    }
-		    }
-	    }
-	    applyGravity(tile);
-	    calculateSunShading(); // roofs could have been destroyed
-	    calculateTerrainLighting(); // fires could have been started
-	    calculateFOV(center / new Position(16,16,24));
-	    return bu;
+                if (bu.getOriginalFaction() == UnitFaction.FACTION_HOSTILE &&
+                    unit != null &&
+                    unit.getOriginalFaction() == UnitFaction.FACTION_PLAYER &&
+                    type != ItemDamageType.DT_NONE &&
+                    _save.getBattleGame().getCurrentAction().type != BattleActionType.BA_HIT)
+                {
+                    unit.addFiringExp();
+                }
+            }
+        }
+        applyGravity(tile);
+        calculateSunShading(); // roofs could have been destroyed
+        calculateTerrainLighting(); // fires could have been started
+        calculateFOV(center / new Position(16, 16, 24));
+        return bu;
     }
 
     /**
@@ -3095,8 +3095,8 @@ internal class TileEngine
      */
     internal void togglePersonalLighting()
     {
-	    _personalLighting = !_personalLighting;
-	    calculateUnitLighting();
+        _personalLighting = !_personalLighting;
+        calculateUnitLighting();
     }
 
     /**
@@ -3106,24 +3106,24 @@ internal class TileEngine
      */
     internal bool isVoxelVisible(Position voxel)
     {
-	    int zstart = voxel.z+3; // slight Z adjust
-	    if ((zstart/24)!=(voxel.z/24))
-		    return true; // visible!
-	    Position tmpVoxel = voxel;
-	    int zend = (zstart/24)*24 +24;
+        int zstart = voxel.z + 3; // slight Z adjust
+        if ((zstart / 24) != (voxel.z / 24))
+            return true; // visible!
+        Position tmpVoxel = voxel;
+        int zend = (zstart / 24) * 24 + 24;
 
-	    voxelCheckFlush();
-	    for (int z = zstart; z<zend; z++)
-	    {
-		    tmpVoxel.z=z;
-		    // only OBJECT can cause additional occlusion (because of any shape)
-		    if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
-		    ++tmpVoxel.x;
-		    if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
-		    ++tmpVoxel.y;
-		    if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
-	    }
-	    return true;
+        voxelCheckFlush();
+        for (int z = zstart; z < zend; z++)
+        {
+            tmpVoxel.z = z;
+            // only OBJECT can cause additional occlusion (because of any shape)
+            if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
+            ++tmpVoxel.x;
+            if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
+            ++tmpVoxel.y;
+            if (voxelCheck(tmpVoxel, null) == VoxelType.V_OBJECT) return false;
+        }
+        return true;
     }
 
     /**
@@ -3133,26 +3133,26 @@ internal class TileEngine
      */
     internal int castedShade(Position voxel)
     {
-	    int zstart = voxel.z;
-	    Position tmpCoord = voxel / new Position(16,16,24);
-	    Tile t = _save.getTile(tmpCoord);
-	    while (t != null && t.isVoid() && t.getUnit() == null)
-	    {
-		    zstart = tmpCoord.z* 24;
-		    --tmpCoord.z;
-		    t = _save.getTile(tmpCoord);
-	    }
+        int zstart = voxel.z;
+        Position tmpCoord = voxel / new Position(16, 16, 24);
+        Tile t = _save.getTile(tmpCoord);
+        while (t != null && t.isVoid() && t.getUnit() == null)
+        {
+            zstart = tmpCoord.z * 24;
+            --tmpCoord.z;
+            t = _save.getTile(tmpCoord);
+        }
 
-	    Position tmpVoxel = voxel;
-	    int z;
+        Position tmpVoxel = voxel;
+        int z;
 
-	    voxelCheckFlush();
-	    for (z = zstart; z>0; z--)
-	    {
-		    tmpVoxel.z = z;
-		    if (voxelCheck(tmpVoxel, null) != VoxelType.V_EMPTY) break;
-	    }
-	    return z;
+        voxelCheckFlush();
+        for (z = zstart; z > 0; z--)
+        {
+            tmpVoxel.z = z;
+            if (voxelCheck(tmpVoxel, null) != VoxelType.V_EMPTY) break;
+        }
+        return z;
     }
 
     /**
@@ -3165,70 +3165,70 @@ internal class TileEngine
      */
     int checkVoxelExposure(Position originVoxel, Tile tile, BattleUnit excludeUnit, BattleUnit excludeAllBut)
     {
-	    Position targetVoxel = new Position((tile.getPosition().x * 16) + 7, (tile.getPosition().y * 16) + 8, tile.getPosition().z * 24);
-	    var scanVoxel = new Position();
-	    var _trajectory = new List<Position>();
-	    BattleUnit otherUnit = tile.getUnit();
-	    if (otherUnit == null) return 0; //no unit in this tile, even if it elevated and appearing in it.
-	    if (otherUnit == excludeUnit) return 0; //skip self
+        Position targetVoxel = new Position((tile.getPosition().x * 16) + 7, (tile.getPosition().y * 16) + 8, tile.getPosition().z * 24);
+        var scanVoxel = new Position();
+        var _trajectory = new List<Position>();
+        BattleUnit otherUnit = tile.getUnit();
+        if (otherUnit == null) return 0; //no unit in this tile, even if it elevated and appearing in it.
+        if (otherUnit == excludeUnit) return 0; //skip self
 
-	    int targetMinHeight = targetVoxel.z - tile.getTerrainLevel();
-	    if (otherUnit != null)
-		     targetMinHeight += otherUnit.getFloatHeight();
+        int targetMinHeight = targetVoxel.z - tile.getTerrainLevel();
+        if (otherUnit != null)
+            targetMinHeight += otherUnit.getFloatHeight();
 
-	    // if there is an other unit on target tile, we assume we want to check against this unit's height
-	    int heightRange;
+        // if there is an other unit on target tile, we assume we want to check against this unit's height
+        int heightRange;
 
-	    int unitRadius = otherUnit.getLoftemps(); //width == loft in default loftemps set
-	    if (otherUnit.getArmor().getSize() > 1)
-	    {
-		    unitRadius = 3;
-	    }
+        int unitRadius = otherUnit.getLoftemps(); //width == loft in default loftemps set
+        if (otherUnit.getArmor().getSize() > 1)
+        {
+            unitRadius = 3;
+        }
 
-	    // vector manipulation to make scan work in view-space
-	    Position relPos = targetVoxel - originVoxel;
-	    float normal = (float)(unitRadius / Math.Sqrt((float)(relPos.x*relPos.x + relPos.y*relPos.y)));
-	    int relX = (int)Math.Floor(((float)relPos.y)*normal+0.5);
-	    int relY = (int)Math.Floor(((float)-relPos.x)*normal+0.5);
+        // vector manipulation to make scan work in view-space
+        Position relPos = targetVoxel - originVoxel;
+        float normal = (float)(unitRadius / Math.Sqrt((float)(relPos.x * relPos.x + relPos.y * relPos.y)));
+        int relX = (int)Math.Floor(((float)relPos.y) * normal + 0.5);
+        int relY = (int)Math.Floor(((float)-relPos.x) * normal + 0.5);
 
-	    int[] sliceTargets = {0,0, relX,relY, -relX,-relY};
+        int[] sliceTargets = { 0, 0, relX, relY, -relX, -relY };
 
-	    if (!otherUnit.isOut())
-	    {
-		    heightRange = otherUnit.getHeight();
-	    }
-	    else
-	    {
-		    heightRange = 12;
-	    }
+        if (!otherUnit.isOut())
+        {
+            heightRange = otherUnit.getHeight();
+        }
+        else
+        {
+            heightRange = 12;
+        }
 
-	    int targetMaxHeight=targetMinHeight+heightRange;
-	    // scan ray from top to bottom  plus different parts of target cylinder
-	    int total=0;
-	    int visible=0;
-	    for (int i = heightRange; i >=0; i-=2)
-	    {
-		    ++total;
-		    scanVoxel.z=targetMinHeight+i;
-		    for (int j = 0; j < 3; ++j)
-		    {
-			    scanVoxel.x=targetVoxel.x + sliceTargets[j*2];
-			    scanVoxel.y=targetVoxel.y + sliceTargets[j*2+1];
-			    _trajectory.Clear();
-			    int test = calculateLine(originVoxel, scanVoxel, false, _trajectory, excludeUnit, true, false, excludeAllBut);
-			    if (test == (int)VoxelType.V_UNIT)
-			    {
-				    //voxel of hit must be inside of scanned box
-				    if (_trajectory[0].x/16 == scanVoxel.x/16 &&
-                        _trajectory[0].y/16 == scanVoxel.y/16 &&
+        int targetMaxHeight = targetMinHeight + heightRange;
+        // scan ray from top to bottom  plus different parts of target cylinder
+        int total = 0;
+        int visible = 0;
+        for (int i = heightRange; i >= 0; i -= 2)
+        {
+            ++total;
+            scanVoxel.z = targetMinHeight + i;
+            for (int j = 0; j < 3; ++j)
+            {
+                scanVoxel.x = targetVoxel.x + sliceTargets[j * 2];
+                scanVoxel.y = targetVoxel.y + sliceTargets[j * 2 + 1];
+                _trajectory.Clear();
+                int test = calculateLine(originVoxel, scanVoxel, false, _trajectory, excludeUnit, true, false, excludeAllBut);
+                if (test == (int)VoxelType.V_UNIT)
+                {
+                    //voxel of hit must be inside of scanned box
+                    if (_trajectory[0].x / 16 == scanVoxel.x / 16 &&
+                        _trajectory[0].y / 16 == scanVoxel.y / 16 &&
                         _trajectory[0].z >= targetMinHeight &&
                         _trajectory[0].z <= targetMaxHeight)
-				    {
-					    ++visible;
-				    }
-			    }
-		    }
-	    }
-	    return (visible*100)/total;
+                    {
+                        ++visible;
+                    }
+                }
+            }
+        }
+        return (visible * 100) / total;
     }
 }

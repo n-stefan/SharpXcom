@@ -36,7 +36,7 @@ internal class EquipmentLayoutItem
      * @param node YAML node.
      */
     internal EquipmentLayoutItem(YamlNode node) =>
-	    load(node);
+        load(node);
 
     /**
      * Initializes a new soldier-equipment layout item.
@@ -75,21 +75,21 @@ internal class EquipmentLayoutItem
         };
         // only save this info if it's needed, reduce clutter in saves
         if (_slotX != 0)
-	    {
-		    node.Add("slotX", _slotX.ToString());
-	    }
-	    if (_slotY != 0)
-	    {
-		    node.Add("slotY", _slotY.ToString());
-	    }
-	    if (_ammoItem != "NONE")
-	    {
-		    node.Add("ammoItem", _ammoItem);
-	    }
-	    if (_fuseTimer >= 0)
-	    {
-		    node.Add("fuseTimer", _fuseTimer.ToString());
-	    }
+        {
+            node.Add("slotX", _slotX.ToString());
+        }
+        if (_slotY != 0)
+        {
+            node.Add("slotY", _slotY.ToString());
+        }
+        if (_ammoItem != "NONE")
+        {
+            node.Add("ammoItem", _ammoItem);
+        }
+        if (_fuseTimer >= 0)
+        {
+            node.Add("fuseTimer", _fuseTimer.ToString());
+        }
         return node;
     }
 
@@ -98,7 +98,7 @@ internal class EquipmentLayoutItem
      * @return slot name.
      */
     internal string getSlot() =>
-	    _slot;
+        _slot;
 
     /**
      * Loads the soldier-equipment layout item from a YAML file.
@@ -106,12 +106,12 @@ internal class EquipmentLayoutItem
      */
     internal void load(YamlNode node)
     {
-	    _itemType = node["itemType"].ToString();
-	    _slot = node["slot"].ToString();
-	    _slotX = int.Parse(node["slotX"].ToString());
-	    _slotY = int.Parse(node["slotY"].ToString());
-	    _ammoItem = node["ammoItem"] != null ? node["ammoItem"].ToString() : "NONE";
-	    _fuseTimer = node["fuseTimer"] != null ? int.Parse(node["fuseTimer"].ToString()) : -1;
+        _itemType = node["itemType"].ToString();
+        _slot = node["slot"].ToString();
+        _slotX = int.Parse(node["slotX"].ToString());
+        _slotY = int.Parse(node["slotY"].ToString());
+        _ammoItem = node["ammoItem"] != null ? node["ammoItem"].ToString() : "NONE";
+        _fuseTimer = node["fuseTimer"] != null ? int.Parse(node["fuseTimer"].ToString()) : -1;
     }
 
     /**
@@ -119,33 +119,33 @@ internal class EquipmentLayoutItem
      * @return item type.
      */
     internal string getItemType() =>
-	    _itemType;
+        _itemType;
 
     /**
      * Returns the position-X in the slot to be occupied.
      * @return slot-X.
      */
     internal int getSlotX() =>
-	    _slotX;
+        _slotX;
 
     /**
      * Returns the position-Y in the slot to be occupied.
      * @return slot-Y.
      */
     internal int getSlotY() =>
-	    _slotY;
+        _slotY;
 
     /**
      * Returns the ammo has to be loaded into the item.
      * @return ammo type.
      */
     internal string getAmmoItem() =>
-	    _ammoItem;
+        _ammoItem;
 
     /**
      * Returns the turn until explosion of the item. (if it's an activated grenade-type)
      * @return turn count.
      */
     internal int getFuseTimer() =>
-	    _fuseTimer;
+        _fuseTimer;
 }

@@ -48,7 +48,7 @@ internal class Soldier
     SoldierDiary _diary;
     string _statString;
 
-	internal Soldier() { }
+    internal Soldier() { }
 
     /**
 	 * Initializes a new soldier, either blank or randomly generated.
@@ -57,96 +57,96 @@ internal class Soldier
 	 * @param id Unique soldier id for soldier generation.
 	 */
     internal Soldier(RuleSoldier rules, Armor armor, int id = 0)
-	{
-		_id = id;
-		_improvement = 0;
-		_psiStrImprovement = 0;
-		_rules = rules;
-		_rank = SoldierRank.RANK_ROOKIE;
-		_craft = null;
-		_gender = SoldierGender.GENDER_MALE;
-		_look = SoldierLook.LOOK_BLONDE;
-		_missions = 0;
-		_kills = 0;
-		_recovery = 0;
-		_recentlyPromoted = false;
-		_psiTraining = false;
-		_armor = armor;
-		_death = null;
-		_diary = new SoldierDiary();
+    {
+        _id = id;
+        _improvement = 0;
+        _psiStrImprovement = 0;
+        _rules = rules;
+        _rank = SoldierRank.RANK_ROOKIE;
+        _craft = null;
+        _gender = SoldierGender.GENDER_MALE;
+        _look = SoldierLook.LOOK_BLONDE;
+        _missions = 0;
+        _kills = 0;
+        _recovery = 0;
+        _recentlyPromoted = false;
+        _psiTraining = false;
+        _armor = armor;
+        _death = null;
+        _diary = new SoldierDiary();
 
         if (id != 0)
-		{
-			UnitStats minStats = rules.getMinStats();
-			UnitStats maxStats = rules.getMaxStats();
+        {
+            UnitStats minStats = rules.getMinStats();
+            UnitStats maxStats = rules.getMaxStats();
 
-			_initialStats.tu = RNG.generate(minStats.tu, maxStats.tu);
-			_initialStats.stamina = RNG.generate(minStats.stamina, maxStats.stamina);
-			_initialStats.health = RNG.generate(minStats.health, maxStats.health);
-			_initialStats.bravery = RNG.generate(minStats.bravery/10, maxStats.bravery/10)*10;
-			_initialStats.reactions = RNG.generate(minStats.reactions, maxStats.reactions);
-			_initialStats.firing = RNG.generate(minStats.firing, maxStats.firing);
-			_initialStats.throwing = RNG.generate(minStats.throwing, maxStats.throwing);
-			_initialStats.strength = RNG.generate(minStats.strength, maxStats.strength);
-			_initialStats.psiStrength = RNG.generate(minStats.psiStrength, maxStats.psiStrength);
-			_initialStats.melee = RNG.generate(minStats.melee, maxStats.melee);
-			_initialStats.psiSkill = minStats.psiSkill;
+            _initialStats.tu = RNG.generate(minStats.tu, maxStats.tu);
+            _initialStats.stamina = RNG.generate(minStats.stamina, maxStats.stamina);
+            _initialStats.health = RNG.generate(minStats.health, maxStats.health);
+            _initialStats.bravery = RNG.generate(minStats.bravery / 10, maxStats.bravery / 10) * 10;
+            _initialStats.reactions = RNG.generate(minStats.reactions, maxStats.reactions);
+            _initialStats.firing = RNG.generate(minStats.firing, maxStats.firing);
+            _initialStats.throwing = RNG.generate(minStats.throwing, maxStats.throwing);
+            _initialStats.strength = RNG.generate(minStats.strength, maxStats.strength);
+            _initialStats.psiStrength = RNG.generate(minStats.psiStrength, maxStats.psiStrength);
+            _initialStats.melee = RNG.generate(minStats.melee, maxStats.melee);
+            _initialStats.psiSkill = minStats.psiSkill;
 
-			_currentStats = _initialStats;
+            _currentStats = _initialStats;
 
-			List<SoldierNamePool> names = rules.getNames();
-			if (names.Any())
-			{
+            List<SoldierNamePool> names = rules.getNames();
+            if (names.Any())
+            {
                 int nationality = RNG.generate(0, names.Count - 1);
-				_name = names[nationality].genName(_gender, rules.getFemaleFrequency());
-				_look = (SoldierLook)names[nationality].genLook(4); // Once we add the ability to mod in extra looks, this will need to reference the ruleset for the maximum amount of looks.
-			}
-			else
-			{
-				// No possible names, just wing it
-				_gender = (RNG.percent(rules.getFemaleFrequency()) ? SoldierGender.GENDER_FEMALE : SoldierGender.GENDER_MALE);
-				_look = (SoldierLook)RNG.generate(0, 3);
-				_name = (_gender == SoldierGender.GENDER_FEMALE) ? "Jane" : "John";
-				_name = $"{_name} Doe";
-			}
-		}
-	}
+                _name = names[nationality].genName(_gender, rules.getFemaleFrequency());
+                _look = (SoldierLook)names[nationality].genLook(4); // Once we add the ability to mod in extra looks, this will need to reference the ruleset for the maximum amount of looks.
+            }
+            else
+            {
+                // No possible names, just wing it
+                _gender = (RNG.percent(rules.getFemaleFrequency()) ? SoldierGender.GENDER_FEMALE : SoldierGender.GENDER_MALE);
+                _look = (SoldierLook)RNG.generate(0, 3);
+                _name = (_gender == SoldierGender.GENDER_FEMALE) ? "Jane" : "John";
+                _name = $"{_name} Doe";
+            }
+        }
+    }
 
-	/**
+    /**
 	 *
 	 */
-	~Soldier()
-	{
-		_equipmentLayout.Clear();
-		_death = null;
-		_diary = null;
-	}
+    ~Soldier()
+    {
+        _equipmentLayout.Clear();
+        _death = null;
+        _diary = null;
+    }
 
-	/**
+    /**
 	 * Returns a localizable-string representation of
 	 * the soldier's military rank.
 	 * @return String ID for rank.
 	 */
-	internal string getRankString()
-	{
-		switch (_rank)
-		{
-			case SoldierRank.RANK_ROOKIE:
-				return "STR_ROOKIE";
-			case SoldierRank.RANK_SQUADDIE:
-				return "STR_SQUADDIE";
-			case SoldierRank.RANK_SERGEANT:
-				return "STR_SERGEANT";
-			case SoldierRank.RANK_CAPTAIN:
-				return "STR_CAPTAIN";
-			case SoldierRank.RANK_COLONEL:
-				return "STR_COLONEL";
-			case SoldierRank.RANK_COMMANDER:
-				return "STR_COMMANDER";
-			default:
-				return string.Empty;
-		}
-	}
+    internal string getRankString()
+    {
+        switch (_rank)
+        {
+            case SoldierRank.RANK_ROOKIE:
+                return "STR_ROOKIE";
+            case SoldierRank.RANK_SQUADDIE:
+                return "STR_SQUADDIE";
+            case SoldierRank.RANK_SERGEANT:
+                return "STR_SERGEANT";
+            case SoldierRank.RANK_CAPTAIN:
+                return "STR_CAPTAIN";
+            case SoldierRank.RANK_COLONEL:
+                return "STR_COLONEL";
+            case SoldierRank.RANK_COMMANDER:
+                return "STR_COMMANDER";
+            default:
+                return string.Empty;
+        }
+    }
 
     /**
 	 * Returns the soldier's full name (and, optionally, statString).
@@ -155,24 +155,24 @@ internal class Soldier
 	 * @return Soldier name.
 	 */
     internal string getName(bool statstring = false, uint maxLength = 20)
-	{
-		if (statstring && !string.IsNullOrEmpty(_statString))
-		{
-			string name = Unicode.convUtf8ToUtf32(_name);
-			if (name.Length + _statString.Length > maxLength)
-			{
-				return Unicode.convUtf32ToUtf8(name.Substring(0, (int)(maxLength - _statString.Length))) + "/" + _statString;
-			}
-			else
-			{
-				return _name + "/" + _statString;
-			}
-		}
-		else
-		{
-			return _name;
-		}
-	}
+    {
+        if (statstring && !string.IsNullOrEmpty(_statString))
+        {
+            string name = Unicode.convUtf8ToUtf32(_name);
+            if (name.Length + _statString.Length > maxLength)
+            {
+                return Unicode.convUtf32ToUtf8(name.Substring(0, (int)(maxLength - _statString.Length))) + "/" + _statString;
+            }
+            else
+            {
+                return _name + "/" + _statString;
+            }
+        }
+        else
+        {
+            return _name;
+        }
+    }
 
     /**
      * Kills the soldier in the Geoscape.
@@ -191,12 +191,12 @@ internal class Soldier
         _equipmentLayout.Clear();
     }
 
-	/**
+    /**
 	 * Saves the soldier to a YAML file.
 	 * @return YAML node.
 	 */
-	internal YamlNode save()
-	{
+    internal YamlNode save()
+    {
         var node = new YamlMappingNode
         {
             { "type", _rules.getType() },
@@ -207,35 +207,35 @@ internal class Soldier
             { "rank", ((int)_rank).ToString() }
         };
         if (_craft != null)
-		{
-			node.Add("craft", _craft.saveId());
-		}
-		node.Add("gender", ((int)_gender).ToString());
-		node.Add("look", ((int)_look).ToString());
-		node.Add("missions", _missions.ToString());
-		node.Add("kills", _kills.ToString());
-		if (_recovery > 0)
-			node.Add("recovery", _recovery.ToString());
-		node.Add("armor", _armor.getType());
-		if (_psiTraining)
-			node.Add("psiTraining", _psiTraining.ToString());
-		node.Add("improvement", _improvement.ToString());
-		node.Add("psiStrImprovement", _psiStrImprovement.ToString());
-		if (_equipmentLayout.Any())
-		{
+        {
+            node.Add("craft", _craft.saveId());
+        }
+        node.Add("gender", ((int)_gender).ToString());
+        node.Add("look", ((int)_look).ToString());
+        node.Add("missions", _missions.ToString());
+        node.Add("kills", _kills.ToString());
+        if (_recovery > 0)
+            node.Add("recovery", _recovery.ToString());
+        node.Add("armor", _armor.getType());
+        if (_psiTraining)
+            node.Add("psiTraining", _psiTraining.ToString());
+        node.Add("improvement", _improvement.ToString());
+        node.Add("psiStrImprovement", _psiStrImprovement.ToString());
+        if (_equipmentLayout.Any())
+        {
             node.Add("equipmentLayout", new YamlSequenceNode(_equipmentLayout.Select(x => x.save())));
-		}
-		if (_death != null)
-		{
-			node.Add("death", _death.save());
-		}
-		if (Options.soldierDiaries && (_diary.getMissionIdList().Any() || _diary.getSoldierCommendations().Any() || _diary.getMonthsService() > 0))
-		{
-			node.Add("diary", _diary.save());
-		}
+        }
+        if (_death != null)
+        {
+            node.Add("death", _death.save());
+        }
+        if (Options.soldierDiaries && (_diary.getMissionIdList().Any() || _diary.getSoldierCommendations().Any() || _diary.getMonthsService() > 0))
+        {
+            node.Add("diary", _diary.save());
+        }
 
-		return node;
-	}
+        return node;
+    }
 
     /**
      * Assigns the soldier to a new craft.
@@ -244,83 +244,83 @@ internal class Soldier
     internal void setCraft(Craft craft) =>
         _craft = craft;
 
-	/**
+    /**
 	 * Loads the soldier from a YAML file.
 	 * @param node YAML node.
 	 * @param mod Game mod.
 	 * @param save Pointer to savegame.
 	 */
-	internal void load(YamlNode node, Mod.Mod mod, SavedGame save)
-	{
-		_id = int.Parse(node["id"].ToString());
-		_name = node["name"].ToString();
-		_initialStats = UnitStats.decode(node["initialStats"]);
-		_currentStats = UnitStats.decode(node["currentStats"]);
-		_rank = (SoldierRank)int.Parse(node["rank"].ToString());
-		_gender = (SoldierGender)int.Parse(node["gender"].ToString());
-		_look = (SoldierLook)int.Parse(node["look"].ToString());
-		_missions = int.Parse(node["missions"].ToString());
-		_kills = int.Parse(node["kills"].ToString());
-		_recovery = int.Parse(node["recovery"].ToString());
-		Armor armor = mod.getArmor(node["armor"].ToString());
-		if (armor == null)
-		{
-			armor = mod.getArmor(mod.getSoldier(mod.getSoldiersList().First()).getArmor());
-		}
-		_armor = armor;
-		_psiTraining = bool.Parse(node["psiTraining"].ToString());
-		_improvement = int.Parse(node["improvement"].ToString());
-		_psiStrImprovement = int.Parse(node["psiStrImprovement"].ToString());
+    internal void load(YamlNode node, Mod.Mod mod, SavedGame save)
+    {
+        _id = int.Parse(node["id"].ToString());
+        _name = node["name"].ToString();
+        _initialStats = UnitStats.decode(node["initialStats"]);
+        _currentStats = UnitStats.decode(node["currentStats"]);
+        _rank = (SoldierRank)int.Parse(node["rank"].ToString());
+        _gender = (SoldierGender)int.Parse(node["gender"].ToString());
+        _look = (SoldierLook)int.Parse(node["look"].ToString());
+        _missions = int.Parse(node["missions"].ToString());
+        _kills = int.Parse(node["kills"].ToString());
+        _recovery = int.Parse(node["recovery"].ToString());
+        Armor armor = mod.getArmor(node["armor"].ToString());
+        if (armor == null)
+        {
+            armor = mod.getArmor(mod.getSoldier(mod.getSoldiersList().First()).getArmor());
+        }
+        _armor = armor;
+        _psiTraining = bool.Parse(node["psiTraining"].ToString());
+        _improvement = int.Parse(node["improvement"].ToString());
+        _psiStrImprovement = int.Parse(node["psiStrImprovement"].ToString());
         if (node["equipmentLayout"] is YamlSequenceNode layout)
-		{
-			foreach (var i in layout)
-			{
-				EquipmentLayoutItem layoutItem = new EquipmentLayoutItem(i);
-				if (mod.getInventory(layoutItem.getSlot()) != null)
-				{
-					_equipmentLayout.Add(layoutItem);
-				}
-				else
-				{
-					layoutItem = null;
-				}
-			}
-		}
-		if (node["death"] != null)
-		{
-			_death = new SoldierDeath();
-			_death.load(node["death"]);
-		}
-		if (node["diary"] != null)
-		{
-			_diary = new SoldierDiary();
-			_diary.load(node["diary"], mod);
-		}
-		calcStatString(mod.getStatStrings(), (Options.psiStrengthEval && save.isResearched(mod.getPsiRequirements())));
-	}
+        {
+            foreach (var i in layout)
+            {
+                EquipmentLayoutItem layoutItem = new EquipmentLayoutItem(i);
+                if (mod.getInventory(layoutItem.getSlot()) != null)
+                {
+                    _equipmentLayout.Add(layoutItem);
+                }
+                else
+                {
+                    layoutItem = null;
+                }
+            }
+        }
+        if (node["death"] != null)
+        {
+            _death = new SoldierDeath();
+            _death.load(node["death"]);
+        }
+        if (node["diary"] != null)
+        {
+            _diary = new SoldierDiary();
+            _diary.load(node["diary"], mod);
+        }
+        calcStatString(mod.getStatStrings(), (Options.psiStrengthEval && save.isResearched(mod.getPsiRequirements())));
+    }
 
-	/**
+    /**
 	 * Calculates the soldier's statString
 	 * Calculates the soldier's statString.
 	 * @param statStrings List of statString rules.
 	 * @param psiStrengthEval Are psi stats available?
 	 */
-	internal void calcStatString(List<StatString> statStrings, bool psiStrengthEval) =>
-		_statString = StatString.calcStatString(_currentStats, statStrings, psiStrengthEval, _psiTraining);
+    internal void calcStatString(List<StatString> statStrings, bool psiStrengthEval) =>
+        _statString = StatString.calcStatString(_currentStats, statStrings, psiStrengthEval, _psiTraining);
 
-	/**
+    /**
 	 * returns whether or not the unit is in psi training
 	 * @return true/false
 	 */
-	internal bool isInPsiTraining() =>
-		_psiTraining;
+    internal bool isInPsiTraining() =>
+        _psiTraining;
 
-	/**
+    /**
 	 * Returns the soldier's rules.
 	 * @return rulesoldier
 	 */
-	internal RuleSoldier getRules() =>
-		_rules;
+    internal RuleSoldier getRules() =>
+        _rules;
 
     /**
      * Trains a soldier's Psychic abilities after 1 month.
@@ -357,12 +357,12 @@ internal class Soldier
         if (_currentStats.psiStrength > psiStrengthCap) _currentStats.psiStrength = psiStrengthCap;
     }
 
-	/**
+    /**
 	 * Returns the amount of time until the soldier is healed.
 	 * @return Number of days.
 	 */
-	internal int getWoundRecovery() =>
-		_recovery;
+    internal int getWoundRecovery() =>
+        _recovery;
 
     /**
      * Heals soldier wounds.
@@ -411,19 +411,19 @@ internal class Soldier
             _currentStats.psiSkill -= RNG.generate(30, 60);    // set initial training from 30 to 60 days
     }
 
-	/**
+    /**
 	 * Returns the craft the soldier is assigned to.
 	 * @return Pointer to craft.
 	 */
-	internal Craft getCraft() =>
-		_craft;
+    internal Craft getCraft() =>
+        _craft;
 
-	/**
+    /**
 	 * Returns the soldier's military rank.
 	 * @return Rank enum.
 	 */
-	internal SoldierRank getRank() =>
-		_rank;
+    internal SoldierRank getRank() =>
+        _rank;
 
     /**
      * Returns the list of EquipmentLayoutItems of a soldier.
@@ -432,33 +432,33 @@ internal class Soldier
     internal List<EquipmentLayoutItem> getEquipmentLayout() =>
         _equipmentLayout;
 
-	/**
+    /**
 	 * Returns the soldier's gender.
 	 * @return Gender.
 	 */
-	internal SoldierGender getGender() =>
-		_gender;
+    internal SoldierGender getGender() =>
+        _gender;
 
-	/**
+    /**
 	 * Returns the soldier's look.
 	 * @return Look.
 	 */
-	internal SoldierLook getLook() =>
-		_look;
+    internal SoldierLook getLook() =>
+        _look;
 
-	/**
+    /**
 	 * Returns the soldier's amount of missions.
 	 * @return Missions.
 	 */
-	internal int getMissions() =>
-		_missions;
+    internal int getMissions() =>
+        _missions;
 
-	/**
+    /**
 	 * Returns the unit's current armor.
 	 * @return Pointer to armor data.
 	 */
-	internal Armor getArmor() =>
-		_armor;
+    internal Armor getArmor() =>
+        _armor;
 
     /**
      * Get pointer to current stats.
@@ -466,13 +466,13 @@ internal class Soldier
     internal UnitStats getCurrentStats() =>
         _currentStats;
 
-	/**
+    /**
 	 * Returns the soldier's unique ID. Each soldier
 	 * can be identified by its ID. (not it's name)
 	 * @return Unique ID.
 	 */
-	internal int getId() =>
-		_id;
+    internal int getId() =>
+        _id;
 
     /**
      * Get pointer to initial stats.
@@ -486,48 +486,48 @@ internal class Soldier
     internal void setPsiTraining(bool psi) =>
         _psiTraining = psi;
 
-	/**
+    /**
 	 * returns this soldier's psionic strength improvement score for this month.
 	 */
-	internal int getPsiStrImprovement() =>
-		_psiStrImprovement;
+    internal int getPsiStrImprovement() =>
+        _psiStrImprovement;
 
-	/**
+    /**
 	 * returns this soldier's psionic skill improvement score for this month.
 	 * @return score
 	 */
-	internal int getImprovement() =>
-		_improvement;
+    internal int getImprovement() =>
+        _improvement;
 
-	/**
+    /**
 	 * Returns a graphic representation of
 	 * the soldier's military rank.
 	 * @note THE MEANING OF LIFE
 	 * @return Sprite ID for rank.
 	 */
-	internal int getRankSprite() =>
-		42 + (int)_rank;
+    internal int getRankSprite() =>
+        42 + (int)_rank;
 
-	/**
+    /**
 	 * Returns the soldier's amount of kills.
 	 * @return Kills.
 	 */
-	internal int getKills() =>
-		_kills;
+    internal int getKills() =>
+        _kills;
 
-	/**
+    /**
 	 * Returns the soldier's death details.
 	 * @return Pointer to death data. NULL if no death has occurred.
 	 */
-	internal SoldierDeath getDeath() =>
-		_death;
+    internal SoldierDeath getDeath() =>
+        _death;
 
-	/**
+    /**
 	 * Changes the soldier's full name.
 	 * @param name Soldier name.
 	 */
-	internal void setName(string name) =>
-		_name = name;
+    internal void setName(string name) =>
+        _name = name;
 
     /**
      * Changes the unit's current armor.
@@ -554,68 +554,68 @@ internal class Soldier
         return promoted;
     }
 
-	/**
+    /**
 	 * Returns the soldier's craft string, which
 	 * is either the soldier's wounded status,
 	 * the assigned craft name, or none.
 	 * @param lang Language to get strings from.
 	 * @return Full name.
 	 */
-	internal string getCraftString(Language lang)
-	{
-		string s;
-		if (_recovery > 0)
-		{
-			s = lang.getString("STR_WOUNDED");
-		}
-		else if (_craft == null)
-		{
-			s = lang.getString("STR_NONE_UC");
-		}
-		else
-		{
-			s = _craft.getName(lang);
-		}
-		return s;
-	}
+    internal string getCraftString(Language lang)
+    {
+        string s;
+        if (_recovery > 0)
+        {
+            s = lang.getString("STR_WOUNDED");
+        }
+        else if (_craft == null)
+        {
+            s = lang.getString("STR_NONE_UC");
+        }
+        else
+        {
+            s = _craft.getName(lang);
+        }
+        return s;
+    }
 
-	/**
+    /**
 	 * Increase the soldier's military rank.
 	 */
-	internal void promoteRank()
-	{
-		_rank = (SoldierRank)((int)_rank + 1);
-		if (_rank > SoldierRank.RANK_SQUADDIE)
-		{
-			// only promotions above SQUADDIE are worth to be mentioned
-			_recentlyPromoted = true;
-		}
-	}
+    internal void promoteRank()
+    {
+        _rank = (SoldierRank)((int)_rank + 1);
+        if (_rank > SoldierRank.RANK_SQUADDIE)
+        {
+            // only promotions above SQUADDIE are worth to be mentioned
+            _recentlyPromoted = true;
+        }
+    }
 
-	/**
+    /**
 	 * Add a mission to the counter.
 	 */
-	internal void addMissionCount() =>
-		_missions++;
+    internal void addMissionCount() =>
+        _missions++;
 
-	/**
+    /**
 	 * Add a kill to the counter.
 	 */
-	internal void addKillCount(int count) =>
-		_kills += count;
+    internal void addKillCount(int count) =>
+        _kills += count;
 
-	/**
+    /**
 	 * Changes the amount of time until the soldier is healed.
 	 * @param recovery Number of days.
 	 */
-	internal void setWoundRecovery(int recovery)
-	{
-		_recovery = recovery;
+    internal void setWoundRecovery(int recovery)
+    {
+        _recovery = recovery;
 
-		// dismiss from craft
-		if (_recovery > 0)
-		{
-			_craft = null;
-		}
-	}
+        // dismiss from craft
+        if (_recovery > 0)
+        {
+            _craft = null;
+        }
+    }
 }

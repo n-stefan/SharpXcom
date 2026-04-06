@@ -84,13 +84,13 @@ internal class GameTime
      */
     internal void load(YamlNode node)
     {
-	    _second = int.Parse(node["second"].ToString());
-	    _minute = int.Parse(node["minute"].ToString());
-	    _hour = int.Parse(node["hour"].ToString());
-	    _weekday = int.Parse(node["weekday"].ToString());
-	    _day = int.Parse(node["day"].ToString());
-	    _month = int.Parse(node["month"].ToString());
-	    _year = int.Parse(node["year"].ToString());
+        _second = int.Parse(node["second"].ToString());
+        _minute = int.Parse(node["minute"].ToString());
+        _hour = int.Parse(node["hour"].ToString());
+        _weekday = int.Parse(node["weekday"].ToString());
+        _day = int.Parse(node["day"].ToString());
+        _month = int.Parse(node["month"].ToString());
+        _year = int.Parse(node["year"].ToString());
     }
 
     /**
@@ -101,27 +101,27 @@ internal class GameTime
      */
     internal string getDayString(Language lang)
     {
-	    string s;
-	    switch (_day)
-	    {
-	        case 1:
-	        case 21:
-	        case 31:
-		        s = "STR_DATE_FIRST";
-		        break;
-	        case 2:
-	        case 22:
-		        s = "STR_DATE_SECOND";
-		        break;
-	        case 3:
-	        case 23:
-		        s = "STR_DATE_THIRD";
-		        break;
-	        default:
-		        s = "STR_DATE_FOURTH";
+        string s;
+        switch (_day)
+        {
+            case 1:
+            case 21:
+            case 31:
+                s = "STR_DATE_FIRST";
                 break;
-	    }
-	    return lang.getString(s).arg(_day);
+            case 2:
+            case 22:
+                s = "STR_DATE_SECOND";
+                break;
+            case 3:
+            case 23:
+                s = "STR_DATE_THIRD";
+                break;
+            default:
+                s = "STR_DATE_FOURTH";
+                break;
+        }
+        return lang.getString(s).arg(_day);
     }
 
     /**
@@ -140,28 +140,28 @@ internal class GameTime
      * @return Year.
      */
     internal int getYear() =>
-	    _year;
+        _year;
 
     /**
      * Returns the current ingame hour.
      * @return Hour (0-23).
      */
     internal int getHour() =>
-	    _hour;
+        _hour;
 
     /**
      * Returns the current ingame minute.
      * @return Minute (0-59).
      */
     internal int getMinute() =>
-	    _minute;
+        _minute;
 
     /**
      * Returns the current ingame second.
      * @return Second (0-59).
      */
     internal int getSecond() =>
-	    _second;
+        _second;
 
     /**
      * Returns a localizable-string representation of
@@ -170,8 +170,8 @@ internal class GameTime
      */
     internal string getWeekdayString()
     {
-	    string[] weekdays = { "STR_SUNDAY", "STR_MONDAY", "STR_TUESDAY", "STR_WEDNESDAY", "STR_THURSDAY", "STR_FRIDAY", "STR_SATURDAY" };
-	    return weekdays[_weekday - 1];
+        string[] weekdays = { "STR_SUNDAY", "STR_MONDAY", "STR_TUESDAY", "STR_WEDNESDAY", "STR_THURSDAY", "STR_FRIDAY", "STR_SATURDAY" };
+        return weekdays[_weekday - 1];
     }
 
     /**
@@ -240,7 +240,7 @@ internal class GameTime
      * @return Day (1-31).
      */
     internal int getDay() =>
-	    _day;
+        _day;
 
     /**
      * Returns the current position of the daylight emitted on the globe
@@ -249,19 +249,19 @@ internal class GameTime
      * @return Daylight position (0-1).
      */
     internal double getDaylight() =>
-	    (double)((((((_hour + 18) % 24) * 60) + _minute) * 60) + _second) / (60 * 60 * 24);
+        (double)((((((_hour + 18) % 24) * 60) + _minute) * 60) + _second) / (60 * 60 * 24);
 
     /**
      * Returns the current ingame month.
      * @return Month (1-12).
      */
     internal int getMonth() =>
-	    _month;
+        _month;
 
     /**
      * Returns the current ingame weekday.
      * @return Weekday (1-7), starts on Sunday.
      */
     int getWeekday() =>
-	    _weekday;
+        _weekday;
 }

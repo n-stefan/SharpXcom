@@ -21,35 +21,35 @@ namespace SharpXcom.Ufopaedia;
 
 internal class ArticleStateTFTDCraftWeapon : ArticleStateTFTD
 {
-	TextList _lstInfo;
+    TextList _lstInfo;
 
-	internal ArticleStateTFTDCraftWeapon(ArticleDefinitionTFTD defs) : base(defs)
-	{
-		_txtInfo.setHeight(88);
+    internal ArticleStateTFTDCraftWeapon(ArticleDefinitionTFTD defs) : base(defs)
+    {
+        _txtInfo.setHeight(88);
 
-		RuleCraftWeapon weapon = _game.getMod().getCraftWeapon(defs.id, true);
+        RuleCraftWeapon weapon = _game.getMod().getCraftWeapon(defs.id, true);
 
-		_lstInfo = new TextList(150, 50, 168, 126);
-		add(_lstInfo);
+        _lstInfo = new TextList(150, 50, 168, 126);
+        add(_lstInfo);
 
-		_lstInfo.setColor((byte)(Palette.blockOffset(0)+2));
-		_lstInfo.setColumns(2, 100, 68); // deliberately making this wider than the original to account for finnish.
-		_lstInfo.setDot(true);
+        _lstInfo.setColor((byte)(Palette.blockOffset(0) + 2));
+        _lstInfo.setColumns(2, 100, 68); // deliberately making this wider than the original to account for finnish.
+        _lstInfo.setDot(true);
 
-		_lstInfo.addRow(2, tr("STR_DAMAGE"), Unicode.formatNumber(weapon.getDamage()));
-		_lstInfo.setCellColor(0, 1, (byte)(Palette.blockOffset(15)+4));
+        _lstInfo.addRow(2, tr("STR_DAMAGE"), Unicode.formatNumber(weapon.getDamage()));
+        _lstInfo.setCellColor(0, 1, (byte)(Palette.blockOffset(15) + 4));
 
-		_lstInfo.addRow(2, tr("STR_RANGE"), tr("STR_KILOMETERS").arg(weapon.getRange()));
-		_lstInfo.setCellColor(1, 1, (byte)(Palette.blockOffset(15)+4));
+        _lstInfo.addRow(2, tr("STR_RANGE"), tr("STR_KILOMETERS").arg(weapon.getRange()));
+        _lstInfo.setCellColor(1, 1, (byte)(Palette.blockOffset(15) + 4));
 
-		_lstInfo.addRow(2, tr("STR_ACCURACY"), Unicode.formatPercentage(weapon.getAccuracy()));
-		_lstInfo.setCellColor(2, 1, (byte)(Palette.blockOffset(15)+4));
+        _lstInfo.addRow(2, tr("STR_ACCURACY"), Unicode.formatPercentage(weapon.getAccuracy()));
+        _lstInfo.setCellColor(2, 1, (byte)(Palette.blockOffset(15) + 4));
 
-		_lstInfo.addRow(2, tr("STR_RE_LOAD_TIME"), tr("STR_SECONDS").arg(weapon.getStandardReload()));
-		_lstInfo.setCellColor(3, 1, (byte)(Palette.blockOffset(15)+4));
+        _lstInfo.addRow(2, tr("STR_RE_LOAD_TIME"), tr("STR_SECONDS").arg(weapon.getStandardReload()));
+        _lstInfo.setCellColor(3, 1, (byte)(Palette.blockOffset(15) + 4));
 
-		centerAllSurfaces();
-	}
+        centerAllSurfaces();
+    }
 
-	~ArticleStateTFTDCraftWeapon() { }
+    ~ArticleStateTFTDCraftWeapon() { }
 }

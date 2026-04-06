@@ -34,43 +34,43 @@ internal class AliensCrashState : State
 	 * @param game Pointer to the core game.
 	 */
     internal AliensCrashState()
-	{
-		// Create objects
-		_window = new Window(this, 256, 160, 32, 20);
-		_btnOk = new TextButton(120, 18, 100, 154);
-		_txtTitle = new Text(246, 80, 37, 50);
+    {
+        // Create objects
+        _window = new Window(this, 256, 160, 32, 20);
+        _btnOk = new TextButton(120, 18, 100, 154);
+        _txtTitle = new Text(246, 80, 37, 50);
 
-		// Set palette
-		setPalette("PAL_BATTLESCAPE");
+        // Set palette
+        setPalette("PAL_BATTLESCAPE");
 
-		add(_window, "messageWindowBorder", "battlescape");
-		add(_btnOk, "messageWindowButtons", "battlescape");
-		add(_txtTitle, "messageWindows", "battlescape");
+        add(_window, "messageWindowBorder", "battlescape");
+        add(_btnOk, "messageWindowButtons", "battlescape");
+        add(_txtTitle, "messageWindows", "battlescape");
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		// Set up objects
-		_window.setHighContrast(true);
-		_window.setBackground(_game.getMod().getSurface("TAC00.SCR"));
+        // Set up objects
+        _window.setHighContrast(true);
+        _window.setBackground(_game.getMod().getSurface("TAC00.SCR"));
 
-		_btnOk.setHighContrast(true);
-		_btnOk.setText(tr("STR_OK"));
-		_btnOk.onMouseClick(btnOkClick);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyOk);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
+        _btnOk.setHighContrast(true);
+        _btnOk.setText(tr("STR_OK"));
+        _btnOk.onMouseClick(btnOkClick);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyOk);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
 
-		_txtTitle.setHighContrast(true);
-		_txtTitle.setText(tr("STR_ALL_ALIENS_KILLED_IN_CRASH"));
-		_txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
-		_txtTitle.setVerticalAlign(TextVAlign.ALIGN_MIDDLE);
-		_txtTitle.setBig();
-		_txtTitle.setWordWrap(true);
-	}
+        _txtTitle.setHighContrast(true);
+        _txtTitle.setText(tr("STR_ALL_ALIENS_KILLED_IN_CRASH"));
+        _txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
+        _txtTitle.setVerticalAlign(TextVAlign.ALIGN_MIDDLE);
+        _txtTitle.setBig();
+        _txtTitle.setWordWrap(true);
+    }
 
-	/**
+    /**
 	 *
 	 */
-	~AliensCrashState() { }
+    ~AliensCrashState() { }
 
     /**
      * Returns to the previous screen.

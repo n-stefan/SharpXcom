@@ -97,29 +97,29 @@ internal class State
      */
     internal virtual void setPalette(string palette, int backpals = -1)
     {
-	    setPalette(_game.getMod().getPalette(palette).getColors(), 0, 256, false);
-	    if (palette == "PAL_GEOSCAPE")
-	    {
-		    _cursorColor = (byte)Mod.Mod.GEOSCAPE_CURSOR;
-	    }
-	    else if (palette == "PAL_BASESCAPE")
-	    {
+        setPalette(_game.getMod().getPalette(palette).getColors(), 0, 256, false);
+        if (palette == "PAL_GEOSCAPE")
+        {
+            _cursorColor = (byte)Mod.Mod.GEOSCAPE_CURSOR;
+        }
+        else if (palette == "PAL_BASESCAPE")
+        {
             _cursorColor = (byte)Mod.Mod.BASESCAPE_CURSOR;
-	    }
-	    else if (palette == "PAL_UFOPAEDIA")
-	    {
-		    _cursorColor = (byte)Mod.Mod.UFOPAEDIA_CURSOR;
-	    }
-	    else if (palette == "PAL_GRAPHS")
-	    {
-		    _cursorColor = (byte)Mod.Mod.GRAPHS_CURSOR;
-	    }
-	    else
-	    {
-		    _cursorColor = (byte)Mod.Mod.BATTLESCAPE_CURSOR;
-	    }
-	    if (backpals != -1)
-		    setPalette(_game.getMod().getPalette("BACKPALS.DAT").getColors(Palette.blockOffset((byte)backpals)), Palette.backPos, 16, false);
+        }
+        else if (palette == "PAL_UFOPAEDIA")
+        {
+            _cursorColor = (byte)Mod.Mod.UFOPAEDIA_CURSOR;
+        }
+        else if (palette == "PAL_GRAPHS")
+        {
+            _cursorColor = (byte)Mod.Mod.GRAPHS_CURSOR;
+        }
+        else
+        {
+            _cursorColor = (byte)Mod.Mod.BATTLESCAPE_CURSOR;
+        }
+        if (backpals != -1)
+            setPalette(_game.getMod().getPalette("BACKPALS.DAT").getColors(Palette.blockOffset((byte)backpals)), Palette.backPos, 16, false);
         setPalette(colors: null); // delay actual update to the end
     }
 
@@ -157,58 +157,58 @@ internal class State
      */
     internal void add(Surface surface, string id, string category, Surface parent = null)
     {
-	    // Set palette
-	    surface.setPalette(_palette);
+        // Set palette
+        surface.setPalette(_palette);
 
-	    // this only works if we're dealing with a battlescape button
-	    BattlescapeButton bsbtn = (BattlescapeButton)surface;
+        // this only works if we're dealing with a battlescape button
+        BattlescapeButton bsbtn = (BattlescapeButton)surface;
 
-	    if (_game.getMod().getInterface(category) != null)
-	    {
-		    Element element = _game.getMod().getInterface(category).getElement(id);
+        if (_game.getMod().getInterface(category) != null)
+        {
+            Element element = _game.getMod().getInterface(category).getElement(id);
             if (element != default)
-		    {
-			    if (parent != null && element.w != int.MaxValue && element.h != int.MaxValue)
-			    {
-				    surface.setWidth(element.w);
-				    surface.setHeight(element.h);
-			    }
+            {
+                if (parent != null && element.w != int.MaxValue && element.h != int.MaxValue)
+                {
+                    surface.setWidth(element.w);
+                    surface.setHeight(element.h);
+                }
 
-			    if (parent != null && element.x != int.MaxValue && element.y != int.MaxValue)
-			    {
-				    surface.setX(parent.getX() + element.x);
-				    surface.setY(parent.getY() + element.y);
-			    }
+                if (parent != null && element.x != int.MaxValue && element.y != int.MaxValue)
+                {
+                    surface.setX(parent.getX() + element.x);
+                    surface.setY(parent.getY() + element.y);
+                }
 
-			    surface.setTFTDMode(element.TFTDMode);
+                surface.setTFTDMode(element.TFTDMode);
 
-			    if (element.color != int.MaxValue)
-			    {
-				    surface.setColor((byte)element.color);
-			    }
-			    if (element.color2 != int.MaxValue)
-			    {
-				    surface.setSecondaryColor((byte)element.color2);
-			    }
-			    if (element.border != int.MaxValue)
-			    {
-				    surface.setBorderColor((byte)element.border);
-			    }
-		    }
-	    }
+                if (element.color != int.MaxValue)
+                {
+                    surface.setColor((byte)element.color);
+                }
+                if (element.color2 != int.MaxValue)
+                {
+                    surface.setSecondaryColor((byte)element.color2);
+                }
+                if (element.border != int.MaxValue)
+                {
+                    surface.setBorderColor((byte)element.border);
+                }
+            }
+        }
 
-	    if (bsbtn != null)
-	    {
-		    // this will initialize the graphics and settings of the battlescape button.
-		    bsbtn.copy(parent);
-		    bsbtn.initSurfaces();
-	    }
+        if (bsbtn != null)
+        {
+            // this will initialize the graphics and settings of the battlescape button.
+            bsbtn.copy(parent);
+            bsbtn.initSurfaces();
+        }
 
-	    // Set default text resources
-	    if (_game.getLanguage() != null && _game.getMod() != null)
-		    surface.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+        // Set default text resources
+        if (_game.getLanguage() != null && _game.getMod() != null)
+            surface.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
 
-	    _surfaces.Add(surface);
+        _surfaces.Add(surface);
     }
 
     /**
@@ -220,7 +220,7 @@ internal class State
      * @return True if it's a screen, False otherwise.
      */
     internal bool isScreen() =>
-	    _screen;
+        _screen;
 
     /**
      * Toggles the full-screen flag. Used by windows to
@@ -246,7 +246,7 @@ internal class State
      * @return The localized text.
      */
     protected LocalizedText tr(string id) =>
-	    _game.getLanguage().getString(id);
+        _game.getLanguage().getString(id);
 
     /**
      * Get the localized text for dictionary key @a id.
@@ -256,7 +256,7 @@ internal class State
      * @return The localized text.
      */
     protected LocalizedText tr(string id, uint n) =>
-	    _game.getLanguage().getString(id, n);
+        _game.getLanguage().getString(id, n);
 
     /**
      * Get the localized text for dictionary key @a id.
@@ -266,7 +266,7 @@ internal class State
      * @return The localized text.
      */
     protected LocalizedText tr(string id, SoldierGender gender) =>
-	    _game.getLanguage().getString(id, (uint)gender);
+        _game.getLanguage().getString(id, (uint)gender);
 
     /**
      * Takes care of any events from the core game engine,
@@ -275,19 +275,19 @@ internal class State
      */
     internal virtual void handle(Action action)
     {
-	    if (_modal == null)
-	    {
-		    for (var i = _surfaces.Count - 1; i >= 0; i--)
-		    {
-			    var j = (InteractiveSurface)_surfaces[i];
+        if (_modal == null)
+        {
+            for (var i = _surfaces.Count - 1; i >= 0; i--)
+            {
+                var j = (InteractiveSurface)_surfaces[i];
                 if (j != null)
                     j.handle(action, this);
-		    }
-	    }
-	    else
-	    {
+            }
+        }
+        else
+        {
             _modal.handle(action, this);
-	    }
+        }
     }
 
     /**
@@ -433,48 +433,48 @@ internal class State
      */
     protected void setInterface(string category, bool alterPal = false, SavedBattleGame battleGame = null)
     {
-	    int backPal = -1;
-	    string pal = "PAL_GEOSCAPE";
+        int backPal = -1;
+        string pal = "PAL_GEOSCAPE";
 
-	    _ruleInterface = _game.getMod().getInterface(category);
-	    if (_ruleInterface != null)
-	    {
-		    _ruleInterfaceParent = _game.getMod().getInterface(_ruleInterface.getParent());
-		    pal = _ruleInterface.getPalette();
-		    Element element = _ruleInterface.getElement("palette");
-		    if (_ruleInterfaceParent != null)
-		    {
-			    if (element == default)
-			    {
-				    element = _ruleInterfaceParent.getElement("palette");
-			    }
-			    if (string.IsNullOrEmpty(pal))
-			    {
-				    pal = _ruleInterfaceParent.getPalette();
-			    }
-		    }
-		    if (element != default)
-		    {
-			    int color = alterPal ? element.color2 : element.color;
-			    if (color != int.MaxValue)
-			    {
-				    backPal = color;
-			    }
-		    }
-	    }
-	    if (battleGame != null)
-	    {
-		    battleGame.setPaletteByDepth(this);
-	    }
-	    else if (string.IsNullOrEmpty(pal))
-	    {
-		    pal = "PAL_GEOSCAPE";
-		    setPalette(pal, backPal);
-	    }
-	    else
-	    {
-		    setPalette(pal, backPal);
-	    }
+        _ruleInterface = _game.getMod().getInterface(category);
+        if (_ruleInterface != null)
+        {
+            _ruleInterfaceParent = _game.getMod().getInterface(_ruleInterface.getParent());
+            pal = _ruleInterface.getPalette();
+            Element element = _ruleInterface.getElement("palette");
+            if (_ruleInterfaceParent != null)
+            {
+                if (element == default)
+                {
+                    element = _ruleInterfaceParent.getElement("palette");
+                }
+                if (string.IsNullOrEmpty(pal))
+                {
+                    pal = _ruleInterfaceParent.getPalette();
+                }
+            }
+            if (element != default)
+            {
+                int color = alterPal ? element.color2 : element.color;
+                if (color != int.MaxValue)
+                {
+                    backPal = color;
+                }
+            }
+        }
+        if (battleGame != null)
+        {
+            battleGame.setPaletteByDepth(this);
+        }
+        else if (string.IsNullOrEmpty(pal))
+        {
+            pal = "PAL_GEOSCAPE";
+            setPalette(pal, backPal);
+        }
+        else
+        {
+            setPalette(pal, backPal);
+        }
     }
 
     /**
@@ -510,8 +510,8 @@ internal class State
      */
     internal void hideAll()
     {
-	    foreach (var i in _surfaces)
-		    i.setHidden(true);
+        foreach (var i in _surfaces)
+            i.setHidden(true);
     }
 
     /**
@@ -519,10 +519,10 @@ internal class State
      */
     protected void lowerAllSurfaces()
     {
-	    foreach (var i in _surfaces)
-	    {
-		    i.setY(i.getY() + _game.getScreen().getDY() / 2);
-	    }
+        foreach (var i in _surfaces)
+        {
+            i.setY(i.getY() + _game.getScreen().getDY() / 2);
+        }
     }
 
     /**
@@ -530,5 +530,5 @@ internal class State
      * @return Pointer to the palette's colors.
      */
     SDL_Color[] getPalette() =>
-	    _palette;
+        _palette;
 }

@@ -53,7 +53,7 @@ internal class RuleInterface : IRule
      * @param id String defining the element.
      */
     internal Element getElement(string id) =>
-	    _elements.TryGetValue(id, out var element) ? element : default;
+        _elements.TryGetValue(id, out var element) ? element : default;
 
     internal string getPalette() =>
         _palette;
@@ -62,47 +62,47 @@ internal class RuleInterface : IRule
         _parent;
 
     internal string getMusic() =>
-	    _music;
+        _music;
 
-	/**
+    /**
 	 * Loads the elements from a YAML file.
 	 * @param node YAML node.
 	 */
-	internal void load(YamlNode node)
-	{
-		_palette = node["palette"].ToString();
-		_parent = node["parent"].ToString();
-		_music = node["music"].ToString();
-		foreach (var i in ((YamlSequenceNode)node["elements"]).Children)
-		{
-			Element element;
-			if (i["size"] != null)
-			{
-				var pos = (YamlSequenceNode)i["size"];
-				element.w = int.Parse(pos[0].ToString());
-				element.h = int.Parse(pos[1].ToString());
-			}
-			else
-			{
-				element.w = element.h = int.MaxValue;
-			}
-			if (i["pos"] != null)
-			{
-				var pos = (YamlSequenceNode)i["pos"];
-				element.x = int.Parse(pos[0].ToString());
-				element.y = int.Parse(pos[1].ToString());
-			}
-			else
-			{
-				element.x = element.y = int.MaxValue;
-			}
-			element.color = i["color"] != null ? int.Parse(i["color"].ToString()) : int.MaxValue;
-			element.color2 = i["color2"] != null ? int.Parse(i["color2"].ToString()) : int.MaxValue;
-			element.border = i["border"] != null ? int.Parse(i["border"].ToString()) : int.MaxValue;
-			element.TFTDMode = bool.Parse(i["TFTDMode"].ToString());
+    internal void load(YamlNode node)
+    {
+        _palette = node["palette"].ToString();
+        _parent = node["parent"].ToString();
+        _music = node["music"].ToString();
+        foreach (var i in ((YamlSequenceNode)node["elements"]).Children)
+        {
+            Element element;
+            if (i["size"] != null)
+            {
+                var pos = (YamlSequenceNode)i["size"];
+                element.w = int.Parse(pos[0].ToString());
+                element.h = int.Parse(pos[1].ToString());
+            }
+            else
+            {
+                element.w = element.h = int.MaxValue;
+            }
+            if (i["pos"] != null)
+            {
+                var pos = (YamlSequenceNode)i["pos"];
+                element.x = int.Parse(pos[0].ToString());
+                element.y = int.Parse(pos[1].ToString());
+            }
+            else
+            {
+                element.x = element.y = int.MaxValue;
+            }
+            element.color = i["color"] != null ? int.Parse(i["color"].ToString()) : int.MaxValue;
+            element.color2 = i["color2"] != null ? int.Parse(i["color2"].ToString()) : int.MaxValue;
+            element.border = i["border"] != null ? int.Parse(i["border"].ToString()) : int.MaxValue;
+            element.TFTDMode = bool.Parse(i["TFTDMode"].ToString());
 
-			string id = i["id"] != null ? i["id"].ToString() : string.Empty;
-			_elements[id] = element;
-		}
-	}
+            string id = i["id"] != null ? i["id"].ToString() : string.Empty;
+            _elements[id] = element;
+        }
+    }
 }

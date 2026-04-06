@@ -86,7 +86,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The facility's name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Gets the facility's list weight.
@@ -101,7 +101,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The number of soldiers.
      */
     internal int getPsiLaboratories() =>
-	    _psiLabs;
+        _psiLabs;
 
     /**
      * Gets the list of research required to
@@ -109,7 +109,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return A list of research IDs.
      */
     internal List<string> getRequirements() =>
-	    _requires;
+        _requires;
 
     /**
      * Loads the base facility type from a YAML file.
@@ -119,41 +119,41 @@ internal class RuleBaseFacility : IListOrder, IRule
      */
     internal void load(YamlNode node, Mod mod, int listOrder)
     {
-	    _type = node["type"].ToString();
-	    _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
+        _type = node["type"].ToString();
+        _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
 
-	    mod.loadSpriteOffset(_type, ref _spriteShape, node["spriteShape"], "BASEBITS.PCK");
-	    mod.loadSpriteOffset(_type, ref _spriteFacility, node["spriteFacility"], "BASEBITS.PCK");
+        mod.loadSpriteOffset(_type, ref _spriteShape, node["spriteShape"], "BASEBITS.PCK");
+        mod.loadSpriteOffset(_type, ref _spriteFacility, node["spriteFacility"], "BASEBITS.PCK");
 
-	    _lift = bool.Parse(node["lift"].ToString());
-	    _hyper = bool.Parse(node["hyper"].ToString());
-	    _mind = bool.Parse(node["mind"].ToString());
-	    _grav = bool.Parse(node["grav"].ToString());
-	    _size = int.Parse(node["size"].ToString());
-	    _buildCost = int.Parse(node["buildCost"].ToString());
-	    _buildTime = int.Parse(node["buildTime"].ToString());
-	    _monthlyCost = int.Parse(node["monthlyCost"].ToString());
-	    _storage = int.Parse(node["storage"].ToString());
-	    _personnel = int.Parse(node["personnel"].ToString());
-	    _aliens = int.Parse(node["aliens"].ToString());
-	    _crafts = int.Parse(node["crafts"].ToString());
-	    _labs = int.Parse(node["labs"].ToString());
-	    _workshops = int.Parse(node["workshops"].ToString());
-	    _psiLabs = int.Parse(node["psiLabs"].ToString());
-	    _radarRange = int.Parse(node["radarRange"].ToString());
-	    _radarChance = int.Parse(node["radarChance"].ToString());
-	    _defense = int.Parse(node["defense"].ToString());
-	    _hitRatio = int.Parse(node["hitRatio"].ToString());
+        _lift = bool.Parse(node["lift"].ToString());
+        _hyper = bool.Parse(node["hyper"].ToString());
+        _mind = bool.Parse(node["mind"].ToString());
+        _grav = bool.Parse(node["grav"].ToString());
+        _size = int.Parse(node["size"].ToString());
+        _buildCost = int.Parse(node["buildCost"].ToString());
+        _buildTime = int.Parse(node["buildTime"].ToString());
+        _monthlyCost = int.Parse(node["monthlyCost"].ToString());
+        _storage = int.Parse(node["storage"].ToString());
+        _personnel = int.Parse(node["personnel"].ToString());
+        _aliens = int.Parse(node["aliens"].ToString());
+        _crafts = int.Parse(node["crafts"].ToString());
+        _labs = int.Parse(node["labs"].ToString());
+        _workshops = int.Parse(node["workshops"].ToString());
+        _psiLabs = int.Parse(node["psiLabs"].ToString());
+        _radarRange = int.Parse(node["radarRange"].ToString());
+        _radarChance = int.Parse(node["radarChance"].ToString());
+        _defense = int.Parse(node["defense"].ToString());
+        _hitRatio = int.Parse(node["hitRatio"].ToString());
 
-	    mod.loadSoundOffset(_type, ref _fireSound, node["fireSound"], "GEO.CAT");
-	    mod.loadSoundOffset(_type, ref _hitSound, node["hitSound"], "GEO.CAT");
+        mod.loadSoundOffset(_type, ref _fireSound, node["fireSound"], "GEO.CAT");
+        mod.loadSoundOffset(_type, ref _hitSound, node["hitSound"], "GEO.CAT");
 
-	    _mapName = node["mapName"].ToString();
-	    _listOrder = int.Parse(node["listOrder"].ToString());
-	    if (_listOrder == 0)
-	    {
+        _mapName = node["mapName"].ToString();
+        _listOrder = int.Parse(node["listOrder"].ToString());
+        if (_listOrder == 0)
+        {
             _listOrder = listOrder;
-	    }
+        }
     }
 
     /**
@@ -162,7 +162,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The monthly cost.
      */
     internal int getMonthlyCost() =>
-	    _monthlyCost;
+        _monthlyCost;
 
     /**
      * Gets the amount of storage space this facility provides
@@ -170,7 +170,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The storage space.
      */
     internal int getStorage() =>
-	    _storage;
+        _storage;
 
     /**
      * Checks if this facility has hyperwave detection
@@ -178,7 +178,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return True if it has hyperwave detection.
      */
     internal bool isHyperwave() =>
-	    _hyper;
+        _hyper;
 
     /**
      * Gets the radar range this facility provides for the
@@ -186,7 +186,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The range in nautical miles.
      */
     internal int getRadarRange() =>
-	    _radarRange;
+        _radarRange;
 
     /**
      * Gets the chance of UFOs that come within the facility's
@@ -194,14 +194,14 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The chance as a percentage.
      */
     internal int getRadarChance() =>
-	    _radarChance;
+        _radarChance;
 
     /**
      * Gets the size of the facility on the base grid.
      * @return The length in grid squares.
      */
     internal int getSize() =>
-	    _size;
+        _size;
 
     /**
      * Checks if this facility has a mind shield,
@@ -209,7 +209,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return True if it has a mind shield.
      */
     internal bool isMindShield() =>
-	    _mind;
+        _mind;
 
     /**
      * Gets the defense value of this facility's weaponry
@@ -217,7 +217,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The defense value.
      */
     internal int getDefenseValue() =>
-	    _defense;
+        _defense;
 
     /**
      * Gets the battlescape map block name for this facility
@@ -225,7 +225,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The map name.
      */
     internal string getMapName() =>
-	    _mapName;
+        _mapName;
 
     /**
      * Gets the number of base personnel (soldiers, scientists,
@@ -233,7 +233,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The number of personnel.
      */
     internal int getPersonnel() =>
-	    _personnel;
+        _personnel;
 
     /**
      * Gets the amount of laboratory space this facility provides
@@ -241,7 +241,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The laboratory space.
      */
     internal int getLaboratories() =>
-	    _labs;
+        _labs;
 
     /**
      * Gets the amount of workshop space this facility provides
@@ -249,14 +249,14 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The workshop space.
      */
     internal int getWorkshops() =>
-	    _workshops;
+        _workshops;
 
     /**
      * Gets the number of base craft this facility can contain.
      * @return The number of craft.
      */
     internal int getCrafts() =>
-	    _crafts;
+        _crafts;
 
     /**
      * Gets the number of captured live aliens this facility
@@ -264,7 +264,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The number of aliens.
      */
     internal int getAliens() =>
-	    _aliens;
+        _aliens;
 
     /**
      * Checks if this facility is the core access lift
@@ -273,7 +273,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return True if it's a lift.
      */
     internal bool isLift() =>
-	    _lift;
+        _lift;
 
     /**
      * Gets the amount of time that this facility takes
@@ -281,7 +281,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The time in days.
      */
     internal int getBuildTime() =>
-	    _buildTime;
+        _buildTime;
 
     /**
      * Checks if this facility has a grav shield,
@@ -289,14 +289,14 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return True if it has a grav shield.
      */
     internal bool isGravShield() =>
-	    _grav;
+        _grav;
 
     /**
      * Gets the fire sound of this facility's weaponry.
      * @return The sound index number.
      */
     internal int getFireSound() =>
-	    _fireSound;
+        _fireSound;
 
     /**
      * Gets the hit ratio of this facility's weaponry
@@ -304,14 +304,14 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The hit ratio as a percentage.
      */
     internal int getHitRatio() =>
-	    _hitRatio;
+        _hitRatio;
 
     /**
      * Gets the hit sound of this facility's weaponry.
      * @return The sound index number.
      */
     internal int getHitSound() =>
-	    _hitSound;
+        _hitSound;
 
     /**
      * Gets the amount of funds that this facility costs
@@ -319,7 +319,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The building cost.
      */
     internal int getBuildCost() =>
-	    _buildCost;
+        _buildCost;
 
     /**
      * Gets the ID of the sprite used to draw the
@@ -327,7 +327,7 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The sprite ID.
      */
     internal int getSpriteShape() =>
-	    _spriteShape;
+        _spriteShape;
 
     /**
      * Gets the ID of the sprite used to draw the
@@ -335,5 +335,5 @@ internal class RuleBaseFacility : IListOrder, IRule
      * @return The sprite ID.
      */
     internal int getSpriteFacility() =>
-	    _spriteFacility;
+        _spriteFacility;
 }

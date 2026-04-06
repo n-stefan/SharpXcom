@@ -197,12 +197,12 @@ internal class UnitDieBState : BattleState
 
     internal override void init()
     {
-	    // check for presence of battlestate to ensure that we're not pre-battle
-	    // check for the unit's tile to make sure we're not trying to kill a dead guy
-	    if (_parent.getSave().getBattleState() != null && _unit.getTile() == null)
-	    {
-		    _parent.popState();
-	    }
+        // check for presence of battlestate to ensure that we're not pre-battle
+        // check for the unit's tile to make sure we're not trying to kill a dead guy
+        if (_parent.getSave().getBattleState() != null && _unit.getTile() == null)
+        {
+            _parent.popState();
+        }
     }
 
     /**
@@ -211,110 +211,110 @@ internal class UnitDieBState : BattleState
      */
     internal override void think()
     {
-	    if (_extraFrame == 3)
-	    {
-		    _parent.popState();
-		    return;
-	    }
-	    if (_unit.getDirection() != 3 && _damageType != ItemDamageType.DT_HE)
-	    {
-		    int dir = _unit.getDirection() + 1;
-		    if (dir == 8)
-		    {
-			    dir = 0;
-		    }
-		    _unit.lookAt(dir);
-		    _unit.turn();
-		    if (dir == 3)
-		    {
-			    _parent.setStateInterval(BattlescapeState.DEFAULT_ANIM_SPEED);
-		    }
-	    }
-	    else if (_unit.getStatus() == UnitStatus.STATUS_COLLAPSING)
-	    {
-		    _unit.keepFalling();
-	    }
-	    else if (!_unit.isOut())
-	    {
-		    _unit.startFalling();
+        if (_extraFrame == 3)
+        {
+            _parent.popState();
+            return;
+        }
+        if (_unit.getDirection() != 3 && _damageType != ItemDamageType.DT_HE)
+        {
+            int dir = _unit.getDirection() + 1;
+            if (dir == 8)
+            {
+                dir = 0;
+            }
+            _unit.lookAt(dir);
+            _unit.turn();
+            if (dir == 3)
+            {
+                _parent.setStateInterval(BattlescapeState.DEFAULT_ANIM_SPEED);
+            }
+        }
+        else if (_unit.getStatus() == UnitStatus.STATUS_COLLAPSING)
+        {
+            _unit.keepFalling();
+        }
+        else if (!_unit.isOut())
+        {
+            _unit.startFalling();
 
-		    if (!_noSound)
-		    {
-			    playDeathSound();
-		    }
-		    if (_unit.getRespawn())
-		    {
-			    while (_unit.getStatus() == UnitStatus.STATUS_COLLAPSING)
-			    {
-				    _unit.keepFalling();
-			    }
-		    }
-	    }
-	    if (_extraFrame == 2)
-	    {
-		    _parent.getMap().setUnitDying(false);
-		    _parent.getTileEngine().calculateUnitLighting();
-		    _parent.popState();
-		    if (_unit.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
-		    {
-			    Game game = _parent.getSave().getBattleState().getGame();
-			    if (_unit.getStatus() == UnitStatus.STATUS_DEAD)
-			    {
-				    if (_damageType == ItemDamageType.DT_NONE && string.IsNullOrEmpty(_unit.getSpawnUnit()))
-				    {
-					    game.pushState(new InfoboxOKState(game.getLanguage().getString("STR_HAS_DIED_FROM_A_FATAL_WOUND", (uint)_unit.getGender()).arg(_unit.getName(game.getLanguage()))));
-				    }
-				    else if (Options.battleNotifyDeath && _unit.getGeoscapeSoldier() != null)
-				    {
-					    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_BEEN_KILLED", (uint)_unit.getGender()).arg(_unit.getName(game.getLanguage()))));
-				    }
-			    }
-			    else
-			    {
-				    game.pushState(new InfoboxOKState(game.getLanguage().getString("STR_HAS_BECOME_UNCONSCIOUS", (uint)_unit.getGender()).arg(_unit.getName(game.getLanguage()))));
-			    }
-		    }
-		    // if all units from either faction are killed - auto-end the mission.
-		    if (_parent.getSave().getSide() == UnitFaction.FACTION_PLAYER)
-		    {
-			    _parent.autoEndBattle();
-		    }
-	    }
-	    else if (_extraFrame == 1)
-	    {
-		    _extraFrame++;
-	    }
-	    else if (_unit.isOut())
-	    {
-		    _extraFrame = 1;
-		    if (!_noSound && _damageType == ItemDamageType.DT_HE && _unit.getStatus() != UnitStatus.STATUS_UNCONSCIOUS)
-		    {
-			    playDeathSound();
-		    }
-		    if (_unit.getStatus() == UnitStatus.STATUS_UNCONSCIOUS && !_unit.getCapturable())
-		    {
-			    _unit.instaKill();
-		    }
-		    if (_unit.getTurnsSinceSpotted() < 255)
-		    {
-			    _unit.setTurnsSinceSpotted(255);
-		    }
-		    if (!string.IsNullOrEmpty(_unit.getSpawnUnit()))
-		    {
-			    // converts the dead zombie to a chryssalid
-			    _parent.convertUnit(_unit);
-		    }
-		    else if (!_noCorpse)
-		    {
-			    convertUnitToCorpse();
-		    }
-		    if (_unit == _parent.getSave().getSelectedUnit())
-		    {
-			    _parent.getSave().setSelectedUnit(null);
-		    }
-	    }
+            if (!_noSound)
+            {
+                playDeathSound();
+            }
+            if (_unit.getRespawn())
+            {
+                while (_unit.getStatus() == UnitStatus.STATUS_COLLAPSING)
+                {
+                    _unit.keepFalling();
+                }
+            }
+        }
+        if (_extraFrame == 2)
+        {
+            _parent.getMap().setUnitDying(false);
+            _parent.getTileEngine().calculateUnitLighting();
+            _parent.popState();
+            if (_unit.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
+            {
+                Game game = _parent.getSave().getBattleState().getGame();
+                if (_unit.getStatus() == UnitStatus.STATUS_DEAD)
+                {
+                    if (_damageType == ItemDamageType.DT_NONE && string.IsNullOrEmpty(_unit.getSpawnUnit()))
+                    {
+                        game.pushState(new InfoboxOKState(game.getLanguage().getString("STR_HAS_DIED_FROM_A_FATAL_WOUND", (uint)_unit.getGender()).arg(_unit.getName(game.getLanguage()))));
+                    }
+                    else if (Options.battleNotifyDeath && _unit.getGeoscapeSoldier() != null)
+                    {
+                        game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_BEEN_KILLED", (uint)_unit.getGender()).arg(_unit.getName(game.getLanguage()))));
+                    }
+                }
+                else
+                {
+                    game.pushState(new InfoboxOKState(game.getLanguage().getString("STR_HAS_BECOME_UNCONSCIOUS", (uint)_unit.getGender()).arg(_unit.getName(game.getLanguage()))));
+                }
+            }
+            // if all units from either faction are killed - auto-end the mission.
+            if (_parent.getSave().getSide() == UnitFaction.FACTION_PLAYER)
+            {
+                _parent.autoEndBattle();
+            }
+        }
+        else if (_extraFrame == 1)
+        {
+            _extraFrame++;
+        }
+        else if (_unit.isOut())
+        {
+            _extraFrame = 1;
+            if (!_noSound && _damageType == ItemDamageType.DT_HE && _unit.getStatus() != UnitStatus.STATUS_UNCONSCIOUS)
+            {
+                playDeathSound();
+            }
+            if (_unit.getStatus() == UnitStatus.STATUS_UNCONSCIOUS && !_unit.getCapturable())
+            {
+                _unit.instaKill();
+            }
+            if (_unit.getTurnsSinceSpotted() < 255)
+            {
+                _unit.setTurnsSinceSpotted(255);
+            }
+            if (!string.IsNullOrEmpty(_unit.getSpawnUnit()))
+            {
+                // converts the dead zombie to a chryssalid
+                _parent.convertUnit(_unit);
+            }
+            else if (!_noCorpse)
+            {
+                convertUnitToCorpse();
+            }
+            if (_unit == _parent.getSave().getSelectedUnit())
+            {
+                _parent.getSave().setSelectedUnit(null);
+            }
+        }
 
-	    _parent.getMap().cacheUnit(_unit);
+        _parent.getMap().cacheUnit(_unit);
     }
 
     /**
@@ -322,15 +322,15 @@ internal class UnitDieBState : BattleState
      */
     void playDeathSound()
     {
-	    List<int> sounds = _unit.getDeathSounds();
-	    if (sounds.Any())
-	    {
-		    int i = sounds[RNG.generate(0, sounds.Count - 1)];
-		    if (i >= 0)
-		    {
-			    _parent.getMod().getSoundByDepth((uint)_parent.getDepth(), (uint)i).play(-1, _parent.getMap().getSoundAngle(_unit.getPosition()));
-		    }
-	    }
+        List<int> sounds = _unit.getDeathSounds();
+        if (sounds.Any())
+        {
+            int i = sounds[RNG.generate(0, sounds.Count - 1)];
+            if (i >= 0)
+            {
+                _parent.getMod().getSoundByDepth((uint)_parent.getDepth(), (uint)i).play(-1, _parent.getMap().getSoundAngle(_unit.getPosition()));
+            }
+        }
     }
 
     /**

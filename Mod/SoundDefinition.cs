@@ -28,32 +28,32 @@ internal class SoundDefinition : IRule
     SoundDefinition(string type) =>
         _type = type;
 
-	public IRule Create(string type) =>
-		new SoundDefinition(type);
+    public IRule Create(string type) =>
+        new SoundDefinition(type);
 
     ~SoundDefinition() { }
 
     internal List<int> getSoundList() =>
-	    _soundList;
+        _soundList;
 
     internal string getCATFile() =>
-	    _catFile;
+        _catFile;
 
-	internal void load(YamlNode node)
-	{
-		foreach (var i in ((YamlMappingNode)node["soundRanges"]).Children)
-		{
-			var key = int.Parse(i.Key.ToString());
-			var value = int.Parse(i.Value.ToString());
+    internal void load(YamlNode node)
+    {
+        foreach (var i in ((YamlMappingNode)node["soundRanges"]).Children)
+        {
+            var key = int.Parse(i.Key.ToString());
+            var value = int.Parse(i.Value.ToString());
             for (int j = key; j <= value; ++j)
-			{
-				_soundList.Add(j);
-			}
-		}
-		foreach (var i in ((YamlSequenceNode)node["sounds"]).Children)
-		{
-			_soundList.Add(i != null ? int.Parse(i.ToString()) : -1);
-		}
+            {
+                _soundList.Add(j);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)node["sounds"]).Children)
+        {
+            _soundList.Add(i != null ? int.Parse(i.ToString()) : -1);
+        }
         _catFile = node["file"].ToString();
-	}
+    }
 }

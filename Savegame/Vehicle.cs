@@ -53,8 +53,8 @@ internal class Vehicle
      */
     internal void load(YamlNode node)
     {
-	    _ammo = int.Parse(node["ammo"].ToString());
-	    _size = int.Parse(node["size"].ToString());
+        _ammo = int.Parse(node["ammo"].ToString());
+        _size = int.Parse(node["size"].ToString());
     }
 
     /**
@@ -62,7 +62,7 @@ internal class Vehicle
      * @return Pointer to ruleset.
      */
     internal RuleItem getRules() =>
-	    _rules;
+        _rules;
 
     /**
      * Returns the ammo contained in this vehicle.
@@ -70,11 +70,11 @@ internal class Vehicle
      */
     internal int getAmmo()
     {
-	    if (_ammo == -1)
-	    {
-		    return 255;
-	    }
-	    return _ammo;
+        if (_ammo == -1)
+        {
+            return 255;
+        }
+        return _ammo;
     }
 
     /**
@@ -83,7 +83,7 @@ internal class Vehicle
      * @return Size in tiles.
      */
     internal int getSize() =>
-	    _size;
+        _size;
 
     /**
      * Saves the base to a YAML file.
@@ -91,11 +91,11 @@ internal class Vehicle
      */
     internal YamlNode save()
     {
-	    var node = new YamlMappingNode();
-	    node.Add("type", _rules.getType());
-	    node.Add("ammo", _ammo.ToString());
-	    node.Add("size", _size.ToString());
-	    return node;
+        var node = new YamlMappingNode();
+        node.Add("type", _rules.getType());
+        node.Add("ammo", _ammo.ToString());
+        node.Add("size", _size.ToString());
+        return node;
     }
 
     /**
@@ -104,9 +104,9 @@ internal class Vehicle
      */
     void setAmmo(int ammo)
     {
-	    if (_ammo != -1)
-	    {
-		    _ammo = ammo;
-	    }
+        if (_ammo != -1)
+        {
+            _ammo = ammo;
+        }
     }
 }

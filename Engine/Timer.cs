@@ -110,11 +110,11 @@ internal class Timer
      */
     internal uint getTime()
     {
-	    if (_running)
-	    {
-		    return slowTick() - _start;
-	    }
-	    return 0;
+        if (_running)
+        {
+            return slowTick() - _start;
+        }
+        return 0;
     }
 
     /**
@@ -166,5 +166,5 @@ internal class Timer
      * @return Running state.
      */
     internal bool isRunning() =>
-	    _running;
+        _running;
 }

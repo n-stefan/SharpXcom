@@ -35,41 +35,41 @@ internal class ResearchRequiredState : State
 	 * @param item Pointer to the researched weapon.
 	 */
     internal ResearchRequiredState(RuleItem item)
-	{
-		_screen = false;
+    {
+        _screen = false;
 
-		// Create objects
-		_window = new Window(this, 288, 180, 16, 10);
-		_btnOk = new TextButton(160, 18, 80, 150);
-		_txtTitle = new Text(288, 80, 16, 50);
+        // Create objects
+        _window = new Window(this, 288, 180, 16, 10);
+        _btnOk = new TextButton(160, 18, 80, 150);
+        _txtTitle = new Text(288, 80, 16, 50);
 
-		// Set palette
-		setInterface("geoResearchRequired");
+        // Set palette
+        setInterface("geoResearchRequired");
 
-		add(_window, "window", "geoResearchRequired");
-		add(_btnOk, "button", "geoResearchRequired");
-		add(_txtTitle, "text1", "geoResearchRequired");
+        add(_window, "window", "geoResearchRequired");
+        add(_btnOk, "button", "geoResearchRequired");
+        add(_txtTitle, "text1", "geoResearchRequired");
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		string weapon = item.getType();
-		string clip = item.getCompatibleAmmo().First();
+        string weapon = item.getType();
+        string clip = item.getCompatibleAmmo().First();
 
-		// Set up objects
-		_window.setBackground(_game.getMod().getSurface("BACK05.SCR"));
+        // Set up objects
+        _window.setBackground(_game.getMod().getSurface("BACK05.SCR"));
 
-		_btnOk.setText(tr("STR_OK"));
-		_btnOk.onMouseClick(btnOkClick);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyOk);
+        _btnOk.setText(tr("STR_OK"));
+        _btnOk.onMouseClick(btnOkClick);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyOk);
 
-		_txtTitle.setBig();
-		_txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
-		_txtTitle.setVerticalAlign(TextVAlign.ALIGN_MIDDLE);
-		_txtTitle.setText(tr("STR_YOU_NEED_TO_RESEARCH_ITEM_TO_PRODUCE_ITEM")
-						   .arg(tr(clip))
-						   .arg(tr(weapon)));
-	}
+        _txtTitle.setBig();
+        _txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
+        _txtTitle.setVerticalAlign(TextVAlign.ALIGN_MIDDLE);
+        _txtTitle.setText(tr("STR_YOU_NEED_TO_RESEARCH_ITEM_TO_PRODUCE_ITEM")
+                           .arg(tr(clip))
+                           .arg(tr(weapon)));
+    }
 
     /**
      * Returns to the previous screen.

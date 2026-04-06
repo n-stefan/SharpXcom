@@ -100,7 +100,7 @@ internal class Bar : Surface
      * @return Color value.
      */
     internal byte getColor() =>
-	    _color;
+        _color;
 
     /**
      * Draws the bordered bar filled according
@@ -108,39 +108,39 @@ internal class Bar : Surface
      */
     internal override void draw()
     {
-	    base.draw();
-	    SDL_Rect square;
+        base.draw();
+        SDL_Rect square;
 
-	    square.x = 0;
-	    square.y = 0;
-	    square.w = (ushort)(_scale * _max) + 1;
-	    square.h = getHeight();
+        square.x = 0;
+        square.y = 0;
+        square.w = (ushort)(_scale * _max) + 1;
+        square.h = getHeight();
 
-	    if (_borderColor != 0)
-		    drawRect(ref square, _borderColor);
-	    else
-		    drawRect(ref square, (byte)(_color + 4));
+        if (_borderColor != 0)
+            drawRect(ref square, _borderColor);
+        else
+            drawRect(ref square, (byte)(_color + 4));
 
-	    square.y++;
-	    square.w--;
-	    square.h -= 2;
+        square.y++;
+        square.w--;
+        square.h -= 2;
 
-	    drawRect(ref square, 0);
+        drawRect(ref square, 0);
 
-	    if (_secondOnTop)
-	    {
-		    square.w = (ushort)(_scale * _value);
-		    drawRect(ref square, _color);
-		    square.w = (ushort)(_scale * _value2);
-		    drawRect(ref square, _color2);
-	    }
-	    else
-	    {
-		    square.w = (ushort)(_scale * _value2);
-		    drawRect(ref square, _color2);
-		    square.w = (ushort)(_scale * _value);
-		    drawRect(ref square, _color);
-	    }
+        if (_secondOnTop)
+        {
+            square.w = (ushort)(_scale * _value);
+            drawRect(ref square, _color);
+            square.w = (ushort)(_scale * _value2);
+            drawRect(ref square, _color2);
+        }
+        else
+        {
+            square.w = (ushort)(_scale * _value2);
+            drawRect(ref square, _color2);
+            square.w = (ushort)(_scale * _value);
+            drawRect(ref square, _color);
+        }
     }
 
     /**
@@ -149,8 +149,8 @@ internal class Bar : Surface
      */
     internal override void setColor(byte color)
     {
-	    _color = color;
-	    _redraw = true;
+        _color = color;
+        _redraw = true;
     }
 
     /**
@@ -159,8 +159,8 @@ internal class Bar : Surface
      */
     internal override void setSecondaryColor(byte color)
     {
-	    _color2 = color;
-	    _redraw = true;
+        _color2 = color;
+        _redraw = true;
     }
 
     /**
@@ -169,47 +169,47 @@ internal class Bar : Surface
      * @note will use base colour + 4 if none is defined here.
      */
     internal override void setBorderColor(byte bc) =>
-	    _borderColor = bc;
+        _borderColor = bc;
 
     /**
      * Returns the second color used to draw the bar.
      * @return Color value.
      */
     byte getSecondaryColor() =>
-	    _color2;
+        _color2;
 
     /**
      * Returns the scale factor used to draw the bar values.
      * @return Scale in pixels/unit.
      */
     double getScale() =>
-	    _scale;
+        _scale;
 
     /**
      * Returns the maximum value used to draw the outer border.
      * @return Maximum value.
      */
     double getMax() =>
-	    _max;
+        _max;
 
     /**
      * Returns the value used to draw the inner contents.
      * @return Current value.
      */
     double getValue() =>
-	    _value;
+        _value;
 
     /**
      * Returns the value used to draw the second inner contents.
      * @return Current value.
      */
     double getValue2() =>
-	    _value2;
+        _value2;
 
     /**
      * Defines whether the second value should be drawn on top. Default this is true.
      * @param onTop Second value on top?
      */
     void setSecondValueOnTop(bool onTop) =>
-	    _secondOnTop = onTop;
+        _secondOnTop = onTop;
 }

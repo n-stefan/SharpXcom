@@ -352,7 +352,7 @@ internal class TransferItemsState : State
     * Updates the production list to match the category filter.
     */
     void cbxCategoryChange(Action _) =>
-	    updateList();
+        updateList();
 
     /**
      * Increases the quantity of the selected item to transfer by one.
@@ -381,36 +381,36 @@ internal class TransferItemsState : State
      */
     string getCategory(int sel)
     {
-	    RuleItem rule = null;
-	    switch (_items[sel].type)
-	    {
-	        case TransferType.TRANSFER_SOLDIER:
-	        case TransferType.TRANSFER_SCIENTIST:
-	        case TransferType.TRANSFER_ENGINEER:
-		        return "STR_PERSONNEL";
-	        case TransferType.TRANSFER_CRAFT:
-		        return "STR_CRAFT_ARMAMENT";
-	        case TransferType.TRANSFER_ITEM:
-		        rule = (RuleItem)_items[sel].rule;
-		        if (rule.getBattleType() == BattleType.BT_CORPSE || rule.isAlien())
-		        {
-			        return "STR_ALIENS";
-		        }
-		        if (rule.getBattleType() == BattleType.BT_NONE)
-		        {
-			        if (_craftWeapons.Contains(rule.getType()))
-			        {
-				        return "STR_CRAFT_ARMAMENT";
-			        }
-			        if (_armors.Contains(rule.getType()))
-			        {
-				        return "STR_EQUIPMENT";
-			        }
-			        return "STR_COMPONENTS";
-		        }
-		        return "STR_EQUIPMENT";
-	    }
-	    return "STR_ALL_ITEMS";
+        RuleItem rule = null;
+        switch (_items[sel].type)
+        {
+            case TransferType.TRANSFER_SOLDIER:
+            case TransferType.TRANSFER_SCIENTIST:
+            case TransferType.TRANSFER_ENGINEER:
+                return "STR_PERSONNEL";
+            case TransferType.TRANSFER_CRAFT:
+                return "STR_CRAFT_ARMAMENT";
+            case TransferType.TRANSFER_ITEM:
+                rule = (RuleItem)_items[sel].rule;
+                if (rule.getBattleType() == BattleType.BT_CORPSE || rule.isAlien())
+                {
+                    return "STR_ALIENS";
+                }
+                if (rule.getBattleType() == BattleType.BT_NONE)
+                {
+                    if (_craftWeapons.Contains(rule.getType()))
+                    {
+                        return "STR_CRAFT_ARMAMENT";
+                    }
+                    if (_armors.Contains(rule.getType()))
+                    {
+                        return "STR_EQUIPMENT";
+                    }
+                    return "STR_COMPONENTS";
+                }
+                return "STR_EQUIPMENT";
+        }
+        return "STR_ALL_ITEMS";
     }
 
     /// Gets the row of the current selection.
@@ -568,40 +568,40 @@ internal class TransferItemsState : State
     */
     void updateList()
     {
-	    _lstItems.clearList();
-	    _rows.Clear();
-	    for (int i = 0; i < _items.Count; ++i)
-	    {
-		    string cat = _cats[(int)_cbxCategory.getSelected()];
-		    if (cat != "STR_ALL_ITEMS" && cat != getCategory(i))
-		    {
-			    continue;
-		    }
-		    string name = _items[i].name;
-		    bool ammo = false;
-		    if (_items[i].type == TransferType.TRANSFER_ITEM)
-		    {
-			    RuleItem rule = (RuleItem)_items[i].rule;
-			    ammo = (rule.getBattleType() == BattleType.BT_AMMO || (rule.getBattleType() == BattleType.BT_NONE && rule.getClipSize() > 0));
-			    if (ammo)
-			    {
+        _lstItems.clearList();
+        _rows.Clear();
+        for (int i = 0; i < _items.Count; ++i)
+        {
+            string cat = _cats[(int)_cbxCategory.getSelected()];
+            if (cat != "STR_ALL_ITEMS" && cat != getCategory(i))
+            {
+                continue;
+            }
+            string name = _items[i].name;
+            bool ammo = false;
+            if (_items[i].type == TransferType.TRANSFER_ITEM)
+            {
+                RuleItem rule = (RuleItem)_items[i].rule;
+                ammo = (rule.getBattleType() == BattleType.BT_AMMO || (rule.getBattleType() == BattleType.BT_NONE && rule.getClipSize() > 0));
+                if (ammo)
+                {
                     name = name.Insert(0, "  ");
-			    }
-		    }
-		    string ssQtySrc = (_items[i].qtySrc - _items[i].amount).ToString();
-		    string ssQtyDst = _items[i].qtyDst.ToString();
-		    string ssAmount = _items[i].amount.ToString();
-		    _lstItems.addRow(4, name, ssQtySrc, ssAmount, ssQtyDst);
-		    _rows.Add(i);
-		    if (_items[i].amount > 0)
-		    {
-			    _lstItems.setRowColor((uint)(_rows.Count - 1), _lstItems.getSecondaryColor());
-		    }
-		    else if (ammo)
-		    {
-			    _lstItems.setRowColor((uint)(_rows.Count - 1), _ammoColor);
-		    }
-	    }
+                }
+            }
+            string ssQtySrc = (_items[i].qtySrc - _items[i].amount).ToString();
+            string ssQtyDst = _items[i].qtyDst.ToString();
+            string ssAmount = _items[i].amount.ToString();
+            _lstItems.addRow(4, name, ssQtySrc, ssAmount, ssQtyDst);
+            _rows.Add(i);
+            if (_items[i].amount > 0)
+            {
+                _lstItems.setRowColor((uint)(_rows.Count - 1), _lstItems.getSecondaryColor());
+            }
+            else if (ammo)
+            {
+                _lstItems.setRowColor((uint)(_rows.Count - 1), _ammoColor);
+            }
+        }
     }
 
     /**
@@ -641,16 +641,17 @@ internal class TransferItemsState : State
         double[] x = new double[3], y = new double[3], z = new double[3];
         double r = 51.2;
         Base @base = _baseFrom;
-	    for (int i = 0; i < 2; ++i) {
-		    x[i] = r * Math.Cos(@base.getLatitude()) * Math.Cos(@base.getLongitude());
-		    y[i] = r * Math.Cos(@base.getLatitude()) * Math.Sin(@base.getLongitude());
-		    z[i] = r * -Math.Sin(@base.getLatitude());
+        for (int i = 0; i < 2; ++i)
+        {
+            x[i] = r * Math.Cos(@base.getLatitude()) * Math.Cos(@base.getLongitude());
+            y[i] = r * Math.Cos(@base.getLatitude()) * Math.Sin(@base.getLongitude());
+            z[i] = r * -Math.Sin(@base.getLatitude());
             @base = _baseTo;
-	    }
-	    x[2] = x[1] - x[0];
-	    y[2] = y[1] - y[0];
-	    z[2] = z[1] - z[0];
-	    return Math.Sqrt(x[2] * x[2] + y[2] * y[2] + z[2] * z[2]);
+        }
+        x[2] = x[1] - x[0];
+        y[2] = y[1] - y[0];
+        z[2] = z[1] - z[0];
+        return Math.Sqrt(x[2] * x[2] + y[2] * y[2] + z[2] * z[2]);
     }
 
     /**
@@ -658,7 +659,7 @@ internal class TransferItemsState : State
      * @return Total cost.
      */
     internal int getTotal() =>
-	    _total;
+        _total;
 
     /**
      * Completes the transfer between bases.
@@ -769,9 +770,9 @@ internal class TransferItemsState : State
      */
     internal override void think()
     {
-	    base.think();
+        base.think();
 
-	    _timerInc.think(this, null);
-	    _timerDec.think(this, null);
+        _timerInc.think(this, null);
+        _timerDec.think(this, null);
     }
 }

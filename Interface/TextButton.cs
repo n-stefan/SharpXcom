@@ -99,8 +99,8 @@ internal class TextButton : InteractiveSurface
      */
     internal void setText(string text)
     {
-	    _text.setText(text);
-	    _redraw = true;
+        _text.setText(text);
+        _redraw = true;
     }
 
     /**
@@ -108,7 +108,7 @@ internal class TextButton : InteractiveSurface
      * @return Pointer to font.
      */
     internal Font getFont() =>
-	    _text.getFont();
+        _text.getFont();
 
     /**
      * Enables/disables high contrast color. Mostly used for
@@ -151,92 +151,92 @@ internal class TextButton : InteractiveSurface
      */
     internal override void draw()
     {
-	    base.draw();
-	    SDL_Rect square;
+        base.draw();
+        SDL_Rect square;
 
-	    int mul = 1;
-	    if (_contrast)
-	    {
-		    mul = 2;
-	    }
+        int mul = 1;
+        if (_contrast)
+        {
+            mul = 2;
+        }
 
-	    int color = _color + 1 * mul;
+        int color = _color + 1 * mul;
 
-	    square.x = 0;
-	    square.y = 0;
-	    square.w = getWidth();
-	    square.h = getHeight();
+        square.x = 0;
+        square.y = 0;
+        square.w = getWidth();
+        square.h = getHeight();
 
-	    for (int i = 0; i < 5; ++i)
-	    {
-		    drawRect(ref square, (byte)color);
+        for (int i = 0; i < 5; ++i)
+        {
+            drawRect(ref square, (byte)color);
 
-		    if (i % 2 == 0)
-		    {
-			    square.x++;
-			    square.y++;
-		    }
-		    square.w--;
-		    square.h--;
+            if (i % 2 == 0)
+            {
+                square.x++;
+                square.y++;
+            }
+            square.w--;
+            square.h--;
 
-		    switch (i)
-		    {
-		        case 0:
-			        color = _color + 5 * mul;
-			        setPixel(square.w, 0, (byte)color);
-			        break;
-		        case 1:
-			        color = _color + 2 * mul;
-			        break;
-		        case 2:
-			        color = _color + 4 * mul;
-			        setPixel(square.w+1, 1, (byte)color);
-			        break;
-		        case 3:
-			        color = _color + 3 * mul;
-			        break;
-		        case 4:
-			        if (_geoscapeButton)
-			        {
-				        setPixel(0, 0, _color);
-				        setPixel(1, 1, _color);
-			        }
-			        break;
-		    }
-	    }
+            switch (i)
+            {
+                case 0:
+                    color = _color + 5 * mul;
+                    setPixel(square.w, 0, (byte)color);
+                    break;
+                case 1:
+                    color = _color + 2 * mul;
+                    break;
+                case 2:
+                    color = _color + 4 * mul;
+                    setPixel(square.w + 1, 1, (byte)color);
+                    break;
+                case 3:
+                    color = _color + 3 * mul;
+                    break;
+                case 4:
+                    if (_geoscapeButton)
+                    {
+                        setPixel(0, 0, _color);
+                        setPixel(1, 1, _color);
+                    }
+                    break;
+            }
+        }
 
-	    bool press;
-	    if (_group == null)
-		    press = isButtonPressed();
-	    else
-		    press = (_group == this);
+        bool press;
+        if (_group == null)
+            press = isButtonPressed();
+        else
+            press = (_group == this);
 
-	    if (press)
-	    {
-		    if (_geoscapeButton)
-		    {
-			    this.invert((byte)(_color + 2 * mul));
-		    }
-		    else
-		    {
-			    this.invert((byte)(_color + 3 * mul));
-		    }
-	    }
-	    _text.setInvert(press);
+        if (press)
+        {
+            if (_geoscapeButton)
+            {
+                this.invert((byte)(_color + 2 * mul));
+            }
+            else
+            {
+                this.invert((byte)(_color + 3 * mul));
+            }
+        }
+        _text.setInvert(press);
 
-	    _text.blit(this);
+        _text.blit(this);
     }
 
     protected override bool isButtonHandled(byte button = 0)
     {
-	    if (_comboBox != null)
-	    {
-		    return (button == SDL_BUTTON_LEFT);
-	    }
-	    else
-	    {
-		    return base.isButtonHandled(button);
-	    }
+        if (_comboBox != null)
+        {
+            return (button == SDL_BUTTON_LEFT);
+        }
+        else
+        {
+            return base.isButtonHandled(button);
+        }
     }
 
     /**
@@ -246,32 +246,32 @@ internal class TextButton : InteractiveSurface
      */
     internal override void mousePress(Action action, State state)
     {
-	    if (action.getDetails().button.button == SDL_BUTTON_LEFT && _group != null)
-	    {
-		    TextButton old = _group;
-		    _group = this;
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT && _group != null)
+        {
+            TextButton old = _group;
+            _group = this;
             if (old != null)
-			    old.draw();
-		    draw();
-	    }
+                old.draw();
+            draw();
+        }
 
-	    if (isButtonHandled(action.getDetails().button.button))
-	    {
-		    if (soundPress != null && _group == null &&
-			    action.getDetails().wheel.y == 0) //button.button != SDL_BUTTON_WHEELUP && button.button != SDL_BUTTON_WHEELDOWN
-		    {
-			    soundPress.play(Mix_GroupAvailable(0));
-		    }
+        if (isButtonHandled(action.getDetails().button.button))
+        {
+            if (soundPress != null && _group == null &&
+                action.getDetails().wheel.y == 0) //button.button != SDL_BUTTON_WHEELUP && button.button != SDL_BUTTON_WHEELDOWN
+            {
+                soundPress.play(Mix_GroupAvailable(0));
+            }
 
-		    if (_comboBox != null)
-		    {
-			    _comboBox.toggle();
-		    }
+            if (_comboBox != null)
+            {
+                _comboBox.toggle();
+            }
 
-		    draw();
-		    //_redraw = true;
-	    }
-	    base.mousePress(action, state);
+            draw();
+            //_redraw = true;
+        }
+        base.mousePress(action, state);
     }
 
     /**
@@ -281,12 +281,12 @@ internal class TextButton : InteractiveSurface
      */
     protected override void mouseRelease(Action action, State state)
     {
-	    if (isButtonHandled(action.getDetails().button.button))
-	    {
-		    draw();
-		    //_redraw = true;
-	    }
-	    base.mouseRelease(action, state);
+        if (isButtonHandled(action.getDetails().button.button))
+        {
+            draw();
+            //_redraw = true;
+        }
+        base.mouseRelease(action, state);
     }
 
     /**
@@ -300,8 +300,8 @@ internal class TextButton : InteractiveSurface
      */
     internal override void initText(Font big, Font small, Language lang)
     {
-	    _text.initText(big, small, lang);
-	    _redraw = true;
+        _text.initText(big, small, lang);
+        _redraw = true;
     }
 
     /**
@@ -312,20 +312,20 @@ internal class TextButton : InteractiveSurface
      */
     internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-	    base.setPalette(colors, firstcolor, ncolors);
-	    _text.setPalette(colors, firstcolor, ncolors);
+        base.setPalette(colors, firstcolor, ncolors);
+        _text.setPalette(colors, firstcolor, ncolors);
     }
 
     internal override void setWidth(int width)
     {
-	    base.setWidth(width);
-	    _text.setWidth(width);
+        base.setWidth(width);
+        _text.setWidth(width);
     }
 
     internal override void setHeight(int height)
     {
-	    base.setHeight(height);
-	    _text.setHeight(height);
+        base.setHeight(height);
+        _text.setHeight(height);
     }
 
     /**
@@ -334,11 +334,11 @@ internal class TextButton : InteractiveSurface
      */
     void setTextColor(byte color)
     {
-	    _text.setColor(color);
-	    _redraw = true;
+        _text.setColor(color);
+        _redraw = true;
     }
 
-	void setSecondaryColor(byte color) =>
+    void setSecondaryColor(byte color) =>
         setTextColor(color);
 
     /**
@@ -346,15 +346,15 @@ internal class TextButton : InteractiveSurface
      * @return Color value.
      */
     internal byte getColor() =>
-	    _color;
+        _color;
 
     /**
      * Changes the text to use the small-size font.
      */
     void setSmall()
     {
-	    _text.setSmall();
-	    _redraw = true;
+        _text.setSmall();
+        _redraw = true;
     }
 
     /**
@@ -362,5 +362,5 @@ internal class TextButton : InteractiveSurface
      * @return Text string.
      */
     string getText() =>
-	    _text.getText();
+        _text.getText();
 }

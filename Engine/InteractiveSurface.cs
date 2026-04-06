@@ -168,14 +168,14 @@ internal class InteractiveSurface : Surface
 
     protected bool isButtonPressed(byte button = 0)
     {
-	    if (button == 0)
-	    {
+        if (button == 0)
+        {
             return (_buttonsPressed != 0);
-	    }
-	    else
-	    {
-		    return (_buttonsPressed & SDL_BUTTON(button)) != 0;
-	    }
+        }
+        else
+        {
+            return (_buttonsPressed & SDL_BUTTON(button)) != 0;
+        }
     }
 
     protected void setButtonPressed(byte button, bool pressed)
@@ -200,13 +200,13 @@ internal class InteractiveSurface : Surface
     internal virtual void mousePress(Action action, State state)
     {
         if (_press.TryGetValue(0, out ActionHandler allHandler))
-	    {
+        {
             allHandler(action);
-	    }
+        }
         if (_press.TryGetValue(action.getDetails().button.button, out ActionHandler oneHandler))
-	    {
+        {
             oneHandler(action);
-	    }
+        }
     }
 
     /**
@@ -219,13 +219,13 @@ internal class InteractiveSurface : Surface
     protected virtual void mouseRelease(Action action, State state)
     {
         if (_release.TryGetValue(0, out ActionHandler allHandler))
-	    {
+        {
             allHandler(action);
-	    }
+        }
         if (_release.TryGetValue(action.getDetails().button.button, out ActionHandler oneHandler))
-	    {
+        {
             oneHandler(action);
-	    }
+        }
     }
 
     /**
@@ -238,13 +238,13 @@ internal class InteractiveSurface : Surface
     protected virtual void mouseClick(Action action, State state)
     {
         if (_click.TryGetValue(0, out ActionHandler allHandler))
-	    {
+        {
             allHandler(action);
-	    }
+        }
         if (_click.TryGetValue(action.getDetails().button.button, out ActionHandler oneHandler))
-	    {
+        {
             oneHandler(action);
-	    }
+        }
     }
 
     /**
@@ -256,16 +256,16 @@ internal class InteractiveSurface : Surface
      */
     protected virtual void keyboardPress(Action action, State state)
     {
-	    if (_keyPress.TryGetValue(SDLK_ANY, out ActionHandler allHandler))
-	    {
-		    allHandler(action);
-	    }
+        if (_keyPress.TryGetValue(SDLK_ANY, out ActionHandler allHandler))
+        {
+            allHandler(action);
+        }
         // Check if Ctrl, Alt and Shift aren't pressed
-        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL|SDL_Keymod.KMOD_ALT|SDL_Keymod.KMOD_SHIFT)) != 0);
+        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL | SDL_Keymod.KMOD_ALT | SDL_Keymod.KMOD_SHIFT)) != 0);
         if (_keyPress.TryGetValue(action.getDetails().key.keysym.sym, out ActionHandler oneHandler) && !mod)
-	    {
+        {
             oneHandler(action);
-	    }
+        }
     }
 
     /**
@@ -277,16 +277,16 @@ internal class InteractiveSurface : Surface
      */
     protected virtual void keyboardRelease(Action action, State state)
     {
-	    if (_keyRelease.TryGetValue(SDLK_ANY, out ActionHandler allHandler))
-	    {
-		    allHandler(action);
-	    }
+        if (_keyRelease.TryGetValue(SDLK_ANY, out ActionHandler allHandler))
+        {
+            allHandler(action);
+        }
         // Check if Ctrl, Alt and Shift aren't pressed
-        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL|SDL_Keymod.KMOD_ALT|SDL_Keymod.KMOD_SHIFT)) != 0);
+        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL | SDL_Keymod.KMOD_ALT | SDL_Keymod.KMOD_SHIFT)) != 0);
         if (_keyRelease.TryGetValue(action.getDetails().key.keysym.sym, out ActionHandler oneHandler) && !mod)
-	    {
+        {
             oneHandler(action);
-	    }
+        }
     }
 
     /**
@@ -399,14 +399,14 @@ internal class InteractiveSurface : Surface
      */
     internal void onMouseRelease(ActionHandler handler, uint button = 0)
     {
-	    if (handler != null)
-	    {
-		    _release[button] = handler;
-	    }
-	    else
-	    {
-		    _release.Remove(button);
-	    }
+        if (handler != null)
+        {
+            _release[button] = handler;
+        }
+        else
+        {
+            _release.Remove(button);
+        }
     }
 
     /**
@@ -488,20 +488,20 @@ internal class InteractiveSurface : Surface
      * @return Is it focused?
      */
     internal bool isFocused() =>
-	    _isFocused;
+        _isFocused;
 
-	/// Is this mouse button event handled?
+    /// Is this mouse button event handled?
     protected virtual bool isButtonHandled(byte button = 0)
     {
-	    bool handled = (_click.ContainsKey(0) ||
-					    _press.ContainsKey(0) ||
-					    _release.ContainsKey(0));
-	    if (!handled && button != 0)
-	    {
-		    handled = (_click.ContainsKey(button) ||
-				       _press.ContainsKey(button) ||
-				       _release.ContainsKey(button));
-	    }
-	    return handled;
+        bool handled = (_click.ContainsKey(0) ||
+                        _press.ContainsKey(0) ||
+                        _release.ContainsKey(0));
+        if (!handled && button != 0)
+        {
+            handled = (_click.ContainsKey(button) ||
+                       _press.ContainsKey(button) ||
+                       _release.ContainsKey(button));
+        }
+        return handled;
     }
 }

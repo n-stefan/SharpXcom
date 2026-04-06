@@ -35,28 +35,28 @@ internal class WeightedOptions
 	 * @param nd The YAML node (containing a map) with the new values.
 	 */
     internal void load(YamlNode nd)
-	{
-		foreach (var val in ((YamlMappingNode)nd).Children)
-		{
-			string id = val.Key.ToString();
+    {
+        foreach (var val in ((YamlMappingNode)nd).Children)
+        {
+            string id = val.Key.ToString();
             uint w = uint.Parse(val.Value.ToString());
-			set(id, w);
-		}
-	}
+            set(id, w);
+        }
+    }
 
     /**
 	 * Send the WeightedOption contents to a YAML::Emitter.
 	 * @return YAML node.
 	 */
     internal YamlNode save()
-	{
-		var node = new YamlMappingNode();
-		foreach (var ii in _choices)
-		{
-			node.Add(ii.Key, ii.Value.ToString());
-		}
-		return node;
-	}
+    {
+        var node = new YamlMappingNode();
+        foreach (var ii in _choices)
+        {
+            node.Add(ii.Key, ii.Value.ToString());
+        }
+        return node;
+    }
 
     /**
      * Get the list of strings associated with these weights.
@@ -72,7 +72,7 @@ internal class WeightedOptions
         return names;
     }
 
-	/**
+    /**
 	 * Set an option's weight.
 	 * If @a weight is set to 0, the option is removed from the list of choices.
 	 * If @a id already exists, the new weight replaces the old one, otherwise
@@ -80,63 +80,63 @@ internal class WeightedOptions
 	 * @param id The option name.
 	 * @param weight The option's new weight.
 	 */
-	internal void set(string id, uint weight)
-	{
-		if (_choices.ContainsKey(id))
-		{
-			_totalWeight -= _choices[id];
-			if (0 != weight)
-			{
-				_choices[id] = weight;
-				_totalWeight += weight;
-			}
-			else
-			{
-				_choices.Remove(id);
-			}
-		}
-		else if (0 != weight)
-		{
-			_choices.Add(id, weight);
-			_totalWeight += weight;
-		}
-	}
+    internal void set(string id, uint weight)
+    {
+        if (_choices.ContainsKey(id))
+        {
+            _totalWeight -= _choices[id];
+            if (0 != weight)
+            {
+                _choices[id] = weight;
+                _totalWeight += weight;
+            }
+            else
+            {
+                _choices.Remove(id);
+            }
+        }
+        else if (0 != weight)
+        {
+            _choices.Add(id, weight);
+            _totalWeight += weight;
+        }
+    }
 
     /// Is this empty?
     internal bool empty() =>
-		0 == _totalWeight;
+        0 == _totalWeight;
 
     /// Remove all entries.
     internal void clear()
-	{
-		_totalWeight = 0;
-		_choices.Clear();
-	}
+    {
+        _totalWeight = 0;
+        _choices.Clear();
+    }
 
-	/**
+    /**
 	 * Select a random choice from among the contents.
 	 * This MUST be called on non-empty objects.
 	 * Each time this is called, the returned value can be different.
 	 * @return The key of the selected choice.
 	 */
-	internal string choose()
-	{
-		if (_totalWeight == 0)
-		{
-			return string.Empty;
-		}
-		uint var = (uint)RNG.generate(0, _totalWeight);
-		foreach (var ii in _choices)
-		{
-			if (var <= ii.Value)
-				return ii.Key;
-			var -= ii.Value;
-		}
-		// We always have a valid iterator here.
-		return string.Empty;
-	}
+    internal string choose()
+    {
+        if (_totalWeight == 0)
+        {
+            return string.Empty;
+        }
+        uint var = (uint)RNG.generate(0, _totalWeight);
+        foreach (var ii in _choices)
+        {
+            if (var <= ii.Value)
+                return ii.Key;
+            var -= ii.Value;
+        }
+        // We always have a valid iterator here.
+        return string.Empty;
+    }
 
-	/// Create an empty set.
-	internal WeightedOptions() =>
-		_totalWeight = 0;
+    /// Create an empty set.
+    internal WeightedOptions() =>
+        _totalWeight = 0;
 }

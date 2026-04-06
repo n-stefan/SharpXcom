@@ -283,8 +283,8 @@ internal class SelectDestinationState : State
      */
     internal override void init()
     {
-	    base.init();
-	    _globe.rotateStop();
+        base.init();
+        _globe.rotateStop();
     }
 
     /**
@@ -292,8 +292,8 @@ internal class SelectDestinationState : State
      */
     internal override void think()
     {
-	    base.think();
-	    _globe.think();
+        base.think();
+        _globe.think();
     }
 
     /**
@@ -302,8 +302,8 @@ internal class SelectDestinationState : State
      */
     internal override void handle(Action action)
     {
-	    base.handle(action);
-	    _globe.handle(action, this);
+        base.handle(action);
+        _globe.handle(action, this);
     }
 
     /**
@@ -313,13 +313,13 @@ internal class SelectDestinationState : State
      */
     internal override void resize(ref int dX, ref int dY)
     {
-	    foreach (var i in _surfaces)
-	    {
-		    i.setX(i.getX() + dX / 2);
-		    if (i != _window && i != _btnCancel && i != _txtTitle && i != _btnCydonia)
-		    {
-			    i.setY(i.getY() + dY / 2);
-		    }
-	    }
+        foreach (var i in _surfaces)
+        {
+            i.setX(i.getX() + dX / 2);
+            if (i != _window && i != _btnCancel && i != _txtTitle && i != _btnCydonia)
+            {
+                i.setY(i.getY() + dY / 2);
+            }
+        }
     }
 }

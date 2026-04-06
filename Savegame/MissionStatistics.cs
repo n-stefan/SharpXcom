@@ -43,7 +43,7 @@ internal struct MissionStatistics
     {
         id = 0;
         markerId = 0;
-		time = new GameTime(0, 0, 0, 0, 0, 0, 0);
+        time = new GameTime(0, 0, 0, 0, 0, 0, 0);
         region = "STR_REGION_UNKNOWN";
         country = "STR_UNKNOWN";
         ufo = "NO_UFO";
@@ -55,139 +55,139 @@ internal struct MissionStatistics
         lootValue = 0;
     }
 
-	MissionStatistics(YamlNode node)
-	{
-		time = new GameTime(0, 0, 0, 0, 0, 0, 0);
-		load(node);
-	}
+    MissionStatistics(YamlNode node)
+    {
+        time = new GameTime(0, 0, 0, 0, 0, 0, 0);
+        load(node);
+    }
 
-	/// Save
-	internal YamlNode save()
-	{
+    /// Save
+    internal YamlNode save()
+    {
         var node = new YamlMappingNode
         {
             { "id", id.ToString() }
         };
         if (!string.IsNullOrEmpty(markerName))
-		{
-			node.Add("markerName", markerName);
-			node.Add("markerId", markerId.ToString());
-		}
-		node.Add("time", time.save());
-		node.Add("region", region);
-		node.Add("country", country);
-		node.Add("type", type);
-		node.Add("ufo", ufo);
-		node.Add("success", success.ToString());
-		node.Add("score", score.ToString());
-		node.Add("rating", rating);
-		node.Add("alienRace", alienRace);
-		node.Add("daylight", daylight.ToString());
+        {
+            node.Add("markerName", markerName);
+            node.Add("markerId", markerId.ToString());
+        }
+        node.Add("time", time.save());
+        node.Add("region", region);
+        node.Add("country", country);
+        node.Add("type", type);
+        node.Add("ufo", ufo);
+        node.Add("success", success.ToString());
+        node.Add("score", score.ToString());
+        node.Add("rating", rating);
+        node.Add("alienRace", alienRace);
+        node.Add("daylight", daylight.ToString());
         node.Add("injuryList", new YamlSequenceNode(injuryList.Select(x => new YamlMappingNode(x.Key.ToString(), x.Value.ToString()))));
-		if (valiantCrux) node.Add("valiantCrux", valiantCrux.ToString());
-		if (lootValue != 0) node.Add("lootValue", lootValue.ToString());
+        if (valiantCrux) node.Add("valiantCrux", valiantCrux.ToString());
+        if (lootValue != 0) node.Add("lootValue", lootValue.ToString());
         return node;
-	}
+    }
 
-	internal string getMissionName(Language lang)
-	{
-		if (!string.IsNullOrEmpty(markerName))
-		{
-			return lang.getString(markerName).arg(markerId);
-		}
-		else
-		{
-			return lang.getString(type);
-		}
-	}
+    internal string getMissionName(Language lang)
+    {
+        if (!string.IsNullOrEmpty(markerName))
+        {
+            return lang.getString(markerName).arg(markerId);
+        }
+        else
+        {
+            return lang.getString(type);
+        }
+    }
 
-	internal string getRatingString(Language lang)
-	{
-		string ss;
-		if (success)
-		{
-			ss = lang.getString("STR_VICTORY");
-		}
-		else
-		{
-			ss = lang.getString("STR_DEFEAT");
-		}
-		ss = $"{ss} - {lang.getString(rating)}";
-		return ss;
-	}
+    internal string getRatingString(Language lang)
+    {
+        string ss;
+        if (success)
+        {
+            ss = lang.getString("STR_VICTORY");
+        }
+        else
+        {
+            ss = lang.getString("STR_DEFEAT");
+        }
+        ss = $"{ss} - {lang.getString(rating)}";
+        return ss;
+    }
 
     internal bool isUfoMission()
-	{
-		if (ufo != "NO_UFO")
-		{
-			return true;
-		}
-		return false;
-	}
+    {
+        if (ufo != "NO_UFO")
+        {
+            return true;
+        }
+        return false;
+    }
 
     internal string getLocationString()
-	{
-		if (country == "STR_UNKNOWN")
-		{
-			return region;
-		}
-		else
-		{
-			return country;
-		}
-	}
+    {
+        if (country == "STR_UNKNOWN")
+        {
+            return region;
+        }
+        else
+        {
+            return country;
+        }
+    }
 
     internal string getDaylightString()
-	{
-		if (isDarkness())
-		{
-			return "STR_NIGHT";
-		}
-		else
-		{
-			return "STR_DAY";
-		}
-	}
+    {
+        if (isDarkness())
+        {
+            return "STR_NIGHT";
+        }
+        else
+        {
+            return "STR_DAY";
+        }
+    }
 
     internal bool isDarkness() =>
-		daylight > TileEngine.MAX_DARKNESS_TO_SEE_UNITS;
+        daylight > TileEngine.MAX_DARKNESS_TO_SEE_UNITS;
 
-	internal bool isAlienBase()
-	{
-		if (type.Contains("STR_ALIEN_BASE") || type.Contains("STR_ALIEN_COLONY"))
-		{
-			return true;
-		}
-		return false;
-	}
+    internal bool isAlienBase()
+    {
+        if (type.Contains("STR_ALIEN_BASE") || type.Contains("STR_ALIEN_COLONY"))
+        {
+            return true;
+        }
+        return false;
+    }
 
-	internal bool isBaseDefense()
-	{
-		if (type == "STR_BASE_DEFENSE")
-		{
-			return true;
-		}
-		return false;
-	}
+    internal bool isBaseDefense()
+    {
+        if (type == "STR_BASE_DEFENSE")
+        {
+            return true;
+        }
+        return false;
+    }
 
-	/// Load
-	internal void load(YamlNode node)
-	{
-		id = int.Parse(node["id"].ToString());
-		markerName = node["markerName"].ToString();
-		markerId = int.Parse(node["markerId"].ToString());
-		time.load(node["time"]);
-		region = node["region"].ToString();
-		country = node["country"].ToString();
-		type = node["type"].ToString();
-		ufo = node["ufo"].ToString();
-		success = bool.Parse(node["success"].ToString());
-		score = int.Parse(node["score"].ToString());
-		rating = node["rating"].ToString();
-		alienRace = node["alienRace"].ToString();
-		daylight = int.Parse(node["daylight"].ToString());
-		injuryList = ((YamlMappingNode)node["injuryList"]).Children.ToDictionary(x => int.Parse(x.ToString()), x => int.Parse(x.ToString()));
-		valiantCrux = bool.Parse(node["valiantCrux"].ToString());
-		lootValue = int.Parse(node["lootValue"].ToString());
-	}
+    /// Load
+    internal void load(YamlNode node)
+    {
+        id = int.Parse(node["id"].ToString());
+        markerName = node["markerName"].ToString();
+        markerId = int.Parse(node["markerId"].ToString());
+        time.load(node["time"]);
+        region = node["region"].ToString();
+        country = node["country"].ToString();
+        type = node["type"].ToString();
+        ufo = node["ufo"].ToString();
+        success = bool.Parse(node["success"].ToString());
+        score = int.Parse(node["score"].ToString());
+        rating = node["rating"].ToString();
+        alienRace = node["alienRace"].ToString();
+        daylight = int.Parse(node["daylight"].ToString());
+        injuryList = ((YamlMappingNode)node["injuryList"]).Children.ToDictionary(x => int.Parse(x.ToString()), x => int.Parse(x.ToString()));
+        valiantCrux = bool.Parse(node["valiantCrux"].ToString());
+        lootValue = int.Parse(node["lootValue"].ToString());
+    }
 }

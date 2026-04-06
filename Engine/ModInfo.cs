@@ -44,7 +44,7 @@ internal class ModInfo
      * List of engines that current version support.
      */
     static EngineData[] supportedEngines = {
-	    new() { name = SHARPXCOM_VERSION_ENGINE, version = SHARPXCOM_VERSION_NUMBER },
+        new() { name = SHARPXCOM_VERSION_ENGINE, version = SHARPXCOM_VERSION_NUMBER },
         new() { name = string.Empty, version = new[] { 0, 0, 0, 0 } } // assume that every engine support mods from base game, remove if its not true.
     };
 
@@ -72,7 +72,7 @@ internal class ModInfo
      * @return True if it's activable, false otherwise.
     */
     internal bool canActivate(string curMaster) =>
-	    (isMaster() || string.IsNullOrEmpty(getMaster()) || getMaster() == curMaster);
+        (isMaster() || string.IsNullOrEmpty(getMaster()) || getMaster() == curMaster);
 
     internal bool isMaster() =>
         _isMaster;
@@ -108,60 +108,60 @@ internal class ModInfo
         yaml.Load(input);
         var doc = (YamlMappingNode)yaml.Documents[0].RootNode;
 
-	    _name     = doc.Children["name"].ToString();
-	    _desc     = doc.Children["description"].ToString();
-	    _version  = doc.Children["version"].ToString();
-	    _author   = doc.Children["author"].ToString();
-	    _id       = doc.Children["id"].ToString();
-	    _isMaster = bool.Parse(doc.Children["isMaster"].ToString());
-	    _reservedSpace = int.Parse(doc.Children["reservedSpace"].ToString());
-	    if (doc.Children["requiredExtendedVersion"] is YamlNode req)
-	    {
-		    _requiredExtendedVersion = req.ToString();
-		    _requiredExtendedEngine = "Extended"; //for backward compatibility
-	    }
-	    _requiredExtendedEngine = doc.Children["requiredExtendedEngine"].ToString();
+        _name = doc.Children["name"].ToString();
+        _desc = doc.Children["description"].ToString();
+        _version = doc.Children["version"].ToString();
+        _author = doc.Children["author"].ToString();
+        _id = doc.Children["id"].ToString();
+        _isMaster = bool.Parse(doc.Children["isMaster"].ToString());
+        _reservedSpace = int.Parse(doc.Children["reservedSpace"].ToString());
+        if (doc.Children["requiredExtendedVersion"] is YamlNode req)
+        {
+            _requiredExtendedVersion = req.ToString();
+            _requiredExtendedEngine = "Extended"; //for backward compatibility
+        }
+        _requiredExtendedEngine = doc.Children["requiredExtendedEngine"].ToString();
 
-	    _engineOk = findCompatibleEngine(supportedEngines, _requiredExtendedEngine);
+        _engineOk = findCompatibleEngine(supportedEngines, _requiredExtendedEngine);
 
-	    if (_reservedSpace < 1)
-	    {
-		    _reservedSpace = 1;
-	    }
-	    else if (_reservedSpace > 100)
-	    {
-		    _reservedSpace = 100;
-	    }
+        if (_reservedSpace < 1)
+        {
+            _reservedSpace = 1;
+        }
+        else if (_reservedSpace > 100)
+        {
+            _reservedSpace = 100;
+        }
 
-	    if (_isMaster)
-	    {
-		    // default a master's master to none.  masters can still have
-		    // masters, but they must be explicitly declared.
-		    _master = string.Empty;
-		    // only masters can load external resource dirs
-		    _externalResourceDirs = ((YamlSequenceNode)doc.Children["loadResources"]).Select(x => x.ToString()).ToList();
-		    // or basic resource definition
-		    _resourceConfigFile = doc.Children["resourceConfig"].ToString();
-	    }
+        if (_isMaster)
+        {
+            // default a master's master to none.  masters can still have
+            // masters, but they must be explicitly declared.
+            _master = string.Empty;
+            // only masters can load external resource dirs
+            _externalResourceDirs = ((YamlSequenceNode)doc.Children["loadResources"]).Select(x => x.ToString()).ToList();
+            // or basic resource definition
+            _resourceConfigFile = doc.Children["resourceConfig"].ToString();
+        }
 
-	    _master = doc.Children["master"].ToString();
-	    if (_master == "*")
-	    {
-		    _master = string.Empty;
-	    }
+        _master = doc.Children["master"].ToString();
+        if (_master == "*")
+        {
+            _master = string.Empty;
+        }
     }
 
     bool findCompatibleEngine(EngineData[] l, string v)
     {
-	    for (int i = 0; i < l.Length; ++i)
-	    {
-		    if (l[i].name == v)
-		    {
-			    //TODO: add check for version
-			    return true;
-		    }
-	    }
-	    return false;
+        for (int i = 0; i < l.Length; ++i)
+        {
+            if (l[i].name == v)
+            {
+                //TODO: add check for version
+                return true;
+            }
+        }
+        return false;
     }
 
     internal int getReservedSpace() =>

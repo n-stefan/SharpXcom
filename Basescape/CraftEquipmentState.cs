@@ -603,12 +603,12 @@ internal class CraftEquipmentState : State
      */
     internal override void init()
     {
-	    base.init();
+        base.init();
 
-	    _game.getSavedGame().setBattleGame(null);
+        _game.getSavedGame().setBattleGame(null);
 
-	    Craft c = _base.getCrafts()[(int)_craft];
-	    c.setInBattlescape(false);
+        Craft c = _base.getCrafts()[(int)_craft];
+        c.setInBattlescape(false);
     }
 
     /**
@@ -616,9 +616,9 @@ internal class CraftEquipmentState : State
      */
     internal override void think()
     {
-	    base.think();
+        base.think();
 
-	    _timerLeft.think(this, null);
-	    _timerRight.think(this, null);
+        _timerLeft.think(this, null);
+        _timerRight.think(this, null);
     }
 }

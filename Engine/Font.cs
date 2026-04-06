@@ -54,21 +54,21 @@ internal class Font
      * @return Width in pixels.
      */
     internal int getWidth() =>
-	    _images[0].width;
+        _images[0].width;
 
     /**
      * Returns the maximum height for any character in the font.
      * @return Height in pixels.
      */
     internal int getHeight() =>
-	    _images[0].height;
+        _images[0].height;
 
     /**
      * Returns the font's 8bpp palette.
      * @return Pointer to the palette's colors.
      */
     internal SDL_Color[] getPalette() =>
-	    _images[0].surface.getPalette();
+        _images[0].surface.getPalette();
 
     /**
      * Replaces a certain amount of colors in the font's palette.
@@ -91,7 +91,7 @@ internal class Font
      * but to the spacing used between successive characters in a line.
      */
     internal int getSpacing() =>
-	    _images[0].spacing;
+        _images[0].spacing;
 
     /**
      * Returns the dimensions of a particular character in the font.
@@ -141,7 +141,8 @@ internal class Font
 
         var dosFontPtr = Marshal.AllocHGlobal(DOSFONT_SIZE);
         Marshal.Copy(dosFont, 0, dosFontPtr, DOSFONT_SIZE);
-        /* SDL_RWops */ nint rw = SDL_RWFromConstMem(dosFontPtr, DOSFONT_SIZE);
+        /* SDL_RWops */
+        nint rw = SDL_RWFromConstMem(dosFontPtr, DOSFONT_SIZE);
         nint s = SDL_LoadBMP_RW(rw, 0);
         SDL_FreeRW(rw);
         Marshal.FreeHGlobal(dosFontPtr);
@@ -168,61 +169,61 @@ internal class Font
     {
         FontImage image = _images[(int)index];
         Surface surface = image.surface;
-	    surface.@lock();
-	    int length = (surface.getWidth() / image.width);
-	    if (_monospace)
-	    {
-		    for (int i = 0; i < str.Length; ++i)
-		    {
-			    SDL_Rect rect;
-			    int startX = i % length * image.width;
-			    int startY = i / length * image.height;
-			    rect.x = startX;
-			    rect.y = startY;
-			    rect.w = image.width;
-			    rect.h = image.height;
-			    _chars[str[i]] = KeyValuePair.Create(index, rect);
-		    }
-	    }
-	    else
-	    {
-		    for (int i = 0; i < str.Length; ++i)
-		    {
-			    SDL_Rect rect;
-			    int left = -1, right = -1;
-			    int startX = i % length * image.width;
-			    int startY = i / length * image.height;
-			    for (int x = startX; x < startX + image.width; ++x)
-			    {
-				    for (int y = startY; y < startY + image.height && left == -1; ++y)
-				    {
-					    byte pixel = surface.getPixel(x, y);
-					    if (pixel != 0)
-					    {
-						    left = x;
-					    }
-				    }
-			    }
-			    for (int x = startX + image.width - 1; x >= startX; --x)
-			    {
-				    for (int y = startY + image.height; y-- != startY && right == -1;)
-				    {
-					    byte pixel = surface.getPixel(x, y);
-					    if (pixel != 0)
-					    {
-						    right = x;
-					    }
-				    }
-			    }
-			    rect.x = left;
-			    rect.y = startY;
-			    rect.w = right - left + 1;
+        surface.@lock();
+        int length = (surface.getWidth() / image.width);
+        if (_monospace)
+        {
+            for (int i = 0; i < str.Length; ++i)
+            {
+                SDL_Rect rect;
+                int startX = i % length * image.width;
+                int startY = i / length * image.height;
+                rect.x = startX;
+                rect.y = startY;
+                rect.w = image.width;
+                rect.h = image.height;
+                _chars[str[i]] = KeyValuePair.Create(index, rect);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < str.Length; ++i)
+            {
+                SDL_Rect rect;
+                int left = -1, right = -1;
+                int startX = i % length * image.width;
+                int startY = i / length * image.height;
+                for (int x = startX; x < startX + image.width; ++x)
+                {
+                    for (int y = startY; y < startY + image.height && left == -1; ++y)
+                    {
+                        byte pixel = surface.getPixel(x, y);
+                        if (pixel != 0)
+                        {
+                            left = x;
+                        }
+                    }
+                }
+                for (int x = startX + image.width - 1; x >= startX; --x)
+                {
+                    for (int y = startY + image.height; y-- != startY && right == -1;)
+                    {
+                        byte pixel = surface.getPixel(x, y);
+                        if (pixel != 0)
+                        {
+                            right = x;
+                        }
+                    }
+                }
+                rect.x = left;
+                rect.y = startY;
+                rect.w = right - left + 1;
                 rect.h = image.height;
 
                 _chars[str[i]] = KeyValuePair.Create(index, rect);
-		    }
-	    }
-	    surface.unlock();
+            }
+        }
+        surface.unlock();
     }
 
     /**
@@ -246,22 +247,22 @@ internal class Font
      */
     internal void load(YamlNode node)
     {
-	    int width = int.Parse(node["width"].ToString());
-	    int height = int.Parse(node["height"].ToString());
-	    int spacing = int.Parse(node["spacing"].ToString());
+        int width = int.Parse(node["width"].ToString());
+        int height = int.Parse(node["height"].ToString());
+        int spacing = int.Parse(node["spacing"].ToString());
         _monospace = bool.Parse(node["monospace"].ToString());
-	    foreach (var i in ((YamlSequenceNode)node["images"]).Children)
-	    {
+        foreach (var i in ((YamlSequenceNode)node["images"]).Children)
+        {
             var image = new FontImage();
             image.width = i["width"] != null ? int.Parse(i["width"].ToString()) : width;
-		    image.height = i["height"] != null ? int.Parse(i["height"].ToString()) : height;
-		    image.spacing = i["spacing"] != null ? int.Parse(i["spacing"].ToString()) : spacing;
-		    string file = "Language/" + i["file"].ToString();
-		    string chars = Unicode.convUtf8ToUtf32(i["chars"].ToString());
-		    image.surface = new Surface(image.width, image.height);
-		    image.surface.loadImage(FileMap.getFilePath(file));
-		    _images.Add(image);
+            image.height = i["height"] != null ? int.Parse(i["height"].ToString()) : height;
+            image.spacing = i["spacing"] != null ? int.Parse(i["spacing"].ToString()) : spacing;
+            string file = "Language/" + i["file"].ToString();
+            string chars = Unicode.convUtf8ToUtf32(i["chars"].ToString());
+            image.surface = new Surface(image.width, image.height);
+            image.surface.loadImage(FileMap.getFilePath(file));
+            _images.Add(image);
             init((uint)(_images.Count - 1), chars);
-	    }
+        }
     }
 }

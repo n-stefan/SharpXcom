@@ -64,24 +64,24 @@ internal class ResearchProject
      * @return the cost of the ResearchProject(in man/day)
      */
     internal int getCost() =>
-	    _cost;
+        _cost;
 
     /**
      * Returns the time already spent on this project
      * @return the time already spent on this ResearchProject(in man/day)
      */
     int getSpent() =>
-	    _spent;
+        _spent;
 
     /**
      * Returns the number of scientist assigned to this project
      * @return Number of assigned scientist.
      */
     internal int getAssigned() =>
-	    _assigned;
+        _assigned;
 
     internal RuleResearch getRules() =>
-	    _project;
+        _project;
 
     /**
      * Changes the number of scientist to the ResearchProject
@@ -119,33 +119,33 @@ internal class ResearchProject
      */
     internal string getResearchProgress()
     {
-	    float progress = (float)getSpent() / getRules().getCost();
-	    if (getAssigned() == 0)
-	    {
-		    return "STR_NONE";
-	    }
-	    else if (progress <= PROGRESS_LIMIT_UNKNOWN)
-	    {
-		    return "STR_UNKNOWN";
-	    }
-	    else
-	    {
-		    float rating = (float)getAssigned();
-		    rating /= getRules().getCost();
-		    if (rating <= PROGRESS_LIMIT_POOR)
-		    {
-			    return "STR_POOR";
-		    }
-		    else if (rating <= PROGRESS_LIMIT_AVERAGE)
-		    {
-			    return "STR_AVERAGE";
-		    }
-		    else if (rating <= PROGRESS_LIMIT_GOOD)
-		    {
-			    return "STR_GOOD";
-		    }
-		    return "STR_EXCELLENT";
-	    }
+        float progress = (float)getSpent() / getRules().getCost();
+        if (getAssigned() == 0)
+        {
+            return "STR_NONE";
+        }
+        else if (progress <= PROGRESS_LIMIT_UNKNOWN)
+        {
+            return "STR_UNKNOWN";
+        }
+        else
+        {
+            float rating = (float)getAssigned();
+            rating /= getRules().getCost();
+            if (rating <= PROGRESS_LIMIT_POOR)
+            {
+                return "STR_POOR";
+            }
+            else if (rating <= PROGRESS_LIMIT_AVERAGE)
+            {
+                return "STR_AVERAGE";
+            }
+            else if (rating <= PROGRESS_LIMIT_GOOD)
+            {
+                return "STR_GOOD";
+            }
+            return "STR_EXCELLENT";
+        }
     }
 
     /**
@@ -154,9 +154,9 @@ internal class ResearchProject
      */
     internal void load(YamlNode node)
     {
-	    setAssigned(node["assigned"] != null ? int.Parse(node["assigned"].ToString()) : getAssigned());
-	    setSpent(node["spent"] != null ? int.Parse(node["spent"].ToString()) : getSpent());
-	    setCost(node["cost"] != null ? int.Parse(node["cost"].ToString()) : getCost());
+        setAssigned(node["assigned"] != null ? int.Parse(node["assigned"].ToString()) : getAssigned());
+        setSpent(node["spent"] != null ? int.Parse(node["spent"].ToString()) : getSpent());
+        setCost(node["cost"] != null ? int.Parse(node["cost"].ToString()) : getCost());
     }
 
     /**
@@ -164,5 +164,5 @@ internal class ResearchProject
      * @param f new project cost(in man/day)
      */
     void setCost(int f) =>
-	    _cost = f;
+        _cost = f;
 }

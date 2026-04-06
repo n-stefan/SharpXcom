@@ -51,27 +51,27 @@ internal class Production
             { "infinite", getInfiniteAmount().ToString() }
         };
         if (getSellItems())
-		    node.Add("sell", getSellItems().ToString());
+            node.Add("sell", getSellItems().ToString());
         return node;
     }
 
     internal int getAssignedEngineers() =>
-	    _engineers;
+        _engineers;
 
     internal int getTimeSpent() =>
-	    _timeSpent;
+        _timeSpent;
 
     internal int getAmountTotal() =>
-	    _amount;
+        _amount;
 
     internal bool getInfiniteAmount() =>
-	    _infinite;
+        _infinite;
 
     internal bool getSellItems() =>
-	    _sell;
+        _sell;
 
     internal RuleManufacture getRules() =>
-	    _rules;
+        _rules;
 
     internal void setAssignedEngineers(int engineers) =>
         _engineers = engineers;
@@ -79,118 +79,118 @@ internal class Production
     internal void setTimeSpent(int done) =>
         _timeSpent = done;
 
-	internal productionProgress_e step(Base b, SavedGame g, Mod.Mod m)
-	{
-		int done = getAmountProduced();
-		_timeSpent += _engineers;
+    internal productionProgress_e step(Base b, SavedGame g, Mod.Mod m)
+    {
+        int done = getAmountProduced();
+        _timeSpent += _engineers;
 
-		if (done < getAmountProduced())
-		{
-			int produced;
-			if (!getInfiniteAmount())
-			{
-				produced = Math.Min(getAmountProduced(), _amount) - done; // Math.Min is required because we don't want to overproduce
+        if (done < getAmountProduced())
+        {
+            int produced;
+            if (!getInfiniteAmount())
+            {
+                produced = Math.Min(getAmountProduced(), _amount) - done; // Math.Min is required because we don't want to overproduce
             }
-			else
-			{
-				produced = getAmountProduced() - done;
-			}
-			int count = 0;
-			do
-			{
-				foreach (var i in _rules.getProducedItems())
-				{
-					if (_rules.getCategory() == "STR_CRAFT")
-					{
-						Craft craft = new Craft(m.getCraft(i.Key, true), b, g.getId(i.Key));
-						craft.setStatus("STR_REFUELLING");
-						b.getCrafts().Add(craft);
-						break;
-					}
-					else
-					{
-						if (m.getItem(i.Key, true).getBattleType() == BattleType.BT_NONE)
-						{
-							foreach (var c in b.getCrafts())
-							{
-								c.reuseItem(i.Key);
-							}
-						}
-						if (getSellItems())
-							g.setFunds(g.getFunds() + (m.getItem(i.Key, true).getSellCost() * i.Value));
-						else
-							b.getStorageItems().addItem(i.Key, i.Value);
-					}
-				}
-				count++;
-				if (count < produced)
-				{
-					// We need to ensure that player has enough cash/item to produce a new unit
-					if (!haveEnoughMoneyForOneMoreUnit(g)) return productionProgress_e.PROGRESS_NOT_ENOUGH_MONEY;
-					if (!haveEnoughMaterialsForOneMoreUnit(b, m)) return productionProgress_e.PROGRESS_NOT_ENOUGH_MATERIALS;
-					startItem(b, g, m);
-				}
-			}
-			while (count < produced);
-		}
-		if (getAmountProduced() >= _amount && !getInfiniteAmount()) return productionProgress_e.PROGRESS_COMPLETE;
-		if (done < getAmountProduced())
-		{
-			// We need to ensure that player has enough cash/item to produce a new unit
-			if (!haveEnoughMoneyForOneMoreUnit(g)) return productionProgress_e.PROGRESS_NOT_ENOUGH_MONEY;
-			if (!haveEnoughMaterialsForOneMoreUnit(b, m)) return productionProgress_e.PROGRESS_NOT_ENOUGH_MATERIALS;
-			startItem(b, g, m);
-		}
-		return productionProgress_e.PROGRESS_NOT_COMPLETE;
-	}
-
-	internal int getAmountProduced()
-	{
-		if (_rules.getManufactureTime() > 0)
-			return _timeSpent / _rules.getManufactureTime();
-		else
-			return _amount;
-	}
-
-	bool haveEnoughMoneyForOneMoreUnit(SavedGame g) =>
-		_rules.haveEnoughMoneyForOneMoreUnit(g.getFunds());
-
-	bool haveEnoughMaterialsForOneMoreUnit(Base b, Mod.Mod m)
-	{
-		foreach (var iter in _rules.getRequiredItems())
-		{
-			if (m.getItem(iter.Key) != null && b.getStorageItems().getItem(iter.Key) < iter.Value)
-				return false;
-			else if (m.getCraft(iter.Key) != null && b.getCraftCount(iter.Key) < iter.Value)
-				return false;
-		}
-		return true;
-	}
-
-	internal void startItem(Base b, SavedGame g, Mod.Mod m)
-	{
-		g.setFunds(g.getFunds() - _rules.getManufactureCost());
-		foreach (var iter in _rules.getRequiredItems())
-		{
-			if (m.getItem(iter.Key) != null)
-			{
-				b.getStorageItems().removeItem(iter.Key, iter.Value);
-			}
-			else if (m.getCraft(iter.Key) != null)
-			{
-				// Find suitable craft
-				foreach (var c in b.getCrafts())
-				{
-					if (c.getRules().getType() == iter.Key)
-					{
-						Craft craft = c;
-						b.removeCraft(craft, true);
+            else
+            {
+                produced = getAmountProduced() - done;
+            }
+            int count = 0;
+            do
+            {
+                foreach (var i in _rules.getProducedItems())
+                {
+                    if (_rules.getCategory() == "STR_CRAFT")
+                    {
+                        Craft craft = new Craft(m.getCraft(i.Key, true), b, g.getId(i.Key));
+                        craft.setStatus("STR_REFUELLING");
+                        b.getCrafts().Add(craft);
                         break;
-					}
-				}
-			}
-		}
-	}
+                    }
+                    else
+                    {
+                        if (m.getItem(i.Key, true).getBattleType() == BattleType.BT_NONE)
+                        {
+                            foreach (var c in b.getCrafts())
+                            {
+                                c.reuseItem(i.Key);
+                            }
+                        }
+                        if (getSellItems())
+                            g.setFunds(g.getFunds() + (m.getItem(i.Key, true).getSellCost() * i.Value));
+                        else
+                            b.getStorageItems().addItem(i.Key, i.Value);
+                    }
+                }
+                count++;
+                if (count < produced)
+                {
+                    // We need to ensure that player has enough cash/item to produce a new unit
+                    if (!haveEnoughMoneyForOneMoreUnit(g)) return productionProgress_e.PROGRESS_NOT_ENOUGH_MONEY;
+                    if (!haveEnoughMaterialsForOneMoreUnit(b, m)) return productionProgress_e.PROGRESS_NOT_ENOUGH_MATERIALS;
+                    startItem(b, g, m);
+                }
+            }
+            while (count < produced);
+        }
+        if (getAmountProduced() >= _amount && !getInfiniteAmount()) return productionProgress_e.PROGRESS_COMPLETE;
+        if (done < getAmountProduced())
+        {
+            // We need to ensure that player has enough cash/item to produce a new unit
+            if (!haveEnoughMoneyForOneMoreUnit(g)) return productionProgress_e.PROGRESS_NOT_ENOUGH_MONEY;
+            if (!haveEnoughMaterialsForOneMoreUnit(b, m)) return productionProgress_e.PROGRESS_NOT_ENOUGH_MATERIALS;
+            startItem(b, g, m);
+        }
+        return productionProgress_e.PROGRESS_NOT_COMPLETE;
+    }
+
+    internal int getAmountProduced()
+    {
+        if (_rules.getManufactureTime() > 0)
+            return _timeSpent / _rules.getManufactureTime();
+        else
+            return _amount;
+    }
+
+    bool haveEnoughMoneyForOneMoreUnit(SavedGame g) =>
+        _rules.haveEnoughMoneyForOneMoreUnit(g.getFunds());
+
+    bool haveEnoughMaterialsForOneMoreUnit(Base b, Mod.Mod m)
+    {
+        foreach (var iter in _rules.getRequiredItems())
+        {
+            if (m.getItem(iter.Key) != null && b.getStorageItems().getItem(iter.Key) < iter.Value)
+                return false;
+            else if (m.getCraft(iter.Key) != null && b.getCraftCount(iter.Key) < iter.Value)
+                return false;
+        }
+        return true;
+    }
+
+    internal void startItem(Base b, SavedGame g, Mod.Mod m)
+    {
+        g.setFunds(g.getFunds() - _rules.getManufactureCost());
+        foreach (var iter in _rules.getRequiredItems())
+        {
+            if (m.getItem(iter.Key) != null)
+            {
+                b.getStorageItems().removeItem(iter.Key, iter.Value);
+            }
+            else if (m.getCraft(iter.Key) != null)
+            {
+                // Find suitable craft
+                foreach (var c in b.getCrafts())
+                {
+                    if (c.getRules().getType() == iter.Key)
+                    {
+                        Craft craft = c;
+                        b.removeCraft(craft, true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     internal void setInfiniteAmount(bool inf) =>
         _infinite = inf;
@@ -201,19 +201,19 @@ internal class Production
     internal void setSellItems(bool sell) =>
         _sell = sell;
 
-	internal void load(YamlNode node)
-	{
-		setAssignedEngineers(node["assigned"] != null ? int.Parse(node["assigned"].ToString()) : getAssignedEngineers());
-		setTimeSpent(node["spent"] != null ? int.Parse(node["spent"].ToString()) : getTimeSpent());
-		setAmountTotal(node["amount"] != null ? int.Parse(node["amount"].ToString()) : getAmountTotal());
-		setInfiniteAmount(node["infinite"] != null ? bool.Parse(node["infinite"].ToString()) : getInfiniteAmount());
-		setSellItems(node["sell"] != null ? bool.Parse(node["sell"].ToString()) : getSellItems());
-		// backwards compatibility
-		if (getAmountTotal() == int.MaxValue)
-		{
-			setAmountTotal(999);
-			setInfiniteAmount(true);
-			setSellItems(true);
-		}
-	}
+    internal void load(YamlNode node)
+    {
+        setAssignedEngineers(node["assigned"] != null ? int.Parse(node["assigned"].ToString()) : getAssignedEngineers());
+        setTimeSpent(node["spent"] != null ? int.Parse(node["spent"].ToString()) : getTimeSpent());
+        setAmountTotal(node["amount"] != null ? int.Parse(node["amount"].ToString()) : getAmountTotal());
+        setInfiniteAmount(node["infinite"] != null ? bool.Parse(node["infinite"].ToString()) : getInfiniteAmount());
+        setSellItems(node["sell"] != null ? bool.Parse(node["sell"].ToString()) : getSellItems());
+        // backwards compatibility
+        if (getAmountTotal() == int.MaxValue)
+        {
+            setAmountTotal(999);
+            setInfiniteAmount(true);
+            setSellItems(true);
+        }
+    }
 }

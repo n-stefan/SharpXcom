@@ -93,20 +93,20 @@ internal class AdlibMusic : Music
         try
         {
             using var file = new FileStream(filename, FileMode.Open);
-	    
-	        //file.Seek(0, SeekOrigin.End);
-	        //_size = (uint)file.Position;
-	        //file.Seek(0, SeekOrigin.Begin);
+
+            //file.Seek(0, SeekOrigin.End);
+            //_size = (uint)file.Position;
+            //file.Seek(0, SeekOrigin.Begin);
             _size = (uint)file.Length;
 
-	        _data = new byte[_size];
-	        file.Read(_data);
+            _data = new byte[_size];
+            file.Read(_data);
 
             file.Close();
         }
         catch (Exception)
         {
-		    throw new Exception(filename + " not found");
+            throw new Exception(filename + " not found");
         }
     }
 
@@ -117,9 +117,9 @@ internal class AdlibMusic : Music
      */
     internal override void load(byte[] data, int size)
     {
-	    _data = data;
-	    if (_data[0]<=56) size+=_data[0];
-	    _size = (uint)size;
+        _data = data;
+        if (_data[0] <= 56) size += _data[0];
+        _size = (uint)size;
     }
 
     /**
@@ -129,13 +129,13 @@ internal class AdlibMusic : Music
     internal override void play(int loop = -1)
     {
 #if !__NO_MUSIC
-	    if (!Options.mute)
-	    {
-		    stop();
-		    func_setup_music(_data, (int)_size);
-		    func_set_music_volume((int)(127 * _volume));
-		    Mix_HookMusic(player, nint.Zero /*(void*)this*/);
-	    }
+        if (!Options.mute)
+        {
+            stop();
+            func_setup_music(_data, (int)_size);
+            func_set_music_volume((int)(127 * _volume));
+            Mix_HookMusic(player, nint.Zero /*(void*)this*/);
+        }
 #endif
     }
 
@@ -148,48 +148,49 @@ internal class AdlibMusic : Music
     internal unsafe void player(nint udata, nint stream, int len)
     {
 #if !__NO_MUSIC
-	    // Check SDL volume for Background Mute functionality
-	    if (Options.musicVolume == 0 || Mix_VolumeMusic(-1) == 0)
-		    return;
-	    if (Options.musicAlwaysLoop && !func_is_music_playing())
-	    {
-		    //AdlibMusic *music = (AdlibMusic*)udata;
-		    /*music.*/ play();
-		    return;
-	    }
-	    while (len != 0)
-	    {
-		    if (opl[0] == default || opl[1] == default)
-			    return;
-		    int i = Math.Min(delay, len);
-		    if (i != 0)
-		    {
-			    float volume = (float)Game.volumeExponent(Options.musicVolume);
+        // Check SDL volume for Background Mute functionality
+        if (Options.musicVolume == 0 || Mix_VolumeMusic(-1) == 0)
+            return;
+        if (Options.musicAlwaysLoop && !func_is_music_playing())
+        {
+            //AdlibMusic *music = (AdlibMusic*)udata;
+            /*music.*/
+            play();
+            return;
+        }
+        while (len != 0)
+        {
+            if (opl[0] == default || opl[1] == default)
+                return;
+            int i = Math.Min(delay, len);
+            if (i != 0)
+            {
+                float volume = (float)Game.volumeExponent(Options.musicVolume);
                 var buffer = new short[i / 2];
                 Marshal.Copy(stream, buffer, 0, i);
-			    YM3812UpdateOne(opl[0], buffer.AsSpan(), i / 2, 2, volume);
-			    YM3812UpdateOne(opl[1], buffer.AsSpan(1), i / 2, 2, volume);
-			    stream += i;
-			    delay -= i;
-			    len -= i;
-		    }
-		    if (len == 0)
-			    return;
-		    func_play_tick();
+                YM3812UpdateOne(opl[0], buffer.AsSpan(), i / 2, 2, volume);
+                YM3812UpdateOne(opl[1], buffer.AsSpan(1), i / 2, 2, volume);
+                stream += i;
+                delay -= i;
+                len -= i;
+            }
+            if (len == 0)
+                return;
+            func_play_tick();
 
-		    delay = delayRates[rate];
-	    }
+            delay = delayRates[rate];
+        }
 #endif
     }
 
     bool isPlaying()
     {
 #if !__NO_MUSIC
-	    if (!Options.mute)
-	    {
-		    return func_is_music_playing();
-	    }
+        if (!Options.mute)
+        {
+            return func_is_music_playing();
+        }
 #endif
-	    return false;
+        return false;
     }
 }

@@ -56,7 +56,7 @@ internal class ImageButton : InteractiveSurface
      * @return Color value.
      */
     internal byte getColor() =>
-	    _color;
+        _color;
 
     /**
      * Changes the color for the image button.
@@ -85,21 +85,21 @@ internal class ImageButton : InteractiveSurface
      */
     internal override void mousePress(Action action, State state)
     {
-	    if (_group != null)
-	    {
-		    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-		    {
-			    _group.invert((byte)(_group.getColor() + 3));
-			    _group = this;
-			    invert((byte)(_color + 3));
-		    }
-	    }
-	    else if (!_inverted && isButtonPressed() && isButtonHandled(action.getDetails().button.button))
-	    {
-		    _inverted = true;
-		    invert((byte)(_color + 3));
-	    }
-	    base.mousePress(action, state);
+        if (_group != null)
+        {
+            if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+            {
+                _group.invert((byte)(_group.getColor() + 3));
+                _group = this;
+                invert((byte)(_color + 3));
+            }
+        }
+        else if (!_inverted && isButtonPressed() && isButtonHandled(action.getDetails().button.button))
+        {
+            _inverted = true;
+            invert((byte)(_color + 3));
+        }
+        base.mousePress(action, state);
     }
 
     /*
@@ -109,12 +109,12 @@ internal class ImageButton : InteractiveSurface
      */
     protected override void mouseRelease(Action action, State state)
     {
-	    if (_inverted && isButtonHandled(action.getDetails().button.button))
-	    {
-		    _inverted = false;
-		    invert((byte)(_color + 3));
-	    }
-	    base.mouseRelease(action, state);
+        if (_inverted && isButtonHandled(action.getDetails().button.button))
+        {
+            _inverted = false;
+            invert((byte)(_color + 3));
+        }
+        base.mouseRelease(action, state);
     }
 
     /**
@@ -123,10 +123,10 @@ internal class ImageButton : InteractiveSurface
      */
     void toggle(bool press)
     {
-	    if (_inverted != press)
-	    {
-		    _inverted = !_inverted;
-		    invert((byte)(_color + 3));
-	    }
+        if (_inverted != press)
+        {
+            _inverted = !_inverted;
+            invert((byte)(_color + 3));
+        }
     }
 }

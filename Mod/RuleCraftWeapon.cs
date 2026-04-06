@@ -69,7 +69,7 @@ internal class RuleCraftWeapon : IRule
      * @return The item name.
      */
     internal string getLauncherItem() =>
-	    _launcher;
+        _launcher;
 
     /**
      * Loads the craft weapon from a YAML file.
@@ -78,31 +78,31 @@ internal class RuleCraftWeapon : IRule
      */
     internal void load(YamlNode node, Mod mod)
     {
-	    _type = node["type"].ToString();
-	    if (node["sprite"] != null)
-	    {
-		    // used in
-		    // Surface set (baseOffset):
-		    //   BASEBITS.PCK (48)
-		    //   INTICON.PCK (5)
-		    //
-		    // Final index in surfaceset is `baseOffset + sprite + (sprite > 5 ? modOffset : 0)`
-		    _sprite = mod.getOffset(int.Parse(node["sprite"].ToString()), 5);
-	    }
-	    mod.loadSoundOffset(_type, ref _sound, node["sound"], "GEO.CAT");
-	    _damage = int.Parse(node["damage"].ToString());
-	    _range = int.Parse(node["range"].ToString());
-	    _accuracy = int.Parse(node["accuracy"].ToString());
-	    _reloadCautious = int.Parse(node["reloadCautious"].ToString());
-	    _reloadStandard = int.Parse(node["reloadStandard"].ToString());
-	    _reloadAggressive = int.Parse(node["reloadAggressive"].ToString());
-	    _ammoMax = int.Parse(node["ammoMax"].ToString());
-	    _rearmRate = int.Parse(node["rearmRate"].ToString());
-	    _projectileType = (CraftWeaponProjectileType)int.Parse(node["projectileType"].ToString());
-	    _projectileSpeed = int.Parse(node["projectileSpeed"].ToString());
-	    _launcher = node["launcher"].ToString();
-	    _clip = node["clip"].ToString();
-	    _underwaterOnly = bool.Parse(node["underwaterOnly"].ToString());
+        _type = node["type"].ToString();
+        if (node["sprite"] != null)
+        {
+            // used in
+            // Surface set (baseOffset):
+            //   BASEBITS.PCK (48)
+            //   INTICON.PCK (5)
+            //
+            // Final index in surfaceset is `baseOffset + sprite + (sprite > 5 ? modOffset : 0)`
+            _sprite = mod.getOffset(int.Parse(node["sprite"].ToString()), 5);
+        }
+        mod.loadSoundOffset(_type, ref _sound, node["sound"], "GEO.CAT");
+        _damage = int.Parse(node["damage"].ToString());
+        _range = int.Parse(node["range"].ToString());
+        _accuracy = int.Parse(node["accuracy"].ToString());
+        _reloadCautious = int.Parse(node["reloadCautious"].ToString());
+        _reloadStandard = int.Parse(node["reloadStandard"].ToString());
+        _reloadAggressive = int.Parse(node["reloadAggressive"].ToString());
+        _ammoMax = int.Parse(node["ammoMax"].ToString());
+        _rearmRate = int.Parse(node["rearmRate"].ToString());
+        _projectileType = (CraftWeaponProjectileType)int.Parse(node["projectileType"].ToString());
+        _projectileSpeed = int.Parse(node["projectileSpeed"].ToString());
+        _launcher = node["launcher"].ToString();
+        _clip = node["clip"].ToString();
+        _underwaterOnly = bool.Parse(node["underwaterOnly"].ToString());
     }
 
     /**
@@ -111,7 +111,7 @@ internal class RuleCraftWeapon : IRule
      * @return The item name.
      */
     internal string getClipItem() =>
-	    _clip;
+        _clip;
 
     /**
      * Gets how much ammo is added to the craft weapon
@@ -119,7 +119,7 @@ internal class RuleCraftWeapon : IRule
      * @return The amount of ammo.
      */
     internal int getRearmRate() =>
-	    _rearmRate;
+        _rearmRate;
 
     /**
      * Gets the maximum amount of ammo the craft weapon
@@ -127,7 +127,7 @@ internal class RuleCraftWeapon : IRule
      * @return The amount of ammo.
      */
     internal int getAmmoMax() =>
-	    _ammoMax;
+        _ammoMax;
 
     /**
      * Gets the amount of time the craft weapon takes to
@@ -135,14 +135,14 @@ internal class RuleCraftWeapon : IRule
      * @return The time in game seconds.
      */
     internal int getCautiousReload() =>
-	    _reloadCautious;
+        _reloadCautious;
 
     /**
      * Gets the maximum range of this craft weapon.
      * @return The range in km.
      */
     internal int getRange() =>
-	    _range;
+        _range;
 
     /**
      * Gets the amount of time the craft weapon takes to
@@ -150,7 +150,7 @@ internal class RuleCraftWeapon : IRule
      * @return The time in game seconds.
      */
     internal int getStandardReload() =>
-	    _reloadStandard;
+        _reloadStandard;
 
     /**
      * Gets the amount of time the craft weapon takes to
@@ -158,7 +158,7 @@ internal class RuleCraftWeapon : IRule
      * @return The time in game seconds.
      */
     internal int getAggressiveReload() =>
-	    _reloadAggressive;
+        _reloadAggressive;
 
     /**
      * Gets the ID of the sprite used to draw the craft weapon
@@ -166,7 +166,7 @@ internal class RuleCraftWeapon : IRule
      * @return The sprite ID.
      */
     internal int getSprite() =>
-	    _sprite;
+        _sprite;
 
     /**
      * Gets the language string that names this craft weapon.
@@ -174,7 +174,7 @@ internal class RuleCraftWeapon : IRule
      * @return The craft weapon's name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Gets the amount of damage this craft weapon
@@ -182,7 +182,7 @@ internal class RuleCraftWeapon : IRule
      * @return The damage amount.
      */
     internal int getDamage() =>
-	    _damage;
+        _damage;
 
     /**
      * Gets the percentage chance of each shot of
@@ -190,7 +190,7 @@ internal class RuleCraftWeapon : IRule
      * @return The accuracy as a percentage.
      */
     internal int getAccuracy() =>
-	    _accuracy;
+        _accuracy;
 
     /**
      * Gets the ID of the sound used when firing the weapon
@@ -198,26 +198,26 @@ internal class RuleCraftWeapon : IRule
      * @return The sound ID.
      */
     internal int getSound() =>
-	    _sound;
+        _sound;
 
     /**
      * Gets the Projectile Type this weapon will fire
      * @return The projectile type.
      */
     internal CraftWeaponProjectileType getProjectileType() =>
-	    _projectileType;
+        _projectileType;
 
     /**
      * Gets the speed of the projectile fired by this weapon
      * @return The projectile speed.
      */
     internal int getProjectileSpeed() =>
-	    _projectileSpeed;
+        _projectileSpeed;
 
     /**
      * Can this item be used on land or is it underwater only?
      * @return if this is an underwater weapon or not.
      */
     bool isWaterOnly() =>
-	    _underwaterOnly;
+        _underwaterOnly;
 }

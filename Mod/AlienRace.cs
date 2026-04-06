@@ -48,7 +48,7 @@ internal class AlienRace : IRule
      */
     internal void load(YamlNode node)
     {
-	    _id = node["id"].ToString();
+        _id = node["id"].ToString();
         _members = ((YamlSequenceNode)node["members"]).Children.Select(x => x.ToString()).ToList();
     }
 
@@ -58,7 +58,7 @@ internal class AlienRace : IRule
      * @return The member's name.
      */
     internal string getMember(int id) =>
-	    _members[id];
+        _members[id];
 
     /**
      * Returns the language string that names
@@ -66,5 +66,5 @@ internal class AlienRace : IRule
      * @return Race name.
      */
     string getId() =>
-	    _id;
+        _id;
 }

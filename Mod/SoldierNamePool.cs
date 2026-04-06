@@ -88,87 +88,87 @@ internal class SoldierNamePool
      */
     internal string genName(SoldierGender gender, int femaleFrequency)
     {
-	    string name;
-	    bool female;
-	    if (_femaleFrequency > -1)
-	    {
-		    female = RNG.percent(_femaleFrequency);
-	    }
-	    else
-	    {
-		    female = RNG.percent(femaleFrequency);
-	    }
+        string name;
+        bool female;
+        if (_femaleFrequency > -1)
+        {
+            female = RNG.percent(_femaleFrequency);
+        }
+        else
+        {
+            female = RNG.percent(femaleFrequency);
+        }
 
-	    if (!female)
-	    {
-		    gender = SoldierGender.GENDER_MALE;
+        if (!female)
+        {
+            gender = SoldierGender.GENDER_MALE;
             int first = RNG.generate(0, _maleFirst.Count - 1);
-		    name = _maleFirst[first];
-		    if (_maleLast.Any())
-		    {
+            name = _maleFirst[first];
+            if (_maleLast.Any())
+            {
                 int last = RNG.generate(0, _maleLast.Count - 1);
-			    name = $"{name} {_maleLast[last]}";
-		    }
-	    }
-	    else
-	    {
-		    gender = SoldierGender.GENDER_FEMALE;
+                name = $"{name} {_maleLast[last]}";
+            }
+        }
+        else
+        {
+            gender = SoldierGender.GENDER_FEMALE;
             int first = RNG.generate(0, _femaleFirst.Count - 1);
-		    name = _femaleFirst[first];
-		    if (_femaleLast.Any())
-		    {
+            name = _femaleFirst[first];
+            if (_femaleLast.Any())
+            {
                 int last = RNG.generate(0, _femaleLast.Count - 1);
-			    name = $"{name} {_femaleLast[last]}";
-		    }
-	    }
-	    return name;
+                name = $"{name} {_femaleLast[last]}";
+            }
+        }
+        return name;
     }
 
-	/**
+    /**
 	 * Loads the pool from a YAML file.
 	 * @param filename YAML file.
 	 */
-	internal void load(string filename)
-	{
+    internal void load(string filename)
+    {
         using var input = new StreamReader(filename);
         var yaml = new YamlStream();
         yaml.Load(input);
         YamlMappingNode doc = (YamlMappingNode)yaml.Documents[0].RootNode;
 
-		foreach (var i in ((YamlSequenceNode)doc["maleFirst"]).Children)
-		{
-			string name = i.ToString();
-			_maleFirst.Add(name);
-		}
-		foreach (var i in ((YamlSequenceNode)doc["femaleFirst"]).Children)
-		{
-			string name = i.ToString();
-			_femaleFirst.Add(name);
-		}
-		foreach (var i in ((YamlSequenceNode)doc["maleLast"]).Children)
-		{
-			string name = i.ToString();
-			_maleLast.Add(name);
-		}
-		foreach (var i in ((YamlSequenceNode)doc["femaleLast"]).Children)
-		{
-			string name = i.ToString();
-			_femaleLast.Add(name);
-		}
-		if (!_femaleFirst.Any())
-		{
-			_femaleFirst = _maleFirst;
-		}
-		if (!_femaleLast.Any())
-		{
-			_femaleLast = _maleLast;
-		}
+        foreach (var i in ((YamlSequenceNode)doc["maleFirst"]).Children)
+        {
+            string name = i.ToString();
+            _maleFirst.Add(name);
+        }
+        foreach (var i in ((YamlSequenceNode)doc["femaleFirst"]).Children)
+        {
+            string name = i.ToString();
+            _femaleFirst.Add(name);
+        }
+        foreach (var i in ((YamlSequenceNode)doc["maleLast"]).Children)
+        {
+            string name = i.ToString();
+            _maleLast.Add(name);
+        }
+        foreach (var i in ((YamlSequenceNode)doc["femaleLast"]).Children)
+        {
+            string name = i.ToString();
+            _femaleLast.Add(name);
+        }
+        if (!_femaleFirst.Any())
+        {
+            _femaleFirst = _maleFirst;
+        }
+        if (!_femaleLast.Any())
+        {
+            _femaleLast = _maleLast;
+        }
         _lookWeights = ((YamlSequenceNode)doc["lookWeights"]).Children.Select(x => int.Parse(x.ToString())).ToList();
-		_totalWeight = 0;
-		foreach (var i in _lookWeights)
-		{
-			_totalWeight += i;
-		}
-		_femaleFrequency = int.Parse(doc["femaleFrequency"].ToString());
-	}
+        _totalWeight = 0;
+        foreach (var i in _lookWeights)
+        {
+            _totalWeight += i;
+        }
+        _femaleFrequency = int.Parse(doc["femaleFrequency"].ToString());
+    }
 }

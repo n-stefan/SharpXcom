@@ -122,7 +122,7 @@ internal class BattleItem
      * @return Pointer to ruleset.
      */
     internal RuleItem getRules() =>
-	    _rules;
+        _rules;
 
     /**
      * Gets the item's ammo item.
@@ -137,11 +137,11 @@ internal class BattleItem
      */
     internal int getAmmoQuantity()
     {
-	    if (_rules.getClipSize() == -1)
-	    {
-		    return 255;
-	    }
-	    return _ammoQuantity;
+        if (_rules.getClipSize() == -1)
+        {
+            return 255;
+        }
+        return _ammoQuantity;
     }
 
     /**
@@ -149,7 +149,7 @@ internal class BattleItem
      * @return The slot id.
      */
     internal RuleInventory getSlot() =>
-	    _inventorySlot;
+        _inventorySlot;
 
     /**
      * Checks if the item is covering certain inventory slot(s).
@@ -164,18 +164,18 @@ internal class BattleItem
             return false;
         if (_inventorySlot.getType() == InventoryType.INV_HAND)
             return true;
-	    if (item == null)
-	    {
-		    return (x >= _inventoryX && x < _inventoryX + _rules.getInventoryWidth() &&
-				    y >= _inventoryY && y < _inventoryY + _rules.getInventoryHeight());
-	    }
-	    else
-	    {
-		    return !(x >= _inventoryX + _rules.getInventoryWidth() ||
-				    x + item.getRules().getInventoryWidth() <= _inventoryX ||
-				    y >= _inventoryY + _rules.getInventoryHeight() ||
-				    y + item.getRules().getInventoryHeight() <= _inventoryY);
-	    }
+        if (item == null)
+        {
+            return (x >= _inventoryX && x < _inventoryX + _rules.getInventoryWidth() &&
+                    y >= _inventoryY && y < _inventoryY + _rules.getInventoryHeight());
+        }
+        else
+        {
+            return !(x >= _inventoryX + _rules.getInventoryWidth() ||
+                    x + item.getRules().getInventoryWidth() <= _inventoryX ||
+                    y >= _inventoryY + _rules.getInventoryHeight() ||
+                    y + item.getRules().getInventoryHeight() <= _inventoryY);
+        }
     }
 
     /**
@@ -183,7 +183,7 @@ internal class BattleItem
      * @return Pointer to BattleUnit.
      */
     internal BattleUnit getUnit() =>
-	    _unit;
+        _unit;
 
     /**
      * Sets the "dropped on non-player turn" flag. This is set when the item is dropped in the battlescape
@@ -266,14 +266,14 @@ internal class BattleItem
      * @return The tile.
      */
     internal Tile getTile() =>
-	    _tile;
+        _tile;
 
     /**
      * Gets the item's owner.
      * @return Pointer to Battleunit.
      */
     internal BattleUnit getOwner() =>
-	    _owner;
+        _owner;
 
     /**
      * Saves the item to a YAML file.
@@ -287,37 +287,37 @@ internal class BattleItem
             { "type", _rules.getType() }
         };
         if (_owner != null)
-		    node.Add("owner", _owner.getId().ToString());
-	    if (_previousOwner != null)
-		    node.Add("previousOwner", _previousOwner.getId().ToString());
-	    if (_unit != null)
-		    node.Add("unit", _unit.getId().ToString());
+            node.Add("owner", _owner.getId().ToString());
+        if (_previousOwner != null)
+            node.Add("previousOwner", _previousOwner.getId().ToString());
+        if (_unit != null)
+            node.Add("unit", _unit.getId().ToString());
 
-	    if (_inventorySlot != null)
-		    node.Add("inventoryslot", _inventorySlot.getId());
-	    node.Add("inventoryX", _inventoryX.ToString());
-	    node.Add("inventoryY", _inventoryY.ToString());
+        if (_inventorySlot != null)
+            node.Add("inventoryslot", _inventorySlot.getId());
+        node.Add("inventoryX", _inventoryX.ToString());
+        node.Add("inventoryY", _inventoryY.ToString());
 
-	    if (_tile != null)
-		    node.Add("position", Position.encode(_tile.getPosition()));
+        if (_tile != null)
+            node.Add("position", Position.encode(_tile.getPosition()));
         if (_ammoQuantity != 0)
             node.Add("ammoqty", _ammoQuantity.ToString());
-	    if (_ammoItem != null)
-		    node.Add("ammoItem", _ammoItem.getId().ToString());
+        if (_ammoItem != null)
+            node.Add("ammoItem", _ammoItem.getId().ToString());
 
-	    if (_rules != null && _rules.getBattleType() == BattleType.BT_MEDIKIT)
-	    {
-		    node.Add("painKiller", _painKiller.ToString());
-		    node.Add("heal", _heal.ToString());
-		    node.Add("stimulant", _stimulant.ToString());
-	    }
-	    if (_fuseTimer != -1)
-		    node.Add("fuseTimer", _fuseTimer.ToString());
-	    if (_droppedOnAlienTurn)
-		    node.Add("droppedOnAlienTurn", _droppedOnAlienTurn.ToString());
-	    if (_XCOMProperty)
-		    node.Add("XCOMProperty", _XCOMProperty.ToString());
-	    return node;
+        if (_rules != null && _rules.getBattleType() == BattleType.BT_MEDIKIT)
+        {
+            node.Add("painKiller", _painKiller.ToString());
+            node.Add("heal", _heal.ToString());
+            node.Add("stimulant", _stimulant.ToString());
+        }
+        if (_fuseTimer != -1)
+            node.Add("fuseTimer", _fuseTimer.ToString());
+        if (_droppedOnAlienTurn)
+            node.Add("droppedOnAlienTurn", _droppedOnAlienTurn.ToString());
+        if (_XCOMProperty)
+            node.Add("XCOMProperty", _XCOMProperty.ToString());
+        return node;
     }
 
     /**
@@ -325,21 +325,21 @@ internal class BattleItem
      * @return The item's id.
      */
     internal int getId() =>
-	    _id;
+        _id;
 
     /**
      * Gets the turns until detonation. -1 = unprimed grenade
      * @return turns until detonation.
      */
     internal int getFuseTimer() =>
-	    _fuseTimer;
+        _fuseTimer;
 
     /**
      * Gets the item's previous owner.
      * @return Pointer to Battleunit.
      */
     internal BattleUnit getPreviousOwner() =>
-	    _previousOwner;
+        _previousOwner;
 
     /**
      * Sets the turn to explode on.
@@ -353,7 +353,7 @@ internal class BattleItem
      * @return True if ammo is used.
      */
     internal bool needsAmmo() =>
-	    !(_ammoItem == this); // no ammo for this weapon is needed
+        !(_ammoItem == this); // no ammo for this weapon is needed
 
     /**
      * Sets the XCom property flag. This is to determine at debriefing what goes into the base/craft.
@@ -423,49 +423,49 @@ internal class BattleItem
      * @return if this is loaded into a weapon or not.
      */
     internal bool isAmmo() =>
-	    _isAmmo;
+        _isAmmo;
 
     /**
      * Gets the item's inventory X position.
      * @return X position.
      */
     internal int getSlotX() =>
-	    _inventoryX;
+        _inventoryX;
 
     /**
      * Gets the item's inventory Y position.
      * @return Y position.
      */
     internal int getSlotY() =>
-	    _inventoryY;
+        _inventoryY;
 
     /**
      * Gets the pain killer quantity of the item.
      * @return The new pain killer quantity.
      */
     internal int getPainKillerQuantity() =>
-	    _painKiller;
+        _painKiller;
 
     /**
      * Gets the stimulant quantity of the item.
      * @return The new stimulant quantity.
      */
     internal int getStimulantQuantity() =>
-	    _stimulant;
+        _stimulant;
 
     /**
      * Gets the heal quantity of the item.
      * @return The new heal quantity.
      */
     internal int getHealQuantity() =>
-	    _heal;
+        _heal;
 
     /**
      * Gets the XCom property flag. This is to determine at debriefing what goes into the base/craft.
      * @return True if it's XCom property.
      */
     internal bool getXCOMProperty() =>
-	    _XCOMProperty;
+        _XCOMProperty;
 
     /**
      * Spends a bullet from the ammo in this item.
@@ -473,13 +473,13 @@ internal class BattleItem
      */
     internal bool spendBullet()
     {
-	    if (_ammoQuantity > 0)
-		    _ammoQuantity--;
+        if (_ammoQuantity > 0)
+            _ammoQuantity--;
 
-	    if (_ammoQuantity == 0)
-		    return false;
-	    else
-		    return true;
+        if (_ammoQuantity == 0)
+            return false;
+        else
+            return true;
     }
 
     /**
@@ -488,7 +488,7 @@ internal class BattleItem
      * @return True if the aliens dropped the item.
      */
     internal bool getTurnFlag() =>
-	    _droppedOnAlienTurn;
+        _droppedOnAlienTurn;
 
     /**
      * Loads the item from a YAML file.
@@ -497,28 +497,28 @@ internal class BattleItem
      */
     internal void load(YamlNode node, Mod.Mod mod)
     {
-	    string slot = node["inventoryslot"] != null ? node["inventoryslot"].ToString() : "NULL";
-	    if (slot != "NULL")
-	    {
-		    if (mod.getInventory(slot) != null)
-		    {
-			    _inventorySlot = mod.getInventory(slot);
+        string slot = node["inventoryslot"] != null ? node["inventoryslot"].ToString() : "NULL";
+        if (slot != "NULL")
+        {
+            if (mod.getInventory(slot) != null)
+            {
+                _inventorySlot = mod.getInventory(slot);
 
-		    }
-		    else
-		    {
-			    _inventorySlot = mod.getInventory("STR_GROUND");
-		    }
-	    }
-	    _inventoryX = int.Parse(node["inventoryX"].ToString());
-	    _inventoryY = int.Parse(node["inventoryY"].ToString());
-	    _ammoQuantity = int.Parse(node["ammoqty"].ToString());
-	    _painKiller = int.Parse(node["painKiller"].ToString());
-	    _heal = int.Parse(node["heal"].ToString());
-	    _stimulant = int.Parse(node["stimulant"].ToString());
-	    _fuseTimer = int.Parse(node["fuseTimer"].ToString());
-	    _droppedOnAlienTurn = bool.Parse(node["droppedOnAlienTurn"].ToString());
-	    _XCOMProperty = bool.Parse(node["XCOMProperty"].ToString());
+            }
+            else
+            {
+                _inventorySlot = mod.getInventory("STR_GROUND");
+            }
+        }
+        _inventoryX = int.Parse(node["inventoryX"].ToString());
+        _inventoryY = int.Parse(node["inventoryY"].ToString());
+        _ammoQuantity = int.Parse(node["ammoqty"].ToString());
+        _painKiller = int.Parse(node["painKiller"].ToString());
+        _heal = int.Parse(node["heal"].ToString());
+        _stimulant = int.Parse(node["stimulant"].ToString());
+        _fuseTimer = int.Parse(node["fuseTimer"].ToString());
+        _droppedOnAlienTurn = bool.Parse(node["droppedOnAlienTurn"].ToString());
+        _XCOMProperty = bool.Parse(node["XCOMProperty"].ToString());
     }
 
     /**
@@ -526,5 +526,5 @@ internal class BattleItem
      * @param owner Pointer to Battleunit.
      */
     internal void setPreviousOwner(BattleUnit owner) =>
-	    _previousOwner = owner;
+        _previousOwner = owner;
 }

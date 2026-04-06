@@ -33,17 +33,17 @@ struct ColorReplace : IColorFunc<byte, byte, int, int, int>
 	* @param newColor new color to set (it should be offseted by 4)
 	*/
     public void func(ref byte dest, byte src, int shade, int newColor, int _)
-	{
-		if (src != default)
-		{
-			int newShade = (src & 15) + shade;
+    {
+        if (src != default)
+        {
+            int newShade = (src & 15) + shade;
             if (newShade > 15)
                 // so dark it would flip over to another color - make it black instead
                 dest = 15;
             else
                 dest = (byte)(newColor | newShade);
-		}
-	}
+        }
+    }
 }
 
 /**
@@ -61,17 +61,17 @@ struct StandardShade : IColorFunc<byte, byte, int, int, int>
 	* @param notused
 	*/
     public void func(ref byte dest, byte src, int shade, int _, int __)
-	{
-		if (src != default)
-		{
-			int newShade = (src & 15) + shade;
-			if (newShade > 15)
-				// so dark it would flip over to another color - make it black instead
-				dest = 15;
-			else
-				dest = (byte)((src & (15 << 4)) | newShade);
-		}
-	}
+    {
+        if (src != default)
+        {
+            int newShade = (src & 15) + shade;
+            if (newShade > 15)
+                // so dark it would flip over to another color - make it black instead
+                dest = 15;
+            else
+                dest = (byte)((src & (15 << 4)) | newShade);
+        }
+    }
 }
 
 /**
@@ -140,14 +140,14 @@ internal class Surface
     {
         nint surfacePtr;
         //if is native SharpXcom aligned surface
-	    if (other._alignedBuffer != nint.Zero)
-	    {
+        if (other._alignedBuffer != nint.Zero)
+        {
             //TODO
             var format = SDL_GetWindowPixelFormat(other._surface.pixels);
             byte bpp = SDL_BITSPERPIXEL(format); //byte bpp = other._surface.format.BitsPerPixel;
-		    int width = other.getWidth();
-		    int height = other.getHeight();
-		    int pitch = GetPitch(bpp, width);
+            int width = other.getWidth();
+            int height = other.getHeight();
+            int pitch = GetPitch(bpp, width);
             _alignedBuffer = NewAligned(bpp, width, height);
             surfacePtr = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
             _surface = Marshal.PtrToStructure<SDL_Surface>(surfacePtr);
@@ -157,30 +157,30 @@ internal class Surface
             new Span<byte>((byte*)other._alignedBuffer, height * pitch).CopyTo(new Span<byte>((byte*)_alignedBuffer, height * pitch)); //memcpy(_alignedBuffer, other._alignedBuffer, height * pitch);
         }
         else
-	    {
-		    surfacePtr = SDL_ConvertSurface(other._surface.pixels, other._surface.format, other._surface.flags);
+        {
+            surfacePtr = SDL_ConvertSurface(other._surface.pixels, other._surface.format, other._surface.flags);
             _surface = Marshal.PtrToStructure<SDL_Surface>(surfacePtr);
             _alignedBuffer = 0;
-	    }
+        }
 
         if (surfacePtr == nint.Zero)
-	    {
+        {
             throw new Exception(SDL_GetError());
-	    }
-	    _x = other._x;
-	    _y = other._y;
-	    _crop.w = other._crop.w;
-	    _crop.h = other._crop.h;
-	    _crop.x = other._crop.x;
-	    _crop.y = other._crop.y;
-	    _clear.w = other._clear.w;
-	    _clear.h = other._clear.h;
-	    _clear.x = other._clear.x;
-	    _clear.y = other._clear.y;
-	    _visible = other._visible;
-	    _hidden = other._hidden;
-	    _redraw = other._redraw;
-	    _tftdMode = other._tftdMode;
+        }
+        _x = other._x;
+        _y = other._y;
+        _crop.w = other._crop.w;
+        _crop.h = other._crop.h;
+        _crop.x = other._crop.x;
+        _crop.y = other._crop.y;
+        _clear.w = other._clear.w;
+        _clear.h = other._clear.h;
+        _clear.x = other._clear.x;
+        _clear.y = other._clear.y;
+        _visible = other._visible;
+        _hidden = other._hidden;
+        _redraw = other._redraw;
+        _tftdMode = other._tftdMode;
     }
 
     /**
@@ -197,14 +197,14 @@ internal class Surface
 	 * @return Width in pixels.
 	 */
     internal int getWidth() =>
-		_surface.w;
+        _surface.w;
 
     /**
 	 * Returns the height of the surface.
 	 * @return Height in pixels
 	 */
     internal int getHeight() =>
-		_surface.h;
+        _surface.h;
 
     /**
      * Helper function counting pitch in bytes with 16byte padding
@@ -277,10 +277,10 @@ internal class Surface
 	 * @return Pointer to the pixel.
 	 */
     nint getRaw(int x, int y)
-	{
+    {
         var bpp = getFormat(_surface).BytesPerPixel;
         return nint.Add(_surface.pixels, y * _surface.pitch + x * bpp);
-	}
+    }
 
     /**
 	 * Returns the color of a specified pixel in the surface.
@@ -289,13 +289,13 @@ internal class Surface
 	 * @return Color of the pixel, zero if the position is invalid.
 	 */
     internal byte getPixel(int x, int y)
-	{
-		if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight())
-		{
-			return 0;
-		}
-		return Marshal.ReadByte(getRaw(x, y));
-	}
+    {
+        if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight())
+        {
+            return 0;
+        }
+        return Marshal.ReadByte(getRaw(x, y));
+    }
 
     /**
 	 * Changes the color of a pixel in the surface, relative to
@@ -373,9 +373,9 @@ internal class Surface
     internal void blitNShade(Surface surface, int x, int y, int shade, GraphSubset range)
     {
         var src = new ShaderMove<byte>(this, x, y);
-	    var dest = new ShaderMove<byte>(surface);
+        var dest = new ShaderMove<byte>(surface);
 
-	    dest.setDomain(range);
+        dest.setDomain(range);
 
         ShaderDraw(new StandardShade(), dest, src, ShaderScalar(shade));
     }
@@ -405,19 +405,19 @@ internal class Surface
     /// Initializes the surface's various text resources.
     internal virtual void initText(Font _, Font __, Language ___) { }
 
-	/**
+    /**
 	 * Returns the position of the surface in the X axis.
 	 * @return X position in pixels.
 	 */
     internal int getX() =>
         _x;
 
-	/**
+    /**
 	 * Returns the position of the surface in the Y axis.
 	 * @return Y position in pixels.
 	 */
-	internal int getY() =>
-		_y;
+    internal int getY() =>
+        _y;
 
     /**
      * Changes the position of the surface in the X axis.
@@ -438,7 +438,7 @@ internal class Surface
 	 * @return Pointer to the surface.
 	 */
     internal SDL_Surface getSurface() =>
-		_surface;
+        _surface;
 
     /**
      * Draws the graphic that the surface contains before it
@@ -496,7 +496,7 @@ internal class Surface
      * @param valid true means redraw.
      */
     internal void invalidate(bool valid = true) =>
-	    _redraw = valid;
+        _redraw = valid;
 
     /**
      * Loads the contents of an image file of a
@@ -505,25 +505,25 @@ internal class Surface
      */
     internal void loadImage(string filename)
     {
-	    // Destroy current surface (will be replaced)
-	    DeleteAligned(_alignedBuffer);
-	    SDL_FreeSurface(_surface.pixels);
-	    _alignedBuffer = nint.Zero;
-	    _surface.pixels = nint.Zero;
+        // Destroy current surface (will be replaced)
+        DeleteAligned(_alignedBuffer);
+        SDL_FreeSurface(_surface.pixels);
+        _alignedBuffer = nint.Zero;
+        _surface.pixels = nint.Zero;
 
         Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Loading image: {filename}");
 
-		string utf8 = Unicode.convPathToUtf8(filename);
+        string utf8 = Unicode.convPathToUtf8(filename);
         _surface.pixels = IMG_Load(utf8);
 
-	    if (_surface.pixels == nint.Zero)
-	    {
-		    string err = filename + ":" + IMG_GetError();
-		    throw new Exception(err);
-	    }
+        if (_surface.pixels == nint.Zero)
+        {
+            string err = filename + ":" + IMG_GetError();
+            throw new Exception(err);
+        }
 
-	    _clear.w = getWidth();
-	    _clear.h = getHeight();
+        _clear.w = getWidth();
+        _clear.h = getHeight();
     }
 
     /**
@@ -531,7 +531,7 @@ internal class Surface
      * @return Current visibility.
      */
     internal bool getVisible() =>
-	    _visible;
+        _visible;
 
     /**
      * Blits this surface onto another one, with its position
@@ -542,25 +542,25 @@ internal class Surface
      */
     internal virtual void blit(Surface surface)
     {
-	    if (_visible && !_hidden)
-	    {
-		    if (_redraw)
-			    draw();
+        if (_visible && !_hidden)
+        {
+            if (_redraw)
+                draw();
 
-		    SDL_Rect cropper;
-		    var target = new SDL_Rect();
-		    if (_crop.w == 0 && _crop.h == 0)
-		    {
-			    cropper = default;
-		    }
-		    else
-		    {
+            SDL_Rect cropper;
+            var target = new SDL_Rect();
+            if (_crop.w == 0 && _crop.h == 0)
+            {
+                cropper = default;
+            }
+            else
+            {
                 cropper = _crop;
-		    }
-		    target.x = getX();
-		    target.y = getY();
+            }
+            target.x = getX();
+            target.y = getY();
             SDL_BlitSurface(_surface.pixels, ref cropper, surface.getSurface().pixels, ref target);
-	    }
+        }
     }
 
     /**
@@ -752,7 +752,7 @@ internal class Surface
         }
         catch (Exception)
         {
-		    throw new Exception(filename + " not found");
+            throw new Exception(filename + " not found");
         }
     }
 
@@ -767,54 +767,54 @@ internal class Surface
     {
         try
         {
-	        // Load file and put pixels in surface
+            // Load file and put pixels in surface
             using var imgFile = new FileStream(filename, FileMode.Open);
 
             // Lock the surface
             @lock();
 
-	        byte dataByte;
-	        int pixelCnt;
-	        int x = 0, y = 0;
-	        int currentRow = 0;
+            byte dataByte;
+            int pixelCnt;
+            int x = 0, y = 0;
+            int currentRow = 0;
 
             int read;
             while ((read = imgFile.ReadByte()) != -1)
-	        {
+            {
                 dataByte = (byte)read;
                 if (dataByte >= 129)
-		        {
-			        pixelCnt = 257 - (int)dataByte;
+                {
+                    pixelCnt = 257 - (int)dataByte;
                     dataByte = (byte)imgFile.ReadByte();
-			        currentRow = y;
-			        for (int i = 0; i < pixelCnt; ++i)
-			        {
-				        setPixelIterative(ref x, ref y, dataByte);
-				        if (currentRow != y) // avoid overscan into next row
-					        break;
-			        }
-		        }
-		        else
-		        {
-			        pixelCnt = 1 + (int)dataByte;
-			        currentRow = y;
-			        for (int i = 0; i < pixelCnt; ++i)
-			        {
+                    currentRow = y;
+                    for (int i = 0; i < pixelCnt; ++i)
+                    {
+                        setPixelIterative(ref x, ref y, dataByte);
+                        if (currentRow != y) // avoid overscan into next row
+                            break;
+                    }
+                }
+                else
+                {
+                    pixelCnt = 1 + (int)dataByte;
+                    currentRow = y;
+                    for (int i = 0; i < pixelCnt; ++i)
+                    {
                         dataByte = (byte)imgFile.ReadByte();
-				        if (currentRow == y) // avoid overscan into next row
-					        setPixelIterative(ref x, ref y, dataByte);
-			        }
-		        }
-	        }
+                        if (currentRow == y) // avoid overscan into next row
+                            setPixelIterative(ref x, ref y, dataByte);
+                    }
+                }
+            }
 
-	        // Unlock the surface
-	        unlock();
+            // Unlock the surface
+            unlock();
 
-	        imgFile.Close();
+            imgFile.Close();
         }
         catch (Exception)
         {
-		    throw new Exception(filename + " not found");
+            throw new Exception(filename + " not found");
         }
     }
 
@@ -829,52 +829,52 @@ internal class Surface
     {
         try
         {
-	        // Load file and put pixels in surface
+            // Load file and put pixels in surface
             using var imgFile = new FileStream(filename, FileMode.Open);
 
             // Lock the surface
             @lock();
 
-	        ushort flag;
-	        byte value;
+            ushort flag;
+            byte value;
             var buffer = new byte[2];
-	        int x = 0, y = 0;
+            int x = 0, y = 0;
 
             while (imgFile.Read(buffer, 0, 2) != 0)
-	        {
+            {
                 flag = BitConverter.ToUInt16(buffer);
 
-		        if (flag == 65535)
-		        {
-			        imgFile.Read(buffer, 0, 2);
-                    flag = BitConverter.ToUInt16(buffer);
-
-                    for (int i = 0; i < flag * 2; ++i)
-			        {
-				        setPixelIterative(ref x, ref y, 0);
-			        }
-		        }
-		        else if (flag == 65534)
-		        {
+                if (flag == 65535)
+                {
                     imgFile.Read(buffer, 0, 2);
                     flag = BitConverter.ToUInt16(buffer);
 
                     for (int i = 0; i < flag * 2; ++i)
-			        {
+                    {
+                        setPixelIterative(ref x, ref y, 0);
+                    }
+                }
+                else if (flag == 65534)
+                {
+                    imgFile.Read(buffer, 0, 2);
+                    flag = BitConverter.ToUInt16(buffer);
+
+                    for (int i = 0; i < flag * 2; ++i)
+                    {
                         value = (byte)imgFile.ReadByte();
                         setPixelIterative(ref x, ref y, value);
-			        }
-		        }
-	        }
+                    }
+                }
+            }
 
-	        // Unlock the surface
-	        unlock();
+            // Unlock the surface
+            unlock();
 
-	        imgFile.Close();
+            imgFile.Close();
         }
         catch (Exception)
         {
-		    throw new Exception(filename + " not found");
+            throw new Exception(filename + " not found");
         }
     }
 
@@ -886,8 +886,8 @@ internal class Surface
     void loadRaw(byte[] bytes)
     {
         @lock();
-	    rawCopy(bytes);
-	    unlock();
+        rawCopy(bytes);
+        unlock();
     }
 
     /**
@@ -896,26 +896,26 @@ internal class Surface
      */
     unsafe void rawCopy<T>(T[] src)
     {
-	    // Copy whole thing
-	    if (_surface.pitch == _surface.w)
-	    {
+        // Copy whole thing
+        if (_surface.pitch == _surface.w)
+        {
             int end = Math.Min(_surface.w * _surface.h * getFormat(_surface).BytesPerPixel, src.Length);
             var source = MemoryExtensions.AsMemory(src, 0, end);
             Unsafe.Copy((void*)_surface.pixels, ref source);
-	    }
-	    // Copy row by row
-	    else
-	    {
-		    for (int y = 0; y < _surface.h; ++y)
-		    {
+        }
+        // Copy row by row
+        else
+        {
+            for (int y = 0; y < _surface.h; ++y)
+            {
                 int begin = y * _surface.w;
                 int end = Math.Min(begin + _surface.w, src.Length);
-			    if (begin >= src.Length)
-				    break;
+                if (begin >= src.Length)
+                    break;
                 var source = MemoryExtensions.AsMemory(src, begin, end - begin);
                 Unsafe.Copy((void*)getRaw(0, y), ref source);
-		    }
-	    }
+            }
+        }
     }
 
     /**
@@ -981,7 +981,7 @@ internal class Surface
      * @param tooltip String ID.
      */
     internal void setTooltip(string tooltip) =>
-	    _tooltip = tooltip;
+        _tooltip = tooltip;
 
     /**
      * Returns the help description of this surface,
@@ -989,7 +989,7 @@ internal class Surface
      * @return String ID.
      */
     internal string getTooltip() =>
-	    _tooltip;
+        _tooltip;
 
     /**
      * Inverts all the colors in the surface according to a middle point.
@@ -1026,7 +1026,7 @@ internal class Surface
      * @param color Color of the circle.
      */
     protected void drawCircle(short x, short y, short r, byte color) =>
-	    filledCircleColor(_surface.pixels, x, y, r, Palette.getRGBA(getPalette(), color));
+        filledCircleColor(_surface.pixels, x, y, r, Palette.getRGBA(getPalette(), color));
 
     /**
      * Draws a textured polygon on the surface.
@@ -1038,7 +1038,7 @@ internal class Surface
      * @param dy Y offset of texture relative to the screen.
      */
     protected void drawTexturedPolygon(short[] x, short[] y, int n, Surface texture, int dx, int dy) =>
-	    texturedPolygon(_surface.pixels, x, y, n, texture.getSurface().pixels, dx, dy);
+        texturedPolygon(_surface.pixels, x, y, n, texture.getSurface().pixels, dx, dy);
 
     /**
      * Shifts all the colors in the surface by a set amount, but
@@ -1049,47 +1049,47 @@ internal class Surface
      */
     internal void offsetBlock(int off, int blk = 16, int mul = 1)
     {
-	    if (off == 0)
-		    return;
+        if (off == 0)
+            return;
 
-	    // Lock the surface
-	    @lock();
+        // Lock the surface
+        @lock();
 
-	    for (int x = 0, y = 0; x < getWidth() && y < getHeight();)
-	    {
-		    byte pixel = getPixel(x, y);
-		    int min = pixel / blk * blk;
-		    int max = min + blk;
-		    int p;
-		    if (off > 0)
-		    {
-			    p = pixel * mul + off;
-		    }
-		    else
-		    {
-			    p = (pixel + off) / mul;
-		    }
-		    if (min != -1 && p < min)
-		    {
-			    p = min;
-		    }
-		    else if (max != -1 && p > max)
-		    {
-			    p = max;
-		    }
+        for (int x = 0, y = 0; x < getWidth() && y < getHeight();)
+        {
+            byte pixel = getPixel(x, y);
+            int min = pixel / blk * blk;
+            int max = min + blk;
+            int p;
+            if (off > 0)
+            {
+                p = pixel * mul + off;
+            }
+            else
+            {
+                p = (pixel + off) / mul;
+            }
+            if (min != -1 && p < min)
+            {
+                p = min;
+            }
+            else if (max != -1 && p > max)
+            {
+                p = max;
+            }
 
-		    if (pixel > 0)
-		    {
-			    setPixelIterative(ref x, ref y, (byte)p);
-		    }
-		    else
-		    {
-			    setPixelIterative(ref x, ref y, 0);
-		    }
-	    }
+            if (pixel > 0)
+            {
+                setPixelIterative(ref x, ref y, (byte)p);
+            }
+            else
+            {
+                setPixelIterative(ref x, ref y, 0);
+            }
+        }
 
-	    // Unlock the surface
-	    unlock();
+        // Unlock the surface
+        unlock();
     }
 
     /**
@@ -1098,10 +1098,10 @@ internal class Surface
      */
     void resetCrop()
     {
-	    _crop.w = 0;
-	    _crop.h = 0;
-	    _crop.x = 0;
-	    _crop.y = 0;
+        _crop.w = 0;
+        _crop.h = 0;
+        _crop.x = 0;
+        _crop.y = 0;
     }
 
     /**
@@ -1109,5 +1109,5 @@ internal class Surface
      * @return TFTD mode.
      */
     bool isTFTDMode() =>
-	    _tftdMode;
+        _tftdMode;
 }

@@ -29,9 +29,9 @@ internal class Explosion
     internal const int EXPLODE_FRAMES = 8;
     const int BULLET_FRAMES = 10;
 
-	Position _position;
-	int _currentFrame, _startFrame, _frameDelay;
-	bool _big, _hit;
+    Position _position;
+    int _currentFrame, _startFrame, _frameDelay;
+    bool _big, _hit;
 
     /**
      * Sets up a Explosion sprite with the specified size and position.
@@ -61,23 +61,23 @@ internal class Explosion
      */
     internal bool animate()
     {
-	    if (_frameDelay > 0)
-	    {
-		    _frameDelay--;
-		    return true;
-	    }
+        if (_frameDelay > 0)
+        {
+            _frameDelay--;
+            return true;
+        }
 
-	    _currentFrame++;
-	    if ((_hit && _currentFrame == _startFrame + HIT_FRAMES) ||
-		    (_big && _currentFrame == _startFrame + EXPLODE_FRAMES) ||
-		    (!_big && !_hit && _currentFrame == _startFrame + BULLET_FRAMES))
-	    {
-		    return false;
-	    }
-	    else
-	    {
-		    return true;
-	    }
+        _currentFrame++;
+        if ((_hit && _currentFrame == _startFrame + HIT_FRAMES) ||
+            (_big && _currentFrame == _startFrame + EXPLODE_FRAMES) ||
+            (!_big && !_hit && _currentFrame == _startFrame + BULLET_FRAMES))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     /**
@@ -85,14 +85,14 @@ internal class Explosion
      * @return position in voxel space.
      */
     internal Position getPosition() =>
-	    _position;
+        _position;
 
     /**
      * Returns flag to indicate if it is a bullet hit (false), or a real explosion (true).
      * @return True if it is a real explosion, false if it is a bullet hit.
      */
     internal bool isBig() =>
-	    _big;
+        _big;
 
     /**
      * Gets the current frame in the animation.
@@ -100,9 +100,9 @@ internal class Explosion
      */
     internal int getCurrentFrame()
     {
-	    if (_frameDelay > 0)
-		    return -1;
-	    return _currentFrame;
+        if (_frameDelay > 0)
+            return -1;
+        return _currentFrame;
     }
 
     /**
@@ -110,5 +110,5 @@ internal class Explosion
      * @return True if it is a melee hit or psi hit.
      */
     internal bool isHit() =>
-	    _hit;
+        _hit;
 }

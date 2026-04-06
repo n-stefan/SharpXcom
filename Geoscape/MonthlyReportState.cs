@@ -391,27 +391,27 @@ internal class MonthlyReportState : State
      */
     string countryList(List<string> countries, string singular, string plural)
     {
-	    string ss = null;
-	    if (countries.Any())
-	    {
-		    ss = "\n\n";
-		    if (countries.Count == 1)
-		    {
-			    ss = $"{ss}{tr(singular).arg(tr(countries.First()))}";
-		    }
-		    else
-		    {
-			    LocalizedText list = tr(countries.First());
+        string ss = null;
+        if (countries.Any())
+        {
+            ss = "\n\n";
+            if (countries.Count == 1)
+            {
+                ss = $"{ss}{tr(singular).arg(tr(countries.First()))}";
+            }
+            else
+            {
+                LocalizedText list = tr(countries.First());
                 int i;
                 for (i = 1; i < countries.Count - 1; ++i)
-			    {
-				    list = tr("STR_COUNTRIES_COMMA").arg(list).arg(tr(countries[i]));
-			    }
-			    list = tr("STR_COUNTRIES_AND").arg(list).arg(tr(countries[i]));
-			    ss = $"{ss}{tr(plural).arg(list)}";
-		    }
-	    }
-	    return ss;
+                {
+                    list = tr("STR_COUNTRIES_COMMA").arg(list).arg(tr(countries[i]));
+                }
+                list = tr("STR_COUNTRIES_AND").arg(list).arg(tr(countries[i]));
+                ss = $"{ss}{tr(plural).arg(list)}";
+            }
+        }
+        return ss;
     }
 
     /**
@@ -419,10 +419,10 @@ internal class MonthlyReportState : State
      */
     internal override void init()
     {
-	    base.init();
-	    if (_gameOver)
-	    {
-		    _game.getSavedGame().setEnding(GameEnding.END_LOSE);
-	    }
+        base.init();
+        if (_gameOver)
+        {
+            _game.getSavedGame().setEnding(GameEnding.END_LOSE);
+        }
     }
 }

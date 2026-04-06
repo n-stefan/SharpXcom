@@ -31,17 +31,17 @@ struct ItemSet
 	 * Loads the ItemSet from a YAML file.
 	 * @param node YAML node.
 	 */
-	internal static ItemSet decode(YamlNode node)
-	{
-		if (node.NodeType != YamlNodeType.Sequence)
-			return default;
+    internal static ItemSet decode(YamlNode node)
+    {
+        if (node.NodeType != YamlNodeType.Sequence)
+            return default;
 
         var @is = new ItemSet
         {
             items = ((YamlSequenceNode)node).Children.Select(x => x.ToString()).ToList()
         };
         return @is;
-	}
+    }
 
     /**
      * Saves the ItemSet to a YAML file.
@@ -65,10 +65,10 @@ struct DeploymentData
 	 * Loads the DeploymentData from a YAML file.
 	 * @param node YAML node.
 	 */
-	internal static DeploymentData decode(YamlNode node)
-	{
-		if (node.NodeType != YamlNodeType.Mapping)
-			return default;
+    internal static DeploymentData decode(YamlNode node)
+    {
+        if (node.NodeType != YamlNodeType.Mapping)
+            return default;
 
         var dd = new DeploymentData
         {
@@ -81,7 +81,7 @@ struct DeploymentData
             itemSets = ((YamlSequenceNode)node["itemSets"]).Children.Select(x => ItemSet.decode(x)).ToList()
         };
         return dd;
-	}
+    }
 
     /**
      * Saves the DeploymentData to a YAML file.
@@ -91,15 +91,15 @@ struct DeploymentData
     {
         var node = new YamlMappingNode
         {
-			{ "alienRank", dd.alienRank.ToString() },
-			{ "lowQty", dd.lowQty.ToString() },
-			{ "highQty", dd.highQty.ToString() },
-			{ "dQty", dd.dQty.ToString() },
-			{ "extraQty", dd.extraQty.ToString() },
-			{ "percentageOutsideUfo", dd.percentageOutsideUfo.ToString() },
-			{ "itemSets", new YamlSequenceNode(dd.itemSets.Select(x => ItemSet.encode(x))) }
+            { "alienRank", dd.alienRank.ToString() },
+            { "lowQty", dd.lowQty.ToString() },
+            { "highQty", dd.highQty.ToString() },
+            { "dQty", dd.dQty.ToString() },
+            { "extraQty", dd.extraQty.ToString() },
+            { "percentageOutsideUfo", dd.percentageOutsideUfo.ToString() },
+            { "itemSets", new YamlSequenceNode(dd.itemSets.Select(x => ItemSet.encode(x))) }
         };
-    	return node;
+        return node;
     }
 }
 
@@ -108,7 +108,7 @@ struct BriefingData
     internal int palette, textOffset;
     internal string title, desc, music, background, cutscene;
     internal bool showCraft, showTarget;
-    
+
     public BriefingData()
     {
         palette = 0;
@@ -123,10 +123,10 @@ struct BriefingData
 	 * Loads the BriefingData from a YAML file.
 	 * @param node YAML node.
 	 */
-	internal static BriefingData decode(YamlNode node)
-	{
-		if (node.NodeType != YamlNodeType.Mapping)
-			return default;
+    internal static BriefingData decode(YamlNode node)
+    {
+        if (node.NodeType != YamlNodeType.Mapping)
+            return default;
 
         var bd = new BriefingData
         {
@@ -141,7 +141,7 @@ struct BriefingData
             showTarget = bool.Parse(node["showTarget"].ToString())
         };
         return bd;
-	}
+    }
 
     /**
      * Saves the BriefingData to a YAML file.
@@ -161,7 +161,7 @@ struct BriefingData
             { "showCraft", bd.showCraft.ToString() },
             { "showTarget", bd.showTarget.ToString() }
         };
-    	return node;
+        return node;
     }
 }
 
@@ -244,14 +244,14 @@ internal class AlienDeployment : IRule
      * @return Deployment name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Returns the globe marker icon for this mission.
      * @return Marker sprite, -1 if none.
      */
     internal int getMarkerIcon() =>
-	    _markerIcon;
+        _markerIcon;
 
     /**
      * Loads the Deployment from a YAML file.
@@ -260,66 +260,66 @@ internal class AlienDeployment : IRule
      */
     internal void load(YamlNode node, Mod mod)
     {
-	    _type = node["type"].ToString();
+        _type = node["type"].ToString();
         _data = ((YamlSequenceNode)node["data"]).Children.Select(x => DeploymentData.decode(x)).ToList();
-	    _width = int.Parse(node["width"].ToString());
-	    _length = int.Parse(node["length"].ToString());
-	    _height = int.Parse(node["height"].ToString());
-	    _civilians = int.Parse(node["civilians"].ToString());
+        _width = int.Parse(node["width"].ToString());
+        _length = int.Parse(node["length"].ToString());
+        _height = int.Parse(node["height"].ToString());
+        _civilians = int.Parse(node["civilians"].ToString());
         _terrains = ((YamlSequenceNode)node["terrains"]).Children.Select(x => x.ToString()).ToList();
-	    _shade = int.Parse(node["shade"].ToString());
-	    _nextStage = node["nextStage"].ToString();
-	    _race = node["race"].ToString();
-	    _finalDestination = bool.Parse(node["finalDestination"].ToString());
-	    _winCutscene = node["winCutscene"].ToString();
-	    _loseCutscene = node["loseCutscene"].ToString();
-	    _abortCutscene = node["abortCutscene"].ToString();
-	    _script = node["script"].ToString();
-	    _alert = node["alert"].ToString();
-	    _alertBackground = node["alertBackground"].ToString();
+        _shade = int.Parse(node["shade"].ToString());
+        _nextStage = node["nextStage"].ToString();
+        _race = node["race"].ToString();
+        _finalDestination = bool.Parse(node["finalDestination"].ToString());
+        _winCutscene = node["winCutscene"].ToString();
+        _loseCutscene = node["loseCutscene"].ToString();
+        _abortCutscene = node["abortCutscene"].ToString();
+        _script = node["script"].ToString();
+        _alert = node["alert"].ToString();
+        _alertBackground = node["alertBackground"].ToString();
         _briefingData = BriefingData.decode(node["briefing"]);
-	    _markerName = node["markerName"].ToString();
-	    if (node["markerIcon"] != null)
-	    {
-		    _markerIcon = mod.getOffset(int.Parse(node["markerIcon"].ToString()), 8);
-	    }
-	    if (node["depth"] != null)
-	    {
-		    _minDepth = int.Parse(node["depth"][0].ToString());
-		    _maxDepth = int.Parse(node["depth"][1].ToString());
-	    }
-	    if (node["duration"] != null)
-	    {
-		    _durationMin = int.Parse(node["duration"][0].ToString());
-		    _durationMax = int.Parse(node["duration"][1].ToString());
-	    }
+        _markerName = node["markerName"].ToString();
+        if (node["markerIcon"] != null)
+        {
+            _markerIcon = mod.getOffset(int.Parse(node["markerIcon"].ToString()), 8);
+        }
+        if (node["depth"] != null)
+        {
+            _minDepth = int.Parse(node["depth"][0].ToString());
+            _maxDepth = int.Parse(node["depth"][1].ToString());
+        }
+        if (node["duration"] != null)
+        {
+            _durationMin = int.Parse(node["duration"][0].ToString());
+            _durationMax = int.Parse(node["duration"][1].ToString());
+        }
         _music = ((YamlSequenceNode)node["music"]).Children.Select(x => x.ToString()).ToList();
-	    _objectiveType = int.Parse(node["objectiveType"].ToString());
-	    _objectivesRequired = int.Parse(node["objectivesRequired"].ToString());
-	    _objectivePopup = node["objectivePopup"].ToString();
+        _objectiveType = int.Parse(node["objectiveType"].ToString());
+        _objectivesRequired = int.Parse(node["objectivesRequired"].ToString());
+        _objectivePopup = node["objectivePopup"].ToString();
 
-	    if (node["objectiveComplete"] != null)
-	    {
-		    _objectiveCompleteText = node["objectiveComplete"][0].ToString();
-		    _objectiveCompleteScore = int.Parse(node["objectiveComplete"][1].ToString());
-	    }
-	    if (node["objectiveFailed"] != null)
-	    {
-		    _objectiveFailedText = node["objectiveFailed"][0].ToString();
-		    _objectiveFailedScore = int.Parse(node["objectiveFailed"][1].ToString());
-	    }
-	    _despawnPenalty = int.Parse(node["despawnPenalty"].ToString());
-	    _points = int.Parse(node["points"].ToString());
-	    _cheatTurn = int.Parse(node["cheatTurn"].ToString());
-	    _turnLimit = int.Parse(node["turnLimit"].ToString());
-	    _chronoTrigger = (ChronoTrigger)int.Parse(node["chronoTrigger"].ToString());
-	    _isAlienBase = bool.Parse(node["alienBase"].ToString());
-	    _escapeType = (EscapeType)int.Parse(node["escapeType"].ToString());
-	    if (node["genMission"] != null)
-	    {
-		    _genMission.load(node["genMission"]);
-	    }
-	    _genMissionFrequency = int.Parse(node["genMissionFreq"].ToString());
+        if (node["objectiveComplete"] != null)
+        {
+            _objectiveCompleteText = node["objectiveComplete"][0].ToString();
+            _objectiveCompleteScore = int.Parse(node["objectiveComplete"][1].ToString());
+        }
+        if (node["objectiveFailed"] != null)
+        {
+            _objectiveFailedText = node["objectiveFailed"][0].ToString();
+            _objectiveFailedScore = int.Parse(node["objectiveFailed"][1].ToString());
+        }
+        _despawnPenalty = int.Parse(node["despawnPenalty"].ToString());
+        _points = int.Parse(node["points"].ToString());
+        _cheatTurn = int.Parse(node["cheatTurn"].ToString());
+        _turnLimit = int.Parse(node["turnLimit"].ToString());
+        _chronoTrigger = (ChronoTrigger)int.Parse(node["chronoTrigger"].ToString());
+        _isAlienBase = bool.Parse(node["alienBase"].ToString());
+        _escapeType = (EscapeType)int.Parse(node["escapeType"].ToString());
+        if (node["genMission"] != null)
+        {
+            _genMission.load(node["genMission"]);
+        }
+        _genMissionFrequency = int.Parse(node["genMissionFreq"].ToString());
     }
 
     /**
@@ -327,7 +327,7 @@ internal class AlienDeployment : IRule
      * @return String ID for marker name.
      */
     internal string getMarkerName() =>
-	    _markerName;
+        _markerName;
 
     /**
      * Gets the score penalty against XCom for this site existing.
@@ -335,55 +335,55 @@ internal class AlienDeployment : IRule
      * @return the number of points the aliens get per half hour.
      */
     internal int getPoints() =>
-	    _points;
+        _points;
 
     /**
      * Gets the score penalty XCom receives for letting this mission despawn.
      * @return the score for letting this site despawn.
      */
     internal int getDespawnPenalty() =>
-	    _despawnPenalty;
+        _despawnPenalty;
 
     /**
      * Returns the minimum duration for this mission type.
      * @return Duration in hours.
      */
     internal int getDurationMin() =>
-	    _durationMin;
+        _durationMin;
 
     /**
      * Returns the maximum duration for this mission type.
      * @return Duration in hours.
      */
     internal int getDurationMax() =>
-	    _durationMax;
+        _durationMax;
 
     internal string chooseGenMissionType() =>
-	    _genMission.choose();
+        _genMission.choose();
 
     internal int getGenMissionFrequency() =>
-	    _genMissionFrequency;
+        _genMissionFrequency;
 
     /**
      * Gets the maximum number of turns we have before this mission ends.
      * @return the turn limit.
      */
     internal int getTurnLimit() =>
-	    _turnLimit;
+        _turnLimit;
 
     /**
      * Gets the action type to perform when the timer expires.
      * @return the action type to perform.
      */
     internal ChronoTrigger getChronoTrigger() =>
-	    _chronoTrigger;
+        _chronoTrigger;
 
     /**
      * Gets the turn at which the players become exposed to the AI.
      * @return the turn to start cheating.
      */
     internal int getCheatTurn() =>
-	    _cheatTurn;
+        _cheatTurn;
 
     /**
      * Gets dimensions.
@@ -393,9 +393,9 @@ internal class AlienDeployment : IRule
      */
     internal void getDimensions(out int width, out int length, out int height)
     {
-	    width = _width;
-	    length = _length;
-	    height = _height;
+        width = _width;
+        length = _length;
+        height = _height;
     }
 
     /**
@@ -403,105 +403,105 @@ internal class AlienDeployment : IRule
      * @return The terrain.
      */
     internal List<string> getTerrains() =>
-	    _terrains;
+        _terrains;
 
     /**
      * Gets the shade level for battlescape generation.
      * @return The shade level.
      */
     internal int getShade() =>
-	    _shade;
+        _shade;
 
     /**
      * Gets the script to use to generate a mission of this type.
      * @return The script to use to generate a mission of this type.
      */
     internal string getScript() =>
-	    _script;
+        _script;
 
     /**
      * Gets the number of civilians.
      * @return The number of civilians.
      */
     internal int getCivilians() =>
-	    _civilians;
+        _civilians;
 
     /**
      * Gets The maximum depth for this deployment.
      * @return The maximum depth.
      */
     internal int getMaxDepth() =>
-	    _maxDepth;
+        _maxDepth;
 
     /**
      * Gets The minimum depth for this deployment.
      * @return The minimum depth.
      */
     internal int getMinDepth() =>
-	    _minDepth;
+        _minDepth;
 
     /**
      * Gets The list of musics this deployment has to choose from.
      * @return The list of track names.
      */
     internal List<string> getMusic() =>
-	    _music;
+        _music;
 
     /**
      * Gets the target type for this mission (ie: alien control consoles and synomium devices).
      * @return the target type for this mission.
      */
     internal int getObjectiveType() =>
-	    _objectiveType;
+        _objectiveType;
 
     /**
      * Gets the number of objectives required by this mission.
      * @return the number of objectives required.
      */
     internal int getObjectivesRequired() =>
-	    _objectivesRequired;
+        _objectivesRequired;
 
     /**
      * Gets the string name for the popup to splash when the objective conditions are met.
      * @return the string to pop up.
      */
     internal string getObjectivePopup() =>
-	    _objectivePopup;
+        _objectivePopup;
 
     /**
      * Gets the next stage of the mission.
      * @return The next stage of the mission.
      */
     internal string getNextStage() =>
-	    _nextStage;
+        _nextStage;
 
     /**
     * Gets the cutscene to play when the mission is aborted.
     * @return the cutscene to play when the mission is aborted.
     */
     internal string getAbortCutscene() =>
-	    _abortCutscene;
+        _abortCutscene;
 
     /**
      * Gets the cutscene to play when the mission is lost.
      * @return the cutscene to play when the mission is lost.
      */
     internal string getLoseCutscene() =>
-	    _loseCutscene;
+        _loseCutscene;
 
     /**
      * Gets the cutscene to play when the mission is won.
      * @return the cutscene to play when the mission is won.
      */
     internal string getWinCutscene() =>
-	    _winCutscene;
+        _winCutscene;
 
     /**
      * Gets the race to use on the next stage of the mission.
      * @return The race for the next stage of the mission.
      */
     internal string getRace() =>
-	    _race;
+        _race;
 
     /**
      * Gets a pointer to the data.
@@ -515,31 +515,31 @@ internal class AlienDeployment : IRule
      * @return data for the briefing window to use.
      */
     internal BriefingData getBriefingData() =>
-	    _briefingData;
+        _briefingData;
 
     /**
     * Gets the alert background displayed when this mission spawns.
     * @return Sprite ID for the background.
     */
     internal string getAlertBackground() =>
-	    _alertBackground;
+        _alertBackground;
 
     /**
      * Gets the alert message displayed when this mission spawns.
      * @return String ID for the message.
      */
     internal string getAlertMessage() =>
-	    _alert;
+        _alert;
 
     /**
      * Gets if winning this mission completes the game.
      * @return if winning this mission completes the game.
      */
     internal bool isFinalDestination() =>
-	    _finalDestination;
+        _finalDestination;
 
     internal bool isAlienBase() =>
-	    _isAlienBase;
+        _isAlienBase;
 
     /**
      * Fills out the variables associated with mission success, and returns if those variables actually contain anything.
@@ -549,9 +549,9 @@ internal class AlienDeployment : IRule
      */
     internal bool getObjectiveCompleteInfo(out string text, out int score)
     {
-	    text = _objectiveCompleteText;
-	    score = _objectiveCompleteScore;
-	    return !string.IsNullOrEmpty(text);
+        text = _objectiveCompleteText;
+        score = _objectiveCompleteScore;
+        return !string.IsNullOrEmpty(text);
     }
 
     /**
@@ -562,11 +562,11 @@ internal class AlienDeployment : IRule
      */
     internal bool getObjectiveFailedInfo(out string text, out int score)
     {
-	    text = _objectiveFailedText;
-	    score = _objectiveFailedScore;
-	    return !string.IsNullOrEmpty(text);
+        text = _objectiveFailedText;
+        score = _objectiveFailedScore;
+        return !string.IsNullOrEmpty(text);
     }
 
     internal EscapeType getEscapeType() =>
-	    _escapeType;
+        _escapeType;
 }

@@ -89,15 +89,15 @@ internal class Base : Target
         node.Add("soldiers", new YamlSequenceNode(_soldiers.Select(x => x.save())));
         node.Add("crafts", new YamlSequenceNode(_crafts.Select(x => x.save())));
         node.Add("items", _items.save());
-	    node.Add("scientists", _scientists.ToString());
+        node.Add("scientists", _scientists.ToString());
         node.Add("engineers", _engineers.ToString());
-	    if (_inBattlescape)
-		    node.Add("inBattlescape", _inBattlescape.ToString());
+        if (_inBattlescape)
+            node.Add("inBattlescape", _inBattlescape.ToString());
         node.Add("transfers", new YamlSequenceNode(_transfers.Select(x => x.save())));
         node.Add("research", new YamlSequenceNode(_research.Select(x => x.save())));
         node.Add("productions", new YamlSequenceNode(_productions.Select(x => x.save())));
-	    if (_retaliationTarget)
-		    node.Add("retaliationTarget", _retaliationTarget.ToString());
+        if (_retaliationTarget)
+            node.Add("retaliationTarget", _retaliationTarget.ToString());
         return node;
     }
 
@@ -114,10 +114,10 @@ internal class Base : Target
      */
     internal override int getMarker()
     {
-	    // Cheap hack to hide bases when they haven't been placed yet
-	    if (AreSame(_lon, 0.0) && AreSame(_lat, 0.0))
-		    return -1;
-	    return 0;
+        // Cheap hack to hide bases when they haven't been placed yet
+        if (AreSame(_lon, 0.0) && AreSame(_lat, 0.0))
+            return -1;
+        return 0;
     }
 
     /**
@@ -162,14 +162,14 @@ internal class Base : Target
      * @return list of base's ResearchProject
      */
     internal List<ResearchProject> getResearch() =>
-	    _research;
+        _research;
 
     /**
      * Returns the amount of scientists currently in the base.
      * @return Number of scientists.
      */
     internal int getScientists() =>
-	    _scientists;
+        _scientists;
 
     /**
      * Add A new ResearchProject to Base
@@ -190,7 +190,7 @@ internal class Base : Target
      * @return Number of engineers.
      */
     internal int getEngineers() =>
-	    _engineers;
+        _engineers;
 
     /**
      * Mark the base as a valid alien retaliation target.
@@ -205,7 +205,7 @@ internal class Base : Target
      * @return Maintenance costs.
      */
     internal int getMonthlyMaintenace() =>
-	    getCraftMaintenance() + getPersonnelMaintenance() + getFacilityMaintenance();
+        getCraftMaintenance() + getPersonnelMaintenance() + getFacilityMaintenance();
 
     /**
      * Returns the total amount of monthly costs
@@ -214,19 +214,19 @@ internal class Base : Target
      */
     int getCraftMaintenance()
     {
-	    int total = 0;
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_CRAFT)
-		    {
-			    total += i.getCraft().getRules().getRentCost();
-		    }
-	    }
-	    foreach (var i in _crafts)
-	    {
-		    total += i.getRules().getRentCost();
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_CRAFT)
+            {
+                total += i.getCraft().getRules().getRentCost();
+            }
+        }
+        foreach (var i in _crafts)
+        {
+            total += i.getRules().getRentCost();
+        }
+        return total;
     }
 
     /**
@@ -236,21 +236,21 @@ internal class Base : Target
      */
     internal int getPersonnelMaintenance()
     {
-	    int total = 0;
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_SOLDIER)
-		    {
-			    total += i.getSoldier().getRules().getSalaryCost();
-		    }
-	    }
-	    foreach (var i in _soldiers)
-	    {
-		    total += i.getRules().getSalaryCost();
-	    }
-	    total += getTotalEngineers() * _mod.getEngineerCost();
-	    total += getTotalScientists() * _mod.getScientistCost();
-	    return total;
+        int total = 0;
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_SOLDIER)
+            {
+                total += i.getSoldier().getRules().getSalaryCost();
+            }
+        }
+        foreach (var i in _soldiers)
+        {
+            total += i.getRules().getSalaryCost();
+        }
+        total += getTotalEngineers() * _mod.getEngineerCost();
+        total += getTotalScientists() * _mod.getScientistCost();
+        return total;
     }
 
     /**
@@ -260,15 +260,15 @@ internal class Base : Target
      */
     internal int getFacilityMaintenance()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getMonthlyCost();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getMonthlyCost();
+            }
+        }
+        return total;
     }
 
     /**
@@ -278,19 +278,19 @@ internal class Base : Target
      */
     internal int getTotalEngineers()
     {
-	    int total = _engineers;
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_ENGINEER)
-		    {
-			    total += i.getQuantity();
-		    }
-	    }
-	    foreach (var iter in _productions)
-	    {
-		    total += iter.getAssignedEngineers();
-	    }
-	    return total;
+        int total = _engineers;
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_ENGINEER)
+            {
+                total += i.getQuantity();
+            }
+        }
+        foreach (var iter in _productions)
+        {
+            total += iter.getAssignedEngineers();
+        }
+        return total;
     }
 
     /**
@@ -300,19 +300,19 @@ internal class Base : Target
      */
     internal int getTotalScientists()
     {
-	    int total = _scientists;
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_SCIENTIST)
-		    {
-			    total += i.getQuantity();
-		    }
-	    }
-	    foreach (var itResearch in getResearch())
-	    {
-		    total += itResearch.getAssigned();
-	    }
-	    return total;
+        int total = _scientists;
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_SCIENTIST)
+            {
+                total += i.getQuantity();
+            }
+        }
+        foreach (var itResearch in getResearch())
+        {
+            total += itResearch.getAssigned();
+        }
+        return total;
     }
 
     /**
@@ -322,15 +322,15 @@ internal class Base : Target
      */
     internal int getAvailablePsiLabs()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getPsiLaboratories();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getPsiLaboratories();
+            }
+        }
+        return total;
     }
 
     /**
@@ -361,14 +361,14 @@ internal class Base : Target
      * @return Name.
      */
     internal override string getName(Language _ = null) =>
-	    _name;
+        _name;
 
     /**
      * Get the list of Base Production's
      * @return the list of Base Production's
      */
     internal List<Production> getProductions() =>
-	    _productions;
+        _productions;
 
     /**
      * Remove a Production from the Base
@@ -406,15 +406,15 @@ internal class Base : Target
      */
     internal int getAvailableStores()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getStorage();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getStorage();
+            }
+        }
+        return total;
     }
 
     /**
@@ -491,22 +491,22 @@ internal class Base : Target
      */
     internal int getCraftCount(string craft)
     {
-	    int total = 0;
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_CRAFT && i.getCraft().getRules().getType() == craft)
-		    {
-			    total++;
-		    }
-	    }
-	    foreach (var i in _crafts)
-	    {
-		    if (i.getRules().getType() == craft)
-		    {
-			    total++;
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_CRAFT && i.getCraft().getRules().getType() == craft)
+            {
+                total++;
+            }
+        }
+        foreach (var i in _crafts)
+        {
+            if (i.getRules().getType() == craft)
+            {
+                total++;
+            }
+        }
+        return total;
     }
 
     /**
@@ -552,21 +552,21 @@ internal class Base : Target
      */
     internal int insideRadarRange(Target target)
     {
-	    bool insideRange = false;
-	    double distance = getDistance(target) * 60.0 * (180.0 / M_PI);
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getRules().getRadarRange() >= distance && i.getBuildTime() == 0)
-		    {
-			    if (i.getRules().isHyperwave())
-			    {
-				    return 2;
-			    }
-			    insideRange = true;
-		    }
-	    }
+        bool insideRange = false;
+        double distance = getDistance(target) * 60.0 * (180.0 / M_PI);
+        foreach (var i in _facilities)
+        {
+            if (i.getRules().getRadarRange() >= distance && i.getBuildTime() == 0)
+            {
+                if (i.getRules().isHyperwave())
+                {
+                    return 2;
+                }
+                insideRange = true;
+            }
+        }
 
-	    return insideRange? 1 : 0;
+        return insideRange ? 1 : 0;
     }
 
     /**
@@ -577,35 +577,35 @@ internal class Base : Target
      */
     internal int detect(Target target)
     {
-	    int chance = 0;
-	    double distance = getDistance(target) * 60.0 * (180.0 / M_PI);
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getRules().getRadarRange() >= distance && i.getBuildTime() == 0)
-		    {
-			    int radarChance = i.getRules().getRadarChance();
-			    if (i.getRules().isHyperwave())
-			    {
-				    if (radarChance == 100 || RNG.percent(radarChance))
-				    {
-					    return 2;
-				    }
-			    }
-			    else
-			    {
-				    chance += radarChance;
-			    }
-		    }
-	    }
-	    if (chance == 0) return 0;
+        int chance = 0;
+        double distance = getDistance(target) * 60.0 * (180.0 / M_PI);
+        foreach (var i in _facilities)
+        {
+            if (i.getRules().getRadarRange() >= distance && i.getBuildTime() == 0)
+            {
+                int radarChance = i.getRules().getRadarChance();
+                if (i.getRules().isHyperwave())
+                {
+                    if (radarChance == 100 || RNG.percent(radarChance))
+                    {
+                        return 2;
+                    }
+                }
+                else
+                {
+                    chance += radarChance;
+                }
+            }
+        }
+        if (chance == 0) return 0;
 
-	    Ufo u = (Ufo)target;
-	    if (u != null)
-	    {
-		    chance = chance * (100 + u.getVisibility()) / 100;
-	    }
+        Ufo u = (Ufo)target;
+        if (u != null)
+        {
+            chance = chance * (100 + u.getVisibility()) / 100;
+        }
 
-	    return RNG.percent(chance)? 1 : 0;
+        return RNG.percent(chance) ? 1 : 0;
     }
 
     /**
@@ -616,16 +616,16 @@ internal class Base : Target
      */
     internal uint getDetectionChance()
     {
-	    int mindShields = _facilities.Count(isMindShield);
-	    int completedFacilities = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    completedFacilities += i.getRules().getSize() * i.getRules().getSize();
-		    }
-	    }
-	    return ((uint)((completedFacilities / 6 + 15) / (mindShields + 1)));
+        int mindShields = _facilities.Count(isMindShield);
+        int completedFacilities = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                completedFacilities += i.getRules().getSize() * i.getRules().getSize();
+            }
+        }
+        return ((uint)((completedFacilities / 6 + 15) / (mindShields + 1)));
     }
 
     /**
@@ -635,12 +635,12 @@ internal class Base : Target
      */
     bool isMindShield(BaseFacility facility)
     {
-	    if (facility.getBuildTime() != 0)
-	    {
-		    // Still building this
-		    return false;
-	    }
-	    return (facility.getRules().isMindShield());
+        if (facility.getBuildTime() != 0)
+        {
+            // Still building this
+            return false;
+        }
+        return (facility.getRules().isMindShield());
     }
 
     internal List<BaseFacility> getDefenses() =>
@@ -654,20 +654,20 @@ internal class Base : Target
      */
     internal int getAvailableSoldiers(bool checkCombatReadiness = false)
     {
-	    int total = 0;
-	    foreach (var i in _soldiers)
-	    {
-		    if (!checkCombatReadiness && i.getCraft() == null)
-		    {
-			    total++;
-		    }
-		    else if (checkCombatReadiness && ((i.getCraft() != null && i.getCraft().getStatus() != "STR_OUT") ||
-			    (i.getCraft() == null && i.getWoundRecovery() == 0)))
-		    {
-			    total++;
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _soldiers)
+        {
+            if (!checkCombatReadiness && i.getCraft() == null)
+            {
+                total++;
+            }
+            else if (checkCombatReadiness && ((i.getCraft() != null && i.getCraft().getStatus() != "STR_OUT") ||
+                (i.getCraft() == null && i.getWoundRecovery() == 0)))
+            {
+                total++;
+            }
+        }
+        return total;
     }
 
     /**
@@ -771,7 +771,7 @@ internal class Base : Target
      * @return If the base is a valid target for alien retaliation.
      */
     internal bool getRetaliationTarget() =>
-	    _retaliationTarget;
+        _retaliationTarget;
 
     /**
      * Changes the base's battlescape status.
@@ -787,15 +787,15 @@ internal class Base : Target
      */
     internal int getAvailableQuarters()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getPersonnel();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getPersonnel();
+            }
+        }
+        return total;
     }
 
     /**
@@ -804,7 +804,7 @@ internal class Base : Target
      * @return Living space.
      */
     internal int getUsedQuarters() =>
-	    getTotalSoldiers() + getTotalScientists() + getTotalEngineers();
+        getTotalSoldiers() + getTotalScientists() + getTotalEngineers();
 
     /**
      * Returns the total amount of soldiers contained
@@ -813,15 +813,15 @@ internal class Base : Target
      */
     internal int getTotalSoldiers()
     {
-	    int total = _soldiers.Count;
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_SOLDIER)
-		    {
-			    total += i.getQuantity();
-		    }
-	    }
-	    return total;
+        int total = _soldiers.Count;
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_SOLDIER)
+            {
+                total += i.getQuantity();
+            }
+        }
+        return total;
     }
 
     /**
@@ -831,15 +831,15 @@ internal class Base : Target
      */
     internal int getAvailableLaboratories()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getLaboratories();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getLaboratories();
+            }
+        }
+        return total;
     }
 
     /**
@@ -849,13 +849,13 @@ internal class Base : Target
      */
     internal int getUsedLaboratories()
     {
-	    List<ResearchProject> research = getResearch();
-	    int usedLabSpace = 0;
-	    foreach (var itResearch in research)
-	    {
-		    usedLabSpace += itResearch.getAssigned();
-	    }
-	    return usedLabSpace;
+        List<ResearchProject> research = getResearch();
+        int usedLabSpace = 0;
+        foreach (var itResearch in research)
+        {
+            usedLabSpace += itResearch.getAssigned();
+        }
+        return usedLabSpace;
     }
 
     /**
@@ -865,15 +865,15 @@ internal class Base : Target
      */
     internal int getAvailableWorkshops()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getWorkshops();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getWorkshops();
+            }
+        }
+        return total;
     }
 
     /**
@@ -883,12 +883,12 @@ internal class Base : Target
      */
     internal int getUsedWorkshops()
     {
-	    int usedWorkShop = 0;
-	    foreach (var iter in _productions)
-	    {
-		    usedWorkShop += (iter.getAssignedEngineers() + iter.getRules().getRequiredSpace());
-	    }
-	    return usedWorkShop;
+        int usedWorkShop = 0;
+        foreach (var iter in _productions)
+        {
+            usedWorkShop += (iter.getAssignedEngineers() + iter.getRules().getRequiredSpace());
+        }
+        return usedWorkShop;
     }
 
     /**
@@ -898,15 +898,15 @@ internal class Base : Target
      */
     internal int getAvailableHangars()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getCrafts();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getCrafts();
+            }
+        }
+        return total;
     }
 
     /**
@@ -916,23 +916,23 @@ internal class Base : Target
      */
     internal int getUsedHangars()
     {
-	    int total = _crafts.Count;
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_CRAFT)
-		    {
-			    total += i.getQuantity();
-		    }
-	    }
-	    foreach (var i in _productions)
-	    {
-		    if (i.getRules().getCategory() == "STR_CRAFT")
-		    {
-			    // This should be fixed on the case when (*i)->getInfiniteAmount() == TRUE
-			    total += (i.getAmountTotal() - i.getAmountProduced());
-		    }
-	    }
-	    return total;
+        int total = _crafts.Count;
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_CRAFT)
+            {
+                total += i.getQuantity();
+            }
+        }
+        foreach (var i in _productions)
+        {
+            if (i.getRules().getCategory() == "STR_CRAFT")
+            {
+                // This should be fixed on the case when (*i)->getInfiniteAmount() == TRUE
+                total += (i.getAmountTotal() - i.getAmountProduced());
+            }
+        }
+        return total;
     }
 
     /**
@@ -942,15 +942,15 @@ internal class Base : Target
      */
     internal int getUsedPsiLabs()
     {
-	    int total = 0;
-	    foreach (var s in _soldiers)
-	    {
-		    if (s.isInPsiTraining())
-		    {
-			    total++;
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var s in _soldiers)
+        {
+            if (s.isInPsiTraining())
+            {
+                total++;
+            }
+        }
+        return total;
     }
 
     /**
@@ -960,15 +960,15 @@ internal class Base : Target
      */
     internal int getAvailableContainment()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getAliens();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getAliens();
+            }
+        }
+        return total;
     }
 
     /**
@@ -978,33 +978,33 @@ internal class Base : Target
      */
     internal int getUsedContainment()
     {
-	    int total = 0;
-	    foreach (var i in _items.getContents())
-	    {
-		    if (_mod.getItem(i.Key, true).isAlien())
-		    {
-			    total += i.Value;
-		    }
-	    }
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_ITEM)
-		    {
-			    if (_mod.getItem(i.getItems(), true).isAlien())
-			    {
-				    total += i.getQuantity();
-			    }
-		    }
-	    }
-	    foreach (var i in _research)
-	    {
-		    RuleResearch projRules = i.getRules();
-		    if (projRules.needItem() && _mod.getUnit(projRules.getName()) != null)
-		    {
-			    ++total;
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _items.getContents())
+        {
+            if (_mod.getItem(i.Key, true).isAlien())
+            {
+                total += i.Value;
+            }
+        }
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_ITEM)
+            {
+                if (_mod.getItem(i.getItems(), true).isAlien())
+                {
+                    total += i.getQuantity();
+                }
+            }
+        }
+        foreach (var i in _research)
+        {
+            RuleResearch projRules = i.getRules();
+            if (projRules.needItem() && _mod.getUnit(projRules.getName()) != null)
+            {
+                ++total;
+            }
+        }
+        return total;
     }
 
     /**
@@ -1103,7 +1103,7 @@ internal class Base : Target
      * @return Number of scientists.
      */
     internal int getAvailableScientists() =>
-	    getScientists();
+        getScientists();
 
     /**
      * Returns the amount of engineers contained
@@ -1111,7 +1111,7 @@ internal class Base : Target
      * @return Number of engineers.
      */
     internal int getAvailableEngineers() =>
-	    getEngineers();
+        getEngineers();
 
     /**
      * Returns the amount of engineers currently in use.
@@ -1119,12 +1119,12 @@ internal class Base : Target
      */
     internal int getAllocatedEngineers()
     {
-	    int total = 0;
-	    foreach (var iter in _productions)
-	    {
-		    total += iter.getAssignedEngineers();
-	    }
-	    return total;
+        int total = 0;
+        foreach (var iter in _productions)
+        {
+            total += iter.getAssignedEngineers();
+        }
+        return total;
     }
 
     /**
@@ -1132,33 +1132,33 @@ internal class Base : Target
      * @return workshop space not used by a Production
      */
     internal int getFreeWorkshops() =>
-	    getAvailableWorkshops() - getUsedWorkshops();
+        getAvailableWorkshops() - getUsedWorkshops();
 
     /**
      * Return containment space not in use
      * @return containment space not in use
      */
     internal int getFreeContainment() =>
-	    getAvailableContainment() - getUsedContainment();
+        getAvailableContainment() - getUsedContainment();
 
     /**
      * Return laboratories space not used by a ResearchProject
      * @return laboratories space not used by a ResearchProject
      */
     internal int getFreeLaboratories() =>
-	    getAvailableLaboratories() - getUsedLaboratories();
+        getAvailableLaboratories() - getUsedLaboratories();
 
     internal int getGravShields()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0 && i.getRules().isGravShield())
-		    {
-			    ++total;
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0 && i.getRules().isGravShield())
+            {
+                ++total;
+            }
+        }
+        return total;
     }
 
     /**
@@ -1208,22 +1208,22 @@ internal class Base : Target
      */
     internal int getSoldierCount(string soldier)
     {
-	    int total = 0;
-	    foreach (var i in _transfers)
-	    {
-		    if (i.getType() == TransferType.TRANSFER_SOLDIER && i.getSoldier().getRules().getType() == soldier)
-		    {
-			    total++;
-		    }
-	    }
-	    foreach (var i in _soldiers)
-	    {
-		    if (i.getRules().getType() == soldier)
-		    {
-			    total++;
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _transfers)
+        {
+            if (i.getType() == TransferType.TRANSFER_SOLDIER && i.getSoldier().getRules().getType() == soldier)
+            {
+                total++;
+            }
+        }
+        foreach (var i in _soldiers)
+        {
+            if (i.getRules().getType() == soldier)
+            {
+                total++;
+            }
+        }
+        return total;
     }
 
     /**
@@ -1233,15 +1233,15 @@ internal class Base : Target
      */
     internal int getDefenseValue()
     {
-	    int total = 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getBuildTime() == 0)
-		    {
-			    total += i.getRules().getDefenseValue();
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getBuildTime() == 0)
+            {
+                total += i.getRules().getDefenseValue();
+            }
+        }
+        return total;
     }
 
     /**
@@ -1251,18 +1251,18 @@ internal class Base : Target
      */
     internal int getShortRangeDetection()
     {
-	    int total = 0;
-	    int minRadarRange = _mod.getMinRadarRange();
+        int total = 0;
+        int minRadarRange = _mod.getMinRadarRange();
 
-	    if (minRadarRange == 0) return 0;
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getRules().getRadarRange() == minRadarRange && i.getBuildTime() == 0)
-		    {
-			    total++;
-		    }
-	    }
-	    return total;
+        if (minRadarRange == 0) return 0;
+        foreach (var i in _facilities)
+        {
+            if (i.getRules().getRadarRange() == minRadarRange && i.getBuildTime() == 0)
+            {
+                total++;
+            }
+        }
+        return total;
     }
 
     /**
@@ -1272,17 +1272,17 @@ internal class Base : Target
      */
     internal int getLongRangeDetection()
     {
-	    int total = 0;
-	    int minRadarRange = _mod.getMinRadarRange();
+        int total = 0;
+        int minRadarRange = _mod.getMinRadarRange();
 
-	    foreach (var i in _facilities)
-	    {
-		    if (i.getRules().getRadarRange() > minRadarRange && i.getBuildTime() == 0)
-		    {
-			    total++;
-		    }
-	    }
-	    return total;
+        foreach (var i in _facilities)
+        {
+            if (i.getRules().getRadarRange() > minRadarRange && i.getBuildTime() == 0)
+            {
+                total++;
+            }
+        }
+        return total;
     }
 
     /**
@@ -1290,18 +1290,18 @@ internal class Base : Target
      * @return Is the craft on the battlescape?
      */
     internal bool isInBattlescape() =>
-	    _inBattlescape;
+        _inBattlescape;
 
     /**
      * Destroys all disconnected facilities in the base.
      */
     internal void destroyDisconnectedFacilities()
     {
-	    List<BaseFacility> disFacs = getDisconnectedFacilities(null);
-	    for (var i = disFacs.Count - 1; i >= 0; i--)
-	    {
-		    destroyFacility(disFacs[i]);
-	    }
+        List<BaseFacility> disFacs = getDisconnectedFacilities(null);
+        for (var i = disFacs.Count - 1; i >= 0; i--)
+        {
+            destroyFacility(disFacs[i]);
+        }
     }
 
     /**
@@ -1310,163 +1310,163 @@ internal class Base : Target
      */
     internal void destroyFacility(BaseFacility facility)
     {
-	    if (facility.getRules().getCrafts() > 0)
-	    {
-		    // hangar destruction - destroy crafts and any production of crafts
-		    // if this will mean there is no hangar to contain it
-		    if (facility.getCraft() != null)
-		    {
-			    // remove all soldiers
-			    if (facility.getCraft().getNumSoldiers() != 0)
-			    {
-				    foreach (var i in _soldiers)
-				    {
-					    if (i.getCraft() == facility.getCraft())
-					    {
-						    i.setCraft(null);
-					    }
-				    }
-			    }
-			    // remove all items
-			    while (facility.getCraft().getItems().getContents().Any())
-			    {
+        if (facility.getRules().getCrafts() > 0)
+        {
+            // hangar destruction - destroy crafts and any production of crafts
+            // if this will mean there is no hangar to contain it
+            if (facility.getCraft() != null)
+            {
+                // remove all soldiers
+                if (facility.getCraft().getNumSoldiers() != 0)
+                {
+                    foreach (var i in _soldiers)
+                    {
+                        if (i.getCraft() == facility.getCraft())
+                        {
+                            i.setCraft(null);
+                        }
+                    }
+                }
+                // remove all items
+                while (facility.getCraft().getItems().getContents().Any())
+                {
                     KeyValuePair<string, int> i = facility.getCraft().getItems().getContents().First();
-				    _items.addItem(i.Key, i.Value);
-				    facility.getCraft().getItems().removeItem(i.Key, i.Value);
-			    }
-			    foreach (var i in _crafts)
-			    {
-				    if (i == facility.getCraft())
-				    {
-					    _crafts.Remove(i);
-					    break;
-				    }
-			    }
-		    }
-		    else
-		    {
-			    bool remove = true;
-			    // no craft - check productions.
-			    foreach (var i in _productions)
-			    {
-				    if (getAvailableHangars() - getUsedHangars() - facility.getRules().getCrafts() < 0 && i.getRules().getCategory() == "STR_CRAFT")
-				    {
-					    _engineers += i.getAssignedEngineers();
-					    _productions.Remove(i);
-					    remove = false;
-					    break;
-				    }
-			    }
-			    if (remove && _transfers.Any())
-			    {
-				    foreach (var i in _transfers)
-				    {
-					    if (i.getType() == TransferType.TRANSFER_CRAFT)
-					    {
-						    i.setCraft(null);
-						    _transfers.Remove(i);
-						    break;
-					    }
-				    }
-			    }
-		    }
-	    }
-	    if (facility.getRules().getPsiLaboratories() > 0)
-	    {
-		    // psi lab destruction: remove any soldiers over the maximum allowable from psi training.
-		    int toRemove = facility.getRules().getPsiLaboratories() - getFreePsiLabs();
-		    for (var i = 0; i < _soldiers.Count && toRemove > 0; ++i)
-		    {
-			    if (_soldiers[i].isInPsiTraining())
-			    {
-				    _soldiers[i].setPsiTraining(false);
-				    --toRemove;
-			    }
-		    }
-	    }
-	    if (facility.getRules().getLaboratories() != 0)
-	    {
-		    // lab destruction: enforce lab space limits. take scientists off projects until
-		    // it all evens out. research is not cancelled.
-		    int toRemove = facility.getRules().getLaboratories() - getFreeLaboratories();
-		    for (var i = 0; i < _research.Count && toRemove > 0;)
-		    {
-			    if (_research[i].getAssigned() >= toRemove)
-			    {
-				    _research[i].setAssigned(_research[i].getAssigned() - toRemove);
-				    _scientists += toRemove;
-				    break;
-			    }
-			    else
-			    {
-				    toRemove -= _research[i].getAssigned();
-				    _scientists += _research[i].getAssigned();
-				    _research[i].setAssigned(0);
-				    ++i;
-			    }
-		    }
-	    }
-	    if (facility.getRules().getWorkshops() != 0)
-	    {
-		    // workshop destruction: similar to lab destruction, but we'll lay off engineers instead
-		    // in this case, however, production IS cancelled, as it takes up space in the workshop.
-		    int toRemove = facility.getRules().getWorkshops() - getFreeWorkshops();
-		    for (var i = 0; i < _productions.Count && toRemove > 0;)
-		    {
-			    if (_productions[i].getAssignedEngineers() > toRemove)
-			    {
-				    _productions[i].setAssignedEngineers(_productions[i].getAssignedEngineers() - toRemove);
-				    _engineers += toRemove;
-				    break;
-			    }
-			    else
-			    {
-				    toRemove -= _productions[i].getAssignedEngineers();
-				    _engineers += _productions[i].getAssignedEngineers();
-				    _productions.RemoveAt(i);
-			    }
-		    }
-	    }
-	    if (facility.getRules().getStorage() != 0)
-	    {
-		    // we won't destroy the items physically AT the base,
-		    // but any items in transit will end up at the dead letter office.
-		    if (storesOverfull(facility.getRules().getStorage()) && _transfers.Any())
-		    {
-			    for (var i = 0; i < _transfers.Count;)
-			    {
-				    if (_transfers[i].getType() == TransferType.TRANSFER_ITEM)
-				    {
-					    _transfers.RemoveAt(i);
-				    }
-				    else
-				    {
-					    ++i;
-				    }
-			    }
-		    }
-	    }
-	    if (facility.getRules().getPersonnel() != 0)
-	    {
-		    // as above, we won't actually fire people, but we'll block any new ones coming in.
-		    if ((getAvailableQuarters() - getUsedQuarters()) - facility.getRules().getPersonnel() < 0 && _transfers.Any())
-		    {
-			    for (var i = 0; i < _transfers.Count;)
-			    {
-				    // let soldiers arrive, but block workers.
-				    if (_transfers[i].getType() == TransferType.TRANSFER_ENGINEER || _transfers[i].getType() == TransferType.TRANSFER_SCIENTIST)
-				    {
-					    _transfers.RemoveAt(i);
-				    }
-				    else
-				    {
-					    ++i;
-				    }
-			    }
-		    }
-	    }
-	    //facility = null;
-	    _facilities.Remove(facility);
+                    _items.addItem(i.Key, i.Value);
+                    facility.getCraft().getItems().removeItem(i.Key, i.Value);
+                }
+                foreach (var i in _crafts)
+                {
+                    if (i == facility.getCraft())
+                    {
+                        _crafts.Remove(i);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                bool remove = true;
+                // no craft - check productions.
+                foreach (var i in _productions)
+                {
+                    if (getAvailableHangars() - getUsedHangars() - facility.getRules().getCrafts() < 0 && i.getRules().getCategory() == "STR_CRAFT")
+                    {
+                        _engineers += i.getAssignedEngineers();
+                        _productions.Remove(i);
+                        remove = false;
+                        break;
+                    }
+                }
+                if (remove && _transfers.Any())
+                {
+                    foreach (var i in _transfers)
+                    {
+                        if (i.getType() == TransferType.TRANSFER_CRAFT)
+                        {
+                            i.setCraft(null);
+                            _transfers.Remove(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (facility.getRules().getPsiLaboratories() > 0)
+        {
+            // psi lab destruction: remove any soldiers over the maximum allowable from psi training.
+            int toRemove = facility.getRules().getPsiLaboratories() - getFreePsiLabs();
+            for (var i = 0; i < _soldiers.Count && toRemove > 0; ++i)
+            {
+                if (_soldiers[i].isInPsiTraining())
+                {
+                    _soldiers[i].setPsiTraining(false);
+                    --toRemove;
+                }
+            }
+        }
+        if (facility.getRules().getLaboratories() != 0)
+        {
+            // lab destruction: enforce lab space limits. take scientists off projects until
+            // it all evens out. research is not cancelled.
+            int toRemove = facility.getRules().getLaboratories() - getFreeLaboratories();
+            for (var i = 0; i < _research.Count && toRemove > 0;)
+            {
+                if (_research[i].getAssigned() >= toRemove)
+                {
+                    _research[i].setAssigned(_research[i].getAssigned() - toRemove);
+                    _scientists += toRemove;
+                    break;
+                }
+                else
+                {
+                    toRemove -= _research[i].getAssigned();
+                    _scientists += _research[i].getAssigned();
+                    _research[i].setAssigned(0);
+                    ++i;
+                }
+            }
+        }
+        if (facility.getRules().getWorkshops() != 0)
+        {
+            // workshop destruction: similar to lab destruction, but we'll lay off engineers instead
+            // in this case, however, production IS cancelled, as it takes up space in the workshop.
+            int toRemove = facility.getRules().getWorkshops() - getFreeWorkshops();
+            for (var i = 0; i < _productions.Count && toRemove > 0;)
+            {
+                if (_productions[i].getAssignedEngineers() > toRemove)
+                {
+                    _productions[i].setAssignedEngineers(_productions[i].getAssignedEngineers() - toRemove);
+                    _engineers += toRemove;
+                    break;
+                }
+                else
+                {
+                    toRemove -= _productions[i].getAssignedEngineers();
+                    _engineers += _productions[i].getAssignedEngineers();
+                    _productions.RemoveAt(i);
+                }
+            }
+        }
+        if (facility.getRules().getStorage() != 0)
+        {
+            // we won't destroy the items physically AT the base,
+            // but any items in transit will end up at the dead letter office.
+            if (storesOverfull(facility.getRules().getStorage()) && _transfers.Any())
+            {
+                for (var i = 0; i < _transfers.Count;)
+                {
+                    if (_transfers[i].getType() == TransferType.TRANSFER_ITEM)
+                    {
+                        _transfers.RemoveAt(i);
+                    }
+                    else
+                    {
+                        ++i;
+                    }
+                }
+            }
+        }
+        if (facility.getRules().getPersonnel() != 0)
+        {
+            // as above, we won't actually fire people, but we'll block any new ones coming in.
+            if ((getAvailableQuarters() - getUsedQuarters()) - facility.getRules().getPersonnel() < 0 && _transfers.Any())
+            {
+                for (var i = 0; i < _transfers.Count;)
+                {
+                    // let soldiers arrive, but block workers.
+                    if (_transfers[i].getType() == TransferType.TRANSFER_ENGINEER || _transfers[i].getType() == TransferType.TRANSFER_SCIENTIST)
+                    {
+                        _transfers.RemoveAt(i);
+                    }
+                    else
+                    {
+                        ++i;
+                    }
+                }
+            }
+        }
+        //facility = null;
+        _facilities.Remove(facility);
     }
 
     /**
@@ -1474,7 +1474,7 @@ internal class Base : Target
      * @return psilab space not in use
      */
     int getFreePsiLabs() =>
-	    getAvailablePsiLabs() - getUsedPsiLabs();
+        getAvailablePsiLabs() - getUsedPsiLabs();
 
     /**
      * Returns the amount of scientists currently in use.
@@ -1482,13 +1482,13 @@ internal class Base : Target
      */
     internal int getAllocatedScientists()
     {
-	    int total = 0;
-	    List<ResearchProject> research = getResearch();
-	    foreach (var itResearch in research)
-	    {
-		    total += itResearch.getAssigned();
-	    }
-	    return total;
+        int total = 0;
+        List<ResearchProject> research = getResearch();
+        foreach (var itResearch in research)
+        {
+            total += itResearch.getAssigned();
+        }
+        return total;
     }
 
     /**
@@ -1497,7 +1497,7 @@ internal class Base : Target
      * @return ID.
      */
     internal override string getType() =>
-	    "STR_BASE";
+        "STR_BASE";
 
     /**
      * Loads the base from a YAML file.
@@ -1508,135 +1508,135 @@ internal class Base : Target
      */
     internal void load(YamlNode node, SavedGame save, bool newGame, bool newBattleGame = false)
     {
-	    base.load(node);
+        base.load(node);
 
-	    if (!newGame || !Options.customInitialBase || newBattleGame)
-	    {
-		    foreach (var i in ((YamlSequenceNode)node["facilities"]).Children)
-		    {
-			    string type = i["type"].ToString();
-			    if (_mod.getBaseFacility(type) != null)
-			    {
-				    BaseFacility f = new BaseFacility(_mod.getBaseFacility(type), this);
-				    f.load(i);
-				    _facilities.Add(f);
-			    }
-			    else
-			    {
-					Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load facility {type}");
-			    }
-		    }
-	    }
+        if (!newGame || !Options.customInitialBase || newBattleGame)
+        {
+            foreach (var i in ((YamlSequenceNode)node["facilities"]).Children)
+            {
+                string type = i["type"].ToString();
+                if (_mod.getBaseFacility(type) != null)
+                {
+                    BaseFacility f = new BaseFacility(_mod.getBaseFacility(type), this);
+                    f.load(i);
+                    _facilities.Add(f);
+                }
+                else
+                {
+                    Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load facility {type}");
+                }
+            }
+        }
 
-	    foreach (var i in ((YamlSequenceNode)node["crafts"]).Children)
-	    {
-		    string type = i["type"].ToString();
-		    if (_mod.getCraft(type) != null)
-		    {
-			    Craft c = new Craft(_mod.getCraft(type), this);
-			    c.load(i, _mod, save);
-			    _crafts.Add(c);
-		    }
-		    else
-		    {
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load craft {type}");
-		    }
-	    }
+        foreach (var i in ((YamlSequenceNode)node["crafts"]).Children)
+        {
+            string type = i["type"].ToString();
+            if (_mod.getCraft(type) != null)
+            {
+                Craft c = new Craft(_mod.getCraft(type), this);
+                c.load(i, _mod, save);
+                _crafts.Add(c);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load craft {type}");
+            }
+        }
 
-	    foreach (var i in ((YamlSequenceNode)node["soldiers"]).Children)
-	    {
-		    string type = i["type"] != null ? i["type"].ToString() : _mod.getSoldiersList().First();
-		    if (_mod.getSoldier(type) != null)
-		    {
-			    Soldier s = new Soldier(_mod.getSoldier(type), null);
-			    s.load(i, _mod, save);
-			    s.setCraft(null);
-			    if (i["craft"] is YamlNode craft)
-			    {
-				    KeyValuePair<string, int> craftId = Craft.loadId(craft);
-				    foreach (var j in _crafts)
-				    {
-					    if ((j.getUniqueId().Key, j.getUniqueId().Value) == (craftId.Key, craftId.Value))
-					    {
-						    s.setCraft(j);
-						    break;
-					    }
-				    }
-			    }
-			    _soldiers.Add(s);
-		    }
-		    else
-		    {
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
-		    }
-	    }
+        foreach (var i in ((YamlSequenceNode)node["soldiers"]).Children)
+        {
+            string type = i["type"] != null ? i["type"].ToString() : _mod.getSoldiersList().First();
+            if (_mod.getSoldier(type) != null)
+            {
+                Soldier s = new Soldier(_mod.getSoldier(type), null);
+                s.load(i, _mod, save);
+                s.setCraft(null);
+                if (i["craft"] is YamlNode craft)
+                {
+                    KeyValuePair<string, int> craftId = Craft.loadId(craft);
+                    foreach (var j in _crafts)
+                    {
+                        if ((j.getUniqueId().Key, j.getUniqueId().Value) == (craftId.Key, craftId.Value))
+                        {
+                            s.setCraft(j);
+                            break;
+                        }
+                    }
+                }
+                _soldiers.Add(s);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
+            }
+        }
 
-	    _items.load(node["items"]);
-	    // Some old saves have bad items, better get rid of them to avoid further bugs
+        _items.load(node["items"]);
+        // Some old saves have bad items, better get rid of them to avoid further bugs
         var k = _items.getContents().GetEnumerator();
         k.MoveNext();
         while (k.Current.Key != null)
-	    {
-		    if (_mod.getItem(k.Current.Key) == null)
-		    {
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {k.Current.Key}");
+        {
+            if (_mod.getItem(k.Current.Key) == null)
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {k.Current.Key}");
                 _items.getContents().Remove(k.Current.Key); k.MoveNext();
-		    }
-		    else
-		    {
-			    k.MoveNext();
-		    }
-	    }
+            }
+            else
+            {
+                k.MoveNext();
+            }
+        }
 
-	    _scientists = int.Parse(node["scientists"].ToString());
-	    _engineers = int.Parse(node["engineers"].ToString());
-	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+        _scientists = int.Parse(node["scientists"].ToString());
+        _engineers = int.Parse(node["engineers"].ToString());
+        _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
 
-	    foreach (var i in ((YamlSequenceNode)node["transfers"]).Children)
-	    {
-		    int hours = int.Parse(i["hours"].ToString());
-		    Transfer t = new Transfer(hours);
-		    if (t.load(i, this, _mod, save))
-		    {
-			    _transfers.Add(t);
-		    }
-	    }
+        foreach (var i in ((YamlSequenceNode)node["transfers"]).Children)
+        {
+            int hours = int.Parse(i["hours"].ToString());
+            Transfer t = new Transfer(hours);
+            if (t.load(i, this, _mod, save))
+            {
+                _transfers.Add(t);
+            }
+        }
 
-	    foreach (var i in ((YamlSequenceNode)node["research"]).Children)
-	    {
-		    string research = i["project"].ToString();
-		    if (_mod.getResearch(research) != null)
-		    {
-			    ResearchProject r = new ResearchProject(_mod.getResearch(research));
-			    r.load(i);
-			    _research.Add(r);
-		    }
-		    else
-		    {
-			    _scientists += int.Parse(i["assigned"].ToString());
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {research}");
-		    }
-	    }
+        foreach (var i in ((YamlSequenceNode)node["research"]).Children)
+        {
+            string research = i["project"].ToString();
+            if (_mod.getResearch(research) != null)
+            {
+                ResearchProject r = new ResearchProject(_mod.getResearch(research));
+                r.load(i);
+                _research.Add(r);
+            }
+            else
+            {
+                _scientists += int.Parse(i["assigned"].ToString());
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {research}");
+            }
+        }
 
-	    foreach (var i in ((YamlSequenceNode)node["productions"]).Children)
-	    {
-		    string item = i["item"].ToString();
-		    if (_mod.getManufacture(item) != null)
-		    {
-			    Production p = new Production(_mod.getManufacture(item), 0);
-			    p.load(i);
-			    _productions.Add(p);
-		    }
-		    else
-		    {
-			    _engineers += int.Parse(i["assigned"].ToString());
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load manufacture {item}");
-		    }
-	    }
+        foreach (var i in ((YamlSequenceNode)node["productions"]).Children)
+        {
+            string item = i["item"].ToString();
+            if (_mod.getManufacture(item) != null)
+            {
+                Production p = new Production(_mod.getManufacture(item), 0);
+                p.load(i);
+                _productions.Add(p);
+            }
+            else
+            {
+                _engineers += int.Parse(i["assigned"].ToString());
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load manufacture {item}");
+            }
+        }
 
-	    _retaliationTarget = bool.Parse(node["retaliationTarget"].ToString());
+        _retaliationTarget = bool.Parse(node["retaliationTarget"].ToString());
 
-	    isOverlappingOrOverflowing(); // don't crash, just report in the log file...
+        isOverlappingOrOverflowing(); // don't crash, just report in the log file...
     }
 
     /**
@@ -1645,46 +1645,46 @@ internal class Base : Target
      */
     bool isOverlappingOrOverflowing()
     {
-	    bool result = false;
+        bool result = false;
         BaseFacility[,] grid = new BaseFacility[BASE_SIZE, BASE_SIZE];
 
-	    // i don't think i NEED to do this for a pointer array, but who knows what might happen on weird archaic linux distros if i don't?
-	    for (int x = 0; x < BASE_SIZE; ++x)
-	    {
-		    for (int y = 0; y < BASE_SIZE; ++y)
-		    {
-			    grid[x, y] = null;
-		    }
-	    }
+        // i don't think i NEED to do this for a pointer array, but who knows what might happen on weird archaic linux distros if i don't?
+        for (int x = 0; x < BASE_SIZE; ++x)
+        {
+            for (int y = 0; y < BASE_SIZE; ++y)
+            {
+                grid[x, y] = null;
+            }
+        }
 
-	    foreach (var f in _facilities)
-	    {
-		    RuleBaseFacility rules = f.getRules();
-		    int facilityX = f.getX();
-		    int facilityY = f.getY();
-		    int facilitySize = rules.getSize();
+        foreach (var f in _facilities)
+        {
+            RuleBaseFacility rules = f.getRules();
+            int facilityX = f.getX();
+            int facilityY = f.getY();
+            int facilitySize = rules.getSize();
 
-		    if (facilityX < 0 || facilityY < 0 || facilityX + (facilitySize - 1) >= BASE_SIZE || facilityY + (facilitySize - 1) >= BASE_SIZE)
-		    {
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Facility {rules.getType()} at [{facilityX}, {facilityY}] (size {facilitySize}) is outside of base boundaries.");
-			    result = true;
-			    continue;
-		    }
+            if (facilityX < 0 || facilityY < 0 || facilityX + (facilitySize - 1) >= BASE_SIZE || facilityY + (facilitySize - 1) >= BASE_SIZE)
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Facility {rules.getType()} at [{facilityX}, {facilityY}] (size {facilitySize}) is outside of base boundaries.");
+                result = true;
+                continue;
+            }
 
-		    for (int x = facilityX; x < facilityX + facilitySize; ++x)
-		    {
-			    for (int y = facilityY; y < facilityY + facilitySize; ++y)
-			    {
-				    if (grid[x, y] != null)
-				    {
-				        Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Facility {rules.getType()} at [{facilityX}, {facilityY}] (size {facilitySize}) overlaps with {grid[x, y].getRules().getType()} at [{x}, {y}] (size {grid[x, y].getRules().getSize()})");
-					    result = true;
-				    }
-				    grid[x, y] = f;
-			    }
-		    }
-	    }
+            for (int x = facilityX; x < facilityX + facilitySize; ++x)
+            {
+                for (int y = facilityY; y < facilityY + facilitySize; ++y)
+                {
+                    if (grid[x, y] != null)
+                    {
+                        Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Facility {rules.getType()} at [{facilityX}, {facilityY}] (size {facilitySize}) overlaps with {grid[x, y].getRules().getType()} at [{x}, {y}] (size {grid[x, y].getRules().getSize()})");
+                        result = true;
+                    }
+                    grid[x, y] = f;
+                }
+            }
+        }
 
-	    return result;
+        return result;
     }
 }

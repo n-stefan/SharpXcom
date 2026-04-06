@@ -25,7 +25,7 @@ namespace SharpXcom.Interface;
  */
 internal class FpsCounter : Surface
 {
-	NumberText _text;
+    NumberText _text;
     Timer _timer;
     int _frames;
 

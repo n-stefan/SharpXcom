@@ -96,10 +96,10 @@ internal class Palette
      */
     internal void loadDat(string filename, int ncolors, int offset = 0)
     {
-	    if (_colors != null)
-		    throw new Exception("loadDat can be run only once");
-	    _count = ncolors;
-	    _colors = new SDL_Color[_count];
+        if (_colors != null)
+            throw new Exception("loadDat can be run only once");
+        _count = ncolors;
+        _colors = new SDL_Color[_count];
 
         try
         {
@@ -109,23 +109,23 @@ internal class Palette
             // Move pointer to proper palette
             palFile.Seek(offset, SeekOrigin.Begin);
 
-	        var value = new byte[3];
+            var value = new byte[3];
 
-	        for (int i = 0; i < _count && palFile.Read(value, 0, 3) != 0; ++i)
-	        {
-		        // Correct X-Com colors to RGB colors
-		        _colors[i].r = (byte)(value[0] * 4);
-		        _colors[i].g = (byte)(value[1] * 4);
-		        _colors[i].b = (byte)(value[2] * 4);
-		        _colors[i].a = 255;
-	        }
-	        _colors[0].a = 0;
+            for (int i = 0; i < _count && palFile.Read(value, 0, 3) != 0; ++i)
+            {
+                // Correct X-Com colors to RGB colors
+                _colors[i].r = (byte)(value[0] * 4);
+                _colors[i].g = (byte)(value[1] * 4);
+                _colors[i].b = (byte)(value[2] * 4);
+                _colors[i].a = 255;
+            }
+            _colors[0].a = 0;
 
-	        palFile.Close();
+            palFile.Close();
         }
         catch (Exception)
         {
-		    throw new Exception(filename + " not found");
+            throw new Exception(filename + " not found");
         }
     }
 
@@ -161,33 +161,33 @@ internal class Palette
 
     void savePal(string file)
     {
-	    using var @out = new BinaryWriter(new FileStream(file, FileMode.Create));
-	    short count = (short)_count;
+        using var @out = new BinaryWriter(new FileStream(file, FileMode.Create));
+        short count = (short)_count;
 
-	    // RIFF header
-	    @out.Write("RIFF");
-	    int length = 4 + 4 + 4 + 4 + 2 + 2 + count * 4;
-	    @out.Write(length);
-	    @out.Write("PAL ");
+        // RIFF header
+        @out.Write("RIFF");
+        int length = 4 + 4 + 4 + 4 + 2 + 2 + count * 4;
+        @out.Write(length);
+        @out.Write("PAL ");
 
-	    // Data chunk
-	    @out.Write("data");
-	    int data = count * 4 + 4;
-	    @out.Write(data);
-	    short version = 0x0300;
-	    @out.Write(version);
-	    @out.Write(count);
+        // Data chunk
+        @out.Write("data");
+        int data = count * 4 + 4;
+        @out.Write(data);
+        short version = 0x0300;
+        @out.Write(version);
+        @out.Write(count);
 
-	    // Colors
-	    Span<SDL_Color> color = getColors();
-	    for (short i = 0; i < count; ++i)
-	    {
-		    byte c = 0;
+        // Colors
+        Span<SDL_Color> color = getColors();
+        for (short i = 0; i < count; ++i)
+        {
+            byte c = 0;
             @out.Write(color[i].r);
             @out.Write(color[i].g);
             @out.Write(color[i].b);
-		    @out.Write(c);
-	    }
-	    @out.Close();
+            @out.Write(c);
+        }
+        @out.Close();
     }
 }

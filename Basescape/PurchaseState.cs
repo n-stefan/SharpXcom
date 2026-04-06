@@ -408,36 +408,36 @@ internal class PurchaseState : State
      */
     string getCategory(int sel)
     {
-	    RuleItem rule = null;
-	    switch (_items[sel].type)
-	    {
-	        case TransferType.TRANSFER_SOLDIER:
-	        case TransferType.TRANSFER_SCIENTIST:
-	        case TransferType.TRANSFER_ENGINEER:
-		        return "STR_PERSONNEL";
-	        case TransferType.TRANSFER_CRAFT:
-		        return "STR_CRAFT_ARMAMENT";
-	        case TransferType.TRANSFER_ITEM:
-		        rule = (RuleItem)_items[sel].rule;
-		        if (rule.getBattleType() == BattleType.BT_CORPSE || rule.isAlien())
-		        {
-			        return "STR_ALIENS";
-		        }
-		        if (rule.getBattleType() == BattleType.BT_NONE)
-		        {
-			        if (_craftWeapons.Contains(rule.getType()))
-			        {
-				        return "STR_CRAFT_ARMAMENT";
-			        }
-			        if (_armors.Contains(rule.getType()))
-			        {
-				        return "STR_EQUIPMENT";
-			        }
-			        return "STR_COMPONENTS";
-		        }
-		        return "STR_EQUIPMENT";
-	    }
-	    return "STR_ALL_ITEMS";
+        RuleItem rule = null;
+        switch (_items[sel].type)
+        {
+            case TransferType.TRANSFER_SOLDIER:
+            case TransferType.TRANSFER_SCIENTIST:
+            case TransferType.TRANSFER_ENGINEER:
+                return "STR_PERSONNEL";
+            case TransferType.TRANSFER_CRAFT:
+                return "STR_CRAFT_ARMAMENT";
+            case TransferType.TRANSFER_ITEM:
+                rule = (RuleItem)_items[sel].rule;
+                if (rule.getBattleType() == BattleType.BT_CORPSE || rule.isAlien())
+                {
+                    return "STR_ALIENS";
+                }
+                if (rule.getBattleType() == BattleType.BT_NONE)
+                {
+                    if (_craftWeapons.Contains(rule.getType()))
+                    {
+                        return "STR_CRAFT_ARMAMENT";
+                    }
+                    if (_armors.Contains(rule.getType()))
+                    {
+                        return "STR_EQUIPMENT";
+                    }
+                    return "STR_COMPONENTS";
+                }
+                return "STR_EQUIPMENT";
+        }
+        return "STR_ALL_ITEMS";
     }
 
     /**
@@ -674,9 +674,9 @@ internal class PurchaseState : State
     */
     internal override void think()
     {
-	    base.think();
+        base.think();
 
-	    _timerInc.think(this, null);
-	    _timerDec.think(this, null);
+        _timerInc.think(this, null);
+        _timerDec.think(this, null);
     }
 }

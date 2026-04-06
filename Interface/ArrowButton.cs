@@ -102,278 +102,279 @@ internal class ArrowButton : ImageButton
      * Keeps the scrolling timers running.
      */
     internal override void think() =>
-	    _timer.think(null, this);
+        _timer.think(null, this);
 
-	/**
+    /**
 	 * Draws the button with the specified arrow shape.
 	 */
-	internal override void draw()
-	{
-		base.draw();
-		@lock();
+    internal override void draw()
+    {
+        base.draw();
+        @lock();
 
-		// Draw button
-		SDL_Rect square;
-		int color = _color + 2;
+        // Draw button
+        SDL_Rect square;
+        int color = _color + 2;
 
-		square.x = 0;
-		square.y = 0;
-		square.w = getWidth() - 1;
-		square.h = getHeight() - 1;
+        square.x = 0;
+        square.y = 0;
+        square.w = getWidth() - 1;
+        square.h = getHeight() - 1;
 
-		drawRect(ref square, (byte)color);
+        drawRect(ref square, (byte)color);
 
-		square.x++;
-		square.y++;
-		color = _color + 5;
+        square.x++;
+        square.y++;
+        color = _color + 5;
 
-		drawRect(ref square, (byte)color);
+        drawRect(ref square, (byte)color);
 
-		square.w--;
-		square.h--;
-		color = _color + 4;
+        square.w--;
+        square.h--;
+        color = _color + 4;
 
-		drawRect(ref square, (byte)color);
+        drawRect(ref square, (byte)color);
 
-		setPixel(0, 0, (byte)(_color + 1));
-		setPixel(0, getHeight() - 1, (byte)(_color + 4));
-		setPixel(getWidth() - 1, 0, (byte)(_color + 4));
+        setPixel(0, 0, (byte)(_color + 1));
+        setPixel(0, getHeight() - 1, (byte)(_color + 4));
+        setPixel(getWidth() - 1, 0, (byte)(_color + 4));
 
-		color = _color + 1;
+        color = _color + 1;
 
-		switch (_shape)
-		{
-		case ArrowShape.ARROW_BIG_UP:
-			// Draw arrow square
-			square.x = 5;
-			square.y = 8;
-			square.w = 3;
-			square.h = 3;
+        switch (_shape)
+        {
+            case ArrowShape.ARROW_BIG_UP:
+                // Draw arrow square
+                square.x = 5;
+                square.y = 8;
+                square.w = 3;
+                square.h = 3;
 
-			drawRect(ref square, (byte)color);
+                drawRect(ref square, (byte)color);
 
-			// Draw arrow triangle
-			square.x = 2;
-			square.y = 7;
-			square.w = 9;
-			square.h = 1;
+                // Draw arrow triangle
+                square.x = 2;
+                square.y = 7;
+                square.w = 9;
+                square.h = 1;
 
-			for (; square.w > 1; square.w -= 2)
-			{
-				drawRect(ref square, (byte)color);
-				square.x++;
-				square.y--;
-			}
-			drawRect(ref square, (byte)color);
-			break;
-		case ArrowShape.ARROW_BIG_DOWN:
-			// Draw arrow square
-			square.x = 5;
-			square.y = 3;
-			square.w = 3;
-			square.h = 3;
+                for (; square.w > 1; square.w -= 2)
+                {
+                    drawRect(ref square, (byte)color);
+                    square.x++;
+                    square.y--;
+                }
+                drawRect(ref square, (byte)color);
+                break;
+            case ArrowShape.ARROW_BIG_DOWN:
+                // Draw arrow square
+                square.x = 5;
+                square.y = 3;
+                square.w = 3;
+                square.h = 3;
 
-			drawRect(ref square, (byte)color);
+                drawRect(ref square, (byte)color);
 
-			// Draw arrow triangle
-			square.x = 2;
-			square.y = 6;
-			square.w = 9;
-			square.h = 1;
+                // Draw arrow triangle
+                square.x = 2;
+                square.y = 6;
+                square.w = 9;
+                square.h = 1;
 
-			for (; square.w > 1; square.w -= 2)
-			{
-				drawRect(ref square, (byte)color);
-				square.x++;
-				square.y++;
-			}
-			drawRect(ref square, (byte)color);
-			break;
-		case ArrowShape.ARROW_SMALL_UP:
-			// Draw arrow triangle 1
-			square.x = 1;
-			square.y = 5;
-			square.w = 9;
-			square.h = 1;
+                for (; square.w > 1; square.w -= 2)
+                {
+                    drawRect(ref square, (byte)color);
+                    square.x++;
+                    square.y++;
+                }
+                drawRect(ref square, (byte)color);
+                break;
+            case ArrowShape.ARROW_SMALL_UP:
+                // Draw arrow triangle 1
+                square.x = 1;
+                square.y = 5;
+                square.w = 9;
+                square.h = 1;
 
-			for (; square.w > 1; square.w -= 2)
-			{
-				drawRect(ref square, (byte)(color + 2));
-				square.x++;
-				square.y--;
-			}
-			drawRect(ref square, (byte)(color + 2));
+                for (; square.w > 1; square.w -= 2)
+                {
+                    drawRect(ref square, (byte)(color + 2));
+                    square.x++;
+                    square.y--;
+                }
+                drawRect(ref square, (byte)(color + 2));
 
-			// Draw arrow triangle 2
-			square.x = 2;
-			square.y = 5;
-			square.w = 7;
-			square.h = 1;
+                // Draw arrow triangle 2
+                square.x = 2;
+                square.y = 5;
+                square.w = 7;
+                square.h = 1;
 
-			for (; square.w > 1; square.w -= 2)
-			{
-				drawRect(ref square, (byte)color);
-				square.x++;
-				square.y--;
-			}
-			drawRect(ref square, (byte)color);
-			break;
-		case ArrowShape.ARROW_SMALL_DOWN:
-			// Draw arrow triangle 1
-			square.x = 1;
-			square.y = 2;
-			square.w = 9;
-			square.h = 1;
+                for (; square.w > 1; square.w -= 2)
+                {
+                    drawRect(ref square, (byte)color);
+                    square.x++;
+                    square.y--;
+                }
+                drawRect(ref square, (byte)color);
+                break;
+            case ArrowShape.ARROW_SMALL_DOWN:
+                // Draw arrow triangle 1
+                square.x = 1;
+                square.y = 2;
+                square.w = 9;
+                square.h = 1;
 
-			for (; square.w > 1; square.w -= 2)
-			{
-				drawRect(ref square, (byte)(color + 2));
-				square.x++;
-				square.y++;
-			}
-			drawRect(ref square, (byte)(color + 2));
+                for (; square.w > 1; square.w -= 2)
+                {
+                    drawRect(ref square, (byte)(color + 2));
+                    square.x++;
+                    square.y++;
+                }
+                drawRect(ref square, (byte)(color + 2));
 
-			// Draw arrow triangle 2
-			square.x = 2;
-			square.y = 2;
-			square.w = 7;
-			square.h = 1;
+                // Draw arrow triangle 2
+                square.x = 2;
+                square.y = 2;
+                square.w = 7;
+                square.h = 1;
 
-			for (; square.w > 1; square.w -= 2)
-			{
-				drawRect(ref square, (byte)color);
-				square.x++;
-				square.y++;
-			}
-			drawRect(ref square, (byte)color);
-			break;
-		case ArrowShape.ARROW_SMALL_LEFT:
-			// Draw arrow triangle 1
-			square.x = 2;
-			square.y = 4;
-			square.w = 2;
-			square.h = 1;
+                for (; square.w > 1; square.w -= 2)
+                {
+                    drawRect(ref square, (byte)color);
+                    square.x++;
+                    square.y++;
+                }
+                drawRect(ref square, (byte)color);
+                break;
+            case ArrowShape.ARROW_SMALL_LEFT:
+                // Draw arrow triangle 1
+                square.x = 2;
+                square.y = 4;
+                square.w = 2;
+                square.h = 1;
 
-			for (; square.h < 5; square.h += 2)
-			{
-				drawRect(ref square, (byte)(color + 2));
-				square.x += 2;
-				square.y--;
-			}
-			square.w = 1;
-			drawRect(ref square, (byte)(color + 2));
+                for (; square.h < 5; square.h += 2)
+                {
+                    drawRect(ref square, (byte)(color + 2));
+                    square.x += 2;
+                    square.y--;
+                }
+                square.w = 1;
+                drawRect(ref square, (byte)(color + 2));
 
-			// Draw arrow triangle 2
-			square.x = 3;
-			square.y = 4;
-			square.w = 2;
-			square.h = 1;
+                // Draw arrow triangle 2
+                square.x = 3;
+                square.y = 4;
+                square.w = 2;
+                square.h = 1;
 
-			for (; square.h < 5; square.h += 2)
-			{
-				drawRect(ref square, (byte)color);
-				square.x += 2;
-				square.y--;
-			}
-			square.w = 1;
-			drawRect(ref square, (byte)color);
-			break;
-		case ArrowShape.ARROW_SMALL_RIGHT:
-			// Draw arrow triangle 1
-			square.x = 7;
-			square.y = 4;
-			square.w = 2;
-			square.h = 1;
+                for (; square.h < 5; square.h += 2)
+                {
+                    drawRect(ref square, (byte)color);
+                    square.x += 2;
+                    square.y--;
+                }
+                square.w = 1;
+                drawRect(ref square, (byte)color);
+                break;
+            case ArrowShape.ARROW_SMALL_RIGHT:
+                // Draw arrow triangle 1
+                square.x = 7;
+                square.y = 4;
+                square.w = 2;
+                square.h = 1;
 
-			for (; square.h < 5; square.h += 2)
-			{
-				drawRect(ref square, (byte)(color + 2));
-				square.x -= 2;
-				square.y--;
-			}
-			square.x++;
-			square.w = 1;
-			drawRect(ref square, (byte)(color + 2));
+                for (; square.h < 5; square.h += 2)
+                {
+                    drawRect(ref square, (byte)(color + 2));
+                    square.x -= 2;
+                    square.y--;
+                }
+                square.x++;
+                square.w = 1;
+                drawRect(ref square, (byte)(color + 2));
 
-			// Draw arrow triangle 2
-			square.x = 6;
-			square.y = 4;
-			square.w = 2;
-			square.h = 1;
+                // Draw arrow triangle 2
+                square.x = 6;
+                square.y = 4;
+                square.w = 2;
+                square.h = 1;
 
-			for (; square.h < 5; square.h += 2)
-			{
-				drawRect(ref square, (byte)color);
-				square.x -= 2;
-				square.y--;
-			}
-			square.x++;
-			square.w = 1;
-			drawRect(ref square, (byte)color);
-			break;
-		default:
-			break;
-		}
+                for (; square.h < 5; square.h += 2)
+                {
+                    drawRect(ref square, (byte)color);
+                    square.x -= 2;
+                    square.y--;
+                }
+                square.x++;
+                square.w = 1;
+                drawRect(ref square, (byte)color);
+                break;
+            default:
+                break;
+        }
 
-		unlock();
-	}
+        unlock();
+    }
 
-	protected override bool isButtonHandled(byte button = 0)
-	{
-		if (_list != null)
-		{
-			return (button == SDL_BUTTON_LEFT || button == SDL_BUTTON_RIGHT);
-		}
-		else
-		{
-			return base.isButtonHandled(button);
-		}
-	}
+    protected override bool isButtonHandled(byte button = 0)
+    {
+        if (_list != null)
+        {
+            return (button == SDL_BUTTON_LEFT || button == SDL_BUTTON_RIGHT);
+        }
+        else
+        {
+            return base.isButtonHandled(button);
+        }
+    }
 
-	/**
+    /**
 	 * Starts scrolling the associated list.
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	internal override void mousePress(Action action, State state)
-	{
-		base.mousePress(action, state);
-		if (_list != null)
-		{
-			if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-			{
-				_timer.start();
-			}
-			else if (action.getDetails().wheel.y > 0) _list.scrollUp(false, true); //button.button == SDL_BUTTON_WHEELUP
-			else if (action.getDetails().wheel.y < 0) _list.scrollDown(false, true); //button.button == SDL_BUTTON_WHEELDOWN
-		}
-	}
+    internal override void mousePress(Action action, State state)
+    {
+        base.mousePress(action, state);
+        if (_list != null)
+        {
+            if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+            {
+                _timer.start();
+            }
+            else if (action.getDetails().wheel.y > 0) _list.scrollUp(false, true); //button.button == SDL_BUTTON_WHEELUP
+            else if (action.getDetails().wheel.y < 0) _list.scrollDown(false, true); //button.button == SDL_BUTTON_WHEELDOWN
+        }
+    }
 
-	/*
+    /*
 	 * Stops scrolling the associated list.
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	protected override void mouseRelease(Action action, State state)
-	{
-		base.mouseRelease(action, state);
-		if (_list != null && action.getDetails().button.button == SDL_BUTTON_LEFT)
-		{
-			_timer.stop();
-		}
-	}
+    protected override void mouseRelease(Action action, State state)
+    {
+        base.mouseRelease(action, state);
+        if (_list != null && action.getDetails().button.button == SDL_BUTTON_LEFT)
+        {
+            _timer.stop();
+        }
+    }
 
-	/*
+    /*
 	 * Scrolls the associated list to top or bottom.
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	protected override void mouseClick(Action action, State state)
-	{
-		base.mouseClick(action, state);
-		if (_list != null && SDL_BUTTON_RIGHT == action.getDetails().button.button) {
-			if (_shape == ArrowShape.ARROW_BIG_UP) _list.scrollUp(true);
-			else if (_shape == ArrowShape.ARROW_BIG_DOWN) _list.scrollDown(true);
-		}
-	}
+    protected override void mouseClick(Action action, State state)
+    {
+        base.mouseClick(action, state);
+        if (_list != null && SDL_BUTTON_RIGHT == action.getDetails().button.button)
+        {
+            if (_shape == ArrowShape.ARROW_BIG_UP) _list.scrollUp(true);
+            else if (_shape == ArrowShape.ARROW_BIG_DOWN) _list.scrollDown(true);
+        }
+    }
 }

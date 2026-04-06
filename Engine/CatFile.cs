@@ -27,46 +27,46 @@ internal class CatFile : BinaryReader
     uint _amount;
     uint[] _offset, _size;
 
-	/**
+    /**
 	 * Creates a CAT file stream. A CAT file starts with an index of the
 	 * offset and size of every file contained within. Each file consists
 	 * of a filename followed by its contents.
 	 * @param path Full path to CAT file.
 	 */
-	internal CatFile(string path) : base(new FileStream(path, FileMode.Open))
+    internal CatFile(string path) : base(new FileStream(path, FileMode.Open))
     {
         _amount = 0;
-		_offset = null;
-		_size = null;
+        _offset = null;
+        _size = null;
 
         // Get amount of files
         _amount = ReadUInt32();
 
-		_amount /= 2 * sizeof(uint);
+        _amount /= 2 * sizeof(uint);
 
-		// Get object offsets
-		BaseStream.Seek(0, SeekOrigin.Begin);
+        // Get object offsets
+        BaseStream.Seek(0, SeekOrigin.Begin);
 
-		_offset = new uint[_amount];
-		_size   = new uint[_amount];
+        _offset = new uint[_amount];
+        _size = new uint[_amount];
 
-		for (var i = 0; i < _amount; ++i)
-		{
+        for (var i = 0; i < _amount; ++i)
+        {
             _offset[i] = ReadUInt32();
             _size[i] = ReadUInt32();
-		}
-	}
+        }
+    }
 
-	/**
+    /**
 	 * Frees associated memory.
 	 */
-	~CatFile()
-	{
-		_offset = null;
-		_size = null;
+    ~CatFile()
+    {
+        _offset = null;
+        _size = null;
 
-		Close();
-	}
+        Close();
+    }
 
     /// Get amount of objects.
     internal int getAmount() =>
@@ -74,7 +74,7 @@ internal class CatFile : BinaryReader
 
     /// Get object size.
     internal uint getObjectSize(uint i) =>
-		(i<_amount) ? _size[i] : 0;
+        (i < _amount) ? _size[i] : 0;
 
     /**
      * Loads an object into memory.

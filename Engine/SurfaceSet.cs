@@ -31,7 +31,7 @@ internal class SurfaceSet
     int _width, _height;
     int _sharedFrames;
 
-	internal SurfaceSet() { }
+    internal SurfaceSet() { }
 
     /**
 	 * Sets up a new empty surface set for frames of the specified size.
@@ -39,33 +39,33 @@ internal class SurfaceSet
 	 * @param height Frame height in pixels.
 	 */
     internal SurfaceSet(int width, int height)
-	{
-		_width = width;
-		_height = height;
-		_sharedFrames = int.MaxValue;
-	}
+    {
+        _width = width;
+        _height = height;
+        _sharedFrames = int.MaxValue;
+    }
 
-	/**
+    /**
 	 * Performs a deep copy of an existing surface set.
 	 * @param other Surface set to copy from.
 	 */
-	internal SurfaceSet(SurfaceSet other)
-	{
-		_width = other._width;
-		_height = other._height;
-		_sharedFrames = other._sharedFrames;
+    internal SurfaceSet(SurfaceSet other)
+    {
+        _width = other._width;
+        _height = other._height;
+        _sharedFrames = other._sharedFrames;
 
-		foreach (var frame in other._frames)
-		{
+        foreach (var frame in other._frames)
+        {
             _frames[frame.Key] = new Surface(frame.Value);
-		}
-	}
+        }
+    }
 
-	/**
+    /**
 	 * Deletes the images from memory.
 	 */
-	~SurfaceSet() =>
-		_frames.Clear();
+    ~SurfaceSet() =>
+        _frames.Clear();
 
     /**
      * Replaces a certain amount of colors in all of the frames.
@@ -89,19 +89,19 @@ internal class SurfaceSet
     internal Surface getFrame(int i) =>
         _frames.TryGetValue(i, out var surface) ? surface : null;
 
-	/**
+    /**
 	 * Returns the full width of a frame in the set.
 	 * @return Width in pixels.
 	 */
-	internal int getWidth() =>
-		_width;
+    internal int getWidth() =>
+        _width;
 
-	/**
+    /**
 	 * Returns the full height of a frame in the set.
 	 * @return Height in pixels.
 	 */
-	internal int getHeight() =>
-		_height;
+    internal int getHeight() =>
+        _height;
 
     /**
 	 * Returns the total amount of frames currently
@@ -111,11 +111,11 @@ internal class SurfaceSet
     internal uint getTotalFrames() =>
         (uint)_frames.Count;
 
-	/**
+    /**
 	 * Gets number of shared frame indexs that are accessible for all mods.
 	 */
-	internal int getMaxSharedFrames() =>
-		_sharedFrames;
+    internal int getMaxSharedFrames() =>
+        _sharedFrames;
 
     /**
      * Set number of shared frame indexs that are accessible for all mods.
@@ -146,7 +146,7 @@ internal class SurfaceSet
     internal Dictionary<int, Surface> getFrames() =>
         _frames;
 
-	/**
+    /**
 	 * Loads the contents of an X-Com DAT image file into the
 	 * surface. Unlike the PCK, a DAT file is an uncompressed
 	 * image with no offsets so these have to be figured out
@@ -154,62 +154,62 @@ internal class SurfaceSet
 	 * @param filename Filename of the DAT image.
 	 * @sa http://www.ufopaedia.org/index.php?title=Image_Formats#SCR_.26_DAT
 	 */
-	internal void loadDat(string filename)
-	{
-		int nframes = 0;
+    internal void loadDat(string filename)
+    {
+        int nframes = 0;
 
-		try
-		{
-			// Load file and put pixels in surface
-			using var imgFile = new FileStream(filename, FileMode.Open);
+        try
+        {
+            // Load file and put pixels in surface
+            using var imgFile = new FileStream(filename, FileMode.Open);
 
             //imgFile.Seek(0, SeekOrigin.End);
-			var size = imgFile.Length;
-			//imgFile.Seek(0, SeekOrigin.Begin);
+            var size = imgFile.Length;
+            //imgFile.Seek(0, SeekOrigin.Begin);
 
-			nframes = (int)size / (_width * _height);
+            nframes = (int)size / (_width * _height);
 
-			for (int i = 0; i < nframes; ++i)
-			{
-				Surface surface = new Surface(_width, _height);
-				_frames[i] = surface;
-			}
+            for (int i = 0; i < nframes; ++i)
+            {
+                Surface surface = new Surface(_width, _height);
+                _frames[i] = surface;
+            }
 
-			int value;
-			int x = 0, y = 0, frame = 0;
+            int value;
+            int x = 0, y = 0, frame = 0;
 
             // Lock the surface
             _frames[frame].@lock();
 
-			while ((value = imgFile.ReadByte()) != -1)
+            while ((value = imgFile.ReadByte()) != -1)
             {
                 _frames[frame].setPixelIterative(ref x, ref y, (byte)value);
 
                 if (y >= _height)
-				{
-					// Unlock the surface
-					_frames[frame].unlock();
+                {
+                    // Unlock the surface
+                    _frames[frame].unlock();
 
-					frame++;
-					x = 0;
-					y = 0;
+                    frame++;
+                    x = 0;
+                    y = 0;
 
-					if (frame >= nframes)
-						break;
-					else
-						_frames[frame].@lock();
-				}
-			}
+                    if (frame >= nframes)
+                        break;
+                    else
+                        _frames[frame].@lock();
+                }
+            }
 
-			imgFile.Close();
-		}
-		catch (Exception)
-		{
-			throw new Exception(filename + " not found");
-		}
-	}
+            imgFile.Close();
+        }
+        catch (Exception)
+        {
+            throw new Exception(filename + " not found");
+        }
+    }
 
-	/**
+    /**
 	 * Loads the contents of an X-Com set of PCK/TAB image files
 	 * into the surface. The PCK file contains an RLE compressed
 	 * image, while the TAB file contains the offsets to each
@@ -218,97 +218,97 @@ internal class SurfaceSet
 	 * @param tab Filename of the TAB offsets.
 	 * @sa http://www.ufopaedia.org/index.php?title=Image_Formats#PCK
 	 */
-	internal void loadPck(string pck, string tab = "")
-	{
-		int nframes = 0;
+    internal void loadPck(string pck, string tab = "")
+    {
+        int nframes = 0;
 
-		// Load TAB and get image offsets
-		if (!string.IsNullOrEmpty(tab))
-		{
-			try
-			{
-				using var offsetFile = new BinaryReader(new FileStream(tab, FileMode.Open));
+        // Load TAB and get image offsets
+        if (!string.IsNullOrEmpty(tab))
+        {
+            try
+            {
+                using var offsetFile = new BinaryReader(new FileStream(tab, FileMode.Open));
                 long begin, end;
-				begin = offsetFile.BaseStream.Position;
-				int off = offsetFile.ReadInt32();
-				offsetFile.BaseStream.Seek(0, SeekOrigin.End);
-				end = offsetFile.BaseStream.Position;
-				int size = (int)(end - begin);
-				// 16-bit offsets
-				if (off != 0)
-				{
-					nframes = size / 2;
-				}
-				// 32-bit offsets
-				else
-				{
-					nframes = size / 4;
-				}
-				offsetFile.Close();
-				for (int frame = 0; frame < nframes; ++frame)
-				{
-					_frames[frame] = new Surface(_width, _height);
-				}
-			}
-			catch (Exception)
-			{
-				throw new Exception(tab + " not found");
-			}
-		}
-		else
-		{
-			nframes = 1;
-			_frames[0] = new Surface(_width, _height);
-		}
+                begin = offsetFile.BaseStream.Position;
+                int off = offsetFile.ReadInt32();
+                offsetFile.BaseStream.Seek(0, SeekOrigin.End);
+                end = offsetFile.BaseStream.Position;
+                int size = (int)(end - begin);
+                // 16-bit offsets
+                if (off != 0)
+                {
+                    nframes = size / 2;
+                }
+                // 32-bit offsets
+                else
+                {
+                    nframes = size / 4;
+                }
+                offsetFile.Close();
+                for (int frame = 0; frame < nframes; ++frame)
+                {
+                    _frames[frame] = new Surface(_width, _height);
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception(tab + " not found");
+            }
+        }
+        else
+        {
+            nframes = 1;
+            _frames[0] = new Surface(_width, _height);
+        }
 
-		try
-		{
-			// Load PCK and put pixels in surfaces
-			using var imgFile = new FileStream(pck, FileMode.Open);
+        try
+        {
+            // Load PCK and put pixels in surfaces
+            using var imgFile = new FileStream(pck, FileMode.Open);
 
             byte value;
 
-			for (int frame = 0; frame < nframes; ++frame)
-			{
-				int x = 0, y = 0;
+            for (int frame = 0; frame < nframes; ++frame)
+            {
+                int x = 0, y = 0;
 
-				// Lock the surface
-				_frames[frame].@lock();
+                // Lock the surface
+                _frames[frame].@lock();
 
                 value = (byte)imgFile.ReadByte();
-				for (int i = 0; i < value; ++i)
-				{
-					for (int j = 0; j < _width; ++j)
-					{
-						_frames[frame].setPixelIterative(ref x, ref y, 0);
-					}
-				}
+                for (int i = 0; i < value; ++i)
+                {
+                    for (int j = 0; j < _width; ++j)
+                    {
+                        _frames[frame].setPixelIterative(ref x, ref y, 0);
+                    }
+                }
 
-				while ((value = (byte)imgFile.ReadByte()) != 255)
-				{
-					if (value == 254)
-					{
+                while ((value = (byte)imgFile.ReadByte()) != 255)
+                {
+                    if (value == 254)
+                    {
                         value = (byte)imgFile.ReadByte();
-						for (int i = 0; i < value; ++i)
-						{
-							_frames[frame].setPixelIterative(ref x, ref y, 0);
-						}
-					}
-					else
-					{
-						_frames[frame].setPixelIterative(ref x, ref y, value);
-					}
-				}
+                        for (int i = 0; i < value; ++i)
+                        {
+                            _frames[frame].setPixelIterative(ref x, ref y, 0);
+                        }
+                    }
+                    else
+                    {
+                        _frames[frame].setPixelIterative(ref x, ref y, value);
+                    }
+                }
 
-				// Unlock the surface
-				_frames[frame].unlock();
-			}
+                // Unlock the surface
+                _frames[frame].unlock();
+            }
 
-			imgFile.Close();
-		}
-		catch (Exception)
-		{
-			throw new Exception(pck + " not found");
-		}
-	}
+            imgFile.Close();
+        }
+        catch (Exception)
+        {
+            throw new Exception(pck + " not found");
+        }
+    }
 }

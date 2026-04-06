@@ -153,35 +153,35 @@ internal class RuleItem : IListOrder, IRule
      * @return The battle type.
      */
     internal BattleType getBattleType() =>
-	    _battleType;
+        _battleType;
 
     /**
      * Gets the item's ammo clip size.
      * @return The ammo clip size.
      */
     internal int getClipSize() =>
-	    _clipSize;
+        _clipSize;
 
     /**
      * Gets the heal quantity of the item.
      * @return The new heal quantity.
      */
     internal int getHealQuantity() =>
-	    _heal;
+        _heal;
 
     /**
      * Gets the pain killer quantity of the item.
      * @return The new pain killer quantity.
      */
     internal int getPainKillerQuantity() =>
-	    _painKiller;
+        _painKiller;
 
     /**
      * Gets the stimulant quantity of the item.
      * @return The new stimulant quantity.
      */
     internal int getStimulantQuantity() =>
-	    _stimulant;
+        _stimulant;
 
     /**
      * Gets a list of compatible ammo.
@@ -195,105 +195,105 @@ internal class RuleItem : IListOrder, IRule
      * @return The sprite reference.
      */
     internal int getBulletSprite() =>
-	    _bulletSprite;
+        _bulletSprite;
 
     /**
      * Gets the color offset to use for the vapor trail.
      * @return the color offset.
      */
     internal int getVaporColor() =>
-	    _vaporColor;
+        _vaporColor;
 
     /**
      * Gets the vapor cloud density for the vapor trail.
      * @return the vapor density.
      */
     internal int getVaporDensity() =>
-	    _vaporDensity;
+        _vaporDensity;
 
     /**
      * Gets the vapor cloud probability for the vapor trail.
      * @return the vapor probability.
      */
     internal int getVaporProbability() =>
-	    _vaporProbability;
+        _vaporProbability;
 
     /**
      * Gets the speed at which this bullet travels.
      * @return The speed.
      */
     internal int getBulletSpeed() =>
-	    _bulletSpeed;
+        _bulletSpeed;
 
     /**
      * Gets the reference in FLOOROB.PCK for use in inventory.
      * @return The sprite reference.
      */
     internal int getFloorSprite() =>
-	    _floorSprite;
+        _floorSprite;
 
     /**
      * Returns whether this item uses waypoints.
      * @return True if it uses waypoints.
      */
     internal int getWaypoints() =>
-	    _waypoints;
+        _waypoints;
 
     /**
      * Gets the item's time unit percentage for snapshots.
      * @return The snapshot TU percentage.
      */
     internal int getTUSnap() =>
-	    _tuSnap;
+        _tuSnap;
 
     /**
      * Gets the item's width in a soldier's inventory.
      * @return The width.
      */
     internal int getInventoryWidth() =>
-	    _invWidth;
+        _invWidth;
 
     /**
      * Gets the item's height in a soldier's inventory.
      * @return The height.
      */
     internal int getInventoryHeight() =>
-	    _invHeight;
+        _invHeight;
 
     /**
      * Gets the item's time unit percentage for autoshots.
      * @return The autoshot TU percentage.
      */
     internal int getTUAuto() =>
-	    _tuAuto;
+        _tuAuto;
 
     /**
      * Gets the item's time unit percentage for melee attacks.
      * @return The melee TU percentage.
      */
     internal int getTUMelee() =>
-	    _tuMelee;
+        _tuMelee;
 
     /**
      * Gets the item's time unit percentage for aimed shots.
      * @return The aimed shot TU percentage.
      */
     internal int getTUAimed() =>
-	    _tuAimed;
+        _tuAimed;
 
     /**
      * Gets the number of Time Units needed to use this item.
      * @return The number of Time Units needed to use this item.
      */
     internal int getTUUse() =>
-	    _tuUse;
+        _tuUse;
 
     /**
      * Returns whether this item charges a flat TU rate.
      * @return True if this item charges a flat TU rate.
      */
     internal bool getFlatRate() =>
-	    _flatRate;
+        _flatRate;
 
     /**
      * Gets the language string that names
@@ -301,14 +301,14 @@ internal class RuleItem : IListOrder, IRule
      * @return  The item's name.
      */
     internal string getName() =>
-	    _name;
+        _name;
 
     /**
      * Gets the item's damage type.
      * @return The damage type.
      */
     internal ItemDamageType getDamageType() =>
-	    _damageType;
+        _damageType;
 
     /**
      * Returns whether this item is a fixed weapon.
@@ -316,14 +316,14 @@ internal class RuleItem : IListOrder, IRule
      * @return True if it is a fixed weapon.
      */
     internal bool isFixed() =>
-	    _fixedWeapon;
+        _fixedWeapon;
 
     /**
      * Gets the item's power.
      * @return The power.
      */
     internal int getPower() =>
-	    _power;
+        _power;
 
     /**
      * Gets the item type. Each item has a unique type.
@@ -350,91 +350,91 @@ internal class RuleItem : IListOrder, IRule
         _type = node["type"].ToString();
         _name = node["name"].ToString();
         _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
-	    _size = double.Parse(node["size"].ToString());
-	    _costBuy = int.Parse(node["costBuy"].ToString());
-	    _costSell = int.Parse(node["costSell"].ToString());
-	    _transferTime = int.Parse(node["transferTime"].ToString());
-	    _weight = int.Parse(node["weight"].ToString());
+        _size = double.Parse(node["size"].ToString());
+        _costBuy = int.Parse(node["costBuy"].ToString());
+        _costSell = int.Parse(node["costSell"].ToString());
+        _transferTime = int.Parse(node["transferTime"].ToString());
+        _weight = int.Parse(node["weight"].ToString());
 
-	    mod.loadSpriteOffset(_type, ref _bigSprite, node["bigSprite"], "BIGOBS.PCK");
-	    mod.loadSpriteOffset(_type, ref _floorSprite, node["floorSprite"], "FLOOROB.PCK");
-	    mod.loadSpriteOffset(_type, ref _handSprite, node["handSprite"], "HANDOB.PCK");
-	    // Projectiles: 0-384 entries ((105*33) / (3*3)) (35 sprites per projectile(0-34), 11 projectiles (0-10))
-	    mod.loadSpriteOffset(_type, ref _bulletSprite, node["bulletSprite"], "Projectiles", 35);
+        mod.loadSpriteOffset(_type, ref _bigSprite, node["bigSprite"], "BIGOBS.PCK");
+        mod.loadSpriteOffset(_type, ref _floorSprite, node["floorSprite"], "FLOOROB.PCK");
+        mod.loadSpriteOffset(_type, ref _handSprite, node["handSprite"], "HANDOB.PCK");
+        // Projectiles: 0-384 entries ((105*33) / (3*3)) (35 sprites per projectile(0-34), 11 projectiles (0-10))
+        mod.loadSpriteOffset(_type, ref _bulletSprite, node["bulletSprite"], "Projectiles", 35);
 
-	    mod.loadSoundOffset(_type, ref _fireSound, node["fireSound"], "BATTLE.CAT");
-	    mod.loadSoundOffset(_type, ref _hitSound, node["hitSound"], "BATTLE.CAT");
-	    mod.loadSoundOffset(_type, ref _meleeSound, node["meleeSound"], "BATTLE.CAT");
-	    mod.loadSpriteOffset(_type, ref _hitAnimation, node["hitAnimation"], "SMOKE.PCK");
-	    mod.loadSpriteOffset(_type, ref _meleeAnimation, node["meleeAnimation"], "HIT.PCK");
-	    mod.loadSoundOffset(_type, ref _meleeHitSound, node["meleeHitSound"], "BATTLE.CAT");
+        mod.loadSoundOffset(_type, ref _fireSound, node["fireSound"], "BATTLE.CAT");
+        mod.loadSoundOffset(_type, ref _hitSound, node["hitSound"], "BATTLE.CAT");
+        mod.loadSoundOffset(_type, ref _meleeSound, node["meleeSound"], "BATTLE.CAT");
+        mod.loadSpriteOffset(_type, ref _hitAnimation, node["hitAnimation"], "SMOKE.PCK");
+        mod.loadSpriteOffset(_type, ref _meleeAnimation, node["meleeAnimation"], "HIT.PCK");
+        mod.loadSoundOffset(_type, ref _meleeHitSound, node["meleeHitSound"], "BATTLE.CAT");
 
-	    _power = int.Parse(node["power"].ToString());
+        _power = int.Parse(node["power"].ToString());
         _compatibleAmmo = ((YamlSequenceNode)node["compatibleAmmo"]).Children.Select(x => x.ToString()).ToList();
-	    _damageType = (ItemDamageType)int.Parse(node["damageType"].ToString());
-	    _accuracyAuto = int.Parse(node["accuracyAuto"].ToString());
-	    _accuracySnap = int.Parse(node["accuracySnap"].ToString());
-	    _accuracyAimed = int.Parse(node["accuracyAimed"].ToString());
-	    _tuAuto = int.Parse(node["tuAuto"].ToString());
-	    _tuSnap = int.Parse(node["tuSnap"].ToString());
-	    _tuAimed = int.Parse(node["tuAimed"].ToString());
-	    _clipSize = int.Parse(node["clipSize"].ToString());
-	    _accuracyMelee = int.Parse(node["accuracyMelee"].ToString());
-	    _tuMelee = int.Parse(node["tuMelee"].ToString());
-	    _battleType = (BattleType)int.Parse(node["battleType"].ToString());
-	    if ((_battleType == BattleType.BT_MELEE || _battleType == BattleType.BT_FIREARM) && _clipSize == 0 && !_compatibleAmmo.Any())
-	    {
-		    throw new Exception("Weapon " + _type + " has clip size 0 and no ammo defined. Please use 'clipSize: -1' for unlimited ammo, or allocate a compatibleAmmo item.");
-	    }
-	    _twoHanded = bool.Parse(node["twoHanded"].ToString());
-	    _waypoints = int.Parse(node["waypoints"].ToString());
-	    _fixedWeapon = bool.Parse(node["fixedWeapon"].ToString());
-	    _invWidth = int.Parse(node["invWidth"].ToString());
-	    _invHeight = int.Parse(node["invHeight"].ToString());
-	    _painKiller = int.Parse(node["painKiller"].ToString());
-	    _heal = int.Parse(node["heal"].ToString());
-	    _stimulant = int.Parse(node["stimulant"].ToString());
-	    _woundRecovery = int.Parse(node["woundRecovery"].ToString());
-	    _healthRecovery = int.Parse(node["healthRecovery"].ToString());
-	    _stunRecovery = int.Parse(node["stunRecovery"].ToString());
-	    _energyRecovery = int.Parse(node["energyRecovery"].ToString());
-	    _tuUse = int.Parse(node["tuUse"].ToString());
-	    _recoveryPoints = int.Parse(node["recoveryPoints"].ToString());
-	    _armor = int.Parse(node["armor"].ToString());
-	    _turretType = int.Parse(node["turretType"].ToString());
-	    _recover = bool.Parse(node["recover"].ToString());
-	    _ignoreInBaseDefense = bool.Parse(node["ignoreInBaseDefense"].ToString());
-	    _liveAlien = bool.Parse(node["liveAlien"].ToString());
-	    _blastRadius = int.Parse(node["blastRadius"].ToString());
-	    _attraction = int.Parse(node["attraction"].ToString());
-	    _flatRate = bool.Parse(node["flatRate"].ToString());
-	    _arcingShot = bool.Parse(node["arcingShot"].ToString());
-	    _listOrder = int.Parse(node["listOrder"].ToString());
-	    _maxRange = int.Parse(node["maxRange"].ToString());
-	    _aimRange = int.Parse(node["aimRange"].ToString());
-	    _snapRange = int.Parse(node["snapRange"].ToString());
-	    _autoRange = int.Parse(node["autoRange"].ToString());
-	    _minRange = int.Parse(node["minRange"].ToString());
-	    _dropoff = int.Parse(node["dropoff"].ToString());
-	    _bulletSpeed = int.Parse(node["bulletSpeed"].ToString());
-	    _explosionSpeed = int.Parse(node["explosionSpeed"].ToString());
-	    _autoShots = int.Parse(node["autoShots"].ToString());
-	    _shotgunPellets = int.Parse(node["shotgunPellets"].ToString());
-	    _zombieUnit = node["zombieUnit"].ToString();
-	    _strengthApplied = bool.Parse(node["strengthApplied"].ToString());
-	    _skillApplied = bool.Parse(node["skillApplied"].ToString());
-	    _LOSRequired = bool.Parse(node["LOSRequired"].ToString());
-	    _meleePower = int.Parse(node["meleePower"].ToString());
-	    _underwaterOnly = bool.Parse(node["underwaterOnly"].ToString());
-	    _landOnly = bool.Parse(node["landOnly"].ToString());
-	    _specialType = int.Parse(node["specialType"].ToString());
-	    mod.loadTransparencyOffset(_type, ref _vaporColor, node["vaporColor"]);
-	    _vaporDensity = int.Parse(node["vaporDensity"].ToString());
-	    _vaporProbability = int.Parse(node["vaporProbability"].ToString());
-	    if (_listOrder == 0)
-	    {
+        _damageType = (ItemDamageType)int.Parse(node["damageType"].ToString());
+        _accuracyAuto = int.Parse(node["accuracyAuto"].ToString());
+        _accuracySnap = int.Parse(node["accuracySnap"].ToString());
+        _accuracyAimed = int.Parse(node["accuracyAimed"].ToString());
+        _tuAuto = int.Parse(node["tuAuto"].ToString());
+        _tuSnap = int.Parse(node["tuSnap"].ToString());
+        _tuAimed = int.Parse(node["tuAimed"].ToString());
+        _clipSize = int.Parse(node["clipSize"].ToString());
+        _accuracyMelee = int.Parse(node["accuracyMelee"].ToString());
+        _tuMelee = int.Parse(node["tuMelee"].ToString());
+        _battleType = (BattleType)int.Parse(node["battleType"].ToString());
+        if ((_battleType == BattleType.BT_MELEE || _battleType == BattleType.BT_FIREARM) && _clipSize == 0 && !_compatibleAmmo.Any())
+        {
+            throw new Exception("Weapon " + _type + " has clip size 0 and no ammo defined. Please use 'clipSize: -1' for unlimited ammo, or allocate a compatibleAmmo item.");
+        }
+        _twoHanded = bool.Parse(node["twoHanded"].ToString());
+        _waypoints = int.Parse(node["waypoints"].ToString());
+        _fixedWeapon = bool.Parse(node["fixedWeapon"].ToString());
+        _invWidth = int.Parse(node["invWidth"].ToString());
+        _invHeight = int.Parse(node["invHeight"].ToString());
+        _painKiller = int.Parse(node["painKiller"].ToString());
+        _heal = int.Parse(node["heal"].ToString());
+        _stimulant = int.Parse(node["stimulant"].ToString());
+        _woundRecovery = int.Parse(node["woundRecovery"].ToString());
+        _healthRecovery = int.Parse(node["healthRecovery"].ToString());
+        _stunRecovery = int.Parse(node["stunRecovery"].ToString());
+        _energyRecovery = int.Parse(node["energyRecovery"].ToString());
+        _tuUse = int.Parse(node["tuUse"].ToString());
+        _recoveryPoints = int.Parse(node["recoveryPoints"].ToString());
+        _armor = int.Parse(node["armor"].ToString());
+        _turretType = int.Parse(node["turretType"].ToString());
+        _recover = bool.Parse(node["recover"].ToString());
+        _ignoreInBaseDefense = bool.Parse(node["ignoreInBaseDefense"].ToString());
+        _liveAlien = bool.Parse(node["liveAlien"].ToString());
+        _blastRadius = int.Parse(node["blastRadius"].ToString());
+        _attraction = int.Parse(node["attraction"].ToString());
+        _flatRate = bool.Parse(node["flatRate"].ToString());
+        _arcingShot = bool.Parse(node["arcingShot"].ToString());
+        _listOrder = int.Parse(node["listOrder"].ToString());
+        _maxRange = int.Parse(node["maxRange"].ToString());
+        _aimRange = int.Parse(node["aimRange"].ToString());
+        _snapRange = int.Parse(node["snapRange"].ToString());
+        _autoRange = int.Parse(node["autoRange"].ToString());
+        _minRange = int.Parse(node["minRange"].ToString());
+        _dropoff = int.Parse(node["dropoff"].ToString());
+        _bulletSpeed = int.Parse(node["bulletSpeed"].ToString());
+        _explosionSpeed = int.Parse(node["explosionSpeed"].ToString());
+        _autoShots = int.Parse(node["autoShots"].ToString());
+        _shotgunPellets = int.Parse(node["shotgunPellets"].ToString());
+        _zombieUnit = node["zombieUnit"].ToString();
+        _strengthApplied = bool.Parse(node["strengthApplied"].ToString());
+        _skillApplied = bool.Parse(node["skillApplied"].ToString());
+        _LOSRequired = bool.Parse(node["LOSRequired"].ToString());
+        _meleePower = int.Parse(node["meleePower"].ToString());
+        _underwaterOnly = bool.Parse(node["underwaterOnly"].ToString());
+        _landOnly = bool.Parse(node["landOnly"].ToString());
+        _specialType = int.Parse(node["specialType"].ToString());
+        mod.loadTransparencyOffset(_type, ref _vaporColor, node["vaporColor"]);
+        _vaporDensity = int.Parse(node["vaporDensity"].ToString());
+        _vaporProbability = int.Parse(node["vaporProbability"].ToString());
+        if (_listOrder == 0)
+        {
             _listOrder = listOrder;
-	    }
+        }
     }
 
     /**
@@ -443,7 +443,7 @@ internal class RuleItem : IListOrder, IRule
      * @return The storage size.
      */
     internal double getSize() =>
-	    _size;
+        _size;
 
     /**
      * Gets the amount of money this item
@@ -451,14 +451,14 @@ internal class RuleItem : IListOrder, IRule
      * @return The sell cost.
      */
     internal int getSellCost() =>
-	    _costSell;
+        _costSell;
 
     /**
      * Returns the item's Turret Type.
      * @return The turret index (-1 for no turret).
      */
     internal int getTurretType() =>
-	    _turretType;
+        _turretType;
 
     /**
      * Returns the item's armor.
@@ -466,7 +466,7 @@ internal class RuleItem : IListOrder, IRule
      * @return The armor.
      */
     internal int getArmor() =>
-	    _armor;
+        _armor;
 
     /**
      * Draws and centers the hand sprite on a surface
@@ -476,10 +476,10 @@ internal class RuleItem : IListOrder, IRule
      */
     internal void drawHandSprite(SurfaceSet texture, Surface surface)
     {
-	    Surface frame = texture.getFrame(this.getBigSprite());
-	    frame.setX((RuleInventory.HAND_W - this.getInventoryWidth()) * RuleInventory.SLOT_W/2);
-	    frame.setY((RuleInventory.HAND_H - this.getInventoryHeight()) * RuleInventory.SLOT_H/2);
-	    texture.getFrame(this.getBigSprite()).blit(surface);
+        Surface frame = texture.getFrame(this.getBigSprite());
+        frame.setX((RuleInventory.HAND_W - this.getInventoryWidth()) * RuleInventory.SLOT_W / 2);
+        frame.setY((RuleInventory.HAND_H - this.getInventoryHeight()) * RuleInventory.SLOT_H / 2);
+        texture.getFrame(this.getBigSprite()).blit(surface);
     }
 
     /**
@@ -487,21 +487,21 @@ internal class RuleItem : IListOrder, IRule
      * @return The sprite reference.
      */
     internal int getBigSprite() =>
-	    _bigSprite;
+        _bigSprite;
 
     /**
      * Gets the weight of the item.
      * @return The weight in strength units.
      */
     internal int getWeight() =>
-	    _weight;
+        _weight;
 
     /**
     * Checks if the item can be equipped in base defense mission.
     * @return True if it can be equipped.
     */
     internal bool canBeEquippedBeforeBaseDefense() =>
-	    !_ignoreInBaseDefense;
+        !_ignoreInBaseDefense;
 
     /**
      * Gets the list of research required to
@@ -509,21 +509,21 @@ internal class RuleItem : IListOrder, IRule
      * @return The list of research IDs.
      */
     internal List<string> getRequirements() =>
-	    _requires;
+        _requires;
 
     /**
      * is this item a rifle?
      * @return whether or not it is a rifle.
      */
     internal bool isRifle() =>
-	    (_battleType == BattleType.BT_FIREARM || _battleType == BattleType.BT_MELEE) && _twoHanded;
+        (_battleType == BattleType.BT_FIREARM || _battleType == BattleType.BT_MELEE) && _twoHanded;
 
     /**
      * is this item a pistol?
      * @return whether or not it is a pistol.
      */
     internal bool isPistol() =>
-	    (_battleType == BattleType.BT_FIREARM || _battleType == BattleType.BT_MELEE) && !_twoHanded;
+        (_battleType == BattleType.BT_FIREARM || _battleType == BattleType.BT_MELEE) && !_twoHanded;
 
     /**
      * Returns if the item should be recoverable
@@ -531,14 +531,14 @@ internal class RuleItem : IListOrder, IRule
      * @return True if it is recoverable.
      */
     internal bool isRecoverable() =>
-	    _recover;
+        _recover;
 
     /**
      * Returns if this is a live alien.
      * @return True if this is a live alien.
      */
     internal bool isAlien() =>
-	    _liveAlien;
+        _liveAlien;
 
     /**
      * Gets the amount of time this item
@@ -546,7 +546,7 @@ internal class RuleItem : IListOrder, IRule
      * @return The time in hours.
      */
     internal int getTransferTime() =>
-	    _transferTime;
+        _transferTime;
 
     /**
      * Gets the amount of money this item
@@ -554,35 +554,35 @@ internal class RuleItem : IListOrder, IRule
      * @return The buy cost.
      */
     internal int getBuyCost() =>
-	    _costBuy;
+        _costBuy;
 
     /**
      * Gets the number of projectiles this ammo shoots at once.
      * @return The number of projectiles.
      */
     internal int getShotgunPellets() =>
-	    _shotgunPellets;
+        _shotgunPellets;
 
     /**
      * Gets the item's accuracy for autoshots.
      * @return The autoshot accuracy.
      */
     internal int getAccuracyAuto() =>
-	    _accuracyAuto;
+        _accuracyAuto;
 
     /**
      * Gets the item's accuracy for snapshots.
      * @return The snapshot accuracy.
      */
     internal int getAccuracySnap() =>
-	    _accuracySnap;
+        _accuracySnap;
 
     /**
      * Gets the item's accuracy for aimed shots.
      * @return The aimed accuracy.
      */
     internal int getAccuracyAimed() =>
-	    _accuracyAimed;
+        _accuracyAimed;
 
     /**
      * Gets the associated special type of this item.
@@ -592,7 +592,7 @@ internal class RuleItem : IListOrder, IRule
      * @return special type.
      */
     internal int getSpecialType() =>
-	    _specialType;
+        _specialType;
 
     /**
      * Returns the item's recovery points.
@@ -600,14 +600,14 @@ internal class RuleItem : IListOrder, IRule
      * @return The recovery points.
      */
     internal int getRecoveryPoints() =>
-	    _recoveryPoints;
+        _recoveryPoints;
 
     /**
      * Is strength applied to the damage of this weapon?
      * @return If we should apply strength.
      */
     internal bool isStrengthApplied() =>
-	    _strengthApplied;
+        _strengthApplied;
 
     /**
      * Returns the item's max explosion radius. Small explosions don't have a restriction.
@@ -616,34 +616,34 @@ internal class RuleItem : IListOrder, IRule
      */
     internal int getExplosionRadius()
     {
-	    int radius = 0;
+        int radius = 0;
 
-	    if (_blastRadius == -1)
-	    {
-		    // heavy explosions, incendiary, smoke or stun bombs create AOE explosions
-		    // all the rest hits one point:
-		    // AP, melee (stun or AP), laser, plasma, acid
-		    if (_damageType == ItemDamageType.DT_IN)
-		    {
-			    radius = (_power / 30) + 1;
-		    }
-		    else if (_damageType == ItemDamageType.DT_HE || _damageType == ItemDamageType.DT_STUN || _damageType == ItemDamageType.DT_SMOKE)
-		    {
-			    radius = _power / 20;
-		    }
-		    // cap the formula to 11
-		    if (radius > 11)
-		    {
-			    radius = 11;
-		    }
-	    }
-	    else
-	    {
-		    // unless a blast radius is actually defined.
-		    radius = _blastRadius;
-	    }
+        if (_blastRadius == -1)
+        {
+            // heavy explosions, incendiary, smoke or stun bombs create AOE explosions
+            // all the rest hits one point:
+            // AP, melee (stun or AP), laser, plasma, acid
+            if (_damageType == ItemDamageType.DT_IN)
+            {
+                radius = (_power / 30) + 1;
+            }
+            else if (_damageType == ItemDamageType.DT_HE || _damageType == ItemDamageType.DT_STUN || _damageType == ItemDamageType.DT_SMOKE)
+            {
+                radius = _power / 20;
+            }
+            // cap the formula to 11
+            if (radius > 11)
+            {
+                radius = 11;
+            }
+        }
+        else
+        {
+            // unless a blast radius is actually defined.
+            radius = _blastRadius;
+        }
 
-	    return radius;
+        return radius;
     }
 
     /**
@@ -651,77 +651,77 @@ internal class RuleItem : IListOrder, IRule
      * @return The hit animation id.
      */
     internal int getHitAnimation() =>
-	    _hitAnimation;
+        _hitAnimation;
 
     /**
      * Gets the speed at which this bullet explodes.
      * @return The speed.
      */
     internal int getExplosionSpeed() =>
-	    _explosionSpeed;
+        _explosionSpeed;
 
     /**
      * Gets the item's hit sound.
      * @return The hit sound id.
      */
     internal int getHitSound() =>
-	    _hitSound;
+        _hitSound;
 
     /**
      * What is the starting frame offset in hit.pck to use for the animation?
      * @return the starting frame offset in hit.pck to use for the animation.
      */
     internal int getMeleeAnimation() =>
-	    _meleeAnimation;
+        _meleeAnimation;
 
     /**
      * What sound does this weapon make when you swing this at someone?
      * @return The weapon's melee attack sound.
      */
     internal int getMeleeAttackSound() =>
-	    _meleeSound;
+        _meleeSound;
 
     /**
      * Gets the maximum range of this weapon
      * @return The maximum range.
      */
     internal int getMaxRange() =>
-	    _maxRange;
+        _maxRange;
 
     /**
      * Gets the maximum range of this weapon squared
      * @return The maximum range squared.
      */
     internal int getMaxRangeSq() =>
-	    _maxRange * _maxRange;
+        _maxRange * _maxRange;
 
     /**
      * Returns if this weapon should arc its shots.
      * @return True if this weapon should arc its shots.
      */
     internal bool getArcingShot() =>
-	    _arcingShot;
+        _arcingShot;
 
     /**
      * Gets the item's fire sound.
      * @return The fire sound id.
      */
     internal int getFireSound() =>
-	    _fireSound;
+        _fireSound;
 
     /**
      * Returns whether this item is held with two hands.
      * @return True if it is two-handed.
      */
     internal bool isTwoHanded() =>
-	    _twoHanded;
+        _twoHanded;
 
     /**
      * Gets the item's accuracy for melee attacks.
      * @return The melee accuracy.
      */
     internal int getAccuracyMelee() =>
-	    _accuracyMelee;
+        _accuracyMelee;
 
     /**
      * Is skill applied to the accuracy of this weapon?
@@ -729,131 +729,131 @@ internal class RuleItem : IListOrder, IRule
      * @return If we should apply skill.
      */
     internal bool isSkillApplied() =>
-	    _skillApplied;
+        _skillApplied;
 
     /**
      * Gets the accuracy dropoff value of this weapon.
      * @return The per-tile dropoff.
      */
     internal int getDropoff() =>
-	    _dropoff;
+        _dropoff;
 
     /**
      * Gets the maximum effective range of this weapon for Snap Shot.
      * @return The maximum range.
      */
     internal int getSnapRange() =>
-	    _snapRange;
+        _snapRange;
 
     /**
      * Gets the maximum effective range of this weapon for Auto Shot.
      * @return The maximum range.
      */
     internal int getAutoRange() =>
-	    _autoRange;
+        _autoRange;
 
     /**
      * Gets the maximum effective range of this weapon when using Aimed Shot.
      * @return The maximum range.
      */
     internal int getAimRange() =>
-	    _aimRange;
+        _aimRange;
 
     /**
      * Gets the minimum effective range of this weapon.
      * @return The minimum effective range.
      */
     internal int getMinRange() =>
-	    _minRange;
+        _minRange;
 
     /**
      * Gets the amount of auto shots fired by this weapon.
      * @return The shots.
      */
     internal int getAutoShots() =>
-	    _autoShots;
+        _autoShots;
 
     /**
      * Can this item only be used underwater?
      * @return if this is an underwater weapon or not.
      */
     internal bool isWaterOnly() =>
-	    _underwaterOnly;
+        _underwaterOnly;
 
     /**
     * Can this item only be used on land?
     * @return if this is a land weapon or not.
     */
     internal bool isLandOnly() =>
-	    _landOnly;
+        _landOnly;
 
     /**
      * What sound does this weapon make when you punch someone in the face with it?
      * @return The weapon's melee hit sound.
      */
     internal int getMeleeHitSound() =>
-	    _meleeHitSound;
+        _meleeHitSound;
 
     /**
      * Gets the unit that the victim is morphed into when attacked.
      * @return The weapon's zombie unit.
      */
     internal string getZombieUnit() =>
-	    _zombieUnit;
+        _zombieUnit;
 
     /**
      * How much damage does this weapon do when you punch someone in the face with it?
      * @return The weapon's melee power.
      */
     internal int getMeleePower() =>
-	    _meleePower;
+        _meleePower;
 
     /**
      * Gets the attraction value for this item (for AI).
      * @return The attraction value.
      */
     internal int getAttraction() =>
-	    _attraction;
+        _attraction;
 
     /**
      * Is line of sight required for this psionic weapon to function?
      * @return If line of sight is required.
      */
     internal bool isLOSRequired() =>
-	    _LOSRequired;
+        _LOSRequired;
 
     /**
      * Gets the amount of fatal wound healed per usage.
      * @return The amount of fatal wound healed.
      */
     internal int getWoundRecovery() =>
-	    _woundRecovery;
+        _woundRecovery;
 
     /**
      * Gets the amount of health added to a wounded soldier's health.
      * @return The amount of health to add.
      */
     internal int getHealthRecovery() =>
-	    _healthRecovery;
+        _healthRecovery;
 
     /**
      * Gets the amount of energy added to a soldier's energy.
      * @return The amount of energy to add.
      */
     internal int getEnergyRecovery() =>
-	    _energyRecovery;
+        _energyRecovery;
 
     /**
      * Gets the amount of stun removed from a soldier's stun level.
      * @return The amount of stun removed.
      */
     internal int getStunRecovery() =>
-	    _stunRecovery;
+        _stunRecovery;
 
     /**
      * Gets the reference in HANDOB.PCK for use in inventory.
      * @return The sprite reference.
      */
     internal int getHandSprite() =>
-	    _handSprite;
+        _handSprite;
 }

@@ -24,107 +24,107 @@ namespace SharpXcom.Battlescape;
  */
 internal class ScannerState : State
 {
-	BattleAction _action;
-	InteractiveSurface _bg;
-	Surface _scan;
-	ScannerView _scannerView;
-	Timer _timerAnimate;
+    BattleAction _action;
+    InteractiveSurface _bg;
+    Surface _scan;
+    ScannerView _scannerView;
+    Timer _timerAnimate;
 
-	/**
+    /**
 	 * Initializes the Scanner State.
 	 * @param game Pointer to the core game.
 	 * @param action Pointer to an action.
 	 */
-	internal ScannerState(BattleAction action)
-	{
-		_action = action;
+    internal ScannerState(BattleAction action)
+    {
+        _action = action;
 
-		if (Options.maximizeInfoScreens)
-		{
-			Options.baseXResolution = Screen.ORIGINAL_WIDTH;
-			Options.baseYResolution = Screen.ORIGINAL_HEIGHT;
-			_game.getScreen().resetDisplay(false);
-		}
-		_bg = new InteractiveSurface(320, 200);
-		_scan = new Surface(320, 200);
-		_scannerView = new ScannerView(152, 152, 56, 24, _game, _action.actor);
+        if (Options.maximizeInfoScreens)
+        {
+            Options.baseXResolution = Screen.ORIGINAL_WIDTH;
+            Options.baseYResolution = Screen.ORIGINAL_HEIGHT;
+            _game.getScreen().resetDisplay(false);
+        }
+        _bg = new InteractiveSurface(320, 200);
+        _scan = new Surface(320, 200);
+        _scannerView = new ScannerView(152, 152, 56, 24, _game, _action.actor);
 
-		if (_game.getScreen().getDY() > 50)
-		{
-			_screen = false;
-		}
+        if (_game.getScreen().getDY() > 50)
+        {
+            _screen = false;
+        }
 
-		// Set palette
-		_game.getSavedGame().getSavedBattle().setPaletteByDepth(this);
+        // Set palette
+        _game.getSavedGame().getSavedBattle().setPaletteByDepth(this);
 
-		add(_scan);
-		add(_scannerView);
-		add(_bg);
+        add(_scan);
+        add(_scannerView);
+        add(_bg);
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		_game.getMod().getSurface("DETBORD.PCK").blit(_bg);
-		_game.getMod().getSurface("DETBORD2.PCK").blit(_scan);
-		_bg.onMouseClick(exitClick);
-		_bg.onKeyboardPress(exitClick, Options.keyCancel);
+        _game.getMod().getSurface("DETBORD.PCK").blit(_bg);
+        _game.getMod().getSurface("DETBORD2.PCK").blit(_scan);
+        _bg.onMouseClick(exitClick);
+        _bg.onKeyboardPress(exitClick, Options.keyCancel);
 
-		_timerAnimate = new Timer(125);
-		_timerAnimate.onTimer((StateHandler)animate);
-		_timerAnimate.start();
+        _timerAnimate = new Timer(125);
+        _timerAnimate.onTimer((StateHandler)animate);
+        _timerAnimate.start();
 
-		update();
-	}
+        update();
+    }
 
-	~ScannerState() =>
-		_timerAnimate = null;
+    ~ScannerState() =>
+        _timerAnimate = null;
 
-	/**
+    /**
 	 * Exits the screen.
 	 * @param action Pointer to an action.
 	 */
-	void exitClick(Action _)
-	{
-		if (Options.maximizeInfoScreens)
-		{
-			Screen.updateScale(Options.battlescapeScale, ref Options.baseXBattlescape, ref Options.baseYBattlescape, true);
-			_game.getScreen().resetDisplay(false);
-		}
-		_game.popState();
-	}
+    void exitClick(Action _)
+    {
+        if (Options.maximizeInfoScreens)
+        {
+            Screen.updateScale(Options.battlescapeScale, ref Options.baseXBattlescape, ref Options.baseYBattlescape, true);
+            _game.getScreen().resetDisplay(false);
+        }
+        _game.popState();
+    }
 
-	/**
+    /**
 	 * Animation handler. Updates the minimap view animation.
 	 */
-	void animate() =>
-		_scannerView.animate();
+    void animate() =>
+        _scannerView.animate();
 
-	/**
+    /**
 	 * Updates scanner state.
 	 */
-	void update()
-	{
-		//_scannerView->draw();
-	}
+    void update()
+    {
+        //_scannerView->draw();
+    }
 
-	/**
+    /**
 	 * Handles timers.
 	 */
-	internal override void think()
-	{
-		base.think();
-		_timerAnimate.think(this, null);
-	}
+    internal override void think()
+    {
+        base.think();
+        _timerAnimate.think(this, null);
+    }
 
-	/**
+    /**
 	 * Closes the window on right-click.
 	 * @param action Pointer to an action.
 	 */
-	internal override void handle(Action action)
-	{
-		base.handle(action);
-		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
-		{
-			exitClick(action);
-		}
-	}
+    internal override void handle(Action action)
+    {
+        base.handle(action);
+        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
+        {
+            exitClick(action);
+        }
+    }
 }

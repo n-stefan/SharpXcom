@@ -89,14 +89,14 @@ internal class Armor : IRule
      * @return The unit's size.
      */
     internal int getSize() =>
-	    _size;
+        _size;
 
     /**
      * Gets number of death frames.
      * @return number of death frames.
      */
     internal int getDeathFrames() =>
-	    _deathFrames;
+        _deathFrames;
 
     /**
      * Gets the list of corpse items dropped by the unit
@@ -104,14 +104,14 @@ internal class Armor : IRule
      * @return The list of corpse items.
      */
     internal List<string> getCorpseBattlescape() =>
-	    _corpseBattle;
+        _corpseBattle;
 
     /**
      * Can this unit's inventory be accessed for any reason?
      * @return if we can access the inventory.
      */
     internal bool hasInventory() =>
-	    _hasInventory;
+        _hasInventory;
 
     /**
      * Returns the language string that names
@@ -119,7 +119,7 @@ internal class Armor : IRule
      * @return The armor name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Gets the storage item needed to equip this.
@@ -127,7 +127,7 @@ internal class Armor : IRule
      * @return The name of the store item (STR_NONE for infinite armor).
      */
     internal string getStoreItem() =>
-	    _storeItem;
+        _storeItem;
 
     /**
      * Loads the armor from a YAML file.
@@ -135,56 +135,56 @@ internal class Armor : IRule
      */
     internal void load(YamlNode node)
     {
-	    _type = node["type"].ToString();
-	    _spriteSheet = node["spriteSheet"].ToString();
-	    _spriteInv = node["spriteInv"].ToString();
-	    _hasInventory = bool.Parse(node["allowInv"].ToString());
-	    if (node["corpseItem"] != null)
-	    {
+        _type = node["type"].ToString();
+        _spriteSheet = node["spriteSheet"].ToString();
+        _spriteInv = node["spriteInv"].ToString();
+        _hasInventory = bool.Parse(node["allowInv"].ToString());
+        if (node["corpseItem"] != null)
+        {
             _corpseBattle.Clear();
-		    _corpseBattle.Add(node["corpseItem"].ToString());
-		    _corpseGeo = _corpseBattle[0];
-	    }
-	    else if (node["corpseBattle"] != null)
-	    {
+            _corpseBattle.Add(node["corpseItem"].ToString());
+            _corpseGeo = _corpseBattle[0];
+        }
+        else if (node["corpseBattle"] != null)
+        {
             _corpseBattle = ((YamlSequenceNode)node["corpseBattle"]).Children.Select(x => x.ToString()).ToList();
-		    _corpseGeo = _corpseBattle[0];
-	    }
-	    _corpseGeo = node["corpseGeo"].ToString();
-	    _storeItem = node["storeItem"].ToString();
-	    _specWeapon = node["specialWeapon"].ToString();
-	    _frontArmor = int.Parse(node["frontArmor"].ToString());
-	    _sideArmor = int.Parse(node["sideArmor"].ToString());
-	    _rearArmor = int.Parse(node["rearArmor"].ToString());
-	    _underArmor = int.Parse(node["underArmor"].ToString());
-	    _drawingRoutine = int.Parse(node["drawingRoutine"].ToString());
-	    _drawBubbles = bool.Parse(node["drawBubbles"].ToString());
-	    _movementType = (MovementType)int.Parse(node["movementType"].ToString());
-	    _size = int.Parse(node["size"].ToString());
-	    _weight = int.Parse(node["weight"].ToString());
+            _corpseGeo = _corpseBattle[0];
+        }
+        _corpseGeo = node["corpseGeo"].ToString();
+        _storeItem = node["storeItem"].ToString();
+        _specWeapon = node["specialWeapon"].ToString();
+        _frontArmor = int.Parse(node["frontArmor"].ToString());
+        _sideArmor = int.Parse(node["sideArmor"].ToString());
+        _rearArmor = int.Parse(node["rearArmor"].ToString());
+        _underArmor = int.Parse(node["underArmor"].ToString());
+        _drawingRoutine = int.Parse(node["drawingRoutine"].ToString());
+        _drawBubbles = bool.Parse(node["drawBubbles"].ToString());
+        _movementType = (MovementType)int.Parse(node["movementType"].ToString());
+        _size = int.Parse(node["size"].ToString());
+        _weight = int.Parse(node["weight"].ToString());
         var stats = UnitStats.decode(node["stats"]);
         _stats.merge(stats);
-	    if (node["damageModifier"] is YamlSequenceNode dmg)
-	    {
-		    for (var i = 0; i < dmg.Children.Count && i < (uint)DAMAGE_TYPES; ++i)
-		    {
-			    _damageModifier[i] = float.Parse(dmg.Children[i].ToString());
-		    }
-	    }
+        if (node["damageModifier"] is YamlSequenceNode dmg)
+        {
+            for (var i = 0; i < dmg.Children.Count && i < (uint)DAMAGE_TYPES; ++i)
+            {
+                _damageModifier[i] = float.Parse(dmg.Children[i].ToString());
+            }
+        }
         _loftempsSet = ((YamlSequenceNode)node["loftempsSet"]).Children.Select(x => int.Parse(x.ToString())).ToList();
-	    if (node["loftemps"] != null)
-	    {
-		    _loftempsSet.Clear();
-		    _loftempsSet.Add(int.Parse(node["loftemps"].ToString()));
-	    }
-	    _deathFrames = int.Parse(node["deathFrames"].ToString());
-	    _constantAnimation = bool.Parse(node["constantAnimation"].ToString());
-	    _forcedTorso = (ForcedTorso)int.Parse(node["forcedTorso"].ToString());
+        if (node["loftemps"] != null)
+        {
+            _loftempsSet.Clear();
+            _loftempsSet.Add(int.Parse(node["loftemps"].ToString()));
+        }
+        _deathFrames = int.Parse(node["deathFrames"].ToString());
+        _constantAnimation = bool.Parse(node["constantAnimation"].ToString());
+        _forcedTorso = (ForcedTorso)int.Parse(node["forcedTorso"].ToString());
 
-	    _faceColorGroup = int.Parse(node["spriteFaceGroup"].ToString());
-	    _hairColorGroup = int.Parse(node["spriteHairGroup"].ToString());
-	    _rankColorGroup = int.Parse(node["spriteRankGroup"].ToString());
-	    _utileColorGroup = int.Parse(node["spriteUtileGroup"].ToString());
+        _faceColorGroup = int.Parse(node["spriteFaceGroup"].ToString());
+        _hairColorGroup = int.Parse(node["spriteHairGroup"].ToString());
+        _rankColorGroup = int.Parse(node["spriteRankGroup"].ToString());
+        _utileColorGroup = int.Parse(node["spriteUtileGroup"].ToString());
         _faceColor = ((YamlSequenceNode)node["spriteFaceColor"]).Children.Select(x => int.Parse(x.ToString())).ToList();
         _hairColor = ((YamlSequenceNode)node["spriteHairColor"]).Children.Select(x => int.Parse(x.ToString())).ToList();
         _rankColor = ((YamlSequenceNode)node["spriteRankColor"]).Children.Select(x => int.Parse(x.ToString())).ToList();
@@ -197,13 +197,13 @@ internal class Armor : IRule
      * @return The name of the corpse item.
      */
     internal string getCorpseGeoscape() =>
-	    _corpseGeo;
+        _corpseGeo;
 
     /** Gets the loftempSet.
      * @return The loftempsSet.
      */
     internal List<int> getLoftempsSet() =>
-	    _loftempsSet;
+        _loftempsSet;
 
     /**
      * Gets the movement type of this armor.
@@ -214,56 +214,56 @@ internal class Armor : IRule
      * @return The movement type.
      */
     internal MovementType getMovementType() =>
-	    _movementType;
+        _movementType;
 
     /**
       * Gets pointer to the armor's stats.
       * @return stats Pointer to the armor's stats.
       */
     internal UnitStats getStats() =>
-	    _stats;
+        _stats;
 
     /**
      * Gets whether or not to draw bubbles (breathing animation).
      * @return True if breathing animation is enabled, false otherwise.
      */
     internal bool drawBubbles() =>
-	    _drawBubbles;
+        _drawBubbles;
 
     /**
      * Gets the front armor level.
      * @return The front armor level.
      */
     internal int getFrontArmor() =>
-	    _frontArmor;
+        _frontArmor;
 
     /**
      * Gets the side armor level.
      * @return The side armor level.
      */
     internal int getSideArmor() =>
-	    _sideArmor;
+        _sideArmor;
 
     /**
      * Gets the rear armor level.
      * @return The rear armor level.
      */
     internal int getRearArmor() =>
-	    _rearArmor;
+        _rearArmor;
 
     /**
      * Gets the under armor level.
      * @return The under armor level.
      */
     internal int getUnderArmor() =>
-	    _underArmor;
+        _underArmor;
 
     /**
      * Gets hair base color group for replacement, if 0 then don't replace colors.
      * @return Color group or 0.
      */
     internal int getFaceColorGroup() =>
-	    _faceColorGroup;
+        _faceColorGroup;
 
     /**
      * Gets new face colors for replacement, if 0 then don't replace colors.
@@ -271,14 +271,14 @@ internal class Armor : IRule
      */
     internal int getFaceColor(int i)
     {
-	    if ((uint)i < _faceColor.Count)
-	    {
-		    return _faceColor[i];
-	    }
-	    else
-	    {
-		    return 0;
-	    }
+        if ((uint)i < _faceColor.Count)
+        {
+            return _faceColor[i];
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     /**
@@ -286,7 +286,7 @@ internal class Armor : IRule
      * @return Color group or 0.
      */
     internal int getHairColorGroup() =>
-	    _hairColorGroup;
+        _hairColorGroup;
 
     /**
      * Gets new hair colors for replacement, if 0 then don't replace colors.
@@ -294,14 +294,14 @@ internal class Armor : IRule
      */
     internal int getHairColor(int i)
     {
-	    if ((uint)i < _hairColor.Count)
-	    {
-		    return _hairColor[i];
-	    }
-	    else
-	    {
-		    return 0;
-	    }
+        if ((uint)i < _hairColor.Count)
+        {
+            return _hairColor[i];
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     /**
@@ -309,7 +309,7 @@ internal class Armor : IRule
      * @return Color group or 0.
      */
     internal int getUtileColorGroup() =>
-	    _utileColorGroup;
+        _utileColorGroup;
 
     /**
      * Gets new utile colors for replacement, if 0 then don't replace colors.
@@ -317,14 +317,14 @@ internal class Armor : IRule
      */
     internal int getUtileColor(int i)
     {
-	    if ((uint)i < _utileColor.Count)
-	    {
-		    return _utileColor[i];
-	    }
-	    else
-	    {
-		    return 0;
-	    }
+        if ((uint)i < _utileColor.Count)
+        {
+            return _utileColor[i];
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     /**
@@ -332,7 +332,7 @@ internal class Armor : IRule
      * @return Color group or 0.
      */
     internal int getRankColorGroup() =>
-	    _rankColorGroup;
+        _rankColorGroup;
 
     /**
      * Gets new rank colors for replacement, if 0 then don't replace colors.
@@ -340,14 +340,14 @@ internal class Armor : IRule
      */
     internal int getRankColor(int i)
     {
-	    if ((uint)i < _rankColor.Count)
-	    {
-		    return _rankColor[i];
-	    }
-	    else
-	    {
-		    return 0;
-	    }
+        if ((uint)i < _rankColor.Count)
+        {
+            return _rankColor[i];
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     /**
@@ -356,61 +356,61 @@ internal class Armor : IRule
      * @return The damage modifier 0->1.
      */
     internal float getDamageModifier(ItemDamageType dt) =>
-	    _damageModifier[(int)dt];
+        _damageModifier[(int)dt];
 
     /**
      * Gets the armor's weight.
      * @return the weight of the armor.
      */
     internal int getWeight() =>
-	    _weight;
+        _weight;
 
     /**
      * Gets the type of special weapon.
      * @return The name of the special weapon.
      */
     internal string getSpecialWeapon() =>
-	    _specWeapon;
+        _specWeapon;
 
     /**
     * Gets the list of units this armor applies to.
     * @return The list of unit IDs (empty = applies to all).
     */
     internal List<string> getUnits() =>
-	    _units;
+        _units;
 
     /**
      * Gets the unit's inventory sprite.
      * @return The inventory sprite name.
      */
     internal string getSpriteInventory() =>
-	    _spriteInv;
+        _spriteInv;
 
     /**
      * Gets the unit's sprite sheet.
      * @return The sprite sheet name.
      */
     internal string getSpriteSheet() =>
-	    _spriteSheet;
+        _spriteSheet;
 
     /*
      * Gets if armor uses constant animation.
      * @return if it uses constant animation
      */
     internal bool getConstantAnimation() =>
-	    _constantAnimation;
+        _constantAnimation;
 
     /**
      * Gets the drawing routine ID.
      * @return The drawing routine ID.
      */
     internal int getDrawingRoutine() =>
-	    _drawingRoutine;
+        _drawingRoutine;
 
     /**
      * Checks if this armor ignores gender (power suit/flying suit).
      * @return which torso to force on the sprite.
      */
     internal ForcedTorso getForcedTorso() =>
-	    _forcedTorso;
+        _forcedTorso;
 }

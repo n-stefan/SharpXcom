@@ -24,8 +24,8 @@ namespace SharpXcom.Battlescape;
  */
 internal class Camera
 {
-	internal const int SCROLL_BORDER = 5;
-	internal const int SCROLL_DIAGONAL_EDGE = 60;
+    internal const int SCROLL_BORDER = 5;
+    internal const int SCROLL_DIAGONAL_EDGE = 60;
 
     Timer _scrollMouseTimer, _scrollKeyTimer;
     int _spriteWidth, _spriteHeight;
@@ -137,20 +137,20 @@ internal class Camera
      */
     internal void convertScreenToMap(int screenX, int screenY, ref int mapX, ref int mapY)
     {
-	    // add half a tileheight to the mouseposition per layer we are above the floor
-	    screenY += (-_spriteWidth/2) + (_mapOffset.z) * ((_spriteHeight + _spriteWidth / 4) / 2);
+        // add half a tileheight to the mouseposition per layer we are above the floor
+        screenY += (-_spriteWidth / 2) + (_mapOffset.z) * ((_spriteHeight + _spriteWidth / 4) / 2);
 
-	    // calculate the actual x/y pixelposition on a diamond shaped map
-	    // taking the view offset into account
-	    mapY = - screenX + _mapOffset.x + 2 * screenY - 2 * _mapOffset.y;
-	    mapX = screenY - _mapOffset.y - mapY / 4 - (_spriteWidth/4);
+        // calculate the actual x/y pixelposition on a diamond shaped map
+        // taking the view offset into account
+        mapY = -screenX + _mapOffset.x + 2 * screenY - 2 * _mapOffset.y;
+        mapX = screenY - _mapOffset.y - mapY / 4 - (_spriteWidth / 4);
 
-	    // to get the row&col itself, divide by the size of a tile
-	    mapX /= (_spriteWidth / 4);
-	    mapY /= _spriteWidth;
+        // to get the row&col itself, divide by the size of a tile
+        mapX /= (_spriteWidth / 4);
+        mapY /= _spriteWidth;
 
-	    mapX = Math.Clamp(mapX, -1, _mapsize_x);
-	    mapY = Math.Clamp(mapY, -1, _mapsize_y);
+        mapX = Math.Clamp(mapX, -1, _mapsize_x);
+        mapY = Math.Clamp(mapY, -1, _mapsize_y);
     }
 
     /**
@@ -190,7 +190,7 @@ internal class Camera
      * @return The map offset.
      */
     internal Position getMapOffset() =>
-	    _mapOffset;
+        _mapOffset;
 
     /**
      * Sets the view level.
@@ -198,26 +198,26 @@ internal class Camera
      */
     internal void setViewLevel(int viewlevel)
     {
-	    _mapOffset.z = Math.Clamp(viewlevel, 0, _mapsize_z - 1);
-	    _map.draw();
+        _mapOffset.z = Math.Clamp(viewlevel, 0, _mapsize_z - 1);
+        _map.draw();
     }
 
     internal void stopMouseScrolling() =>
-	    _scrollMouseTimer.stop();
+        _scrollMouseTimer.stop();
 
     /**
      * Sets the map offset.
      * @param pos The map offset.
      */
     internal void setMapOffset(Position pos) =>
-	    _mapOffset = pos;
+        _mapOffset = pos;
 
     /**
      * Gets the displayed level.
      * @return The displayed layer.
      */
     internal int getViewLevel() =>
-	    _mapOffset.z;
+        _mapOffset.z;
 
     /**
      * Converts voxel coordinates X,Y,Z to screen positions X, Y.
@@ -226,15 +226,15 @@ internal class Camera
      */
     internal void convertVoxelToScreen(Position voxelPos, out Position screenPos)
     {
-	    Position mapPosition = new Position(voxelPos.x / 16, voxelPos.y / 16, voxelPos.z / 24);
-	    convertMapToScreen(mapPosition, out screenPos);
-	    double dx = voxelPos.x - (mapPosition.x * 16);
-	    double dy = voxelPos.y - (mapPosition.y * 16);
-	    double dz = voxelPos.z - (mapPosition.z * 24);
-	    screenPos.x += (int)(dx - dy) + (_spriteWidth/2);
-	    screenPos.y += (int)(((_spriteHeight / 2.0)) + (dx / 2.0) + (dy / 2.0) - dz);
-	    screenPos.x += _mapOffset.x;
-	    screenPos.y += _mapOffset.y;
+        Position mapPosition = new Position(voxelPos.x / 16, voxelPos.y / 16, voxelPos.z / 24);
+        convertMapToScreen(mapPosition, out screenPos);
+        double dx = voxelPos.x - (mapPosition.x * 16);
+        double dy = voxelPos.y - (mapPosition.y * 16);
+        double dz = voxelPos.z - (mapPosition.z * 24);
+        screenPos.x += (int)(dx - dy) + (_spriteWidth / 2);
+        screenPos.y += (int)(((_spriteHeight / 2.0)) + (dx / 2.0) + (dy / 2.0) - dz);
+        screenPos.x += _mapOffset.x;
+        screenPos.y += _mapOffset.y;
     }
 
     /**
@@ -247,51 +247,51 @@ internal class Camera
      */
     internal bool isOnScreen(Position mapPos, bool unitWalking, int unitSize, bool boundary)
     {
-	    Position screenPos;
-	    convertMapToScreen(mapPos, out screenPos);
-	    int posx = _spriteWidth/2, posy = _spriteHeight - _spriteWidth/4;
-	    int sizex = _spriteWidth/2, sizey = _spriteHeight/2;
-	    if (unitSize > 0)
-	    {
-		    posy -= _spriteWidth /4;
-		    sizex = _spriteWidth*unitSize;
-		    sizey = _spriteWidth*unitSize/2;
-	    }
-	    screenPos.x += _mapOffset.x + posx;
-	    screenPos.y += _mapOffset.y + posy;
-	    if (unitWalking)
-	    {
-    /* pretty hardcoded hack to handle overlapping by icons
-    (they are always in the center at the bottom of the screen)
-    Free positioned icons would require more complex workaround.
-    __________
-    |________|
-    ||      ||
-    || ____ ||
-    ||_|XX|_||
-    |________|
-     */
-		    if (boundary) //to make sprite updates even being slightly outside of screen
-		    {
-			    sizex += _spriteWidth;
-			    sizey += _spriteWidth/2;
-		    }
-		    if ( screenPos.x < 0 - sizex
-			    || screenPos.x >= _screenWidth + sizex
-			    || screenPos.y < 0 - sizey
-			    || screenPos.y >= _screenHeight + sizey ) return false; //totally outside
-		    int side = ( _screenWidth - _map.getIconWidth() ) / 2;
-		    if ( (screenPos.y < (_screenHeight - _map.getIconHeight()) + sizey) ) return true; //above icons
-		    if ( (side > 1) && ( (screenPos.x < side + sizex) || (screenPos.x >= (_screenWidth - side - sizex)) ) ) return true; //at sides (if there are any)
-		    return false;
-	    }
-	    else
-	    {
-		    return screenPos.x >= 0
-			    && screenPos.x <= _screenWidth - 10
-			    && screenPos.y >= 0
-			    && screenPos.y <= _screenHeight - 10;
-	    }
+        Position screenPos;
+        convertMapToScreen(mapPos, out screenPos);
+        int posx = _spriteWidth / 2, posy = _spriteHeight - _spriteWidth / 4;
+        int sizex = _spriteWidth / 2, sizey = _spriteHeight / 2;
+        if (unitSize > 0)
+        {
+            posy -= _spriteWidth / 4;
+            sizex = _spriteWidth * unitSize;
+            sizey = _spriteWidth * unitSize / 2;
+        }
+        screenPos.x += _mapOffset.x + posx;
+        screenPos.y += _mapOffset.y + posy;
+        if (unitWalking)
+        {
+            /* pretty hardcoded hack to handle overlapping by icons
+            (they are always in the center at the bottom of the screen)
+            Free positioned icons would require more complex workaround.
+            __________
+            |________|
+            ||      ||
+            || ____ ||
+            ||_|XX|_||
+            |________|
+             */
+            if (boundary) //to make sprite updates even being slightly outside of screen
+            {
+                sizex += _spriteWidth;
+                sizey += _spriteWidth / 2;
+            }
+            if (screenPos.x < 0 - sizex
+                || screenPos.x >= _screenWidth + sizex
+                || screenPos.y < 0 - sizey
+                || screenPos.y >= _screenHeight + sizey) return false; //totally outside
+            int side = (_screenWidth - _map.getIconWidth()) / 2;
+            if ((screenPos.y < (_screenHeight - _map.getIconHeight()) + sizey)) return true; //above icons
+            if ((side > 1) && ((screenPos.x < side + sizex) || (screenPos.x >= (_screenWidth - side - sizex)))) return true; //at sides (if there are any)
+            return false;
+        }
+        else
+        {
+            return screenPos.x >= 0
+                && screenPos.x <= _screenWidth - 10
+                && screenPos.y >= 0
+                && screenPos.y <= _screenHeight - 10;
+        }
     }
 
     /**
@@ -299,9 +299,9 @@ internal class Camera
      */
     internal void resize()
     {
-	    _screenWidth = _map.getWidth();
-	    _screenHeight = _map.getHeight();
-	    _visibleMapHeight = _map.getHeight() - _map.getIconHeight();
+        _screenWidth = _map.getWidth();
+        _screenHeight = _map.getHeight();
+        _visibleMapHeight = _map.getHeight() - _map.getIconHeight();
     }
 
     /**
@@ -311,9 +311,9 @@ internal class Camera
      */
     internal void jumpXY(int x, int y)
     {
-	    _mapOffset.x += x;
-	    _mapOffset.y += y;
-	    convertScreenToMap((_screenWidth / 2), (_visibleMapHeight / 2), ref _center.x, ref _center.y);
+        _mapOffset.x += x;
+        _mapOffset.y += y;
+        convertScreenToMap((_screenWidth / 2), (_visibleMapHeight / 2), ref _center.x, ref _center.y);
     }
 
     /**
@@ -321,12 +321,12 @@ internal class Camera
      */
     internal void up()
     {
-	    if (_mapOffset.z < _mapsize_z - 1)
-	    {
-		    _mapOffset.z++;
-		    _mapOffset.y += _spriteHeight * 3 / 5;
-		    _map.draw();
-	    }
+        if (_mapOffset.z < _mapsize_z - 1)
+        {
+            _mapOffset.z++;
+            _mapOffset.y += _spriteHeight * 3 / 5;
+            _map.draw();
+        }
     }
 
     /**
@@ -334,12 +334,12 @@ internal class Camera
      */
     internal void down()
     {
-	    if (_mapOffset.z > 0)
-	    {
-		    _mapOffset.z--;
-		    _mapOffset.y -= _spriteHeight * 3 / 5;
-		    _map.draw();
-	    }
+        if (_mapOffset.z > 0)
+        {
+            _mapOffset.z--;
+            _mapOffset.y -= _spriteHeight * 3 / 5;
+            _map.draw();
+        }
     }
 
     /**
@@ -348,8 +348,8 @@ internal class Camera
      */
     internal int toggleShowAllLayers()
     {
-	    _showAllLayers = !_showAllLayers;
-	    return _showAllLayers?2:1;
+        _showAllLayers = !_showAllLayers;
+        return _showAllLayers ? 2 : 1;
     }
 
     /**
@@ -357,7 +357,7 @@ internal class Camera
      * @return Current layer setting.
      */
     internal bool getShowAllLayers() =>
-	    _showAllLayers;
+        _showAllLayers;
 
     /**
      * Gets map's center position.
@@ -365,8 +365,8 @@ internal class Camera
      */
     internal Position getCenterPosition()
     {
-	    _center.z = _mapOffset.z;
-	    return _center;
+        _center.z = _mapOffset.z;
+        return _center;
     }
 
     /**
@@ -376,132 +376,132 @@ internal class Camera
      */
     internal void mousePress(Action action, State _)
     {
-	    if (action.getDetails().button.button == SDL_BUTTON_LEFT && Options.battleEdgeScroll == ScrollType.SCROLL_TRIGGER)
-	    {
-		    _scrollTrigger = true;
-		    mouseOver(action, null);
-	    }
-	    else if (Options.battleDragScrollButton != SDL_BUTTON_MIDDLE || (SDL_GetMouseState(0,0)&SDL_BUTTON((uint)Options.battleDragScrollButton)) == 0)
-	    {
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT && Options.battleEdgeScroll == ScrollType.SCROLL_TRIGGER)
+        {
+            _scrollTrigger = true;
+            mouseOver(action, null);
+        }
+        else if (Options.battleDragScrollButton != SDL_BUTTON_MIDDLE || (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)) == 0)
+        {
             if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
-		    {
-			    up();
-		    }
+            {
+                up();
+            }
             else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
-		    {
-			    down();
-		    }
-	    }
+            {
+                down();
+            }
+        }
     }
 
-	/**
+    /**
 	 * Handles mouse over events.
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	internal void mouseOver(Action action, State _)
-	{
-		if (_map.getCursorType() == CursorType.CT_NONE)
-		{
-			return;
-		}
+    internal void mouseOver(Action action, State _)
+    {
+        if (_map.getCursorType() == CursorType.CT_NONE)
+        {
+            return;
+        }
 
-		if (Options.battleEdgeScroll == ScrollType.SCROLL_AUTO || _scrollTrigger)
-		{
-			int posX = action.getXMouse();
-			int posY = action.getYMouse();
-			int scrollSpeed = Options.battleScrollSpeed;
+        if (Options.battleEdgeScroll == ScrollType.SCROLL_AUTO || _scrollTrigger)
+        {
+            int posX = action.getXMouse();
+            int posY = action.getYMouse();
+            int scrollSpeed = Options.battleScrollSpeed;
 
-			//left scroll
-			if (posX < (SCROLL_BORDER * action.getXScale()) && posX >= 0)
-			{
-				_scrollMouseX = scrollSpeed;
-				// if close to top or bottom, also scroll diagonally
-				//downleft
-				if (posY < (SCROLL_DIAGONAL_EDGE * action.getYScale()) && posY >= 0)
-				{
-					_scrollMouseY = scrollSpeed/2;
-				}
-				//upleft
-				else if (posY > (_screenHeight - SCROLL_DIAGONAL_EDGE) * action.getYScale())
-				{
-					_scrollMouseY = -scrollSpeed/2;
-				}
-				else _scrollMouseY = 0;
-			}
-			//right scroll
-			else if (posX > (_screenWidth - SCROLL_BORDER) * action.getXScale())
-			{
-				_scrollMouseX = -scrollSpeed;
-				// if close to top or bottom, also scroll diagonally
-				//downright
-				if (posY <= (SCROLL_DIAGONAL_EDGE * action.getYScale()) && posY >= 0)
-				{
-					_scrollMouseY = scrollSpeed/2;
-				}
-				//upright
-				else if (posY > (_screenHeight - SCROLL_DIAGONAL_EDGE) * action.getYScale())
-				{
-					_scrollMouseY = -scrollSpeed/2;
-				}
-				else _scrollMouseY = 0;
-			}
-			else if (posX != 0)
-			{
-				_scrollMouseX = 0;
-			}
+            //left scroll
+            if (posX < (SCROLL_BORDER * action.getXScale()) && posX >= 0)
+            {
+                _scrollMouseX = scrollSpeed;
+                // if close to top or bottom, also scroll diagonally
+                //downleft
+                if (posY < (SCROLL_DIAGONAL_EDGE * action.getYScale()) && posY >= 0)
+                {
+                    _scrollMouseY = scrollSpeed / 2;
+                }
+                //upleft
+                else if (posY > (_screenHeight - SCROLL_DIAGONAL_EDGE) * action.getYScale())
+                {
+                    _scrollMouseY = -scrollSpeed / 2;
+                }
+                else _scrollMouseY = 0;
+            }
+            //right scroll
+            else if (posX > (_screenWidth - SCROLL_BORDER) * action.getXScale())
+            {
+                _scrollMouseX = -scrollSpeed;
+                // if close to top or bottom, also scroll diagonally
+                //downright
+                if (posY <= (SCROLL_DIAGONAL_EDGE * action.getYScale()) && posY >= 0)
+                {
+                    _scrollMouseY = scrollSpeed / 2;
+                }
+                //upright
+                else if (posY > (_screenHeight - SCROLL_DIAGONAL_EDGE) * action.getYScale())
+                {
+                    _scrollMouseY = -scrollSpeed / 2;
+                }
+                else _scrollMouseY = 0;
+            }
+            else if (posX != 0)
+            {
+                _scrollMouseX = 0;
+            }
 
-			//up
-			if (posY < (SCROLL_BORDER * action.getYScale()) && posY >= 0)
-			{
-				_scrollMouseY = scrollSpeed;
-				// if close to left or right edge, also scroll diagonally
-				//up left
-				if (posX < (SCROLL_DIAGONAL_EDGE * action.getXScale()) && posX >= 0)
-				{
-					_scrollMouseX = scrollSpeed;
-					_scrollMouseY /=2;
-				}
-				//up right
-				else if (posX > (_screenWidth - SCROLL_DIAGONAL_EDGE) * action.getXScale())
-				{
-					_scrollMouseX = -scrollSpeed;
-					_scrollMouseY /=2;
-				}
-			}
-			//down
-			else if (posY > (_screenHeight- SCROLL_BORDER) * action.getYScale())
-			{
-				_scrollMouseY = -scrollSpeed;
-				// if close to left or right edge, also scroll diagonally
-				//down left
-				if (posX < (SCROLL_DIAGONAL_EDGE * action.getXScale()) && posX >= 0)
-				{
-					_scrollMouseX = scrollSpeed;
-					_scrollMouseY /=2;
-				}
-				//down right
-				else if (posX > (_screenWidth - SCROLL_DIAGONAL_EDGE) * action.getXScale())
-				{
-					_scrollMouseX = -scrollSpeed;
-					_scrollMouseY /=2;
-				}
-			}
-			else if (posY != 0 && _scrollMouseX == 0)
-			{
-				_scrollMouseY = 0;
-			}
+            //up
+            if (posY < (SCROLL_BORDER * action.getYScale()) && posY >= 0)
+            {
+                _scrollMouseY = scrollSpeed;
+                // if close to left or right edge, also scroll diagonally
+                //up left
+                if (posX < (SCROLL_DIAGONAL_EDGE * action.getXScale()) && posX >= 0)
+                {
+                    _scrollMouseX = scrollSpeed;
+                    _scrollMouseY /= 2;
+                }
+                //up right
+                else if (posX > (_screenWidth - SCROLL_DIAGONAL_EDGE) * action.getXScale())
+                {
+                    _scrollMouseX = -scrollSpeed;
+                    _scrollMouseY /= 2;
+                }
+            }
+            //down
+            else if (posY > (_screenHeight - SCROLL_BORDER) * action.getYScale())
+            {
+                _scrollMouseY = -scrollSpeed;
+                // if close to left or right edge, also scroll diagonally
+                //down left
+                if (posX < (SCROLL_DIAGONAL_EDGE * action.getXScale()) && posX >= 0)
+                {
+                    _scrollMouseX = scrollSpeed;
+                    _scrollMouseY /= 2;
+                }
+                //down right
+                else if (posX > (_screenWidth - SCROLL_DIAGONAL_EDGE) * action.getXScale())
+                {
+                    _scrollMouseX = -scrollSpeed;
+                    _scrollMouseY /= 2;
+                }
+            }
+            else if (posY != 0 && _scrollMouseX == 0)
+            {
+                _scrollMouseY = 0;
+            }
 
-			if ((_scrollMouseX != 0 || _scrollMouseY != 0) && !_scrollMouseTimer.isRunning() && !_scrollKeyTimer.isRunning() && 0==(SDL_GetMouseState(0,0)&SDL_BUTTON((uint)Options.battleDragScrollButton)))
-			{
-				_scrollMouseTimer.start();
-			}
-			else if ((_scrollMouseX == 0 && _scrollMouseY == 0) && _scrollMouseTimer.isRunning())
-			{
-				_scrollMouseTimer.stop();
-			}
-		}
-	}
+            if ((_scrollMouseX != 0 || _scrollMouseY != 0) && !_scrollMouseTimer.isRunning() && !_scrollKeyTimer.isRunning() && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)))
+            {
+                _scrollMouseTimer.start();
+            }
+            else if ((_scrollMouseX == 0 && _scrollMouseY == 0) && _scrollMouseTimer.isRunning())
+            {
+                _scrollMouseTimer.stop();
+            }
+        }
+    }
 
     /**
      * Handles camera mouse shortcuts.
@@ -510,22 +510,22 @@ internal class Camera
      */
     internal void mouseRelease(Action action, State _)
     {
-	    if (action.getDetails().button.button == SDL_BUTTON_LEFT && Options.battleEdgeScroll == ScrollType.SCROLL_TRIGGER)
-	    {
-		    _scrollMouseX = 0;
-		    _scrollMouseY = 0;
-		    _scrollMouseTimer.stop();
-		    _scrollTrigger = false;
-		    int posX = action.getXMouse();
-		    int posY = action.getYMouse();
-		    if ((posX < (SCROLL_BORDER * action.getXScale()) && posX > 0)
-			    || (posX > (_screenWidth - SCROLL_BORDER) * action.getXScale())
-			    || (posY < (SCROLL_BORDER * action.getYScale()) && posY > 0)
-			    || (posY > (_screenHeight - SCROLL_BORDER) * action.getYScale()))
-			    // A cheap hack to avoid handling this event as a click
-			    // on the map when the mouse is on the scroll-border
-			    action.getDetails().button.button = 0;
-	    }
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT && Options.battleEdgeScroll == ScrollType.SCROLL_TRIGGER)
+        {
+            _scrollMouseX = 0;
+            _scrollMouseY = 0;
+            _scrollMouseTimer.stop();
+            _scrollTrigger = false;
+            int posX = action.getXMouse();
+            int posY = action.getYMouse();
+            if ((posX < (SCROLL_BORDER * action.getXScale()) && posX > 0)
+                || (posX > (_screenWidth - SCROLL_BORDER) * action.getXScale())
+                || (posY < (SCROLL_BORDER * action.getYScale()) && posY > 0)
+                || (posY > (_screenHeight - SCROLL_BORDER) * action.getYScale()))
+                // A cheap hack to avoid handling this event as a click
+                // on the map when the mouse is on the scroll-border
+                action.getDetails().button.button = 0;
+        }
     }
 
     /**
@@ -533,14 +533,14 @@ internal class Camera
      * @return The map size x.
      */
     internal int getMapSizeX() =>
-	    _mapsize_x;
+        _mapsize_x;
 
     /**
      * Gets the map size y.
      * @return The map size y.
      */
     internal int getMapSizeY() =>
-	    _mapsize_y;
+        _mapsize_y;
 
     /**
      * Handles camera keyboard shortcuts.
@@ -549,77 +549,77 @@ internal class Camera
      */
     internal void keyboardPress(Action action, State _)
     {
-	    if (_map.getCursorType() == CursorType.CT_NONE)
-	    {
-		    return;
-	    }
+        if (_map.getCursorType() == CursorType.CT_NONE)
+        {
+            return;
+        }
 
-	    var key = action.getDetails().key.keysym.sym;
-	    int scrollSpeed = Options.battleScrollSpeed;
-	    if (key == Options.keyBattleLeft)
-	    {
-		    _scrollKeyX = scrollSpeed;
-	    }
-	    else if (key == Options.keyBattleRight)
-	    {
-		    _scrollKeyX = -scrollSpeed;
-	    }
-	    else if (key == Options.keyBattleUp)
-	    {
-		    _scrollKeyY = scrollSpeed;
-	    }
-	    else if (key == Options.keyBattleDown)
-	    {
-		    _scrollKeyY = -scrollSpeed;
-	    }
+        var key = action.getDetails().key.keysym.sym;
+        int scrollSpeed = Options.battleScrollSpeed;
+        if (key == Options.keyBattleLeft)
+        {
+            _scrollKeyX = scrollSpeed;
+        }
+        else if (key == Options.keyBattleRight)
+        {
+            _scrollKeyX = -scrollSpeed;
+        }
+        else if (key == Options.keyBattleUp)
+        {
+            _scrollKeyY = scrollSpeed;
+        }
+        else if (key == Options.keyBattleDown)
+        {
+            _scrollKeyY = -scrollSpeed;
+        }
 
-	    if ((_scrollKeyX != 0 || _scrollKeyY != 0) && !_scrollKeyTimer.isRunning() && !_scrollMouseTimer.isRunning() && 0==(SDL_GetMouseState(0,0)&SDL_BUTTON((uint)Options.battleDragScrollButton)))
-	    {
-		    _scrollKeyTimer.start();
-	    }
-	    else if ((_scrollKeyX == 0 && _scrollKeyY == 0) && _scrollKeyTimer.isRunning())
-	    {
-		    _scrollKeyTimer.stop();
-	    }
+        if ((_scrollKeyX != 0 || _scrollKeyY != 0) && !_scrollKeyTimer.isRunning() && !_scrollMouseTimer.isRunning() && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)))
+        {
+            _scrollKeyTimer.start();
+        }
+        else if ((_scrollKeyX == 0 && _scrollKeyY == 0) && _scrollKeyTimer.isRunning())
+        {
+            _scrollKeyTimer.stop();
+        }
     }
 
-	/**
+    /**
 	 * Handles camera keyboard shortcuts.
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	internal void keyboardRelease(Action action, State _)
-	{
-		if (_map.getCursorType() == CursorType.CT_NONE)
-		{
-			return;
-		}
+    internal void keyboardRelease(Action action, State _)
+    {
+        if (_map.getCursorType() == CursorType.CT_NONE)
+        {
+            return;
+        }
 
-		var key = action.getDetails().key.keysym.sym;
-		if (key == Options.keyBattleLeft)
-		{
-			_scrollKeyX = 0;
-		}
-		else if (key == Options.keyBattleRight)
-		{
-			_scrollKeyX = 0;
-		}
-		else if (key == Options.keyBattleUp)
-		{
-			_scrollKeyY = 0;
-		}
-		else if (key == Options.keyBattleDown)
-		{
-			_scrollKeyY = 0;
-		}
+        var key = action.getDetails().key.keysym.sym;
+        if (key == Options.keyBattleLeft)
+        {
+            _scrollKeyX = 0;
+        }
+        else if (key == Options.keyBattleRight)
+        {
+            _scrollKeyX = 0;
+        }
+        else if (key == Options.keyBattleUp)
+        {
+            _scrollKeyY = 0;
+        }
+        else if (key == Options.keyBattleDown)
+        {
+            _scrollKeyY = 0;
+        }
 
-		if ((_scrollKeyX != 0 || _scrollKeyY != 0) && !_scrollKeyTimer.isRunning() && !_scrollMouseTimer.isRunning() && 0==(SDL_GetMouseState(0,0)&SDL_BUTTON((uint)Options.battleDragScrollButton)))
-		{
-			_scrollKeyTimer.start();
-		}
-		else if ((_scrollKeyX == 0 && _scrollKeyY == 0) && _scrollKeyTimer.isRunning())
-		{
-			_scrollKeyTimer.stop();
-		}
-	}
+        if ((_scrollKeyX != 0 || _scrollKeyY != 0) && !_scrollKeyTimer.isRunning() && !_scrollMouseTimer.isRunning() && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)))
+        {
+            _scrollKeyTimer.start();
+        }
+        else if ((_scrollKeyX == 0 && _scrollKeyY == 0) && _scrollKeyTimer.isRunning())
+        {
+            _scrollKeyTimer.stop();
+        }
+    }
 }

@@ -67,16 +67,16 @@ internal class Music
     {
 #if !__NO_MUSIC
         if (!Options.mute)
-	    {
-		    if (_music != nint.Zero)
-		    {
-			    stop();
-			    if (Mix_PlayMusic(_music, loop) == -1)
-			    {
+        {
+            if (_music != nint.Zero)
+            {
+                stop();
+                if (Mix_PlayMusic(_music, loop) == -1)
+                {
                     Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
-			    }
-		    }
-	    }
+                }
+            }
+        }
 #endif
     }
 
@@ -129,11 +129,11 @@ internal class Music
     {
 #if !__NO_MUSIC
         string utf8 = Unicode.convPathToUtf8(filename);
-	    _music = Mix_LoadMUS(utf8);
-	    if (_music == nint.Zero)
-	    {
-		    throw new Exception(Mix_GetError());
-	    }
+        _music = Mix_LoadMUS(utf8);
+        if (_music == nint.Zero)
+        {
+            throw new Exception(Mix_GetError());
+        }
 #endif
     }
 
@@ -143,12 +143,12 @@ internal class Music
     static void pause()
     {
 #if !__NO_MUSIC
-	    if (!Options.mute)
-	    {
-		    Mix_PauseMusic();
-		    if (Mix_GetMusicType(0) == Mix_MusicType.MUS_NONE)
-			    Mix_HookMusic(null, nint.Zero);
-	    }
+        if (!Options.mute)
+        {
+            Mix_PauseMusic();
+            if (Mix_GetMusicType(0) == Mix_MusicType.MUS_NONE)
+                Mix_HookMusic(null, nint.Zero);
+        }
 #endif
     }
 
@@ -158,12 +158,12 @@ internal class Music
     static void resume()
     {
 #if !__NO_MUSIC
-	    if (!Options.mute)
-	    {
-		    Mix_ResumeMusic();
-		    if (Mix_GetMusicType(0) == Mix_MusicType.MUS_NONE)
-			    Mix_HookMusic(new AdlibMusic().player, nint.Zero);
-	    }
+        if (!Options.mute)
+        {
+            Mix_ResumeMusic();
+            if (Mix_GetMusicType(0) == Mix_MusicType.MUS_NONE)
+                Mix_HookMusic(new AdlibMusic().player, nint.Zero);
+        }
 #endif
     }
 
@@ -173,11 +173,11 @@ internal class Music
     static bool isPlaying()
     {
 #if !__NO_MUSIC
-	    if (!Options.mute)
-	    {
-		    return Mix_Playing(-1) != 0;
-	    }
+        if (!Options.mute)
+        {
+            return Mix_Playing(-1) != 0;
+        }
 #endif
-	    return false;
+        return false;
     }
 }

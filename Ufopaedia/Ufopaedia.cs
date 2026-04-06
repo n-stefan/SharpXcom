@@ -32,8 +32,8 @@ internal class Ufopaedia
     // Maybe others as well, that should just not be selectable.
     internal const string UFOPAEDIA_NOT_AVAILABLE = "STR_NOT_AVAILABLE";
 
-	/// current selected article index (for prev/next navigation).
-	protected static uint _current_index;
+    /// current selected article index (for prev/next navigation).
+    protected static uint _current_index;
 
     /**
 	 * Open Ufopaedia start state, presenting the section selection buttons.
@@ -66,18 +66,18 @@ internal class Ufopaedia
 	 * @param article_id Article id to find.
 	 */
     internal static void openArticle(Game game, string article_id)
-	{
+    {
         string id = article_id;
-		_current_index = getArticleIndex(game.getSavedGame(), game.getMod(), id);
+        _current_index = getArticleIndex(game.getSavedGame(), game.getMod(), id);
         unchecked
         {
-			if (_current_index != (uint)-1)
-			{
-				ArticleDefinition article = game.getMod().getUfopaediaArticle(id);
-				game.pushState(createArticleState(article));
-			}
-		}
-	}
+            if (_current_index != (uint)-1)
+            {
+                ArticleDefinition article = game.getMod().getUfopaediaArticle(id);
+                game.pushState(createArticleState(article));
+            }
+        }
+    }
 
     /**
 	 * Gets the index of the selected article_id in the visible list.
@@ -149,16 +149,16 @@ internal class Ufopaedia
 	 * @param data Article definition list object to fill data in.
 	 */
     internal static void list(SavedGame save, Mod.Mod mod, string section, List<ArticleDefinition> data)
-	{
-		List<ArticleDefinition> articles = getAvailableArticles(save, mod);
-		foreach (var it in articles)
-		{
-			if (it.section == section)
-			{
-				data.Add(it);
-			}
-		}
-	}
+    {
+        List<ArticleDefinition> articles = getAvailableArticles(save, mod);
+        foreach (var it in articles)
+        {
+            if (it.section == section)
+            {
+                data.Add(it);
+            }
+        }
+    }
 
     /**
 	 * Checks, if an article has already been released.
@@ -218,43 +218,43 @@ internal class Ufopaedia
         return null;
     }
 
-	/**
+    /**
 	 * Open the previous article in the list. Loops to the last.
 	 * @param game Pointer to actual game.
 	 */
-	internal static void prev(Game game)
-	{
-		List<ArticleDefinition> articles = getAvailableArticles(game.getSavedGame(), game.getMod());
-		if (_current_index == 0)
-		{
-			// goto last
-			_current_index = (uint)(articles.Count - 1);
-		}
-		else
-		{
-			_current_index--;
-		}
-		game.popState();
-		game.pushState(createArticleState(articles[(int)_current_index]));
-	}
+    internal static void prev(Game game)
+    {
+        List<ArticleDefinition> articles = getAvailableArticles(game.getSavedGame(), game.getMod());
+        if (_current_index == 0)
+        {
+            // goto last
+            _current_index = (uint)(articles.Count - 1);
+        }
+        else
+        {
+            _current_index--;
+        }
+        game.popState();
+        game.pushState(createArticleState(articles[(int)_current_index]));
+    }
 
-	/**
+    /**
 	 * Open the next article in the list. Loops to the first.
 	 * @param game Pointer to actual game.
 	 */
-	internal static void next(Game game)
-	{
-		List<ArticleDefinition> articles = getAvailableArticles(game.getSavedGame(), game.getMod());
-		if (_current_index >= articles.Count - 1)
-		{
-			// goto first
-			_current_index = 0;
-		}
-		else
-		{
-			_current_index++;
-		}
-		game.popState();
-		game.pushState(createArticleState(articles[(int)_current_index]));
-	}
+    internal static void next(Game game)
+    {
+        List<ArticleDefinition> articles = getAvailableArticles(game.getSavedGame(), game.getMod());
+        if (_current_index >= articles.Count - 1)
+        {
+            // goto first
+            _current_index = 0;
+        }
+        else
+        {
+            _current_index++;
+        }
+        game.popState();
+        game.pushState(createArticleState(articles[(int)_current_index]));
+    }
 }

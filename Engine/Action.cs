@@ -60,7 +60,7 @@ internal class Action
      * @return Pointer to SDL_event.
      */
     internal ref SDL_Event getDetails() =>
-	    ref _ev;
+        ref _ev;
 
     /**
      * Returns the absolute X position of the
@@ -70,9 +70,9 @@ internal class Action
      */
     internal double getAbsoluteXMouse()
     {
-	    if (_mouseX == -1)
-		    return -1;
-	    return _mouseX / _scaleX;
+        if (_mouseX == -1)
+            return -1;
+        return _mouseX / _scaleX;
     }
 
     /**
@@ -83,9 +83,9 @@ internal class Action
      */
     internal double getAbsoluteYMouse()
     {
-	    if (_mouseY == -1)
-		    return -1;
-	    return _mouseY / _scaleY;
+        if (_mouseY == -1)
+            return -1;
+        return _mouseY / _scaleY;
     }
 
     /**
@@ -105,7 +105,7 @@ internal class Action
     }
 
     internal bool isMouseAction() =>
-	    (_mouseX != -1);
+        (_mouseX != -1);
 
     /**
      * Changes the interactive surface that triggered
@@ -121,7 +121,7 @@ internal class Action
      * @return Screen's top black band.
      */
     internal int getTopBlackBand() =>
-	    _topBlackBand;
+        _topBlackBand;
 
     /**
      * Returns the width in pixel of the
@@ -129,7 +129,7 @@ internal class Action
      * @return Screen's left black band.
      */
     internal int getLeftBlackBand() =>
-	    _leftBlackBand;
+        _leftBlackBand;
 
     /**
      * Returns the X scaling factor used by the screen
@@ -137,7 +137,7 @@ internal class Action
      * @return Screen's X scaling factor.
      */
     internal double getXScale() =>
-	    _scaleX;
+        _scaleX;
 
     /**
      * Returns the Y scaling factor used by the screen
@@ -145,7 +145,7 @@ internal class Action
      * @return Screen's Y scaling factor.
      */
     internal double getYScale() =>
-	    _scaleY;
+        _scaleY;
 
     /**
      * Returns the interactive surface that triggered
@@ -153,7 +153,7 @@ internal class Action
      * @return Pointer to interactive surface.
      */
     internal InteractiveSurface getSender() =>
-	    _sender;
+        _sender;
 
     /**
      * Returns the Y position of the
@@ -162,7 +162,7 @@ internal class Action
      * @return Mouse's Y position.
      */
     internal int getYMouse() =>
-	    _mouseY;
+        _mouseY;
 
     /**
      * Returns the X position of the
@@ -171,7 +171,7 @@ internal class Action
      * @return Mouse's X position.
      */
     internal int getXMouse() =>
-	    _mouseX;
+        _mouseX;
 
     /**
      * Returns the relative X position of the
@@ -181,9 +181,9 @@ internal class Action
      */
     internal double getRelativeXMouse()
     {
-	    if (_mouseX == -1)
-		    return -1;
-	    return _mouseX - _surfaceX * _scaleX;
+        if (_mouseX == -1)
+            return -1;
+        return _mouseX - _surfaceX * _scaleX;
     }
 
     /**
@@ -194,8 +194,8 @@ internal class Action
      */
     internal double getRelativeYMouse()
     {
-	    if (_mouseY == -1)
-		    return -1;
-	    return _mouseY - _surfaceY * _scaleY;
+        if (_mouseY == -1)
+            return -1;
+        return _mouseY - _surfaceY * _scaleY;
     }
 }

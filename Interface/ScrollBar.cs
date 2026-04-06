@@ -92,7 +92,7 @@ internal class ScrollBar : InteractiveSurface
      * @return Color value.
      */
     internal byte getColor() =>
-	    _color;
+        _color;
 
     /**
      * Automatically updates the scrollbar
@@ -102,15 +102,15 @@ internal class ScrollBar : InteractiveSurface
      */
     internal override void handle(Action action, State state)
     {
-	    base.handle(action, state);
-	    if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
-	    {
-		    int cursorY = (int)(action.getAbsoluteYMouse() - getY());
-		    int y = Math.Clamp(cursorY + _offset, 0, getHeight() - _thumbRect.h + 1);
-		    double scale = (double)_list.getRows() / getHeight();
-		    int scroll = (int)Round(y * scale);
-		    _list.scrollTo((uint)scroll);
-	    }
+        base.handle(action, state);
+        if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
+        {
+            int cursorY = (int)(action.getAbsoluteYMouse() - getY());
+            int y = Math.Clamp(cursorY + _offset, 0, getHeight() - _thumbRect.h + 1);
+            double scale = (double)_list.getRows() / getHeight();
+            int scroll = (int)Round(y * scale);
+            _list.scrollTo((uint)scroll);
+        }
     }
 
     /**
@@ -118,9 +118,9 @@ internal class ScrollBar : InteractiveSurface
      */
     internal override void draw()
     {
-	    base.draw();
-	    drawTrack();
-	    drawThumb();
+        base.draw();
+        drawTrack();
+        drawThumb();
     }
 
     /**
@@ -128,18 +128,18 @@ internal class ScrollBar : InteractiveSurface
      */
     void drawTrack()
     {
-	    if (_bg != null)
-	    {
-		    _track.copy(_bg);
-		    if (_list.getComboBox() != null)
-		    {
-			    _track.offset(+1, Palette.backPos);
-		    }
-		    else
-		    {
-			    _track.offsetBlock(-5);
-		    }
-	    }
+        if (_bg != null)
+        {
+            _track.copy(_bg);
+            if (_list.getComboBox() != null)
+            {
+                _track.offset(+1, Palette.backPos);
+            }
+            else
+            {
+                _track.offsetBlock(-5);
+            }
+        }
     }
 
     /**
@@ -147,69 +147,69 @@ internal class ScrollBar : InteractiveSurface
      */
     void drawThumb()
     {
-	    double scale = (double)getHeight() / _list.getRows();
-	    _thumbRect.x = 0;
-	    _thumbRect.y = (int)Math.Floor(_list.getScroll() * scale);
-	    _thumbRect.w = _thumb.getWidth();
-	    _thumbRect.h = (int)Math.Ceiling(_list.getVisibleRows() * scale);
+        double scale = (double)getHeight() / _list.getRows();
+        _thumbRect.x = 0;
+        _thumbRect.y = (int)Math.Floor(_list.getScroll() * scale);
+        _thumbRect.w = _thumb.getWidth();
+        _thumbRect.h = (int)Math.Ceiling(_list.getVisibleRows() * scale);
 
-	    // Draw base button
-	    _thumb.clear();
-	    _thumb.@lock();
+        // Draw base button
+        _thumb.clear();
+        _thumb.@lock();
 
-	    SDL_Rect square = _thumbRect;
-	    int color = _color + 2;
+        SDL_Rect square = _thumbRect;
+        int color = _color + 2;
 
-	    square.w--;
-	    square.h--;
+        square.w--;
+        square.h--;
 
-	    _thumb.drawRect(ref square, (byte)color);
+        _thumb.drawRect(ref square, (byte)color);
 
-	    square.x++;
-	    square.y++;
-	    color = _color + 5;
+        square.x++;
+        square.y++;
+        color = _color + 5;
 
-	    _thumb.drawRect(ref square, (byte)color);
+        _thumb.drawRect(ref square, (byte)color);
 
-	    square.w--;
-	    square.h--;
-	    color = _color + 4;
+        square.w--;
+        square.h--;
+        color = _color + 4;
 
-	    _thumb.drawRect(ref square, (byte)color);
+        _thumb.drawRect(ref square, (byte)color);
 
-	    _thumb.setPixel(_thumbRect.x, _thumbRect.y, (byte)(_color + 1));
-	    _thumb.setPixel(_thumbRect.x, _thumbRect.y + _thumbRect.h - 1, (byte)(_color + 4));
-	    _thumb.setPixel(_thumbRect.x + _thumbRect.w - 1, _thumbRect.y, (byte)(_color + 4));
+        _thumb.setPixel(_thumbRect.x, _thumbRect.y, (byte)(_color + 1));
+        _thumb.setPixel(_thumbRect.x, _thumbRect.y + _thumbRect.h - 1, (byte)(_color + 4));
+        _thumb.setPixel(_thumbRect.x + _thumbRect.w - 1, _thumbRect.y, (byte)(_color + 4));
 
-	    // Hollow it out
-	    if ((int)square.h - 4 > 0)
-	    {
-		    color = _color + 5;
+        // Hollow it out
+        if ((int)square.h - 4 > 0)
+        {
+            color = _color + 5;
 
-		    square.x++;
-		    square.y++;
-		    square.w -= 3;
-		    square.h -= 3;
+            square.x++;
+            square.y++;
+            square.w -= 3;
+            square.h -= 3;
 
-		    _thumb.drawRect(ref square, (byte)color);
+            _thumb.drawRect(ref square, (byte)color);
 
-		    square.x++;
-		    square.y++;
-		    color = _color + 2;
+            square.x++;
+            square.y++;
+            color = _color + 2;
 
-		    _thumb.drawRect(ref square, (byte)color);
+            _thumb.drawRect(ref square, (byte)color);
 
-		    square.w--;
-		    square.h--;
-		    color = 0;
+            square.w--;
+            square.h--;
+            color = 0;
 
-		    _thumb.drawRect(ref square, (byte)color);
+            _thumb.drawRect(ref square, (byte)color);
 
-		    _thumb.setPixel(_thumbRect.x + 2 + _thumbRect.w - 1 - 4, _thumbRect.y + 2 + _thumbRect.h - 1 - 4, (byte)(_color + 1));
-		    _thumb.setPixel(_thumbRect.x + 2, _thumbRect.y + 2 + _thumbRect.h - 1 - 4, (byte)(_color + 4));
-		    _thumb.setPixel(_thumbRect.x + 2 + _thumbRect.w - 1 - 4, _thumbRect.y + 2, (byte)(_color + 4));
-	    }
-	    _thumb.unlock();
+            _thumb.setPixel(_thumbRect.x + 2 + _thumbRect.w - 1 - 4, _thumbRect.y + 2 + _thumbRect.h - 1 - 4, (byte)(_color + 1));
+            _thumb.setPixel(_thumbRect.x + 2, _thumbRect.y + 2 + _thumbRect.h - 1 - 4, (byte)(_color + 4));
+            _thumb.setPixel(_thumbRect.x + 2 + _thumbRect.w - 1 - 4, _thumbRect.y + 2, (byte)(_color + 4));
+        }
+        _thumb.unlock();
     }
 
     /**
@@ -218,113 +218,113 @@ internal class ScrollBar : InteractiveSurface
      */
     internal override void blit(Surface surface)
     {
-	    base.blit(surface);
-	    if (_visible && !_hidden)
-	    {
-		    _track.blit(surface);
-		    _thumb.blit(surface);
-		    invalidate();
-	    }
+        base.blit(surface);
+        if (_visible && !_hidden)
+        {
+            _track.blit(surface);
+            _thumb.blit(surface);
+            invalidate();
+        }
     }
 
-	/**
+    /**
 	 * The scrollbar only moves while the button is pressed.
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	internal override void mousePress(Action action, State state)
-	{
-		base.mousePress(action, state);
-		if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-		{
-			int cursorY = (int)(action.getAbsoluteYMouse() - getY());
-			if (cursorY >= _thumbRect.y && cursorY < _thumbRect.y + _thumbRect.h)
-			{
-				_offset = _thumbRect.y - cursorY;
-			}
-			else
-			{
-				_offset = -_thumbRect.h / 2;
-			}
-			_pressed = true;
-		}
-		else if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
-		{
-			_list.scrollUp(false, true);
-		}
-		else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
-		{
-			_list.scrollDown(false, true);
-		}
-	}
+    internal override void mousePress(Action action, State state)
+    {
+        base.mousePress(action, state);
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+        {
+            int cursorY = (int)(action.getAbsoluteYMouse() - getY());
+            if (cursorY >= _thumbRect.y && cursorY < _thumbRect.y + _thumbRect.h)
+            {
+                _offset = _thumbRect.y - cursorY;
+            }
+            else
+            {
+                _offset = -_thumbRect.h / 2;
+            }
+            _pressed = true;
+        }
+        else if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
+        {
+            _list.scrollUp(false, true);
+        }
+        else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+        {
+            _list.scrollDown(false, true);
+        }
+    }
 
-	/**
+    /**
 	 * The scrollbar stops moving when the button is released.
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	protected override void mouseRelease(Action action, State state)
-	{
-		base.mouseRelease(action, state);
-		if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-		{
-			_pressed = false;
-			_offset = 0;
-		}
-	}
+    protected override void mouseRelease(Action action, State state)
+    {
+        base.mouseRelease(action, state);
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+        {
+            _pressed = false;
+            _offset = 0;
+        }
+    }
 
-	/**
+    /**
 	 * Replaces a certain amount of colors in the scrollbar's palette.
 	 * @param colors Pointer to the set of colors.
 	 * @param firstcolor Offset of the first color to replace.
 	 * @param ncolors Amount of colors to replace.
 	 */
-	internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
-	{
-		base.setPalette(colors, firstcolor, ncolors);
-		_track.setPalette(colors, firstcolor, ncolors);
-		_thumb.setPalette(colors, firstcolor, ncolors);
-	}
+    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    {
+        base.setPalette(colors, firstcolor, ncolors);
+        _track.setPalette(colors, firstcolor, ncolors);
+        _thumb.setPalette(colors, firstcolor, ncolors);
+    }
 
-	/**
+    /**
 	 * Changes the position of the surface in the X axis.
 	 * @param x X position in pixels.
 	 */
-	internal override void setX(int x)
-	{
-		base.setX(x);
-		_track.setX(x+1);
-		_thumb.setX(x);
-	}
+    internal override void setX(int x)
+    {
+        base.setX(x);
+        _track.setX(x + 1);
+        _thumb.setX(x);
+    }
 
-	/**
+    /**
 	 * Changes the position of the surface in the Y axis.
 	 * @param y Y position in pixels.
 	 */
-	internal override void setY(int y)
-	{
-		base.setY(y);
-		_track.setY(y);
-		_thumb.setY(y);
-	}
+    internal override void setY(int y)
+    {
+        base.setY(y);
+        _track.setY(y);
+        _thumb.setY(y);
+    }
 
-	/**
+    /**
 	 * Changes the height of the scrollbar.
 	 * @param height New height in pixels.
 	 */
-	internal override void setHeight(int height)
-	{
-		base.setHeight(height);
-		_track.setHeight(height);
-		_thumb.setHeight(height);
-		_redraw = true;
-	}
+    internal override void setHeight(int height)
+    {
+        base.setHeight(height);
+        _track.setHeight(height);
+        _thumb.setHeight(height);
+        _redraw = true;
+    }
 
-	/**
+    /**
 	 * Enables/disables high contrast color. Mostly used for
 	 * Battlescape text.
 	 * @param contrast High contrast setting.
 	 */
-	internal override void setHighContrast(bool contrast) =>
-		_contrast = contrast;
+    internal override void setHighContrast(bool contrast) =>
+        _contrast = contrast;
 }

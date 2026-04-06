@@ -90,15 +90,15 @@ internal class RNG
         return (num / ((double)ulong.MaxValue / (max - min)) + min);
     }
 
-	/// Shuffles a list randomly.
-	/**
+    /// Shuffles a list randomly.
+    /**
 	 * Randomly changes the orders of the elements in a list.
 	 * @param list The container to randomize.
 	 */
-	internal static void shuffle<T>(List<T> list)
-	{
-		if (!list.Any())
-			return;
+    internal static void shuffle<T>(List<T> list)
+    {
+        if (!list.Any())
+            return;
         for (int i = list.Count - 1; i > 0; --i)
             (list[generate(0, i)], list[i]) = (list[i], list[generate(0, i)]);
     }
@@ -108,5 +108,5 @@ internal class RNG
      * @param n New seed.
      */
     internal static void setSeed(ulong n) =>
-	    x = n;
+        x = n;
 }

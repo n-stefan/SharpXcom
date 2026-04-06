@@ -24,80 +24,80 @@ namespace SharpXcom.Menu;
  */
 internal class ConfirmLoadState : State
 {
-	OptionsOrigin _origin;
-	string _fileName;
-	Window _window;
-	TextButton _btnYes, _btnNo;
-	Text _txtText;
+    OptionsOrigin _origin;
+    string _fileName;
+    Window _window;
+    TextButton _btnYes, _btnNo;
+    Text _txtText;
 
-	/**
+    /**
 	 * Initializes all the elements in the Confirm Load screen.
 	 * @param game Pointer to the core game.
 	 * @param origin Game section that originated this state.
 	 * @param fileName Name of the save file without extension.
 	 */
-	internal ConfirmLoadState(OptionsOrigin origin, string fileName)
-	{
-		_origin = origin;
-		_fileName = fileName;
+    internal ConfirmLoadState(OptionsOrigin origin, string fileName)
+    {
+        _origin = origin;
+        _fileName = fileName;
 
-		_screen = false;
+        _screen = false;
 
-		// Create objects
-		_window = new Window(this, 216, 100, 52, 50, WindowPopup.POPUP_BOTH);
-		_btnYes = new TextButton(50, 20, 70, 120);
-		_btnNo = new TextButton(50, 20, 200, 120);
-		_txtText = new Text(204, 58, 58, 60);
+        // Create objects
+        _window = new Window(this, 216, 100, 52, 50, WindowPopup.POPUP_BOTH);
+        _btnYes = new TextButton(50, 20, 70, 120);
+        _btnNo = new TextButton(50, 20, 200, 120);
+        _txtText = new Text(204, 58, 58, 60);
 
-		// Set palette
-		setInterface("saveMenus", false, _game.getSavedGame() != null ? _game.getSavedGame().getSavedBattle() : null);
+        // Set palette
+        setInterface("saveMenus", false, _game.getSavedGame() != null ? _game.getSavedGame().getSavedBattle() : null);
 
-		add(_window, "confirmLoad", "saveMenus");
-		add(_btnYes, "confirmLoad", "saveMenus");
-		add(_btnNo, "confirmLoad", "saveMenus");
-		add(_txtText, "confirmLoad", "saveMenus");
+        add(_window, "confirmLoad", "saveMenus");
+        add(_btnYes, "confirmLoad", "saveMenus");
+        add(_btnNo, "confirmLoad", "saveMenus");
+        add(_txtText, "confirmLoad", "saveMenus");
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		// Set up objects
-		_window.setBackground(_game.getMod().getSurface("BACK01.SCR"));
+        // Set up objects
+        _window.setBackground(_game.getMod().getSurface("BACK01.SCR"));
 
-		_btnYes.setText(tr("STR_YES"));
-		_btnYes.onMouseClick(btnYesClick);
-		_btnYes.onKeyboardPress(btnYesClick, Options.keyOk);
+        _btnYes.setText(tr("STR_YES"));
+        _btnYes.onMouseClick(btnYesClick);
+        _btnYes.onKeyboardPress(btnYesClick, Options.keyOk);
 
-		_btnNo.setText(tr("STR_NO"));
-		_btnNo.onMouseClick(btnNoClick);
-		_btnNo.onKeyboardPress(btnNoClick, Options.keyCancel);
+        _btnNo.setText(tr("STR_NO"));
+        _btnNo.onMouseClick(btnNoClick);
+        _btnNo.onKeyboardPress(btnNoClick, Options.keyCancel);
 
-		_txtText.setAlign(TextHAlign.ALIGN_CENTER);
-		_txtText.setBig();
-		_txtText.setWordWrap(true);
-		_txtText.setText(tr("STR_MISSING_CONTENT_PROMPT"));
+        _txtText.setAlign(TextHAlign.ALIGN_CENTER);
+        _txtText.setBig();
+        _txtText.setWordWrap(true);
+        _txtText.setText(tr("STR_MISSING_CONTENT_PROMPT"));
 
-		if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
-		{
-			applyBattlescapeTheme();
-		}
-	}
+        if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
+        {
+            applyBattlescapeTheme();
+        }
+    }
 
-	/// Cleans up the confirmation state.
-	~ConfirmLoadState() { }
+    /// Cleans up the confirmation state.
+    ~ConfirmLoadState() { }
 
-	/**
+    /**
 	 * Proceed to load the save.
 	 * @param action Pointer to an action.
 	 */
-	void btnYesClick(Action _)
-	{
-		_game.popState();
-		_game.pushState(new LoadGameState(_origin, _fileName, _palette));
-	}
+    void btnYesClick(Action _)
+    {
+        _game.popState();
+        _game.pushState(new LoadGameState(_origin, _fileName, _palette));
+    }
 
-	/**
+    /**
 	 * Abort loading and return to save list.
 	 * @param action Pointer to an action.
 	 */
-	void btnNoClick(Action _) =>
-		_game.popState();
+    void btnNoClick(Action _) =>
+        _game.popState();
 }

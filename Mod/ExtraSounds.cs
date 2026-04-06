@@ -39,102 +39,102 @@ internal class ExtraSounds
      */
     ~ExtraSounds() { }
 
-	/**
+    /**
 	 * Loads the external sounds into a new or existing soundset.
 	 * @param set Existing soundset.
 	 * @return New soundset.
 	 */
-	internal SoundSet loadSoundSet(SoundSet set)
-	{
-		if (set == null)
-		{
+    internal SoundSet loadSoundSet(SoundSet set)
+    {
+        if (set == null)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} Creating new sound set: {_type}, this will likely have no in-game use.");
-			set = new SoundSet();
-		}
-		else
-		{
+            set = new SoundSet();
+        }
+        else
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Adding/Replacing items in sound set: {_type}");
-		}
-		foreach (var sound in _sounds)
-		{
-			int startSound = sound.Key;
-			string fileName = sound.Value;
-			if (fileName[fileName.Length - 1] == '/')
-			{
+        }
+        foreach (var sound in _sounds)
+        {
+            int startSound = sound.Key;
+            string fileName = sound.Value;
+            if (fileName[fileName.Length - 1] == '/')
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Loading sound set from folder: {fileName} starting at index: {startSound}");
-				int offset = startSound;
-				HashSet<string> contents = FileMap.getVFolderContents(fileName);
-				foreach (var item in contents)
-				{
-					try
-					{
-						loadSound(set, offset, fileName + item);
-						offset++;
-					}
-					catch (Exception e)
-					{
+                int offset = startSound;
+                HashSet<string> contents = FileMap.getVFolderContents(fileName);
+                foreach (var item in contents)
+                {
+                    try
+                    {
+                        loadSound(set, offset, fileName + item);
+                        offset++;
+                    }
+                    catch (Exception e)
+                    {
                         Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {e.Message}");
-					}
-				}
-			}
-			else
-			{
-				loadSound(set, startSound, fileName);
-			}
-		}
-		return set;
-	}
+                    }
+                }
+            }
+            else
+            {
+                loadSound(set, startSound, fileName);
+            }
+        }
+        return set;
+    }
 
-	void loadSound(SoundSet set, int index, string fileName)
-	{
-		uint indexWithOffset = (uint)index;
-		if (indexWithOffset >= set.getMaxSharedSounds())
-		{
-			if (indexWithOffset >= _current.size)
-			{
-				string err = $"ExtraSounds '{_type}' sound '{indexWithOffset}' exceeds mod '{_current.name}' size limit {_current.size}";
-				throw new Exception(err);
-			}
-			indexWithOffset += _current.offset;
-		}
+    void loadSound(SoundSet set, int index, string fileName)
+    {
+        uint indexWithOffset = (uint)index;
+        if (indexWithOffset >= set.getMaxSharedSounds())
+        {
+            if (indexWithOffset >= _current.size)
+            {
+                string err = $"ExtraSounds '{_type}' sound '{indexWithOffset}' exceeds mod '{_current.name}' size limit {_current.size}";
+                throw new Exception(err);
+            }
+            indexWithOffset += _current.offset;
+        }
 
-		string fullPath = FileMap.getFilePath(fileName);
-		Sound sound = set.getSound(indexWithOffset);
-		if (sound != null)
-		{
+        string fullPath = FileMap.getFilePath(fileName);
+        Sound sound = set.getSound(indexWithOffset);
+        if (sound != null)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Replacing sound: {index}, using index: {indexWithOffset}");
-		}
-		else
-		{
+        }
+        else
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Adding sound: {index}, using index: {indexWithOffset}");
-			sound = set.addSound(indexWithOffset);
-		}
-		sound.load(fullPath);
-	}
+            sound = set.addSound(indexWithOffset);
+        }
+        sound.load(fullPath);
+    }
 
-	/**
+    /**
 	 * Loads the extra sound set from YAML.
 	 * @param node YAML node.
 	 * @param modIndex The internal index of the associated mod.
 	 */
-	internal void load(YamlNode node, ModData current)
-	{
-		_type = node["type"].ToString();
+    internal void load(YamlNode node, ModData current)
+    {
+        _type = node["type"].ToString();
         _sounds = ((YamlMappingNode)node["files"]).Children.ToDictionary(x => int.Parse(x.Key.ToString()), x => x.Value.ToString());
         _current = current;
-	}
+    }
 
-	/**
+    /**
 	 * Gets the filename that this sound set represents.
 	 * @return The sound name.
 	 */
-	internal string getType() =>
-		_type;
+    internal string getType() =>
+        _type;
 
-	/**
+    /**
 	 * Gets the list of sounds defined by this mod.
 	 * @return The list of sounds defined my this mod.
 	 */
-	Dictionary<int, string> getSounds() =>
-		_sounds;
+    Dictionary<int, string> getSounds() =>
+        _sounds;
 }

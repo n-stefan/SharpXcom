@@ -48,7 +48,7 @@ internal class StatStringCondition
      * @return Name of the associated stat.
      */
     internal string getConditionName() =>
-	    _conditionName;
+        _conditionName;
 
     /**
      * Checks if this condition is valid for the current stat.
@@ -58,16 +58,16 @@ internal class StatStringCondition
      */
     internal bool isMet(int stat, bool psi)
     {
-	    if (_conditionName == "psiTraining")
-	    {
-		    return true;
-	    }
-	    bool conditionMet = (stat >= _minVal && stat <= _maxVal);
-	    if (_conditionName == "psiStrength" || _conditionName == "psiSkill")
-	    {
-		    conditionMet = conditionMet && psi;
-	    }
-	    return conditionMet;
+        if (_conditionName == "psiTraining")
+        {
+            return true;
+        }
+        bool conditionMet = (stat >= _minVal && stat <= _maxVal);
+        if (_conditionName == "psiStrength" || _conditionName == "psiSkill")
+        {
+            conditionMet = conditionMet && psi;
+        }
+        return conditionMet;
     }
 
     /**
@@ -75,12 +75,12 @@ internal class StatStringCondition
      * @return The minimum value.
      */
     int getMinVal() =>
-	    _minVal;
+        _minVal;
 
     /**
      * Gets the maximum value for the condition (default is 255).
      * @return The maximum value.
      */
     int getMaxVal() =>
-	    _maxVal;
+        _maxVal;
 }

@@ -48,7 +48,7 @@ internal class Ufo : MovingTarget
     uint _trajectoryPoint;
     bool _detected, _hyperDetected, _processedIntercept;
     int _shootingAt, _hitFrame, _fireCountdown, _escapeCountdown;
-	KeyValuePair<string, int> _shotDownByCraftId;
+    KeyValuePair<string, int> _shotDownByCraftId;
 
     /**
      * Initializes a UFO of the specified type.
@@ -101,35 +101,35 @@ internal class Ufo : MovingTarget
     {
         var node = (YamlMappingNode)base.save();
         node.Add("type", _rules.getType());
-	    if (_crashId != 0)
-	    {
-		    node.Add("crashId", _crashId.ToString());
-	    }
-	    else if (_landId != 0)
-	    {
-		    node.Add("landId", _landId.ToString());
-	    }
-	    node.Add("damage", _damage.ToString());
-	    node.Add("altitude", _altitude);
-	    node.Add("direction", _direction);
-	    node.Add("status", ((int)_status).ToString());
+        if (_crashId != 0)
+        {
+            node.Add("crashId", _crashId.ToString());
+        }
+        else if (_landId != 0)
+        {
+            node.Add("landId", _landId.ToString());
+        }
+        node.Add("damage", _damage.ToString());
+        node.Add("altitude", _altitude);
+        node.Add("direction", _direction);
+        node.Add("status", ((int)_status).ToString());
         if (_detected)
             node.Add("detected", _detected.ToString());
-	    if (_hyperDetected)
-		    node.Add("hyperDetected", _hyperDetected.ToString());
-	    if (_secondsRemaining != 0)
-		    node.Add("secondsRemaining", _secondsRemaining.ToString());
-	    if (_inBattlescape)
-		    node.Add("inBattlescape", _inBattlescape.ToString());
-	    if (!newBattle)
-	    {
+        if (_hyperDetected)
+            node.Add("hyperDetected", _hyperDetected.ToString());
+        if (_secondsRemaining != 0)
+            node.Add("secondsRemaining", _secondsRemaining.ToString());
+        if (_inBattlescape)
+            node.Add("inBattlescape", _inBattlescape.ToString());
+        if (!newBattle)
+        {
             node.Add("mission", _mission.getId().ToString());
-		    node.Add("trajectory", _trajectory.getID());
-		    node.Add("trajectoryPoint", _trajectoryPoint.ToString());
-	    }
+            node.Add("trajectory", _trajectory.getID());
+            node.Add("trajectoryPoint", _trajectoryPoint.ToString());
+        }
 
-	    node.Add("fireCountdown", _fireCountdown.ToString());
-	    node.Add("escapeCountdown", _escapeCountdown.ToString());
+        node.Add("fireCountdown", _fireCountdown.ToString());
+        node.Add("escapeCountdown", _escapeCountdown.ToString());
         return node;
     }
 
@@ -141,15 +141,15 @@ internal class Ufo : MovingTarget
     {
         if (!_detected)
             return -1;
-	    switch (_status)
-	    {
-	        case UfoStatus.LANDED:
-		        return _rules.getLandMarker() == -1 ? 3 : _rules.getLandMarker();
-	        case UfoStatus.CRASHED:
-		        return _rules.getCrashMarker() == -1 ? 4 : _rules.getCrashMarker();
-	        default:
-		        return _rules.getMarker() == -1 ? 2 : _rules.getMarker();
-	    }
+        switch (_status)
+        {
+            case UfoStatus.LANDED:
+                return _rules.getLandMarker() == -1 ? 3 : _rules.getLandMarker();
+            case UfoStatus.CRASHED:
+                return _rules.getCrashMarker() == -1 ? 4 : _rules.getCrashMarker();
+            default:
+                return _rules.getMarker() == -1 ? 2 : _rules.getMarker();
+        }
     }
 
     /**
@@ -188,7 +188,7 @@ internal class Ufo : MovingTarget
      * @warning ONLY FOR NEW BATTLE USE!
      */
     internal void changeRules(RuleUfo rules) =>
-	    _rules = rules;
+        _rules = rules;
 
     /// Gets the UFO status
     internal UfoStatus getStatus() =>
@@ -201,7 +201,7 @@ internal class Ufo : MovingTarget
      * @return Amount of seconds.
      */
     internal uint getSecondsRemaining() =>
-	    _secondsRemaining;
+        _secondsRemaining;
 
     /**
      * Loads the UFO from a YAML file.
@@ -211,73 +211,73 @@ internal class Ufo : MovingTarget
      */
     internal void load(YamlNode node, Mod.Mod mod, SavedGame game)
     {
-	    base.load(node);
-	    _crashId = int.Parse(node["crashId"].ToString());
-	    _landId = int.Parse(node["landId"].ToString());
-	    _damage = int.Parse(node["damage"].ToString());
-	    _altitude = node["altitude"].ToString();
-	    _direction = node["direction"].ToString();
-	    _detected = bool.Parse(node["detected"].ToString());
-	    _hyperDetected = bool.Parse(node["hyperDetected"].ToString());
-	    _secondsRemaining = uint.Parse(node["secondsRemaining"].ToString());
-	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
-	    double lon = _lon;
-	    double lat = _lat;
+        base.load(node);
+        _crashId = int.Parse(node["crashId"].ToString());
+        _landId = int.Parse(node["landId"].ToString());
+        _damage = int.Parse(node["damage"].ToString());
+        _altitude = node["altitude"].ToString();
+        _direction = node["direction"].ToString();
+        _detected = bool.Parse(node["detected"].ToString());
+        _hyperDetected = bool.Parse(node["hyperDetected"].ToString());
+        _secondsRemaining = uint.Parse(node["secondsRemaining"].ToString());
+        _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+        double lon = _lon;
+        double lat = _lat;
         if (node["dest"] is YamlNode dest)
-	    {
-		    lon = double.Parse(dest["lon"].ToString());
-		    lat = double.Parse(dest["lat"].ToString());
-	    }
-	    _dest = new Waypoint();
-	    _dest.setLongitude(lon);
-	    _dest.setLatitude(lat);
+        {
+            lon = double.Parse(dest["lon"].ToString());
+            lat = double.Parse(dest["lat"].ToString());
+        }
+        _dest = new Waypoint();
+        _dest.setLongitude(lon);
+        _dest.setLatitude(lat);
         if (node["status"] is YamlNode status)
-	    {
-		    _status = (UfoStatus)int.Parse(status.ToString());
-	    }
-	    else
-	    {
-		    if (isDestroyed())
-		    {
-			    _status = UfoStatus.DESTROYED;
-		    }
-		    else if (isCrashed())
-		    {
-			    _status = UfoStatus.CRASHED;
-		    }
-		    else if (_altitude == "STR_GROUND")
-		    {
-			    _status = UfoStatus.LANDED;
-		    }
-		    else
-		    {
-			    _status = UfoStatus.FLYING;
-		    }
-	    }
-	    if (game.getMonthsPassed() != -1)
-	    {
-		    int missionID = int.Parse(node["mission"].ToString());
-		    var found = game.getAlienMissions().Find(x => x.getId() == missionID);
-		    if (found == null)
-		    {
-			    // Corrupt save file.
-			    throw new Exception("Unknown UFO mission, save file is corrupt.");
-		    }
-		    _mission = found;
+        {
+            _status = (UfoStatus)int.Parse(status.ToString());
+        }
+        else
+        {
+            if (isDestroyed())
+            {
+                _status = UfoStatus.DESTROYED;
+            }
+            else if (isCrashed())
+            {
+                _status = UfoStatus.CRASHED;
+            }
+            else if (_altitude == "STR_GROUND")
+            {
+                _status = UfoStatus.LANDED;
+            }
+            else
+            {
+                _status = UfoStatus.FLYING;
+            }
+        }
+        if (game.getMonthsPassed() != -1)
+        {
+            int missionID = int.Parse(node["mission"].ToString());
+            var found = game.getAlienMissions().Find(x => x.getId() == missionID);
+            if (found == null)
+            {
+                // Corrupt save file.
+                throw new Exception("Unknown UFO mission, save file is corrupt.");
+            }
+            _mission = found;
 
-		    string tid = node["trajectory"].ToString();
-		    _trajectory = mod.getUfoTrajectory(tid);
-		    if (_trajectory == null)
-		    {
-			    // Corrupt save file.
-			    throw new Exception("Unknown UFO trajectory, save file is corrupt.");
-		    }
-		    _trajectoryPoint = uint.Parse(node["trajectoryPoint"].ToString());
-	    }
-	    _fireCountdown = int.Parse(node["fireCountdown"].ToString());
-	    _escapeCountdown = int.Parse(node["escapeCountdown"].ToString());
-	    if (_inBattlescape)
-		    setSpeed(0);
+            string tid = node["trajectory"].ToString();
+            _trajectory = mod.getUfoTrajectory(tid);
+            if (_trajectory == null)
+            {
+                // Corrupt save file.
+                throw new Exception("Unknown UFO trajectory, save file is corrupt.");
+            }
+            _trajectoryPoint = uint.Parse(node["trajectoryPoint"].ToString());
+        }
+        _fireCountdown = int.Parse(node["fireCountdown"].ToString());
+        _escapeCountdown = int.Parse(node["escapeCountdown"].ToString());
+        if (_inBattlescape)
+            setSpeed(0);
     }
 
     /**
@@ -286,7 +286,7 @@ internal class Ufo : MovingTarget
      * @return Crashed status.
      */
     internal bool isDestroyed() =>
-	    (_damage >= _rules.getMaxDamage());
+        (_damage >= _rules.getMaxDamage());
 
     /**
      * Returns if this UFO took enough damage
@@ -294,14 +294,14 @@ internal class Ufo : MovingTarget
      * @return Crashed status.
      */
     internal bool isCrashed() =>
-	    (_damage > _rules.getMaxDamage() / 2);
+        (_damage > _rules.getMaxDamage() / 2);
 
     /**
      * Returns whether this UFO has been detected by hyper-wave.
      * @return Detection status.
      */
     internal bool getHyperDetected() =>
-	    _hyperDetected;
+        _hyperDetected;
 
     /**
      * Changes whether this UFO has been detected by hyper-wave.
@@ -315,14 +315,14 @@ internal class Ufo : MovingTarget
      * @return Pointer to ruleset.
      */
     internal RuleUfo getRules() =>
-	    _rules;
+        _rules;
 
     /**
      * Returns whether this UFO has been detected by radars.
      * @return Detection status.
      */
     internal bool getDetected() =>
-	    _detected;
+        _detected;
 
     /**
      * Returns a UFO's visibility to radar detection.
@@ -332,32 +332,32 @@ internal class Ufo : MovingTarget
      */
     internal int getVisibility()
     {
-	    int size = 0;
-	    // size = 15*(3-ufosize);
-	    if (_rules.getSize() == "STR_VERY_SMALL")
-		    size = -30;
-	    else if (_rules.getSize() == "STR_SMALL")
-		    size = -15;
-	    else if (_rules.getSize() == "STR_MEDIUM_UC")
-		    size = 0;
-	    else if (_rules.getSize() == "STR_LARGE")
-		    size = 15;
-	    else if (_rules.getSize() == "STR_VERY_LARGE")
-		    size = 30;
+        int size = 0;
+        // size = 15*(3-ufosize);
+        if (_rules.getSize() == "STR_VERY_SMALL")
+            size = -30;
+        else if (_rules.getSize() == "STR_SMALL")
+            size = -15;
+        else if (_rules.getSize() == "STR_MEDIUM_UC")
+            size = 0;
+        else if (_rules.getSize() == "STR_LARGE")
+            size = 15;
+        else if (_rules.getSize() == "STR_VERY_LARGE")
+            size = 30;
 
-	    int visibility = 0;
-	    if (_altitude == "STR_GROUND")
-		    visibility = -30;
-	    else if (_altitude == "STR_VERY_LOW")
-		    visibility = size - 20;
-	    else if (_altitude == "STR_LOW_UC")
-		    visibility = size - 10;
-	    else if (_altitude == "STR_HIGH_UC")
-		    visibility = size;
-	    else if (_altitude == "STR_VERY_HIGH")
-		    visibility = size - 10;
+        int visibility = 0;
+        if (_altitude == "STR_GROUND")
+            visibility = -30;
+        else if (_altitude == "STR_VERY_LOW")
+            visibility = size - 20;
+        else if (_altitude == "STR_LOW_UC")
+            visibility = size - 10;
+        else if (_altitude == "STR_HIGH_UC")
+            visibility = size;
+        else if (_altitude == "STR_VERY_HIGH")
+            visibility = size - 10;
 
-	    return visibility;
+        return visibility;
     }
 
     /// Set the UFO's status.
@@ -382,14 +382,14 @@ internal class Ufo : MovingTarget
      */
     internal int getAltitudeInt()
     {
-	    for (int i = 0; i < 5; ++i)
-	    {
-		    if (ALTITUDE_STRING[i] == _altitude)
-		    {
-			    return i;
-		    }
-	    }
-	    return -1;
+        for (int i = 0; i < 5; ++i)
+        {
+            if (ALTITUDE_STRING[i] == _altitude)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -398,15 +398,15 @@ internal class Ufo : MovingTarget
      */
     internal void setAltitude(string altitude)
     {
-	    _altitude = altitude;
-	    if (_altitude != "STR_GROUND")
-	    {
-		    _status = UfoStatus.FLYING;
-	    }
-	    else
-	    {
-		    _status = isCrashed() ? UfoStatus.CRASHED : UfoStatus.LANDED;
-	    }
+        _altitude = altitude;
+        if (_altitude != "STR_GROUND")
+        {
+            _status = UfoStatus.FLYING;
+        }
+        else
+        {
+            _status = isCrashed() ? UfoStatus.CRASHED : UfoStatus.LANDED;
+        }
     }
 
     /// Sets the UFO's progress on the trajectory track.
@@ -418,21 +418,21 @@ internal class Ufo : MovingTarget
      * @return Altitude as string ID.
      */
     internal string getAltitude() =>
-	    _altitude;
+        _altitude;
 
     /**
      * Gets the UFO's landing site ID.
      * @return landing site ID.
      */
     internal int getLandId() =>
-	    _landId;
+        _landId;
 
     /**
      * Returns the alien race currently residing in the UFO.
      * @return Alien race.
      */
     internal string getAlienRace() =>
-	    _mission.getRace();
+        _mission.getRace();
 
     /**
      * Sets the mission information of the UFO.
@@ -444,11 +444,11 @@ internal class Ufo : MovingTarget
      */
     internal void setMissionInfo(AlienMission mission, UfoTrajectory trajectory)
     {
-	    Debug.Assert(_mission == null && mission != null && trajectory != null);
-	    _mission = mission;
-	    _mission.increaseLiveUfos();
-	    _trajectoryPoint = 0;
-	    _trajectory = trajectory;
+        Debug.Assert(_mission == null && mission != null && trajectory != null);
+        _mission = mission;
+        _mission.increaseLiveUfos();
+        _trajectoryPoint = 0;
+        _trajectory = trajectory;
     }
 
     /**
@@ -476,8 +476,8 @@ internal class Ufo : MovingTarget
                     _detected = true;
                 }
                 goto case UfoStatus.DESTROYED;
-                // This gets handled in GeoscapeState::time30Minutes()
-                // Because the original game processes it every 30 minutes!
+            // This gets handled in GeoscapeState::time30Minutes()
+            // Because the original game processes it every 30 minutes!
             case UfoStatus.DESTROYED:
                 // Do nothing
                 break;
@@ -489,7 +489,7 @@ internal class Ufo : MovingTarget
      * @return Is the UFO currently in battle?
      */
     internal bool isInBattlescape() =>
-	    _inBattlescape;
+        _inBattlescape;
 
     /**
      * Sets the UFO's battlescape status.
@@ -507,7 +507,7 @@ internal class Ufo : MovingTarget
      * @return how many ticks until the ship tries to leave.
      */
     internal int getEscapeCountdown() =>
-	    _escapeCountdown;
+        _escapeCountdown;
 
     /**
      * Sets the number of ticks until the ufo fires its weapon.
@@ -537,21 +537,21 @@ internal class Ufo : MovingTarget
      * @return Direction.
      */
     internal string getDirection() =>
-	    _direction;
+        _direction;
 
     /**
      * Returns the Mission type of the UFO.
      * @return Mission.
      */
     internal string getMissionType() =>
-	    _mission.getRules().getType();
+        _mission.getRules().getType();
 
     /**
      * Returns the amount of damage this UFO has taken.
      * @return Amount of damage.
      */
     internal int getDamage() =>
-	    _damage;
+        _damage;
 
     /**
      * Changes the amount of damage this UFO has taken.
@@ -579,55 +579,55 @@ internal class Ufo : MovingTarget
      * @return which interception window the UFO is active in.
      */
     internal int getShootingAt() =>
-	    _shootingAt;
+        _shootingAt;
 
     /**
      * Sets which interception window the UFO is active in.
      * @param target the window the UFO is active in.
      */
     internal void setShootingAt(int target) =>
-	    _shootingAt = target;
+        _shootingAt = target;
 
     /**
      * Gets the number of ticks until the ufo is ready to fire.
      * @return ticks until weapon is ready.
      */
     internal int getFireCountdown() =>
-	    _fireCountdown;
+        _fireCountdown;
 
     internal KeyValuePair<string, int> getShotDownByCraftId() =>
-	    _shotDownByCraftId;
+        _shotDownByCraftId;
 
     /**
      * Gets the UFO's hit frame.
      * @return the hit frame.
      */
     internal int getHitFrame() =>
-	    _hitFrame;
+        _hitFrame;
 
     /**
      * Sets the UFO's hit frame.
      * @param frame the hit frame.
      */
     internal void setHitFrame(int frame) =>
-	    _hitFrame = frame;
+        _hitFrame = frame;
 
     /**
      * Gets the UFO's crash site ID.
      * @return the UFO's crash site ID.
      */
     internal int getCrashId() =>
-	    _crashId;
+        _crashId;
 
     /**
      * Gets if the ufo has had its timers decremented on this cycle of interception updates.
      * @return if this ufo has already been processed.
      */
     internal bool getInterceptionProcessed() =>
-	    _processedIntercept;
+        _processedIntercept;
 
     internal void setShotDownByCraftId(KeyValuePair<string, int> craft) =>
-	    _shotDownByCraftId = craft;
+        _shotDownByCraftId = craft;
 
     /**
      * Returns the UFO's unique type used for
@@ -635,7 +635,7 @@ internal class Ufo : MovingTarget
      * @return ID.
      */
     internal override string getType() =>
-	    "STR_UFO";
+        "STR_UFO";
 
     /**
      * Returns the UFO's unique default name.
@@ -644,15 +644,15 @@ internal class Ufo : MovingTarget
      */
     internal override string getDefaultName(Language lang)
     {
-	    switch (_status)
-	    {
-	        case UfoStatus.LANDED:
-		        return lang.getString(getMarkerName()).arg(_landId);
-	        case UfoStatus.CRASHED:
-		        return lang.getString(getMarkerName()).arg(_crashId);
-	        default:
-		        return lang.getString(getMarkerName()).arg(_id);
-	    }
+        switch (_status)
+        {
+            case UfoStatus.LANDED:
+                return lang.getString(getMarkerName()).arg(_landId);
+            case UfoStatus.CRASHED:
+                return lang.getString(getMarkerName()).arg(_crashId);
+            default:
+                return lang.getString(getMarkerName()).arg(_id);
+        }
     }
 
     /**
@@ -661,15 +661,15 @@ internal class Ufo : MovingTarget
      */
     internal override string getMarkerName()
     {
-	    switch (_status)
-	    {
-	        case UfoStatus.LANDED:
-		        return "STR_LANDING_SITE_";
-	        case UfoStatus.CRASHED:
-		        return "STR_CRASH_SITE_";
-	        default:
-		        return "STR_UFO_";
-	    }
+        switch (_status)
+        {
+            case UfoStatus.LANDED:
+                return "STR_LANDING_SITE_";
+            case UfoStatus.CRASHED:
+                return "STR_CRASH_SITE_";
+            default:
+                return "STR_UFO_";
+        }
     }
 
     /**
@@ -678,15 +678,15 @@ internal class Ufo : MovingTarget
      */
     internal override int getMarkerId()
     {
-	    switch (_status)
-	    {
-	        case UfoStatus.LANDED:
-		        return _landId;
-	        case UfoStatus.CRASHED:
-		        return _crashId;
-	        default:
-		        return _id;
-	    }
+        switch (_status)
+        {
+            case UfoStatus.LANDED:
+                return _landId;
+            case UfoStatus.CRASHED:
+                return _crashId;
+            default:
+                return _id;
+        }
     }
 
     /**
@@ -695,79 +695,79 @@ internal class Ufo : MovingTarget
      */
     protected override void calculateSpeed()
     {
-	    base.calculateSpeed();
+        base.calculateSpeed();
 
-	    double x = _speedLon;
-	    double y = -_speedLat;
+        double x = _speedLon;
+        double y = -_speedLat;
 
-	    // This section guards vs. divide-by-zero.
-	    if (AreSame(x, 0.0) || AreSame(y, 0.0))
-	    {
-		    if (AreSame(x, 0.0) && AreSame(y, 0.0))
-		    {
-			    _direction = "STR_NONE_UC";
-		    }
-		    else if (AreSame(x, 0.0))
-		    {
-			    if (y > 0.0f)
-			    {
-				    _direction = "STR_NORTH";
-			    }
-			    else if (y < 0.0f)
-			    {
-				    _direction = "STR_SOUTH";
-			    }
-		    }
-		    else if (AreSame(y, 0.0))
-		    {
-			    if (x > 0.0f)
-			    {
-				    _direction = "STR_EAST";
-			    }
-			    else if (x < 0.0f)
-			    {
-				    _direction = "STR_WEST";
-			    }
-		    }
+        // This section guards vs. divide-by-zero.
+        if (AreSame(x, 0.0) || AreSame(y, 0.0))
+        {
+            if (AreSame(x, 0.0) && AreSame(y, 0.0))
+            {
+                _direction = "STR_NONE_UC";
+            }
+            else if (AreSame(x, 0.0))
+            {
+                if (y > 0.0f)
+                {
+                    _direction = "STR_NORTH";
+                }
+                else if (y < 0.0f)
+                {
+                    _direction = "STR_SOUTH";
+                }
+            }
+            else if (AreSame(y, 0.0))
+            {
+                if (x > 0.0f)
+                {
+                    _direction = "STR_EAST";
+                }
+                else if (x < 0.0f)
+                {
+                    _direction = "STR_WEST";
+                }
+            }
 
-		    return;
-	    }
+            return;
+        }
 
-	    double theta = Math.Atan2(y, x); // radians
-	    theta = theta * 180.0f / M_PI; // +/- 180 deg.
+        double theta = Math.Atan2(y, x); // radians
+        theta = theta * 180.0f / M_PI; // +/- 180 deg.
 
-	    if (22.5f > theta && theta > -22.5f)
-	    {
-		    _direction = "STR_EAST";
-	    }
-	    else if (-22.5f > theta && theta > -67.5f)
-	    {
-		    _direction = "STR_SOUTH_EAST";
-	    }
-	    else if (-67.5f > theta && theta > -112.5f)
-	    {
-		    _direction = "STR_SOUTH";
-	    }
-	    else if (-112.5f > theta && theta > -157.5f)
-	    {
-		    _direction = "STR_SOUTH_WEST";
-	    }
-	    else if (-157.5f > theta || theta > 157.5f)
-	    {
-		    _direction = "STR_WEST";
-	    }
-	    else if (157.5f > theta && theta > 112.5f)
-	    {
-		    _direction = "STR_NORTH_WEST";
-	    }
-	    else if (112.5f > theta && theta > 67.5f)
-	    {
-		    _direction = "STR_NORTH";
-	    }
-	    else
-	    {
-		    _direction = "STR_NORTH_EAST";
-	    }
+        if (22.5f > theta && theta > -22.5f)
+        {
+            _direction = "STR_EAST";
+        }
+        else if (-22.5f > theta && theta > -67.5f)
+        {
+            _direction = "STR_SOUTH_EAST";
+        }
+        else if (-67.5f > theta && theta > -112.5f)
+        {
+            _direction = "STR_SOUTH";
+        }
+        else if (-112.5f > theta && theta > -157.5f)
+        {
+            _direction = "STR_SOUTH_WEST";
+        }
+        else if (-157.5f > theta || theta > 157.5f)
+        {
+            _direction = "STR_WEST";
+        }
+        else if (157.5f > theta && theta > 112.5f)
+        {
+            _direction = "STR_NORTH_WEST";
+        }
+        else if (112.5f > theta && theta > 67.5f)
+        {
+            _direction = "STR_NORTH";
+        }
+        else
+        {
+            _direction = "STR_NORTH_EAST";
+        }
     }
 
     /**
@@ -776,8 +776,8 @@ internal class Ufo : MovingTarget
      */
     internal override void setDestination(Target dest)
     {
-	    Waypoint old = (Waypoint)_dest;
-	    base.setDestination(dest);
-	    old = null;
+        Waypoint old = (Waypoint)_dest;
+        base.setDestination(dest);
+        old = null;
     }
 }

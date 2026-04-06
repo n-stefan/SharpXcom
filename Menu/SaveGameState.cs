@@ -124,59 +124,59 @@ internal class SaveGameState : State
      */
     internal override void think()
     {
-	    base.think();
-	    // Make sure it gets drawn properly
-	    if (_firstRun < 10)
-	    {
-		    _firstRun++;
-	    }
-	    else
-	    {
-		    _game.popState();
+        base.think();
+        // Make sure it gets drawn properly
+        if (_firstRun < 10)
+        {
+            _firstRun++;
+        }
+        else
+        {
+            _game.popState();
 
-		    switch (_type)
-		    {
-		        case SaveType.SAVE_DEFAULT:
-			        // manual save, close the save screen
-			        _game.popState();
-			        if (!_game.getSavedGame().isIronman())
-			        {
-				        // and pause screen too
-				        _game.popState();
-			        }
-			        break;
-		        case SaveType.SAVE_QUICK:
-		        case SaveType.SAVE_AUTO_GEOSCAPE:
-		        case SaveType.SAVE_AUTO_BATTLESCAPE:
-			        // automatic save, give it a default name
-			        _game.getSavedGame().setName(_filename);
+            switch (_type)
+            {
+                case SaveType.SAVE_DEFAULT:
+                    // manual save, close the save screen
+                    _game.popState();
+                    if (!_game.getSavedGame().isIronman())
+                    {
+                        // and pause screen too
+                        _game.popState();
+                    }
+                    break;
+                case SaveType.SAVE_QUICK:
+                case SaveType.SAVE_AUTO_GEOSCAPE:
+                case SaveType.SAVE_AUTO_BATTLESCAPE:
+                    // automatic save, give it a default name
+                    _game.getSavedGame().setName(_filename);
                     goto default;
-		        default:
-			        break;
-		    }
+                default:
+                    break;
+            }
 
-		    // Save the game
-		    try
-		    {
-			    _game.getSavedGame().save(_filename);
-			    if (_type == SaveType.SAVE_IRONMAN_END)
-			    {
-				    Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
-				    _game.getScreen().resetDisplay(false);
+            // Save the game
+            try
+            {
+                _game.getSavedGame().save(_filename);
+                if (_type == SaveType.SAVE_IRONMAN_END)
+                {
+                    Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
+                    _game.getScreen().resetDisplay(false);
 
-				    _game.setState(new MainMenuState());
-				    _game.setSavedGame(null);
-			    }
-		    }
-		    catch (YamlException e)
-		    {
-			    error(e.Message);
-		    }
-		    catch (Exception e)
-		    {
-			    error(e.Message);
-		    }
-	    }
+                    _game.setState(new MainMenuState());
+                    _game.setSavedGame(null);
+                }
+            }
+            catch (YamlException e)
+            {
+                error(e.Message);
+            }
+            catch (Exception e)
+            {
+                error(e.Message);
+            }
+        }
     }
 
     /**
@@ -186,10 +186,10 @@ internal class SaveGameState : State
     void error(string msg)
     {
         Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {msg}");
-	    string error = $"{tr("STR_SAVE_UNSUCCESSFUL")}{Unicode.TOK_NL_SMALL}{Unicode.convPathToUtf8(msg)}";
-	    if (_origin != OptionsOrigin.OPT_BATTLESCAPE)
-		    _game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("geoscapeColor").color, "BACK01.SCR", _game.getMod().getInterface("errorMessages").getElement("geoscapePalette").color));
-	    else
-		    _game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("battlescapeColor").color, "TAC00.SCR", _game.getMod().getInterface("errorMessages").getElement("battlescapePalette").color));
+        string error = $"{tr("STR_SAVE_UNSUCCESSFUL")}{Unicode.TOK_NL_SMALL}{Unicode.convPathToUtf8(msg)}";
+        if (_origin != OptionsOrigin.OPT_BATTLESCAPE)
+            _game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("geoscapeColor").color, "BACK01.SCR", _game.getMod().getInterface("errorMessages").getElement("geoscapePalette").color));
+        else
+            _game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("battlescapeColor").color, "TAC00.SCR", _game.getMod().getInterface("errorMessages").getElement("battlescapePalette").color));
     }
 }

@@ -147,21 +147,21 @@ internal class SoldiersState : State
      */
     internal override void init()
     {
-	    base.init();
-	    uint row = 0;
-	    _lstSoldiers.clearList();
-	    foreach (var i in _base.getSoldiers())
-	    {
-		    _lstSoldiers.addRow(3, i.getName(true), tr(i.getRankString()), i.getCraftString(_game.getLanguage()));
-		    if (i.getCraft() == null)
-		    {
-			    _lstSoldiers.setRowColor(row, _lstSoldiers.getSecondaryColor());
-		    }
-		    row++;
-	    }
-	    if (row > 0 && _lstSoldiers.getScroll() >= row)
-	    {
-		    _lstSoldiers.scrollTo(0);
-	    }
+        base.init();
+        uint row = 0;
+        _lstSoldiers.clearList();
+        foreach (var i in _base.getSoldiers())
+        {
+            _lstSoldiers.addRow(3, i.getName(true), tr(i.getRankString()), i.getCraftString(_game.getLanguage()));
+            if (i.getCraft() == null)
+            {
+                _lstSoldiers.setRowColor(row, _lstSoldiers.getSecondaryColor());
+            }
+            row++;
+        }
+        if (row > 0 && _lstSoldiers.getScroll() >= row)
+        {
+            _lstSoldiers.scrollTo(0);
+        }
     }
 }

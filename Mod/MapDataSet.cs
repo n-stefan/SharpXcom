@@ -69,8 +69,8 @@ struct MCD
 
     internal bool Read(BinaryReader reader)
     {
-		try
-		{
+        try
+        {
             reader.Read(Frame);
             reader.Read(LOFT);
             ScanG = reader.ReadUInt16();
@@ -117,9 +117,9 @@ struct MCD
             return true;
         }
         catch (IOException)
-		{
-			return false;
-		}
+        {
+            return false;
+        }
     }
 }
 
@@ -173,7 +173,7 @@ internal class MapDataSet
      * @return The MapDataSet name.
      */
     internal string getName() =>
-	    _name;
+        _name;
 
     /**
      * Loads the LOFTEMPS.DAT into the ruleset voxeldata.
@@ -190,22 +190,22 @@ internal class MapDataSet
             ushort value;
             Span<byte> buffer = new byte[2];
 
-	        while (mapFile.Read(buffer) != 0)
+            while (mapFile.Read(buffer) != 0)
             {
-		        value = BitConverter.ToUInt16(buffer);
-		        voxelData.Add(value);
-	        }
+                value = BitConverter.ToUInt16(buffer);
+                voxelData.Add(value);
+            }
 
             if (mapFile.Position != mapFile.Length)
-	        {
-		        throw new Exception("Invalid LOFTEMPS");
-	        }
+            {
+                throw new Exception("Invalid LOFTEMPS");
+            }
 
-	        mapFile.Close();
+            mapFile.Close();
         }
         catch (Exception)
         {
-		    throw new Exception(filename + " not found");
+            throw new Exception(filename + " not found");
         }
     }
 
@@ -229,118 +229,118 @@ internal class MapDataSet
 	 * @sa http://www.ufopaedia.org/index.php?title=MCD
 	 */
     internal void loadData(MCDPatch patch)
-	{
-		// prevents loading twice
-		if (_loaded) return;
-		_loaded = true;
+    {
+        // prevents loading twice
+        if (_loaded) return;
+        _loaded = true;
 
-		int objNumber = 0;
+        int objNumber = 0;
 
-		// the struct below helps to read the xcom file format
-		//#pragma pack(push, 1)
-		//#pragma pack(pop)
+        // the struct below helps to read the xcom file format
+        //#pragma pack(push, 1)
+        //#pragma pack(pop)
 
-		var mcd = new MCD();
+        var mcd = new MCD();
 
-		// Load Terrain Data from MCD file
-		string fname = "TERRAIN/" + _name + ".MCD";
-		try
-		{
+        // Load Terrain Data from MCD file
+        string fname = "TERRAIN/" + _name + ".MCD";
+        try
+        {
             using var mapFile = new BinaryReader(new FileStream(FileMap.getFilePath(fname), FileMode.Open));
-		    while (mcd.Read(mapFile))
-		    {
-			    MapData to = new MapData(this);
-			    _objects.Add(to);
+            while (mcd.Read(mapFile))
+            {
+                MapData to = new MapData(this);
+                _objects.Add(to);
 
-			    // set all the terrainobject properties:
-			    for (int frame = 0; frame < 8; frame++)
-			    {
-				    to.setSprite(frame, (int)mcd.Frame[frame]);
-			    }
-			    to.setYOffset((int)mcd.P_Level);
-			    to.setSpecialType((int)mcd.Target_Type, (TilePart)mcd.Tile_Type);
-			    to.setTUCosts((int)mcd.TU_Walk, (int)mcd.TU_Fly, (int)mcd.TU_Slide);
-			    to.setFlags(mcd.UFO_Door != 0, mcd.Stop_LOS != 0, mcd.No_Floor != 0, (int)mcd.Big_Wall, mcd.Gravlift != 0, mcd.Door != 0, mcd.Block_Fire != 0, mcd.Block_Smoke != 0, mcd.Xcom_Base != 0);
-			    to.setTerrainLevel((int)mcd.T_Level);
-			    to.setFootstepSound((int)mcd.Footstep);
-			    to.setAltMCD((int)(mcd.Alt_MCD));
-			    to.setDieMCD((int)(mcd.Die_MCD));
-			    to.setBlockValue((int)mcd.Light_Block, (int)mcd.Stop_LOS, (int)mcd.HE_Block, (int)mcd.Block_Smoke, (int)mcd.Flammable, (int)mcd.HE_Block);
-			    to.setLightSource((int)mcd.Light_Source);
-			    to.setArmor((int)mcd.Armor);
-			    to.setFlammable((int)mcd.Flammable);
-			    to.setFuel((int)mcd.Fuel);
-			    to.setExplosiveType((int)mcd.HE_Type);
-			    to.setExplosive((int)mcd.HE_Strength);
+                // set all the terrainobject properties:
+                for (int frame = 0; frame < 8; frame++)
+                {
+                    to.setSprite(frame, (int)mcd.Frame[frame]);
+                }
+                to.setYOffset((int)mcd.P_Level);
+                to.setSpecialType((int)mcd.Target_Type, (TilePart)mcd.Tile_Type);
+                to.setTUCosts((int)mcd.TU_Walk, (int)mcd.TU_Fly, (int)mcd.TU_Slide);
+                to.setFlags(mcd.UFO_Door != 0, mcd.Stop_LOS != 0, mcd.No_Floor != 0, (int)mcd.Big_Wall, mcd.Gravlift != 0, mcd.Door != 0, mcd.Block_Fire != 0, mcd.Block_Smoke != 0, mcd.Xcom_Base != 0);
+                to.setTerrainLevel((int)mcd.T_Level);
+                to.setFootstepSound((int)mcd.Footstep);
+                to.setAltMCD((int)(mcd.Alt_MCD));
+                to.setDieMCD((int)(mcd.Die_MCD));
+                to.setBlockValue((int)mcd.Light_Block, (int)mcd.Stop_LOS, (int)mcd.HE_Block, (int)mcd.Block_Smoke, (int)mcd.Flammable, (int)mcd.HE_Block);
+                to.setLightSource((int)mcd.Light_Source);
+                to.setArmor((int)mcd.Armor);
+                to.setFlammable((int)mcd.Flammable);
+                to.setFuel((int)mcd.Fuel);
+                to.setExplosiveType((int)mcd.HE_Type);
+                to.setExplosive((int)mcd.HE_Strength);
                 //mcd.ScanG = SDL_SwapLE16(mcd.ScanG);
-			    to.setMiniMapIndex(mcd.ScanG);
+                to.setMiniMapIndex(mcd.ScanG);
 
-			    for (int layer = 0; layer < 12; layer++)
-			    {
-				    int loft = (int)mcd.LOFT[layer];
-				    to.setLoftID(loft, layer);
-			    }
+                for (int layer = 0; layer < 12; layer++)
+                {
+                    int loft = (int)mcd.LOFT[layer];
+                    to.setLoftID(loft, layer);
+                }
 
-			    // store the 2 tiles of blanks in a static - so they are accessible everywhere
-			    if (_name == "BLANKS")
-			    {
-				    if (objNumber == 0)
-					    _blankTile = to;
-				    else if (objNumber == 1)
-					    _scorchedTile = to;
-			    }
-			    objNumber++;
-		    }
+                // store the 2 tiles of blanks in a static - so they are accessible everywhere
+                if (_name == "BLANKS")
+                {
+                    if (objNumber == 0)
+                        _blankTile = to;
+                    else if (objNumber == 1)
+                        _scorchedTile = to;
+                }
+                objNumber++;
+            }
 
-		    if (mapFile.BaseStream.Position != mapFile.BaseStream.Length)
-		    {
-			    throw new Exception("Invalid MCD file " + fname);
-		    }
+            if (mapFile.BaseStream.Position != mapFile.BaseStream.Length)
+            {
+                throw new Exception("Invalid MCD file " + fname);
+            }
 
-		    mapFile.Close();
-		}
-		catch (Exception)
-		{
-			throw new Exception(fname + " not found");
-		}
+            mapFile.Close();
+        }
+        catch (Exception)
+        {
+            throw new Exception(fname + " not found");
+        }
 
-		// apply any ruleset patches before validation
-		if (patch != null)
-		{
-			patch.modifyData(this);
-		}
+        // apply any ruleset patches before validation
+        if (patch != null)
+        {
+            patch.modifyData(this);
+        }
 
-		// Validate MCD references
-		bool validData = true;
+        // Validate MCD references
+        bool validData = true;
 
-		for (int i = 0; i < _objects.Count; ++i)
-		{
-			if ((uint)_objects[i].getDieMCD() >= _objects.Count)
-			{
+        for (int i = 0; i < _objects.Count; ++i)
+        {
+            if ((uint)_objects[i].getDieMCD() >= _objects.Count)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} MCD {_name} object {i} has invalid DieMCD: {_objects[i].getDieMCD()}");
-				validData = false;
-			}
-			if ((uint)_objects[i].getAltMCD() >= _objects.Count)
-			{
+                validData = false;
+            }
+            if ((uint)_objects[i].getAltMCD() >= _objects.Count)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} MCD {_name} object {i} has invalid AltMCD: {_objects[i].getAltMCD()}");
-				validData = false;
-			}
-			if (_objects[i].getArmor() == 0)
-			{
+                validData = false;
+            }
+            if (_objects[i].getArmor() == 0)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} MCD {_name} object {i} has 0 armor");
-				validData = false;
-			}
-		}
+                validData = false;
+            }
+        }
 
-		if (!validData)
-		{
-			throw new Exception("invalid MCD file: " + fname + ", check log file for more details.");
-		}
+        if (!validData)
+        {
+            throw new Exception("invalid MCD file: " + fname + ", check log file for more details.");
+        }
 
-		// Load terrain sprites/surfaces/PCK files into a surfaceset
-		_surfaceSet = new SurfaceSet(32, 40);
-		_surfaceSet.loadPck(FileMap.getFilePath("TERRAIN/" + _name + ".PCK"), FileMap.getFilePath("TERRAIN/" + _name + ".TAB"));
-	}
+        // Load terrain sprites/surfaces/PCK files into a surfaceset
+        _surfaceSet = new SurfaceSet(32, 40);
+        _surfaceSet.loadPck(FileMap.getFilePath("TERRAIN/" + _name + ".PCK"), FileMap.getFilePath("TERRAIN/" + _name + ".TAB"));
+    }
 
     /**
      * Gets a scorched earth tile.
@@ -361,12 +361,12 @@ internal class MapDataSet
      * @return Pointer to the surfaceset.
      */
     internal SurfaceSet getSurfaceset() =>
-	    _surfaceSet;
+        _surfaceSet;
 
     /**
      * Gets a blank floor tile.
      * @return Pointer to a blank tile.
      */
     static MapData getBlankFloorTile() =>
-	    _blankTile;
+        _blankTile;
 }

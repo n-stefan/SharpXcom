@@ -37,112 +37,112 @@ internal class BriefingState : State
 	 * @param base Pointer to the base in the mission.
 	 */
     internal BriefingState(Craft craft = null, Base @base = null)
-	{
-		Options.baseXResolution = Options.baseXGeoscape;
-		Options.baseYResolution = Options.baseYGeoscape;
-		_game.getScreen().resetDisplay(false);
+    {
+        Options.baseXResolution = Options.baseXGeoscape;
+        Options.baseYResolution = Options.baseYGeoscape;
+        _game.getScreen().resetDisplay(false);
 
-		_screen = true;
-		// Create objects
-		_window = new Window(this, 320, 200, 0, 0);
-		_btnOk = new TextButton(120, 18, 100, 164);
-		_txtTitle = new Text(300, 32, 16, 24);
-		_txtTarget = new Text(300, 17, 16, 40);
-		_txtCraft = new Text(300, 17, 16, 56);
-		_txtBriefing = new Text(274, 94, 16, 72);
+        _screen = true;
+        // Create objects
+        _window = new Window(this, 320, 200, 0, 0);
+        _btnOk = new TextButton(120, 18, 100, 164);
+        _txtTitle = new Text(300, 32, 16, 24);
+        _txtTarget = new Text(300, 17, 16, 40);
+        _txtCraft = new Text(300, 17, 16, 56);
+        _txtBriefing = new Text(274, 94, 16, 72);
 
-		string mission = _game.getSavedGame().getSavedBattle().getMissionType();
-		AlienDeployment deployment = _game.getMod().getDeployment(mission);
-		Ufo ufo = null;
-		if (deployment == null && craft != null)
-		{
-			ufo = (Ufo)craft.getDestination();
-			if (ufo != null) // landing site or crash site.
-			{
-				deployment = _game.getMod().getDeployment(ufo.getRules().getType());
-			}
-		}
+        string mission = _game.getSavedGame().getSavedBattle().getMissionType();
+        AlienDeployment deployment = _game.getMod().getDeployment(mission);
+        Ufo ufo = null;
+        if (deployment == null && craft != null)
+        {
+            ufo = (Ufo)craft.getDestination();
+            if (ufo != null) // landing site or crash site.
+            {
+                deployment = _game.getMod().getDeployment(ufo.getRules().getType());
+            }
+        }
 
-		string title = mission;
-		string desc = title + "_BRIEFING";
-		if (deployment == null) // none defined - should never happen, but better safe than sorry i guess.
-		{
-			setPalette("PAL_GEOSCAPE", 0);
-			_musicId = "GMDEFEND";
-			_window.setBackground(_game.getMod().getSurface("BACK16.SCR"));
-		}
-		else
-		{
-			BriefingData data = deployment.getBriefingData();
-			setPalette("PAL_GEOSCAPE", data.palette);
-			_window.setBackground(_game.getMod().getSurface(data.background));
-			_txtCraft.setY(56 + data.textOffset);
-			_txtBriefing.setY(72 + data.textOffset);
-			_txtTarget.setVisible(data.showTarget);
-			_txtCraft.setVisible(data.showCraft);
-			_cutsceneId = data.cutscene;
-			_musicId = data.music;
-			if (!string.IsNullOrEmpty(data.title))
-			{
-				title = data.title;
-			}
-			if (!string.IsNullOrEmpty(data.desc))
-			{
-				desc = data.desc;
-			}
-		}
+        string title = mission;
+        string desc = title + "_BRIEFING";
+        if (deployment == null) // none defined - should never happen, but better safe than sorry i guess.
+        {
+            setPalette("PAL_GEOSCAPE", 0);
+            _musicId = "GMDEFEND";
+            _window.setBackground(_game.getMod().getSurface("BACK16.SCR"));
+        }
+        else
+        {
+            BriefingData data = deployment.getBriefingData();
+            setPalette("PAL_GEOSCAPE", data.palette);
+            _window.setBackground(_game.getMod().getSurface(data.background));
+            _txtCraft.setY(56 + data.textOffset);
+            _txtBriefing.setY(72 + data.textOffset);
+            _txtTarget.setVisible(data.showTarget);
+            _txtCraft.setVisible(data.showCraft);
+            _cutsceneId = data.cutscene;
+            _musicId = data.music;
+            if (!string.IsNullOrEmpty(data.title))
+            {
+                title = data.title;
+            }
+            if (!string.IsNullOrEmpty(data.desc))
+            {
+                desc = data.desc;
+            }
+        }
 
-		add(_window, "window", "briefing");
-		add(_btnOk, "button", "briefing");
-		add(_txtTitle, "text", "briefing");
-		add(_txtTarget, "text", "briefing");
-		add(_txtCraft, "text", "briefing");
-		add(_txtBriefing, "text", "briefing");
+        add(_window, "window", "briefing");
+        add(_btnOk, "button", "briefing");
+        add(_txtTitle, "text", "briefing");
+        add(_txtTarget, "text", "briefing");
+        add(_txtCraft, "text", "briefing");
+        add(_txtBriefing, "text", "briefing");
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		// Set up objects
-		_btnOk.setText(tr("STR_OK"));
-		_btnOk.onMouseClick(btnOkClick);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyOk);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
+        // Set up objects
+        _btnOk.setText(tr("STR_OK"));
+        _btnOk.onMouseClick(btnOkClick);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyOk);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
 
-		_txtTitle.setBig();
-		_txtTarget.setBig();
-		_txtCraft.setBig();
+        _txtTitle.setBig();
+        _txtTarget.setBig();
+        _txtCraft.setBig();
 
-		string s = null;
-		if (craft != null)
-		{
-			if (craft.getDestination() != null)
-			{
-				_txtTarget.setText(craft.getDestination().getName(_game.getLanguage()));
-			}
+        string s = null;
+        if (craft != null)
+        {
+            if (craft.getDestination() != null)
+            {
+                _txtTarget.setText(craft.getDestination().getName(_game.getLanguage()));
+            }
 
-			s = tr("STR_CRAFT_").arg(craft.getName(_game.getLanguage()));
-		}
-		else if (@base != null)
-		{
-			s = tr("STR_BASE_UC_").arg(@base.getName());
-		}
-		_txtCraft.setText(s);
+            s = tr("STR_CRAFT_").arg(craft.getName(_game.getLanguage()));
+        }
+        else if (@base != null)
+        {
+            s = tr("STR_BASE_UC_").arg(@base.getName());
+        }
+        _txtCraft.setText(s);
 
-		_txtTitle.setText(tr(title));
+        _txtTitle.setText(tr(title));
 
-		_txtBriefing.setWordWrap(true);
-		_txtBriefing.setText(tr(desc));
+        _txtBriefing.setWordWrap(true);
+        _txtBriefing.setText(tr(desc));
 
-		if (mission == "STR_BASE_DEFENSE")
-		{
+        if (mission == "STR_BASE_DEFENSE")
+        {
             // And make sure the base is unmarked.
             @base.setRetaliationTarget(false);
-		}
-	}
+        }
+    }
 
-	/**
+    /**
 	 *
 	 */
-	~BriefingState() { }
+    ~BriefingState() { }
 
     /**
      * Closes the window.
@@ -174,20 +174,20 @@ internal class BriefingState : State
         }
     }
 
-	internal override void init()
-	{
-		base.init();
+    internal override void init()
+    {
+        base.init();
 
-		if (!string.IsNullOrEmpty(_cutsceneId))
-		{
-			_game.pushState(new CutsceneState(_cutsceneId));
+        if (!string.IsNullOrEmpty(_cutsceneId))
+        {
+            _game.pushState(new CutsceneState(_cutsceneId));
 
-			// don't play the cutscene again when we return to this state
-			_cutsceneId = string.Empty;
-		}
-		else
-		{
-			_game.getMod().playMusic(_musicId);
-		}
-	}
+            // don't play the cutscene again when we return to this state
+            _cutsceneId = string.Empty;
+        }
+        else
+        {
+            _game.getMod().playMusic(_musicId);
+        }
+    }
 }

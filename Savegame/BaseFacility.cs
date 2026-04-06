@@ -65,8 +65,8 @@ internal class BaseFacility
             { "y", _y.ToString() }
         };
         if (_buildTime != 0)
-		    node.Add("buildTime", _buildTime.ToString());
-	    return node;
+            node.Add("buildTime", _buildTime.ToString());
+        return node;
     }
 
     /**
@@ -98,7 +98,7 @@ internal class BaseFacility
      * @return Pointer to ruleset.
      */
     internal RuleBaseFacility getRules() =>
-	    _rules;
+        _rules;
 
     /**
      * Returns the base facility's remaining time
@@ -106,7 +106,7 @@ internal class BaseFacility
      * @return Time left in days.
      */
     internal int getBuildTime() =>
-	    _buildTime;
+        _buildTime;
 
     /**
      * Handles the facility building every day.
@@ -119,7 +119,7 @@ internal class BaseFacility
      * @return craft
      */
     internal Craft getCraft() =>
-	    _craftForDrawing;
+        _craftForDrawing;
 
     /**
      * Sets craft, used for drawing facility.
@@ -134,7 +134,7 @@ internal class BaseFacility
      * @return X position in grid squares.
      */
     internal int getX() =>
-	    _x;
+        _x;
 
     /**
      * Returns the base facility's Y position on the
@@ -142,7 +142,7 @@ internal class BaseFacility
      * @return Y position in grid squares.
      */
     internal int getY() =>
-	    _y;
+        _y;
 
     /**
      * Returns if this facility is currently being
@@ -151,17 +151,17 @@ internal class BaseFacility
      */
     internal bool inUse()
     {
-	    if (_buildTime > 0)
-	    {
-		    return false;
-	    }
-	    return ((_rules.getPersonnel() > 0 && _base.getAvailableQuarters() - _rules.getPersonnel() < _base.getUsedQuarters()) ||
-			    (_rules.getStorage() > 0 && _base.getAvailableStores() - _rules.getStorage() < _base.getUsedStores()) ||
-			    (_rules.getLaboratories() > 0 && _base.getAvailableLaboratories() - _rules.getLaboratories() < _base.getUsedLaboratories()) ||
-			    (_rules.getWorkshops() > 0 && _base.getAvailableWorkshops() - _rules.getWorkshops() < _base.getUsedWorkshops()) ||
-			    (_rules.getCrafts() > 0 && _base.getAvailableHangars() - _rules.getCrafts() < _base.getUsedHangars()) ||
-			    (_rules.getPsiLaboratories() > 0 && _base.getAvailablePsiLabs() - _rules.getPsiLaboratories() < _base.getUsedPsiLabs()) ||
-			    (_rules.getAliens() > 0 && _base.getAvailableContainment() - _rules.getAliens() < _base.getUsedContainment()));
+        if (_buildTime > 0)
+        {
+            return false;
+        }
+        return ((_rules.getPersonnel() > 0 && _base.getAvailableQuarters() - _rules.getPersonnel() < _base.getUsedQuarters()) ||
+                (_rules.getStorage() > 0 && _base.getAvailableStores() - _rules.getStorage() < _base.getUsedStores()) ||
+                (_rules.getLaboratories() > 0 && _base.getAvailableLaboratories() - _rules.getLaboratories() < _base.getUsedLaboratories()) ||
+                (_rules.getWorkshops() > 0 && _base.getAvailableWorkshops() - _rules.getWorkshops() < _base.getUsedWorkshops()) ||
+                (_rules.getCrafts() > 0 && _base.getAvailableHangars() - _rules.getCrafts() < _base.getUsedHangars()) ||
+                (_rules.getPsiLaboratories() > 0 && _base.getAvailablePsiLabs() - _rules.getPsiLaboratories() < _base.getUsedPsiLabs()) ||
+                (_rules.getAliens() > 0 && _base.getAvailableContainment() - _rules.getAliens() < _base.getUsedContainment()));
     }
 
     /**
@@ -170,8 +170,8 @@ internal class BaseFacility
      */
     internal void load(YamlNode node)
     {
-	    _x = int.Parse(node["x"].ToString());
-	    _y = int.Parse(node["y"].ToString());
-	    _buildTime = int.Parse(node["buildTime"].ToString());
+        _x = int.Parse(node["x"].ToString());
+        _y = int.Parse(node["y"].ToString());
+        _buildTime = int.Parse(node["buildTime"].ToString());
     }
 }

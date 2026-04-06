@@ -31,7 +31,7 @@ internal class FMath
     // Float operations
 
     internal static bool AreSame(float l, float r) =>
-	    Math.Abs(l - r) <= FLT_EPSILON * Math.Max(1.0f, Math.Max(Math.Abs(l), Math.Abs(r)));
+        Math.Abs(l - r) <= FLT_EPSILON * Math.Max(1.0f, Math.Max(Math.Abs(l), Math.Abs(r)));
 
     internal static bool AreSame(double l, double r) =>
         Math.Abs(l - r) <= DBL_EPSILON * Math.Max(1.0, Math.Max(Math.Abs(l), Math.Abs(r)));
@@ -40,7 +40,7 @@ internal class FMath
         (float)(x < 0.0f ? Math.Ceiling(x - 0.5f) : Math.Floor(x + 0.5f));
 
     internal static double Round(double x) =>
-	    x < 0.0 ? Math.Ceiling(x - 0.5) : Math.Floor(x + 0.5);
+        x < 0.0 ? Math.Ceiling(x - 0.5) : Math.Floor(x + 0.5);
 
     // Degree operations
 
@@ -48,7 +48,7 @@ internal class FMath
         deg * M_PI / 180.0;
 
     internal static double Rad2Deg(double rad) =>
-	    rad / M_PI * 180.0;
+        rad / M_PI * 180.0;
 
     internal static double Xcom2Rad(int deg) =>
         deg * 0.125 * M_PI / 180.0;

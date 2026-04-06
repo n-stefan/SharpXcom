@@ -130,7 +130,7 @@ internal class SavedBattleGame
      * @return The map size.
      */
     internal int getMapSizeXYZ() =>
-	    _mapsize_x * _mapsize_y * _mapsize_z;
+        _mapsize_x * _mapsize_y * _mapsize_z;
 
     /**
      * Converts a tile index to coordinates.
@@ -141,9 +141,9 @@ internal class SavedBattleGame
      */
     internal void getTileCoords(int index, out int x, out int y, out int z)
     {
-	    z = index / (_mapsize_y * _mapsize_x);
-	    y = (index % (_mapsize_y * _mapsize_x)) / _mapsize_x;
-	    x = (index % (_mapsize_y * _mapsize_x)) % _mapsize_x;
+        z = index / (_mapsize_y * _mapsize_x);
+        y = (index % (_mapsize_y * _mapsize_x)) / _mapsize_x;
+        x = (index % (_mapsize_y * _mapsize_x)) % _mapsize_x;
     }
 
     /**
@@ -151,49 +151,49 @@ internal class SavedBattleGame
      * @return the ambient sound volume.
      */
     internal double getAmbientVolume() =>
-	    _ambientVolume;
+        _ambientVolume;
 
     /**
      * check the depth of the battlescape.
      * @return depth.
      */
     internal int getDepth() =>
-	    _depth;
+        _depth;
 
     /**
      * Gets the pathfinding object.
      * @return Pointer to the pathfinding object.
      */
     internal Pathfinding getPathfinding() =>
-	    _pathfinding;
+        _pathfinding;
 
     /**
      * Gets the map width.
      * @return The map width (Size X) in tiles.
      */
     internal int getMapSizeX() =>
-	    _mapsize_x;
+        _mapsize_x;
 
     /**
      * Gets the map length.
      * @return The map length (Size Y) in tiles.
      */
     internal int getMapSizeY() =>
-	    _mapsize_y;
+        _mapsize_y;
 
     /**
      * Gets the map height.
      * @return The map height (Size Z) in layers.
      */
     internal int getMapSizeZ() =>
-	    _mapsize_z;
+        _mapsize_z;
 
     /**
      * Gets the currently selected unit
      * @return Pointer to BattleUnit.
      */
     internal BattleUnit getSelectedUnit() =>
-	    _selectedUnit;
+        _selectedUnit;
 
     /**
      * Gets the BattlescapeState.
@@ -221,20 +221,20 @@ internal class SavedBattleGame
 	 */
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Tile getTile(Position pos)
-	{
+    {
         if (pos.x < 0 || pos.y < 0 || pos.z < 0
             || pos.x >= _mapsize_x || pos.y >= _mapsize_y || pos.z >= _mapsize_z)
             return null;
 
-		return _tiles[getTileIndex(pos)];
-	}
+        return _tiles[getTileIndex(pos)];
+    }
 
     /**
      * Gets the TU reserved type.
      * @return A battleactiontype.
      */
     internal BattleActionType getTUReserved() =>
-	    _tuReserved;
+        _tuReserved;
 
     /**
      * Sets the TU reserved type.
@@ -248,14 +248,14 @@ internal class SavedBattleGame
      * @return The unit faction currently playing.
      */
     internal UnitFaction getSide() =>
-	    _side;
+        _side;
 
     /**
      * Gets the kneel reservation setting.
      * @return Should we reserve an extra 4 TUs to kneel?
      */
     internal bool getKneelReserved() =>
-	    _kneelReserved;
+        _kneelReserved;
 
     /**
      * Gets the list of units.
@@ -347,10 +347,10 @@ internal class SavedBattleGame
      * @return The current turn.
      */
     internal int getTurn() =>
-	    _turn;
+        _turn;
 
     internal bool isBeforeGame() =>
-	    _beforeGame;
+        _beforeGame;
 
     /**
      * Gets the list of nodes.
@@ -364,7 +364,7 @@ internal class SavedBattleGame
      * @return Pointer to the terrain modifier object.
      */
     internal TileEngine getTileEngine() =>
-	    _tileEngine;
+        _tileEngine;
 
     /**
      * Gets the list of items.
@@ -378,7 +378,7 @@ internal class SavedBattleGame
      * @return A pointer to the Tile array.
      */
     internal Tile[] getTiles() =>
-	    _tiles;
+        _tiles;
 
     /**
      * Gets the BattlescapeState.
@@ -514,7 +514,7 @@ internal class SavedBattleGame
      * @return The mission type.
      */
     internal string getMissionType() =>
-	    _missionType;
+        _missionType;
 
     /**
      * Saves the saved battle game to a YAML file.
@@ -522,79 +522,79 @@ internal class SavedBattleGame
      */
     internal YamlNode save()
     {
-	    var node = new YamlMappingNode();
-	    if (_objectivesNeeded != 0)
-	    {
-		    node.Add("objectivesDestroyed", _objectivesDestroyed.ToString());
-		    node.Add("objectivesNeeded", _objectivesNeeded.ToString());
-		    node.Add("objectiveType", _objectiveType.ToString());
-	    }
-	    node.Add("width", _mapsize_x.ToString());
-	    node.Add("length", _mapsize_y.ToString());
-	    node.Add("height", _mapsize_z.ToString());
-	    node.Add("missionType", _missionType);
-	    node.Add("globalshade", _globalShade.ToString());
+        var node = new YamlMappingNode();
+        if (_objectivesNeeded != 0)
+        {
+            node.Add("objectivesDestroyed", _objectivesDestroyed.ToString());
+            node.Add("objectivesNeeded", _objectivesNeeded.ToString());
+            node.Add("objectiveType", _objectiveType.ToString());
+        }
+        node.Add("width", _mapsize_x.ToString());
+        node.Add("length", _mapsize_y.ToString());
+        node.Add("height", _mapsize_z.ToString());
+        node.Add("missionType", _missionType);
+        node.Add("globalshade", _globalShade.ToString());
         node.Add("turn", _turn.ToString());
         node.Add("selectedUnit", (_selectedUnit != null ? _selectedUnit.getId() : -1).ToString());
         node.Add("mapdatasets", new YamlSequenceNode(_mapDataSets.Select(x => new YamlScalarNode(x.getName()))));
         //TODO
         //#if 0
-	    //    for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
-	    //    {
-	    //	    if (!_tiles[i]->isVoid())
-	    //	    {
-	    //		    node["tiles"].push_back(_tiles[i]->save());
-	    //	    }
-	    //    }
+        //    for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
+        //    {
+        //	    if (!_tiles[i]->isVoid())
+        //	    {
+        //		    node["tiles"].push_back(_tiles[i]->save());
+        //	    }
+        //    }
         //#else
-	    // first, write out the field sizes we're going to use to write the tile data
-	    node.Add("tileIndexSize", ((byte)Tile.serializationKey.index).ToString());
-	    node.Add("tileTotalBytesPer", Tile.serializationKey.totalBytes.ToString());
-	    node.Add("tileFireSize", ((byte)Tile.serializationKey._fire).ToString());
-	    node.Add("tileSmokeSize", ((byte)Tile.serializationKey._smoke).ToString());
-	    node.Add("tileIDSize", ((byte)Tile.serializationKey._mapDataID).ToString());
-	    node.Add("tileSetIDSize", ((byte)Tile.serializationKey._mapDataSetID).ToString());
-	    node.Add("tileBoolFieldsSize", ((byte)Tile.serializationKey.boolFields).ToString());
+        // first, write out the field sizes we're going to use to write the tile data
+        node.Add("tileIndexSize", ((byte)Tile.serializationKey.index).ToString());
+        node.Add("tileTotalBytesPer", Tile.serializationKey.totalBytes.ToString());
+        node.Add("tileFireSize", ((byte)Tile.serializationKey._fire).ToString());
+        node.Add("tileSmokeSize", ((byte)Tile.serializationKey._smoke).ToString());
+        node.Add("tileIDSize", ((byte)Tile.serializationKey._mapDataID).ToString());
+        node.Add("tileSetIDSize", ((byte)Tile.serializationKey._mapDataSetID).ToString());
+        node.Add("tileBoolFieldsSize", ((byte)Tile.serializationKey.boolFields).ToString());
 
         uint tileDataSize = (uint)(Tile.serializationKey.totalBytes * _mapsize_z * _mapsize_y * _mapsize_x);
         var tileData = new byte[tileDataSize];
         var w = tileData.AsSpan();
 
         for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
-	    {
-		    if (!_tiles[i].isVoid())
-		    {
+        {
+            if (!_tiles[i].isVoid())
+            {
                 serializeInt(ref w, Tile.serializationKey.index, i);
                 _tiles[i].saveBinary(ref w);
             }
             else
-		    {
-			    tileDataSize -= Tile.serializationKey.totalBytes;
-		    }
-	    }
+            {
+                tileDataSize -= Tile.serializationKey.totalBytes;
+            }
+        }
         node.Add("totalTiles", (tileDataSize / Tile.serializationKey.totalBytes).ToString()); // not strictly necessary, just convenient
         node.Add("binTiles", $"!!binary {Convert.ToBase64String(tileData, 0, (int)tileDataSize)}");
         tileData = null;
         //#endif
         node.Add("nodes", new YamlSequenceNode(_nodes.Select(x => x.save())));
-	    if (_missionType == "STR_BASE_DEFENSE")
-	    {
+        if (_missionType == "STR_BASE_DEFENSE")
+        {
             node.Add("moduleMap",
                 new YamlSequenceNode(_baseModules.Select(x =>
                 new YamlSequenceNode(x.Select(y => new YamlMappingNode(y.Key.ToString(), y.Value.ToString()))))));
         }
         node.Add("units", new YamlSequenceNode(_units.Select(x => x.save())));
         node.Add("items", new YamlSequenceNode(_items.Select(x => x.save())));
-	    node.Add("tuReserved", ((int)_tuReserved).ToString());
-	    node.Add("kneelReserved", _kneelReserved.ToString());
-	    node.Add("depth", _depth.ToString());
-	    node.Add("ambience", _ambience.ToString());
-	    node.Add("ambientVolume", _ambientVolume.ToString());
+        node.Add("tuReserved", ((int)_tuReserved).ToString());
+        node.Add("kneelReserved", _kneelReserved.ToString());
+        node.Add("depth", _depth.ToString());
+        node.Add("ambience", _ambience.ToString());
+        node.Add("ambientVolume", _ambientVolume.ToString());
         node.Add("recoverGuaranteed", new YamlSequenceNode(_recoverGuaranteed.Select(x => x.save())));
         node.Add("recoverConditional", new YamlSequenceNode(_recoverConditional.Select(x => x.save())));
-	    node.Add("music", _music);
-	    node.Add("turnLimit", _turnLimit.ToString());
-	    node.Add("chronoTrigger", ((int)_chronoTrigger).ToString());
+        node.Add("music", _music);
+        node.Add("turnLimit", _turnLimit.ToString());
+        node.Add("chronoTrigger", ((int)_chronoTrigger).ToString());
         node.Add("cheatTurn", _cheatTurn.ToString());
 
         return node;
@@ -665,14 +665,14 @@ internal class SavedBattleGame
      * @return The global shade.
      */
     internal int getGlobalShade() =>
-	    _globalShade;
+        _globalShade;
 
     /**
      * Sets the mission type.
      * @param missionType The mission type.
      */
     internal void setMissionType(string missionType) =>
-	    _missionType = missionType;
+        _missionType = missionType;
 
     /**
      * Sets the turn limit for this mission.
@@ -714,7 +714,7 @@ internal class SavedBattleGame
      * @param track the track name.
      */
     internal void setMusic(string track) =>
-	    _music = track;
+        _music = track;
 
     /**
      * Finds a fitting node where a unit can spawn.
@@ -768,35 +768,35 @@ internal class SavedBattleGame
      */
     internal bool placeUnitNearPosition(BattleUnit unit, Position entryPoint, bool largeFriend)
     {
-	    if (setUnitPosition(unit, entryPoint))
-	    {
-		    return true;
-	    }
+        if (setUnitPosition(unit, entryPoint))
+        {
+            return true;
+        }
 
-	    int me = 0 - unit.getArmor().getSize();
-	    int you = largeFriend ? 2 : 1;
-	    int[] xArray = {0, you, you, you, 0, me, me, me};
-	    int[] yArray = {me, me, 0, you, you, you, 0, me};
-	    for (int dir = 0; dir <= 7; ++dir)
-	    {
-		    Position offset = new Position(xArray[dir], yArray[dir], 0);
-		    Tile t = getTile(entryPoint + offset);
-		    if (t != null && !getPathfinding().isBlocked(getTile(entryPoint + (offset / 2)), t, dir, null)
-			    && setUnitPosition(unit, entryPoint + offset))
-		    {
-			    return true;
-		    }
-	    }
+        int me = 0 - unit.getArmor().getSize();
+        int you = largeFriend ? 2 : 1;
+        int[] xArray = { 0, you, you, you, 0, me, me, me };
+        int[] yArray = { me, me, 0, you, you, you, 0, me };
+        for (int dir = 0; dir <= 7; ++dir)
+        {
+            Position offset = new Position(xArray[dir], yArray[dir], 0);
+            Tile t = getTile(entryPoint + offset);
+            if (t != null && !getPathfinding().isBlocked(getTile(entryPoint + (offset / 2)), t, dir, null)
+                && setUnitPosition(unit, entryPoint + offset))
+            {
+                return true;
+            }
+        }
 
-	    if (unit.getMovementType() == MovementType.MT_FLY)
-	    {
-		    Tile t = getTile(entryPoint + new Position(0, 0, 1));
-		    if (t != null && t.hasNoFloor(getTile(entryPoint)) && setUnitPosition(unit, entryPoint + new Position(0, 0, 1)))
-		    {
-			    return true;
-		    }
-	    }
-	    return false;
+        if (unit.getMovementType() == MovementType.MT_FLY)
+        {
+            Tile t = getTile(entryPoint + new Position(0, 0, 1));
+            if (t != null && t.hasNoFloor(getTile(entryPoint)) && setUnitPosition(unit, entryPoint + new Position(0, 0, 1)))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -809,7 +809,7 @@ internal class SavedBattleGame
     internal bool setUnitPosition(BattleUnit bu, Position position, bool testOnly = false)
     {
         int size = bu.getArmor().getSize() - 1;
-        var zOffset = new Position(0,0,0);
+        var zOffset = new Position(0, 0, 0);
         // first check if the tiles are occupied
         for (int x = size; x >= 0; x--)
         {
@@ -905,14 +905,14 @@ internal class SavedBattleGame
      * @return True if the objectives are destroyed.
      */
     internal bool allObjectivesDestroyed() =>
-	    (_objectivesNeeded > 0 && _objectivesDestroyed == _objectivesNeeded);
+        (_objectivesNeeded > 0 && _objectivesDestroyed == _objectivesNeeded);
 
     /**
      * Get the objective type for the current battle.
      * @return the objective type.
      */
     internal SpecialTileType getObjectiveType() =>
-	    (SpecialTileType)(_objectiveType);
+        (SpecialTileType)(_objectiveType);
 
     /**
      * Sets the currently selected unit.
@@ -929,21 +929,21 @@ internal class SavedBattleGame
      * @return the base module damage map.
      */
     internal List<List<KeyValuePair<int, int>>> getModuleMap() =>
-	    _baseModules;
+        _baseModules;
 
     /**
      * Gets the maximum number of turns we have before this mission ends.
      * @return the turn limit.
      */
     internal int getTurnLimit() =>
-	    _turnLimit;
+        _turnLimit;
 
     /**
      * Gets the action type to perform when the timer expires.
      * @return the action type to perform.
      */
     internal ChronoTrigger getChronoTrigger() =>
-	    _chronoTrigger;
+        _chronoTrigger;
 
     /**
      * Sets whether the mission was aborted or successful.
@@ -957,14 +957,14 @@ internal class SavedBattleGame
      * @return the intended sound.
      */
     internal int getAmbientSound() =>
-	    _ambience;
+        _ambience;
 
     /**
      * Gets the current debug mode.
      * @return Debug mode.
      */
     internal bool getDebugMode() =>
-	    _debugMode;
+        _debugMode;
 
     /**
      * set the ambient battlescape sound effect.
@@ -1026,7 +1026,7 @@ internal class SavedBattleGame
      * @return Vector of storage positions.
      */
     internal List<Position> getStorageSpace() =>
-	    _storageSpace;
+        _storageSpace;
 
     /**
      * calculate the number of map modules remaining by counting the map objects
@@ -1064,7 +1064,7 @@ internal class SavedBattleGame
      * @return True, if the mission was aborted, or false, if the mission was successful.
      */
     internal bool isAborted() =>
-	    _aborted;
+        _aborted;
 
     /**
      * get the list of items we're guaranteed to take with us (ie: items that were in the skyranger)
@@ -1248,89 +1248,89 @@ internal class SavedBattleGame
      */
     internal void endTurn()
     {
-	    if (_side == UnitFaction.FACTION_PLAYER)
-	    {
-		    if (_selectedUnit != null && _selectedUnit.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
-			    _lastSelectedUnit = _selectedUnit;
-		    _selectedUnit = null;
-		    _side = UnitFaction.FACTION_HOSTILE;
-	    }
-	    else if (_side == UnitFaction.FACTION_HOSTILE)
-	    {
-		    _side = UnitFaction.FACTION_NEUTRAL;
-		    // if there is no neutral team, we skip this and instantly prepare the new turn for the player
-		    if (selectNextPlayerUnit() == null)
-		    {
-			    prepareNewTurn();
-			    _turn++;
-			    _side = UnitFaction.FACTION_PLAYER;
-			    if (_lastSelectedUnit != null && _lastSelectedUnit.isSelectable(UnitFaction.FACTION_PLAYER, false, false))
-				    _selectedUnit = _lastSelectedUnit;
-			    else
-				    selectNextPlayerUnit();
-			    while (_selectedUnit != null && _selectedUnit.getFaction() != UnitFaction.FACTION_PLAYER)
-				    selectNextPlayerUnit();
-		    }
+        if (_side == UnitFaction.FACTION_PLAYER)
+        {
+            if (_selectedUnit != null && _selectedUnit.getOriginalFaction() == UnitFaction.FACTION_PLAYER)
+                _lastSelectedUnit = _selectedUnit;
+            _selectedUnit = null;
+            _side = UnitFaction.FACTION_HOSTILE;
+        }
+        else if (_side == UnitFaction.FACTION_HOSTILE)
+        {
+            _side = UnitFaction.FACTION_NEUTRAL;
+            // if there is no neutral team, we skip this and instantly prepare the new turn for the player
+            if (selectNextPlayerUnit() == null)
+            {
+                prepareNewTurn();
+                _turn++;
+                _side = UnitFaction.FACTION_PLAYER;
+                if (_lastSelectedUnit != null && _lastSelectedUnit.isSelectable(UnitFaction.FACTION_PLAYER, false, false))
+                    _selectedUnit = _lastSelectedUnit;
+                else
+                    selectNextPlayerUnit();
+                while (_selectedUnit != null && _selectedUnit.getFaction() != UnitFaction.FACTION_PLAYER)
+                    selectNextPlayerUnit();
+            }
 
-	    }
-	    else if (_side == UnitFaction.FACTION_NEUTRAL)
-	    {
-		    prepareNewTurn();
-		    _turn++;
-		    _side = UnitFaction.FACTION_PLAYER;
-		    if (_lastSelectedUnit != null && _lastSelectedUnit.isSelectable(UnitFaction.FACTION_PLAYER, false, false))
-			    _selectedUnit = _lastSelectedUnit;
-		    else
-			    selectNextPlayerUnit();
-		    while (_selectedUnit != null && _selectedUnit.getFaction() != UnitFaction.FACTION_PLAYER)
-			    selectNextPlayerUnit();
-	    }
-	    int liveSoldiers, liveAliens;
+        }
+        else if (_side == UnitFaction.FACTION_NEUTRAL)
+        {
+            prepareNewTurn();
+            _turn++;
+            _side = UnitFaction.FACTION_PLAYER;
+            if (_lastSelectedUnit != null && _lastSelectedUnit.isSelectable(UnitFaction.FACTION_PLAYER, false, false))
+                _selectedUnit = _lastSelectedUnit;
+            else
+                selectNextPlayerUnit();
+            while (_selectedUnit != null && _selectedUnit.getFaction() != UnitFaction.FACTION_PLAYER)
+                selectNextPlayerUnit();
+        }
+        int liveSoldiers, liveAliens;
 
-	    _battleState.getBattleGame().tallyUnits(out liveAliens, out liveSoldiers);
+        _battleState.getBattleGame().tallyUnits(out liveAliens, out liveSoldiers);
 
-	    if ((_turn > _cheatTurn / 2 && liveAliens <= 2) || _turn > _cheatTurn)
-	    {
-		    _cheating = true;
-	    }
+        if ((_turn > _cheatTurn / 2 && liveAliens <= 2) || _turn > _cheatTurn)
+        {
+            _cheating = true;
+        }
 
-	    if (_side == UnitFaction.FACTION_PLAYER)
-	    {
-		    // update the "number of turns since last spotted"
-		    foreach (var i in _units)
-		    {
-			    if (i.getTurnsSinceSpotted() < 255)
-			    {
-				    i.setTurnsSinceSpotted(i.getTurnsSinceSpotted() + 1);
-			    }
-			    if (_cheating && i.getFaction() == UnitFaction.FACTION_PLAYER && !i.isOut())
-			    {
-				    i.setTurnsSinceSpotted(0);
-			    }
-			    if (i.getAIModule() != null)
-			    {
-				    i.getAIModule().reset(); // clean up AI state
-			    }
-		    }
-	    }
-	    // hide all aliens (VOF calculations below will turn them visible again)
-	    foreach (var i in _units)
-	    {
-		    if (i.getFaction() == _side)
-		    {
-			    i.prepareNewTurn();
-		    }
-		    if (i.getFaction() != UnitFaction.FACTION_PLAYER)
-		    {
-			    i.setVisible(false);
-		    }
-	    }
+        if (_side == UnitFaction.FACTION_PLAYER)
+        {
+            // update the "number of turns since last spotted"
+            foreach (var i in _units)
+            {
+                if (i.getTurnsSinceSpotted() < 255)
+                {
+                    i.setTurnsSinceSpotted(i.getTurnsSinceSpotted() + 1);
+                }
+                if (_cheating && i.getFaction() == UnitFaction.FACTION_PLAYER && !i.isOut())
+                {
+                    i.setTurnsSinceSpotted(0);
+                }
+                if (i.getAIModule() != null)
+                {
+                    i.getAIModule().reset(); // clean up AI state
+                }
+            }
+        }
+        // hide all aliens (VOF calculations below will turn them visible again)
+        foreach (var i in _units)
+        {
+            if (i.getFaction() == _side)
+            {
+                i.prepareNewTurn();
+            }
+            if (i.getFaction() != UnitFaction.FACTION_PLAYER)
+            {
+                i.setVisible(false);
+            }
+        }
 
-	    // re-run calculateFOV() *after* all aliens have been set not-visible
-	    _tileEngine.recalculateFOV();
+        // re-run calculateFOV() *after* all aliens have been set not-visible
+        _tileEngine.recalculateFOV();
 
-	    if (_side != UnitFaction.FACTION_PLAYER)
-		    selectNextPlayerUnit();
+        if (_side != UnitFaction.FACTION_PLAYER)
+            selectNextPlayerUnit();
     }
 
     /**
@@ -1338,151 +1338,151 @@ internal class SavedBattleGame
      */
     void prepareNewTurn()
     {
-	    var tilesOnFire = new List<Tile>();
-	    var tilesOnSmoke = new List<Tile>();
+        var tilesOnFire = new List<Tile>();
+        var tilesOnSmoke = new List<Tile>();
 
-	    // prepare a list of tiles on fire
-	    for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
-	    {
-		    if (getTiles()[i].getFire() > 0)
-		    {
-			    tilesOnFire.Add(getTiles()[i]);
-		    }
-	    }
+        // prepare a list of tiles on fire
+        for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
+        {
+            if (getTiles()[i].getFire() > 0)
+            {
+                tilesOnFire.Add(getTiles()[i]);
+            }
+        }
 
-	    // first: fires spread
-	    foreach (var i in tilesOnFire)
-	    {
-		    // if we haven't added fire here this turn
-		    if (i.getOverlaps() == 0)
-		    {
-			    // reduce the fire timer
-			    i.setFire(i.getFire() -1);
+        // first: fires spread
+        foreach (var i in tilesOnFire)
+        {
+            // if we haven't added fire here this turn
+            if (i.getOverlaps() == 0)
+            {
+                // reduce the fire timer
+                i.setFire(i.getFire() - 1);
 
-			    // if we're still burning
-			    if (i.getFire() != 0)
-			    {
-				    // propagate in four cardinal directions (0, 2, 4, 6)
-				    for (int dir = 0; dir <= 6; dir += 2)
-				    {
-					    Pathfinding.directionToVector(dir, out var pos);
-					    Tile t = getTile(i.getPosition() + pos);
-					    // if there's no wall blocking the path of the flames...
-					    if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_IN) == 0)
-					    {
-						    // attempt to set this tile on fire
-						    t.ignite(i.getSmoke());
-					    }
-				    }
-			    }
-			    // fire has burnt out
-			    else
-			    {
-				    i.setSmoke(0);
-				    // burn this tile, and any object in it, if it's not fireproof/indestructible.
-				    if (i.getMapData(TilePart.O_OBJECT) != null)
-				    {
-					    if (i.getMapData(TilePart.O_OBJECT).getFlammable() != 255 && i.getMapData(TilePart.O_OBJECT).getArmor() != 255)
-					    {
-						    if (i.destroy(TilePart.O_OBJECT, getObjectiveType()))
-						    {
-							    addDestroyedObjective();
-						    }
-						    if (i.destroy(TilePart.O_FLOOR, getObjectiveType()))
-						    {
-							    addDestroyedObjective();
-						    }
-					    }
-				    }
-				    else if (i.getMapData(TilePart.O_FLOOR) != null)
-				    {
-					    if (i.getMapData(TilePart.O_FLOOR).getFlammable() != 255 && i.getMapData(TilePart.O_FLOOR).getArmor() != 255)
-					    {
-						    if (i.destroy(TilePart.O_FLOOR, getObjectiveType()))
-						    {
-							    addDestroyedObjective();
-						    }
-					    }
-				    }
-				    getTileEngine().applyGravity(i);
-			    }
-		    }
-	    }
+                // if we're still burning
+                if (i.getFire() != 0)
+                {
+                    // propagate in four cardinal directions (0, 2, 4, 6)
+                    for (int dir = 0; dir <= 6; dir += 2)
+                    {
+                        Pathfinding.directionToVector(dir, out var pos);
+                        Tile t = getTile(i.getPosition() + pos);
+                        // if there's no wall blocking the path of the flames...
+                        if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_IN) == 0)
+                        {
+                            // attempt to set this tile on fire
+                            t.ignite(i.getSmoke());
+                        }
+                    }
+                }
+                // fire has burnt out
+                else
+                {
+                    i.setSmoke(0);
+                    // burn this tile, and any object in it, if it's not fireproof/indestructible.
+                    if (i.getMapData(TilePart.O_OBJECT) != null)
+                    {
+                        if (i.getMapData(TilePart.O_OBJECT).getFlammable() != 255 && i.getMapData(TilePart.O_OBJECT).getArmor() != 255)
+                        {
+                            if (i.destroy(TilePart.O_OBJECT, getObjectiveType()))
+                            {
+                                addDestroyedObjective();
+                            }
+                            if (i.destroy(TilePart.O_FLOOR, getObjectiveType()))
+                            {
+                                addDestroyedObjective();
+                            }
+                        }
+                    }
+                    else if (i.getMapData(TilePart.O_FLOOR) != null)
+                    {
+                        if (i.getMapData(TilePart.O_FLOOR).getFlammable() != 255 && i.getMapData(TilePart.O_FLOOR).getArmor() != 255)
+                        {
+                            if (i.destroy(TilePart.O_FLOOR, getObjectiveType()))
+                            {
+                                addDestroyedObjective();
+                            }
+                        }
+                    }
+                    getTileEngine().applyGravity(i);
+                }
+            }
+        }
 
-	    // prepare a list of tiles on fire/with smoke in them (smoke acts as fire intensity)
-	    for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
-	    {
-		    if (getTiles()[i].getSmoke() > 0)
-		    {
-			    tilesOnSmoke.Add(getTiles()[i]);
-		    }
-		    getTiles()[i].setDangerous(false);
-	    }
+        // prepare a list of tiles on fire/with smoke in them (smoke acts as fire intensity)
+        for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
+        {
+            if (getTiles()[i].getSmoke() > 0)
+            {
+                tilesOnSmoke.Add(getTiles()[i]);
+            }
+            getTiles()[i].setDangerous(false);
+        }
 
-	    // now make the smoke spread.
-	    foreach (var i in tilesOnSmoke)
-	    {
-		    // smoke and fire follow slightly different rules.
-		    if (i.getFire() == 0)
-		    {
-			    // reduce the smoke counter
-			    i.setSmoke(i.getSmoke() - 1);
-			    // if we're still smoking
-			    if (i.getSmoke() != 0)
-			    {
-				    // spread in four cardinal directions
-				    for (int dir = 0; dir <= 6; dir += 2)
-				    {
-					    Pathfinding.directionToVector(dir, out var pos);
-					    Tile t = getTile(i.getPosition() + pos);
-					    // as long as there are no walls blocking us
-					    if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_SMOKE) == 0)
-					    {
-						    // only add smoke to empty tiles, or tiles with no fire, and smoke that was added this turn
-						    if (t.getSmoke() == 0 || (t.getFire() == 0 && t.getOverlaps() != 0))
-						    {
-							    t.addSmoke(i.getSmoke());
-						    }
-					    }
-				    }
-			    }
-		    }
-		    else
-		    {
-			    // smoke from fire spreads upwards one level if there's no floor blocking it.
-			    Position pos = new Position(0,0,1);
-			    Tile t = getTile(i.getPosition() + pos);
-			    if (t != null && t.hasNoFloor(i))
-			    {
-				    // only add smoke equal to half the intensity of the fire
-				    t.addSmoke(i.getSmoke()/2);
-			    }
-			    // then it spreads in the four cardinal directions.
-			    for (int dir = 0; dir <= 6; dir += 2)
-			    {
-				    Pathfinding.directionToVector(dir, out pos);
-				    t = getTile(i.getPosition() + pos);
-				    if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_SMOKE) == 0)
-				    {
-					    t.addSmoke(i.getSmoke()/2);
-				    }
-			    }
-		    }
-	    }
+        // now make the smoke spread.
+        foreach (var i in tilesOnSmoke)
+        {
+            // smoke and fire follow slightly different rules.
+            if (i.getFire() == 0)
+            {
+                // reduce the smoke counter
+                i.setSmoke(i.getSmoke() - 1);
+                // if we're still smoking
+                if (i.getSmoke() != 0)
+                {
+                    // spread in four cardinal directions
+                    for (int dir = 0; dir <= 6; dir += 2)
+                    {
+                        Pathfinding.directionToVector(dir, out var pos);
+                        Tile t = getTile(i.getPosition() + pos);
+                        // as long as there are no walls blocking us
+                        if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_SMOKE) == 0)
+                        {
+                            // only add smoke to empty tiles, or tiles with no fire, and smoke that was added this turn
+                            if (t.getSmoke() == 0 || (t.getFire() == 0 && t.getOverlaps() != 0))
+                            {
+                                t.addSmoke(i.getSmoke());
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // smoke from fire spreads upwards one level if there's no floor blocking it.
+                Position pos = new Position(0, 0, 1);
+                Tile t = getTile(i.getPosition() + pos);
+                if (t != null && t.hasNoFloor(i))
+                {
+                    // only add smoke equal to half the intensity of the fire
+                    t.addSmoke(i.getSmoke() / 2);
+                }
+                // then it spreads in the four cardinal directions.
+                for (int dir = 0; dir <= 6; dir += 2)
+                {
+                    Pathfinding.directionToVector(dir, out pos);
+                    t = getTile(i.getPosition() + pos);
+                    if (t != null && getTileEngine().horizontalBlockage(i, t, ItemDamageType.DT_SMOKE) == 0)
+                    {
+                        t.addSmoke(i.getSmoke() / 2);
+                    }
+                }
+            }
+        }
 
-	    if (tilesOnFire.Any() || tilesOnSmoke.Any())
-	    {
-		    // do damage to units, average out the smoke, etc.
-		    for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
-		    {
-			    if (getTiles()[i].getSmoke() != 0)
-				    getTiles()[i].prepareNewTurn(getDepth() == 0);
-		    }
-		    // fires could have been started, stopped or smoke could reveal/conceal units.
-		    getTileEngine().calculateTerrainLighting();
-	    }
+        if (tilesOnFire.Any() || tilesOnSmoke.Any())
+        {
+            // do damage to units, average out the smoke, etc.
+            for (int i = 0; i < _mapsize_x * _mapsize_y * _mapsize_z; ++i)
+            {
+                if (getTiles()[i].getSmoke() != 0)
+                    getTiles()[i].prepareNewTurn(getDepth() == 0);
+            }
+            // fires could have been started, stopped or smoke could reveal/conceal units.
+            getTileEngine().calculateTerrainLighting();
+        }
 
-	    reviveUnconsciousUnits();
+        reviveUnconsciousUnits();
     }
 
     /**
@@ -1494,38 +1494,38 @@ internal class SavedBattleGame
      */
     internal void reviveUnconsciousUnits()
     {
-	    foreach (var i in getUnits())
-	    {
-		    if (i.getArmor().getSize() == 1)
-		    {
-			    Position originalPosition = i.getPosition();
-			    if (originalPosition == new Position(-1, -1, -1))
-			    {
-				    foreach (var j in _items)
-				    {
-					    if (j.getUnit() != null && j.getUnit() == i && j.getOwner() != null)
-					    {
-						    originalPosition = j.getOwner().getPosition();
-					    }
-				    }
-			    }
-			    if (i.getStatus() == UnitStatus.STATUS_UNCONSCIOUS && i.getStunlevel() < i.getHealth() && i.getHealth() > 0)
-			    {
-				    Tile targetTile = getTile(originalPosition);
-				    bool largeUnit = targetTile != null && targetTile.getUnit() != null && targetTile.getUnit() != i && targetTile.getUnit().getArmor().getSize() != 1;
-				    if (placeUnitNearPosition(i, originalPosition, largeUnit))
-				    {
-					    // recover from unconscious
-					    i.turn(false); // makes the unit stand up again
-					    i.kneel(false);
-					    i.setCache(null);
-					    getTileEngine().calculateFOV(i);
-					    getTileEngine().calculateUnitLighting();
-					    removeUnconsciousBodyItem(i);
-				    }
-			    }
-		    }
-	    }
+        foreach (var i in getUnits())
+        {
+            if (i.getArmor().getSize() == 1)
+            {
+                Position originalPosition = i.getPosition();
+                if (originalPosition == new Position(-1, -1, -1))
+                {
+                    foreach (var j in _items)
+                    {
+                        if (j.getUnit() != null && j.getUnit() == i && j.getOwner() != null)
+                        {
+                            originalPosition = j.getOwner().getPosition();
+                        }
+                    }
+                }
+                if (i.getStatus() == UnitStatus.STATUS_UNCONSCIOUS && i.getStunlevel() < i.getHealth() && i.getHealth() > 0)
+                {
+                    Tile targetTile = getTile(originalPosition);
+                    bool largeUnit = targetTile != null && targetTile.getUnit() != null && targetTile.getUnit() != i && targetTile.getUnit().getArmor().getSize() != 1;
+                    if (placeUnitNearPosition(i, originalPosition, largeUnit))
+                    {
+                        // recover from unconscious
+                        i.turn(false); // makes the unit stand up again
+                        i.kneel(false);
+                        i.setCache(null);
+                        getTileEngine().calculateFOV(i);
+                        getTileEngine().calculateUnitLighting();
+                        removeUnconsciousBodyItem(i);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -1533,7 +1533,7 @@ internal class SavedBattleGame
      * @param reserved Should we reserve an extra 4 TUs to kneel?
      */
     internal void setKneelReserved(bool reserved) =>
-	    _kneelReserved = reserved;
+        _kneelReserved = reserved;
 
     /**
      * Converts a unit into a unit of another type.
@@ -1542,58 +1542,58 @@ internal class SavedBattleGame
      */
     internal BattleUnit convertUnit(BattleUnit unit, SavedGame saveGame, Mod.Mod mod)
     {
-	    string newType = unit.getSpawnUnit();
-	    bool visible = unit.getVisible();
-	    // in case the unit was unconscious
-	    removeUnconsciousBodyItem(unit);
+        string newType = unit.getSpawnUnit();
+        bool visible = unit.getVisible();
+        // in case the unit was unconscious
+        removeUnconsciousBodyItem(unit);
 
-	    unit.instaKill();
+        unit.instaKill();
 
-	    foreach (var i in unit.getInventory())
-	    {
-		    getTileEngine().itemDrop(getTile(unit.getPosition()), i, mod);
-		    i.setOwner(null);
-	    }
+        foreach (var i in unit.getInventory())
+        {
+            getTileEngine().itemDrop(getTile(unit.getPosition()), i, mod);
+            i.setOwner(null);
+        }
 
-	    unit.getInventory().Clear();
+        unit.getInventory().Clear();
 
-	    // remove unit-tile link
-	    unit.setTile(null);
+        // remove unit-tile link
+        unit.setTile(null);
 
-	    getTile(unit.getPosition()).setUnit(null);
-	    Unit newRule = mod.getUnit(newType, true);
-	    string newArmor = newRule.getArmor();
-	    string terroristWeapon = newRule.getRace().Substring(4);
-	    terroristWeapon += "_WEAPON";
-	    RuleItem newItem = mod.getItem(terroristWeapon);
+        getTile(unit.getPosition()).setUnit(null);
+        Unit newRule = mod.getUnit(newType, true);
+        string newArmor = newRule.getArmor();
+        string terroristWeapon = newRule.getRace().Substring(4);
+        terroristWeapon += "_WEAPON";
+        RuleItem newItem = mod.getItem(terroristWeapon);
 
-	    BattleUnit newUnit = new BattleUnit(newRule,
-		    UnitFaction.FACTION_HOSTILE,
-		    getUnits().Last().getId() + 1,
-		    mod.getArmor(newArmor, true),
-		    mod.getStatAdjustment((int)saveGame.getDifficulty()),
-		    getDepth());
+        BattleUnit newUnit = new BattleUnit(newRule,
+            UnitFaction.FACTION_HOSTILE,
+            getUnits().Last().getId() + 1,
+            mod.getArmor(newArmor, true),
+            mod.getStatAdjustment((int)saveGame.getDifficulty()),
+            getDepth());
 
-	    getTile(unit.getPosition()).setUnit(newUnit, getTile(unit.getPosition() + new Position(0,0,-1)));
-	    newUnit.setPosition(unit.getPosition());
-	    newUnit.setDirection(unit.getDirection());
-	    newUnit.setCache(null);
-	    newUnit.setTimeUnits(0);
-	    newUnit.setSpecialWeapon(this, mod);
-	    getUnits().Add(newUnit);
-	    newUnit.setAIModule(new AIModule(this, newUnit, null));
-	    if (newItem != null)
-	    {
-		    BattleItem bi = new BattleItem(newItem, ref getCurrentItemId());
-		    bi.moveToOwner(newUnit);
-		    bi.setSlot(mod.getInventory("STR_RIGHT_HAND", true));
-		    getItems().Add(bi);
-	    }
-	    newUnit.setVisible(visible);
-	    getTileEngine().calculateFOV(newUnit.getPosition());
-	    getTileEngine().applyGravity(newUnit.getTile());
-	    newUnit.dontReselect();
-	    return newUnit;
+        getTile(unit.getPosition()).setUnit(newUnit, getTile(unit.getPosition() + new Position(0, 0, -1)));
+        newUnit.setPosition(unit.getPosition());
+        newUnit.setDirection(unit.getDirection());
+        newUnit.setCache(null);
+        newUnit.setTimeUnits(0);
+        newUnit.setSpecialWeapon(this, mod);
+        getUnits().Add(newUnit);
+        newUnit.setAIModule(new AIModule(this, newUnit, null));
+        if (newItem != null)
+        {
+            BattleItem bi = new BattleItem(newItem, ref getCurrentItemId());
+            bi.moveToOwner(newUnit);
+            bi.setSlot(mod.getInventory("STR_RIGHT_HAND", true));
+            getItems().Add(bi);
+        }
+        newUnit.setVisible(visible);
+        getTileEngine().calculateFOV(newUnit.getPosition());
+        getTileEngine().applyGravity(newUnit.getTile());
+        newUnit.dontReselect();
+        return newUnit;
     }
 
     /**
@@ -1601,24 +1601,24 @@ internal class SavedBattleGame
      * @return True if there are any units falling in the battlescape.
      */
     internal bool getUnitsFalling() =>
-	    _unitsFalling;
+        _unitsFalling;
 
     /**
      * Toggles the switch that says "there are units falling, start the fall state".
      * @param fall True if there are any units falling in the battlescape.
      */
     internal void setUnitsFalling(bool fall) =>
-	    _unitsFalling = fall;
+        _unitsFalling = fall;
 
     /**
      * Resets all unit hit state flags.
      */
     internal void resetUnitHitStates()
     {
-	    foreach (var i in _units)
-	    {
-		    i.resetHitState();
-	    }
+        foreach (var i in _units)
+        {
+            i.resetHitState();
+        }
     }
 
     /**
@@ -1626,14 +1626,14 @@ internal class SavedBattleGame
      * @return a pointer to the geoscape save.
      */
     internal SavedGame getGeoscapeSave() =>
-	    _battleState.getGame().getSavedGame();
+        _battleState.getGame().getSavedGame();
 
     /**
      * Checks if an item can be used in the current battlescape conditions.
      * @return True if it's usable, False otherwise.
      */
     internal bool isItemUsable(BattleItem item) =>
-	    string.IsNullOrEmpty(getItemUsable(item));
+        string.IsNullOrEmpty(getItemUsable(item));
 
     /**
      * Checks if an item can be used in the current battlescape conditions.
@@ -1641,19 +1641,19 @@ internal class SavedBattleGame
      */
     internal string getItemUsable(BattleItem item)
     {
-	    if (_depth == 0 &&
-		    (item.getRules().isWaterOnly() ||
-		    (item.getAmmoItem() != null && item.getAmmoItem().getRules().isWaterOnly())))
-	    {
-		    return "STR_UNDERWATER_EQUIPMENT";
-	    }
-	    if (_depth != 0 &&
-		    (item.getRules().isLandOnly() ||
-		    (item.getAmmoItem() != null && item.getAmmoItem().getRules().isLandOnly())))
-	    {
-		    return "STR_LAND_EQUIPMENT";
-	    }
-	    return string.Empty;
+        if (_depth == 0 &&
+            (item.getRules().isWaterOnly() ||
+            (item.getAmmoItem() != null && item.getAmmoItem().getRules().isWaterOnly())))
+        {
+            return "STR_UNDERWATER_EQUIPMENT";
+        }
+        if (_depth != 0 &&
+            (item.getRules().isLandOnly() ||
+            (item.getAmmoItem() != null && item.getAmmoItem().getRules().isLandOnly())))
+        {
+            return "STR_LAND_EQUIPMENT";
+        }
+        return string.Empty;
     }
 
     /**
@@ -1661,13 +1661,13 @@ internal class SavedBattleGame
      * @return true if cheating.
      */
     internal bool isCheating() =>
-	    _cheating;
+        _cheating;
 
     /**
      * @return the tilesearch vector for use in AI functions.
      */
     internal List<Position> getTileSearch() =>
-	    _tileSearch;
+        _tileSearch;
 
     /**
      * Finds a fitting node where a unit can patrol to.
@@ -1678,75 +1678,75 @@ internal class SavedBattleGame
      */
     internal Node getPatrolNode(bool scout, BattleUnit unit, Node fromNode)
     {
-	    var compliantNodes = new List<Node>();
-	    Node preferred = null;
+        var compliantNodes = new List<Node>();
+        Node preferred = null;
 
-	    if (fromNode == null)
-	    {
-		    if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} This alien got lost. :("); }
-		    fromNode = getNodes()[RNG.generate(0, getNodes().Count - 1)];
-		    while (fromNode.isDummy())
-		    {
-			    fromNode = getNodes()[RNG.generate(0, getNodes().Count - 1)];
-		    }
-	    }
+        if (fromNode == null)
+        {
+            if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} This alien got lost. :("); }
+            fromNode = getNodes()[RNG.generate(0, getNodes().Count - 1)];
+            while (fromNode.isDummy())
+            {
+                fromNode = getNodes()[RNG.generate(0, getNodes().Count - 1)];
+            }
+        }
 
-	    // scouts roam all over while all others shuffle around to adjacent nodes at most:
-	    int end = scout ? getNodes().Count : fromNode.getNodeLinks().Count;
+        // scouts roam all over while all others shuffle around to adjacent nodes at most:
+        int end = scout ? getNodes().Count : fromNode.getNodeLinks().Count;
 
-	    for (int i = 0; i < end; ++i)
-	    {
-		    if (!scout && fromNode.getNodeLinks()[i] < 1) continue;
+        for (int i = 0; i < end; ++i)
+        {
+            if (!scout && fromNode.getNodeLinks()[i] < 1) continue;
 
-		    Node n = getNodes()[scout ? i : fromNode.getNodeLinks()[i]];
-		    if ( !n.isDummy()																				        // don't consider dummy nodes.
-			    && (n.getFlags() > 0 || n.getRank() > 0 || scout)											        // for non-scouts we find a node with a desirability above 0
-			    && (!((n.getType() & Node.TYPE_SMALL) != 0) || unit.getArmor().getSize() == 1)					    // the small unit bit is not set or the unit is small
-			    && (!((n.getType() & Node.TYPE_FLYING) != 0) || unit.getMovementType() == MovementType.MT_FLY)		// the flying unit bit is not set or the unit can fly
-			    && !n.isAllocated()																		            // check if not allocated
-			        && !((n.getType() & Node.TYPE_DANGEROUS) != 0)													// don't go there if an alien got shot there; stupid behavior like that
-			    && setUnitPosition(unit, n.getPosition(), true)											            // check if not already occupied
-			    && getTile(n.getPosition()) != null && getTile(n.getPosition()).getFire() == 0						// you are not a firefighter; do not patrol into fire
-			    && (unit.getFaction() != UnitFaction.FACTION_HOSTILE || !getTile(n.getPosition()).getDangerous())	// aliens don't run into a grenade blast
-			            && (!scout || n != fromNode)																// scouts push forward
-			    && n.getPosition().x > 0 && n.getPosition().y > 0)
-		    {
-			    if (preferred == null
-				    || (unit.getRankInt() >=0 &&
-					    (int)preferred.getRank() == Node.nodeRank[unit.getRankInt(), 0] &&
-					    preferred.getFlags() < n.getFlags())
-				    || preferred.getFlags() < n.getFlags())
-			    {
-				    preferred = n;
-			    }
-			    compliantNodes.Add(n);
-		    }
-	    }
+            Node n = getNodes()[scout ? i : fromNode.getNodeLinks()[i]];
+            if (!n.isDummy()                                                                                        // don't consider dummy nodes.
+                && (n.getFlags() > 0 || n.getRank() > 0 || scout)                                                   // for non-scouts we find a node with a desirability above 0
+                && (!((n.getType() & Node.TYPE_SMALL) != 0) || unit.getArmor().getSize() == 1)                      // the small unit bit is not set or the unit is small
+                && (!((n.getType() & Node.TYPE_FLYING) != 0) || unit.getMovementType() == MovementType.MT_FLY)      // the flying unit bit is not set or the unit can fly
+                && !n.isAllocated()                                                                                 // check if not allocated
+                    && !((n.getType() & Node.TYPE_DANGEROUS) != 0)                                                  // don't go there if an alien got shot there; stupid behavior like that
+                && setUnitPosition(unit, n.getPosition(), true)                                                     // check if not already occupied
+                && getTile(n.getPosition()) != null && getTile(n.getPosition()).getFire() == 0                      // you are not a firefighter; do not patrol into fire
+                && (unit.getFaction() != UnitFaction.FACTION_HOSTILE || !getTile(n.getPosition()).getDangerous())   // aliens don't run into a grenade blast
+                        && (!scout || n != fromNode)                                                                // scouts push forward
+                && n.getPosition().x > 0 && n.getPosition().y > 0)
+            {
+                if (preferred == null
+                    || (unit.getRankInt() >= 0 &&
+                        (int)preferred.getRank() == Node.nodeRank[unit.getRankInt(), 0] &&
+                        preferred.getFlags() < n.getFlags())
+                    || preferred.getFlags() < n.getFlags())
+                {
+                    preferred = n;
+                }
+                compliantNodes.Add(n);
+            }
+        }
 
-	    if (!compliantNodes.Any())
-	    {
-		    if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} {(scout ? "Scout " : "Guard")} found on patrol node! XXX XXX XXX"); }
-		    if (unit.getArmor().getSize() > 1 && !scout)
-		    {
-			    return getPatrolNode(true, unit, fromNode); // move dammit
-		    }
-		    else
-			    return null;
-	    }
+        if (!compliantNodes.Any())
+        {
+            if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} {(scout ? "Scout " : "Guard")} found on patrol node! XXX XXX XXX"); }
+            if (unit.getArmor().getSize() > 1 && !scout)
+            {
+                return getPatrolNode(true, unit, fromNode); // move dammit
+            }
+            else
+                return null;
+        }
 
-	    if (scout)
-	    {
-		    // scout picks a random destination:
-		    return compliantNodes[RNG.generate(0, compliantNodes.Count - 1)];
-	    }
-	    else
-	    {
-		    if (preferred == null) return null;
+        if (scout)
+        {
+            // scout picks a random destination:
+            return compliantNodes[RNG.generate(0, compliantNodes.Count - 1)];
+        }
+        else
+        {
+            if (preferred == null) return null;
 
-		    // non-scout patrols to highest value unoccupied node that's not fromNode
-		    if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Choosing node flagged {preferred.getFlags()}"); }
-		    return preferred;
-	    }
+            // non-scout patrols to highest value unoccupied node that's not fromNode
+            if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Choosing node flagged {preferred.getFlags()}"); }
+            return preferred;
+        }
     }
 
     /**
@@ -1754,19 +1754,19 @@ internal class SavedBattleGame
      * @return The falling units in the battlescape.
      */
     internal List<BattleUnit> getFallingUnits() =>
-	    _fallingUnits;
+        _fallingUnits;
 
     /**
      * Turns on debug mode.
      */
     internal void setDebugMode()
     {
-	    for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
-	    {
-		    _tiles[i].setDiscovered(true, 2);
-	    }
+        for (int i = 0; i < _mapsize_z * _mapsize_y * _mapsize_x; ++i)
+        {
+            _tiles[i].setDiscovered(true, 2);
+        }
 
-	    _debugMode = true;
+        _debugMode = true;
     }
 
     /**
@@ -1774,12 +1774,12 @@ internal class SavedBattleGame
      */
     internal void resetTiles()
     {
-	    for (int i = 0; i != getMapSizeXYZ(); ++i)
-	    {
-		    _tiles[i].setDiscovered(false, 0);
-		    _tiles[i].setDiscovered(false, 1);
-		    _tiles[i].setDiscovered(false, 2);
-	    }
+        for (int i = 0; i != getMapSizeXYZ(); ++i)
+        {
+            _tiles[i].setDiscovered(false, 0);
+            _tiles[i].setDiscovered(false, 1);
+            _tiles[i].setDiscovered(false, 2);
+        }
     }
 
     /**
@@ -1787,7 +1787,7 @@ internal class SavedBattleGame
      * @return the name of the music track.
      */
     internal string getMusic() =>
-	    _music;
+        _music;
 
     /**
      * Selects the unit at the given position on the map.
@@ -1796,16 +1796,16 @@ internal class SavedBattleGame
      */
     internal BattleUnit selectUnit(Position pos)
     {
-	    BattleUnit bu = getTile(pos).getUnit();
+        BattleUnit bu = getTile(pos).getUnit();
 
-	    if (bu != null && bu.isOut())
-	    {
-		    return null;
-	    }
-	    else
-	    {
-		    return bu;
-	    }
+        if (bu != null && bu.isOut())
+        {
+            return null;
+        }
+        else
+        {
+            return bu;
+        }
     }
 
     /**
@@ -1816,69 +1816,69 @@ internal class SavedBattleGame
      */
     internal void load(YamlNode node, Mod.Mod mod, SavedGame savedGame)
     {
-	    int mapsize_x = node["width"] != null ? int.Parse(node["width"].ToString()) : _mapsize_x;
-	    int mapsize_y = node["length"] != null ? int.Parse(node["length"].ToString()) : _mapsize_y;
-	    int mapsize_z = node["height"] != null ? int.Parse(node["height"].ToString()) : _mapsize_z;
-	    initMap(mapsize_x, mapsize_y, mapsize_z);
+        int mapsize_x = node["width"] != null ? int.Parse(node["width"].ToString()) : _mapsize_x;
+        int mapsize_y = node["length"] != null ? int.Parse(node["length"].ToString()) : _mapsize_y;
+        int mapsize_z = node["height"] != null ? int.Parse(node["height"].ToString()) : _mapsize_z;
+        initMap(mapsize_x, mapsize_y, mapsize_z);
 
-	    _missionType = node["missionType"].ToString();
-	    _globalShade = int.Parse(node["globalshade"].ToString());
-	    _turn = int.Parse(node["turn"].ToString());
-	    _depth = int.Parse(node["depth"].ToString());
-	    int selectedUnit = int.Parse(node["selectedUnit"].ToString());
+        _missionType = node["missionType"].ToString();
+        _globalShade = int.Parse(node["globalshade"].ToString());
+        _turn = int.Parse(node["turn"].ToString());
+        _depth = int.Parse(node["depth"].ToString());
+        int selectedUnit = int.Parse(node["selectedUnit"].ToString());
 
-	    foreach (var i in ((YamlSequenceNode)node["mapdatasets"]).Children)
-	    {
-		    string name = i.ToString();
-		    MapDataSet mds = mod.getMapDataSet(name);
-		    _mapDataSets.Add(mds);
-	    }
+        foreach (var i in ((YamlSequenceNode)node["mapdatasets"]).Children)
+        {
+            string name = i.ToString();
+            MapDataSet mds = mod.getMapDataSet(name);
+            _mapDataSets.Add(mds);
+        }
 
-	    if (node["tileTotalBytesPer"] == null)
-	    {
-		    // binary tile data not found, load old-style text tiles :(
-		    foreach (var i in ((YamlSequenceNode)node["tiles"]).Children)
-		    {
+        if (node["tileTotalBytesPer"] == null)
+        {
+            // binary tile data not found, load old-style text tiles :(
+            foreach (var i in ((YamlSequenceNode)node["tiles"]).Children)
+            {
                 var pos = Position.decode(i["position"]);
-			    getTile(pos).load(i);
-		    }
-	    }
-	    else
-	    {
-		    // load key to how the tile data was saved
-		    SerializationKey serKey;
-		    uint totalTiles = uint.Parse(node["totalTiles"].ToString());
+                getTile(pos).load(i);
+            }
+        }
+        else
+        {
+            // load key to how the tile data was saved
+            SerializationKey serKey;
+            uint totalTiles = uint.Parse(node["totalTiles"].ToString());
 
             serKey = default;
-		    serKey.index = byte.Parse(node["tileIndexSize"].ToString());
-		    serKey.totalBytes = uint.Parse(node["tileTotalBytesPer"].ToString());
-		    serKey._fire = byte.Parse(node["tileFireSize"].ToString());
-		    serKey._smoke = byte.Parse(node["tileSmokeSize"].ToString());
-		    serKey._mapDataID = byte.Parse(node["tileIDSize"].ToString());
-		    serKey._mapDataSetID = byte.Parse(node["tileSetIDSize"].ToString());
-		    serKey.boolFields = node["tileBoolFieldsSize"] != null ? byte.Parse(node["tileBoolFieldsSize"].ToString()) : (byte)1; // boolean flags used to be stored in an unmentioned byte (Uint8) :|
+            serKey.index = byte.Parse(node["tileIndexSize"].ToString());
+            serKey.totalBytes = uint.Parse(node["tileTotalBytesPer"].ToString());
+            serKey._fire = byte.Parse(node["tileFireSize"].ToString());
+            serKey._smoke = byte.Parse(node["tileSmokeSize"].ToString());
+            serKey._mapDataID = byte.Parse(node["tileIDSize"].ToString());
+            serKey._mapDataSetID = byte.Parse(node["tileSetIDSize"].ToString());
+            serKey.boolFields = node["tileBoolFieldsSize"] != null ? byte.Parse(node["tileBoolFieldsSize"].ToString()) : (byte)1; // boolean flags used to be stored in an unmentioned byte (Uint8) :|
 
-		    // load binary tile data!
-		    string binTiles = node["binTiles"].ToString();
+            // load binary tile data!
+            string binTiles = node["binTiles"].ToString();
             binTiles = binTiles[9..]; // skip "!!binary "
 
-		    byte[] r = Convert.FromBase64String(binTiles);
-		    uint size = totalTiles * serKey.totalBytes;
+            byte[] r = Convert.FromBase64String(binTiles);
+            uint size = totalTiles * serKey.totalBytes;
             uint i = 0;
 
-		    while (i < size)
-		    {
+            while (i < size)
+            {
                 Span<byte> s = r.AsSpan((int)i);
                 int index = unserializeInt(ref s, serKey.index);
-			    Debug.Assert(index >= 0 && index < _mapsize_x * _mapsize_z * _mapsize_y);
-			    _tiles[index].loadBinary(s, serKey); // loadBinary's privileges to advance *r have been revoked
-			    i += serKey.totalBytes-serKey.index; // r is now incremented strictly by totalBytes in case there are obsolete fields present in the data
-		    }
-	    }
-	    if (_missionType == "STR_BASE_DEFENSE")
-	    {
-		    if (node["moduleMap"] != null)
-		    {
+                Debug.Assert(index >= 0 && index < _mapsize_x * _mapsize_z * _mapsize_y);
+                _tiles[index].loadBinary(s, serKey); // loadBinary's privileges to advance *r have been revoked
+                i += serKey.totalBytes - serKey.index; // r is now incremented strictly by totalBytes in case there are obsolete fields present in the data
+            }
+        }
+        if (_missionType == "STR_BASE_DEFENSE")
+        {
+            if (node["moduleMap"] != null)
+            {
                 _baseModules = new List<List<KeyValuePair<int, int>>>();
                 foreach (var i in ((YamlSequenceNode)node["moduleMap"]).Children)
                 {
@@ -1886,176 +1886,176 @@ internal class SavedBattleGame
                         KeyValuePair.Create(int.Parse(x.Key.ToString()), int.Parse(x.Value.ToString()))
                     ).ToList());
                 }
-		    }
-		    else
-		    {
-			    // backwards compatibility: imperfect solution, modules that were completely destroyed
-			    // prior to saving and updating builds will be counted as indestructible.
-			    calculateModuleMap();
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)node["nodes"]).Children)
-	    {
-		    Node n = new Node();
-		    n.load(i);
-		    _nodes.Add(n);
-	    }
+            }
+            else
+            {
+                // backwards compatibility: imperfect solution, modules that were completely destroyed
+                // prior to saving and updating builds will be counted as indestructible.
+                calculateModuleMap();
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)node["nodes"]).Children)
+        {
+            Node n = new Node();
+            n.load(i);
+            _nodes.Add(n);
+        }
 
-	    foreach (var i in ((YamlSequenceNode)node["units"]).Children)
-	    {
-		    UnitFaction faction = (UnitFaction)int.Parse(i["faction"].ToString());
-		    UnitFaction originalFaction = i["originalFaction"] != null ? (UnitFaction)int.Parse(i["originalFaction"].ToString()) : faction;
-		    int id = int.Parse(i["id"].ToString());
-		    BattleUnit unit;
-		    if (id < BattleUnit.MAX_SOLDIER_ID) // Unit is linked to a geoscape soldier
-		    {
-			    // look up the matching soldier
-			    unit = new BattleUnit(savedGame.getSoldier(id), _depth);
-		    }
-		    else
-		    {
-			    string type = i["genUnitType"].ToString();
-			    string armor = i["genUnitArmor"].ToString();
-			    // create a new Unit.
-			    if(mod.getUnit(type) == null || mod.getArmor(armor) == null) continue;
-			    unit = new BattleUnit(mod.getUnit(type), originalFaction, id, mod.getArmor(armor), mod.getStatAdjustment((int)savedGame.getDifficulty()), _depth);
-		    }
-		    unit.load(i);
-		    unit.setSpecialWeapon(this, mod);
-		    _units.Add(unit);
-		    if (faction == UnitFaction.FACTION_PLAYER)
-		    {
-			    if ((unit.getId() == selectedUnit) || (_selectedUnit == null && !unit.isOut()))
-				    _selectedUnit = unit;
-		    }
-		    if (unit.getStatus() != UnitStatus.STATUS_DEAD && unit.getStatus() != UnitStatus.STATUS_IGNORE_ME)
-		    {
-			    if (i["AI"] is YamlNode ai)
-			    {
-				    AIModule aiModule;
-				    if (faction != UnitFaction.FACTION_PLAYER)
-				    {
-					    aiModule = new AIModule(this, unit, null);
-				    }
-				    else
-				    {
-					    continue;
-				    }
-				    aiModule.load(ai);
-				    unit.setAIModule(aiModule);
-			    }
-		    }
-	    }
-	    // matches up tiles and units
-	    resetUnitTiles();
+        foreach (var i in ((YamlSequenceNode)node["units"]).Children)
+        {
+            UnitFaction faction = (UnitFaction)int.Parse(i["faction"].ToString());
+            UnitFaction originalFaction = i["originalFaction"] != null ? (UnitFaction)int.Parse(i["originalFaction"].ToString()) : faction;
+            int id = int.Parse(i["id"].ToString());
+            BattleUnit unit;
+            if (id < BattleUnit.MAX_SOLDIER_ID) // Unit is linked to a geoscape soldier
+            {
+                // look up the matching soldier
+                unit = new BattleUnit(savedGame.getSoldier(id), _depth);
+            }
+            else
+            {
+                string type = i["genUnitType"].ToString();
+                string armor = i["genUnitArmor"].ToString();
+                // create a new Unit.
+                if (mod.getUnit(type) == null || mod.getArmor(armor) == null) continue;
+                unit = new BattleUnit(mod.getUnit(type), originalFaction, id, mod.getArmor(armor), mod.getStatAdjustment((int)savedGame.getDifficulty()), _depth);
+            }
+            unit.load(i);
+            unit.setSpecialWeapon(this, mod);
+            _units.Add(unit);
+            if (faction == UnitFaction.FACTION_PLAYER)
+            {
+                if ((unit.getId() == selectedUnit) || (_selectedUnit == null && !unit.isOut()))
+                    _selectedUnit = unit;
+            }
+            if (unit.getStatus() != UnitStatus.STATUS_DEAD && unit.getStatus() != UnitStatus.STATUS_IGNORE_ME)
+            {
+                if (i["AI"] is YamlNode ai)
+                {
+                    AIModule aiModule;
+                    if (faction != UnitFaction.FACTION_PLAYER)
+                    {
+                        aiModule = new AIModule(this, unit, null);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    aiModule.load(ai);
+                    unit.setAIModule(aiModule);
+                }
+            }
+        }
+        // matches up tiles and units
+        resetUnitTiles();
 
-	    string[] fromContainer = { "items", "recoverConditional", "recoverGuaranteed" };
-	    for (int pass = 0; pass != 3; ++pass)
-	    {
-		    foreach (var i in ((YamlSequenceNode)node[fromContainer[pass]]).Children)
-		    {
-			    if (i["owner"] != null && i["inventoryslot"] == null)
-			    {
-				    // skip special items from OXCE saves
-				    continue;
-			    }
-			    string type = i["type"].ToString();
-			    if (mod.getItem(type) != null)
-			    {
-				    int id = int.Parse(i["id"].ToString());
-				    _itemId = Math.Max(_itemId, id);
-				    BattleItem item = new BattleItem(mod.getItem(type), ref id);
-				    item.load(i, mod);
+        string[] fromContainer = { "items", "recoverConditional", "recoverGuaranteed" };
+        for (int pass = 0; pass != 3; ++pass)
+        {
+            foreach (var i in ((YamlSequenceNode)node[fromContainer[pass]]).Children)
+            {
+                if (i["owner"] != null && i["inventoryslot"] == null)
+                {
+                    // skip special items from OXCE saves
+                    continue;
+                }
+                string type = i["type"].ToString();
+                if (mod.getItem(type) != null)
+                {
+                    int id = int.Parse(i["id"].ToString());
+                    _itemId = Math.Max(_itemId, id);
+                    BattleItem item = new BattleItem(mod.getItem(type), ref id);
+                    item.load(i, mod);
 
-				    int owner = i["owner"] != null ? int.Parse(i["owner"].ToString()) : -1;
-				    int prevOwner = i["previousOwner"] != null ? int.Parse(i["previousOwner"].ToString()) : -1;
-				    int unit = i["unit"] != null ? int.Parse(i["unit"].ToString()) : -1;
+                    int owner = i["owner"] != null ? int.Parse(i["owner"].ToString()) : -1;
+                    int prevOwner = i["previousOwner"] != null ? int.Parse(i["previousOwner"].ToString()) : -1;
+                    int unit = i["unit"] != null ? int.Parse(i["unit"].ToString()) : -1;
 
-				    // match up items and units
-				    for (var bu = 0; bu < _units.Count && owner != -1; ++bu)
-				    {
-					    if (_units[bu].getId() == owner)
-					    {
-						    item.moveToOwner(_units[bu]);
-						    break;
-					    }
-				    }
-				    for (var bu = 0; bu < _units.Count && prevOwner != -1; ++bu)
-				    {
-					    if (_units[bu].getId() == prevOwner)
-					    {
-						    item.setPreviousOwner(_units[bu]);
-						    break;
-					    }
-				    }
-				    for (var bu = 0; bu < _units.Count && unit != -1; ++bu)
-				    {
-					    if (_units[bu].getId() == unit)
-					    {
-						    item.setUnit(_units[bu]);
-						    break;
-					    }
-				    }
+                    // match up items and units
+                    for (var bu = 0; bu < _units.Count && owner != -1; ++bu)
+                    {
+                        if (_units[bu].getId() == owner)
+                        {
+                            item.moveToOwner(_units[bu]);
+                            break;
+                        }
+                    }
+                    for (var bu = 0; bu < _units.Count && prevOwner != -1; ++bu)
+                    {
+                        if (_units[bu].getId() == prevOwner)
+                        {
+                            item.setPreviousOwner(_units[bu]);
+                            break;
+                        }
+                    }
+                    for (var bu = 0; bu < _units.Count && unit != -1; ++bu)
+                    {
+                        if (_units[bu].getId() == unit)
+                        {
+                            item.setUnit(_units[bu]);
+                            break;
+                        }
+                    }
 
-				    // match up items and tiles
-				    if (item.getSlot() != null && item.getSlot().getType() == InventoryType.INV_GROUND)
-				    {
+                    // match up items and tiles
+                    if (item.getSlot() != null && item.getSlot().getType() == InventoryType.INV_GROUND)
+                    {
                         Position pos = i["position"] != null ? Position.decode(i["position"]) : new Position(-1, -1, -1);
                         if (pos.x != -1)
-						    getTile(pos).addItem(item, mod.getInventory("STR_GROUND", true));
-				    }
+                            getTile(pos).addItem(item, mod.getInventory("STR_GROUND", true));
+                    }
                     switch (pass)
                     {
                         case 0: _items.Add(item); break;
                         case 1: _recoverConditional.Add(item); break;
                         case 2: _recoverGuaranteed.Add(item); break;
                     }
-			    }
-			    else
-			    {
+                }
+                else
+                {
                     Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {type}");
-			    }
-		    }
-	    }
-	    _itemId++;
+                }
+            }
+        }
+        _itemId++;
 
         // tie ammo items to their weapons, running through the items again
         var weaponi = 0;
-	    foreach (var i in ((YamlSequenceNode)node["items"]).Children)
-	    {
-		    if (i["owner"] != null && i["inventoryslot"] == null)
-		    {
-			    // skip special items from OXCE saves
-			    continue;
-		    }
-		    if (mod.getItem(i["type"].ToString()) != null)
-		    {
-			    int ammo = i["ammoItem"] != null ? int.Parse(i["ammoItem"].ToString()) : -1;
-			    if (ammo != -1)
-			    {
-				    foreach (var ammoi in _items)
-				    {
-					    if (ammoi.getId() == ammo)
-					    {
-						    _items[weaponi].setAmmoItem(ammoi);
-						    break;
-					    }
-				    }
-			    }
-			    ++weaponi;
-		    }
-	    }
-	    _objectiveType = int.Parse(node["objectiveType"].ToString());
-	    _objectivesDestroyed = int.Parse(node["objectivesDestroyed"].ToString());
-	    _objectivesNeeded = int.Parse(node["objectivesNeeded"].ToString());
-	    _tuReserved = (BattleActionType)int.Parse(node["tuReserved"].ToString());
-	    _kneelReserved = bool.Parse(node["kneelReserved"].ToString());
-	    _ambience = int.Parse(node["ambience"].ToString());
-	    _ambientVolume = double.Parse(node["ambientVolume"].ToString());
-	    _music = node["music"].ToString();
-	    _turnLimit = int.Parse(node["turnLimit"].ToString());
-	    _chronoTrigger = (ChronoTrigger)int.Parse(node["chronoTrigger"].ToString());
-	    _cheatTurn = int.Parse(node["cheatTurn"].ToString());
+        foreach (var i in ((YamlSequenceNode)node["items"]).Children)
+        {
+            if (i["owner"] != null && i["inventoryslot"] == null)
+            {
+                // skip special items from OXCE saves
+                continue;
+            }
+            if (mod.getItem(i["type"].ToString()) != null)
+            {
+                int ammo = i["ammoItem"] != null ? int.Parse(i["ammoItem"].ToString()) : -1;
+                if (ammo != -1)
+                {
+                    foreach (var ammoi in _items)
+                    {
+                        if (ammoi.getId() == ammo)
+                        {
+                            _items[weaponi].setAmmoItem(ammoi);
+                            break;
+                        }
+                    }
+                }
+                ++weaponi;
+            }
+        }
+        _objectiveType = int.Parse(node["objectiveType"].ToString());
+        _objectivesDestroyed = int.Parse(node["objectivesDestroyed"].ToString());
+        _objectivesNeeded = int.Parse(node["objectivesNeeded"].ToString());
+        _tuReserved = (BattleActionType)int.Parse(node["tuReserved"].ToString());
+        _kneelReserved = bool.Parse(node["kneelReserved"].ToString());
+        _ambience = int.Parse(node["ambience"].ToString());
+        _ambientVolume = double.Parse(node["ambientVolume"].ToString());
+        _music = node["music"].ToString();
+        _turnLimit = int.Parse(node["turnLimit"].ToString());
+        _chronoTrigger = (ChronoTrigger)int.Parse(node["chronoTrigger"].ToString());
+        _cheatTurn = int.Parse(node["cheatTurn"].ToString());
     }
 
     /**
@@ -2070,15 +2070,15 @@ internal class SavedBattleGame
     bool eyesOnTarget(UnitFaction faction, BattleUnit unit)
     {
         var units = getUnits();
-	    for (var i = 0; i < units.Count; ++i)
-	    {
-		    if (units[i].getFaction() != faction) continue;
+        for (var i = 0; i < units.Count; ++i)
+        {
+            if (units[i].getFaction() != faction) continue;
 
-		    List<BattleUnit> vis = units[i].getVisibleUnits();
-		    if (vis.Contains(unit)) return true;
-		    // aliens know the location of all XCom agents sighted by all other aliens due to sharing locations over their space-walkie-talkies
-	    }
+            List<BattleUnit> vis = units[i].getVisibleUnits();
+            if (vis.Contains(unit)) return true;
+            // aliens know the location of all XCom agents sighted by all other aliens due to sharing locations over their space-walkie-talkies
+        }
 
-	    return false;
+        return false;
     }
 }

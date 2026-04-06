@@ -21,24 +21,24 @@ namespace SharpXcom.Engine;
 
 internal class ShaderRepeat<TPixel> : ShaderBase<TPixel>
 {
-	int _off_x;
-	int _off_y;
+    int _off_x;
+    int _off_y;
 
-	internal ShaderRepeat(Surface s) : base(s) =>
-		setOffset(0, 0);
+    internal ShaderRepeat(Surface s) : base(s) =>
+        setOffset(0, 0);
 
-	internal ShaderRepeat(List<TPixel> f, int max_x, int max_y) : base(f, max_x, max_y) =>
-		setOffset(0, 0);
+    internal ShaderRepeat(List<TPixel> f, int max_x, int max_y) : base(f, max_x, max_y) =>
+        setOffset(0, 0);
 
-	internal void setOffset(int x, int y)
-	{
-		_off_x = x;
-		_off_y = y;
-	}
+    internal void setOffset(int x, int y)
+    {
+        _off_x = x;
+        _off_y = y;
+    }
 
-	internal void addOffset(int x, int y)
-	{
-		_off_x += x;
-		_off_y += y;
-	}
+    internal void addOffset(int x, int y)
+    {
+        _off_x += x;
+        _off_y += y;
+    }
 }

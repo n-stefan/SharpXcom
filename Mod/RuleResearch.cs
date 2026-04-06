@@ -57,14 +57,14 @@ internal class RuleResearch : IListOrder, IRule
      * @return The name of this ResearchProject.
      */
     internal string getName() =>
-	    _name;
+        _name;
 
     /**
      * Gets the list weight for this research item.
      * @return The list weight for this research item.
      */
     public int getListOrder() =>
-	    _listOrder;
+        _listOrder;
 
     /**
      * Loads the research project from a YAML file.
@@ -73,27 +73,27 @@ internal class RuleResearch : IListOrder, IRule
      */
     internal void load(YamlNode node, int listOrder)
     {
-	    _name = node["name"].ToString();
-	    _lookup = node["lookup"].ToString();
-	    _cutscene = node["cutscene"].ToString();
-	    _cost = int.Parse(node["cost"].ToString());
-	    _points = int.Parse(node["points"].ToString());
+        _name = node["name"].ToString();
+        _lookup = node["lookup"].ToString();
+        _cutscene = node["cutscene"].ToString();
+        _cost = int.Parse(node["cost"].ToString());
+        _points = int.Parse(node["points"].ToString());
         _dependencies = ((YamlSequenceNode)node["dependencies"]).Children.Select(x => x.ToString()).ToList();
         _unlocks = ((YamlSequenceNode)node["unlocks"]).Children.Select(x => x.ToString()).ToList();
         _getOneFree = ((YamlSequenceNode)node["getOneFree"]).Children.Select(x => x.ToString()).ToList();
         _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
-	    _needItem = bool.Parse(node["needItem"].ToString());
-	    _destroyItem = bool.Parse(node["destroyItem"].ToString());
+        _needItem = bool.Parse(node["needItem"].ToString());
+        _destroyItem = bool.Parse(node["destroyItem"].ToString());
         _listOrder = int.Parse(node["listOrder"].ToString());
-	    if (_listOrder == 0)
-	    {
+        if (_listOrder == 0)
+        {
             _listOrder = listOrder;
-	    }
-	    // This is necessary, research code assumes it!
-	    if (_requires.Any() && _cost != 0)
-	    {
-		    throw new Exception("Research topic " + _name + " has requirements, but the cost is not zero. Sorry, this is not allowed!");
-	    }
+        }
+        // This is necessary, research code assumes it!
+        if (_requires.Any() && _cost != 0)
+        {
+            throw new Exception("Research topic " + _name + " has requirements, but the cost is not zero. Sorry, this is not allowed!");
+        }
     }
 
     /**
@@ -101,70 +101,70 @@ internal class RuleResearch : IListOrder, IRule
      * @return The cost of this ResearchProject (in man/day).
      */
     internal int getCost() =>
-	    _cost;
+        _cost;
 
     /**
      * Gets the list of ResearchProjects granted at random for free by this research.
      * @return The list of ResearchProjects.
      */
     internal List<string> getGetOneFree() =>
-	    _getOneFree;
+        _getOneFree;
 
     /**
      * Gets the requirements for this ResearchProject.
      * @return The requirement for this research.
      */
     internal List<string> getRequirements() =>
-	    _requires;
+        _requires;
 
     /**
      * Gets the list of ResearchProjects unlocked by this research.
      * @return The list of ResearchProjects.
      */
     internal List<string> getUnlocked() =>
-	    _unlocks;
+        _unlocks;
 
     /**
      * Checks if this ResearchProject needs a corresponding Item to be researched.
      *  @return True if the ResearchProject needs a corresponding item.
      */
     internal bool needItem() =>
-	    _needItem;
+        _needItem;
 
     /**
      * Gets the list of dependencies, i.e. ResearchProjects, that must be discovered before this one.
      * @return The list of ResearchProjects.
      */
     internal List<string> getDependencies() =>
-	    _dependencies;
+        _dependencies;
 
     /**
      * Get the points earned for this ResearchProject.
      * @return The points earned for this ResearchProject.
      */
     internal int getPoints() =>
-	    _points;
+        _points;
 
     /**
      * Checks if this ResearchProject needs a corresponding Item to be researched.
      *  @return True if the ResearchProject needs a corresponding item.
      */
     internal bool destroyItem() =>
-	    _destroyItem;
+        _destroyItem;
 
     /**
      * Gets what article to look up in the ufopedia.
      * @return The article to look up in the ufopaedia
      */
     internal string getLookup() =>
-	    _lookup;
+        _lookup;
 
     /**
      * Gets the cutscene to play when this research item is completed.
      * @return The cutscene id.
      */
     internal string getCutscene() =>
-	    _cutscene;
+        _cutscene;
 }
 
 /**

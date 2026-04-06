@@ -938,18 +938,18 @@ internal class InventoryState : State
      */
     internal override void handle(Action action)
     {
-	    base.handle(action);
+        base.handle(action);
 
-	    if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
-	    {
-		    if (action.getDetails().button.button == SDL_BUTTON_X1)
-		    {
-			    btnNextClick(action);
-		    }
-		    else if (action.getDetails().button.button == SDL_BUTTON_X2)
-		    {
-			    btnPrevClick(action);
-		    }
-	    }
+        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        {
+            if (action.getDetails().button.button == SDL_BUTTON_X1)
+            {
+                btnNextClick(action);
+            }
+            else if (action.getDetails().button.button == SDL_BUTTON_X2)
+            {
+                btnPrevClick(action);
+            }
+        }
     }
 }

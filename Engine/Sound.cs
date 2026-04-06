@@ -56,21 +56,21 @@ internal class Sound
      */
     internal void play(int channel = -1, int angle = 0, int distance = 0)
     {
-	    if (!Options.mute && _sound.abuf != nint.Zero)
- 	    {
+        if (!Options.mute && _sound.abuf != nint.Zero)
+        {
             int chan = Mix_PlayChannel(channel, _sound.abuf, 0);
-		    if (chan == -1)
-		    {
+            if (chan == -1)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
             }
             else if (Options.StereoSound)
-		    {
+            {
                 if (Mix_SetPosition(chan, (short)angle, (byte)distance) == 0)
-			    {
+                {
                     Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
                 }
             }
-	    }
+        }
     }
 
     /**
@@ -96,13 +96,13 @@ internal class Sound
      */
     internal void load(string filename)
     {
-	    string utf8 = Unicode.convPathToUtf8(filename);
-	    _sound.abuf = Mix_LoadWAV(utf8);
-	    if (_sound.abuf == nint.Zero)
-	    {
-		    string err = filename + ":" + Mix_GetError();
-		    throw new Exception(err);
-	    }
+        string utf8 = Unicode.convPathToUtf8(filename);
+        _sound.abuf = Mix_LoadWAV(utf8);
+        if (_sound.abuf == nint.Zero)
+        {
+            string err = filename + ":" + Mix_GetError();
+            throw new Exception(err);
+        }
     }
 
     /**
@@ -121,13 +121,13 @@ internal class Sound
      */
     internal void loop()
     {
-	    if (!Options.mute && _sound.abuf != nint.Zero && Mix_Playing(3) == 0)
-	    {
-		    int chan = Mix_PlayChannel(3, _sound.abuf, -1);
-		    if (chan == -1)
-		    {
+        if (!Options.mute && _sound.abuf != nint.Zero && Mix_Playing(3) == 0)
+        {
+            int chan = Mix_PlayChannel(3, _sound.abuf, -1);
+            if (chan == -1)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
-		    }
-	    }
+            }
+        }
     }
 }

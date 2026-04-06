@@ -21,7 +21,8 @@ namespace SharpXcom.Savegame;
 
 enum TransferType { TRANSFER_ITEM, TRANSFER_CRAFT, TRANSFER_SOLDIER, TRANSFER_SCIENTIST, TRANSFER_ENGINEER };
 
-/* struct */ class TransferRow
+/* struct */
+class TransferRow
 {
     internal TransferType type;
     internal object rule;
@@ -83,30 +84,30 @@ internal class Transfer
             { "hours", _hours.ToString() }
         };
         if (_soldier != null)
-	    {
-		    node.Add("soldier", _soldier.save());
-	    }
-	    else if (_craft != null)
-	    {
-		    node.Add("craft", _craft.save());
-	    }
-	    else if (_itemQty != 0)
-	    {
-		    node.Add("itemId", _itemId);
-		    node.Add("itemQty", _itemQty.ToString());
-	    }
-	    else if (_scientists != 0)
-	    {
-		    node.Add("scientists", _scientists.ToString());
-	    }
-	    else if (_engineers != 0)
-	    {
-		    node.Add("engineers", _engineers.ToString());
-	    }
-	    if (_delivered)
-	    {
-		    node.Add("delivered", _delivered.ToString());
-	    }
+        {
+            node.Add("soldier", _soldier.save());
+        }
+        else if (_craft != null)
+        {
+            node.Add("craft", _craft.save());
+        }
+        else if (_itemQty != 0)
+        {
+            node.Add("itemId", _itemId);
+            node.Add("itemQty", _itemQty.ToString());
+        }
+        else if (_scientists != 0)
+        {
+            node.Add("scientists", _scientists.ToString());
+        }
+        else if (_engineers != 0)
+        {
+            node.Add("engineers", _engineers.ToString());
+        }
+        if (_delivered)
+        {
+            node.Add("delivered", _delivered.ToString());
+        }
         return node;
     }
 
@@ -124,8 +125,8 @@ internal class Transfer
      */
     internal void setItems(string id, int qty = 1)
     {
-	    _itemId = id;
-	    _itemQty = qty;
+        _itemId = id;
+        _itemQty = qty;
     }
 
     /**
@@ -169,23 +170,23 @@ internal class Transfer
      */
     internal TransferType getType()
     {
-	    if (_soldier != null)
-	    {
-		    return TransferType.TRANSFER_SOLDIER;
-	    }
-	    else if (_craft != null)
-	    {
-		    return TransferType.TRANSFER_CRAFT;
-	    }
-	    else if (_scientists != 0)
-	    {
-		    return TransferType.TRANSFER_SCIENTIST;
-	    }
-	    else if (_engineers != 0)
-	    {
-		    return TransferType.TRANSFER_ENGINEER;
-	    }
-	    return TransferType.TRANSFER_ITEM;
+        if (_soldier != null)
+        {
+            return TransferType.TRANSFER_SOLDIER;
+        }
+        else if (_craft != null)
+        {
+            return TransferType.TRANSFER_CRAFT;
+        }
+        else if (_scientists != 0)
+        {
+            return TransferType.TRANSFER_SCIENTIST;
+        }
+        else if (_engineers != 0)
+        {
+            return TransferType.TRANSFER_ENGINEER;
+        }
+        return TransferType.TRANSFER_ITEM;
     }
 
     /**
@@ -194,19 +195,19 @@ internal class Transfer
      */
     internal int getQuantity()
     {
-	    if (_itemQty != 0)
-	    {
-		    return _itemQty;
-	    }
-	    else if (_scientists != 0)
-	    {
-		    return _scientists;
-	    }
-	    else if (_engineers != 0)
-	    {
-		    return _engineers;
-	    }
-	    return 1;
+        if (_itemQty != 0)
+        {
+            return _itemQty;
+        }
+        else if (_scientists != 0)
+        {
+            return _scientists;
+        }
+        else if (_engineers != 0)
+        {
+            return _engineers;
+        }
+        return 1;
     }
 
     /**
@@ -251,14 +252,14 @@ internal class Transfer
      * @return Amount of hours.
      */
     internal int getHours() =>
-	    _hours;
+        _hours;
 
     /**
      * Returns the items being transferred.
      * @return Item ID.
      */
     internal string getItems() =>
-	    _itemId;
+        _itemId;
 
     /**
      * Returns the name of the contents of the transfer.
@@ -267,23 +268,23 @@ internal class Transfer
      */
     internal string getName(Language lang)
     {
-	    if (_soldier != null)
-	    {
-		    return _soldier.getName();
-	    }
-	    else if (_craft != null)
-	    {
-		    return _craft.getName(lang);
-	    }
-	    else if (_scientists != 0)
-	    {
-		    return lang.getString("STR_SCIENTISTS");
-	    }
-	    else if (_engineers != 0)
-	    {
-		    return lang.getString("STR_ENGINEERS");
-	    }
-	    return lang.getString(_itemId);
+        if (_soldier != null)
+        {
+            return _soldier.getName();
+        }
+        else if (_craft != null)
+        {
+            return _craft.getName(lang);
+        }
+        else if (_scientists != 0)
+        {
+            return lang.getString("STR_SCIENTISTS");
+        }
+        else if (_engineers != 0)
+        {
+            return lang.getString("STR_ENGINEERS");
+        }
+        return lang.getString(_itemId);
     }
 
     /**
@@ -296,52 +297,52 @@ internal class Transfer
      */
     internal bool load(YamlNode node, Base @base, Mod.Mod mod, SavedGame save)
     {
-	    _hours = int.Parse(node["hours"].ToString());
-	    if (node["soldier"] is YamlNode soldier)
-	    {
-		    string type = soldier["type"] != null ? soldier["type"].ToString() : mod.getSoldiersList().First();
-		    if (mod.getSoldier(type) != null)
-		    {
-			    _soldier = new Soldier(mod.getSoldier(type), null);
-			    _soldier.load(soldier, mod, save);
-		    }
-		    else
-		    {
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
-			    //this = null;
-			    return false;
-		    }
-	    }
-	    if (node["craft"] is YamlNode craft)
-	    {
-		    string type = craft["type"].ToString();
-		    if (mod.getCraft(type) != null)
-		    {
-			    _craft = new Craft(mod.getCraft(type), @base);
-			    _craft.load(craft, mod, null);
-		    }
-		    else
-		    {
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load craft {type}");
-			    //this = null;
-			    return false;
-		    }
+        _hours = int.Parse(node["hours"].ToString());
+        if (node["soldier"] is YamlNode soldier)
+        {
+            string type = soldier["type"] != null ? soldier["type"].ToString() : mod.getSoldiersList().First();
+            if (mod.getSoldier(type) != null)
+            {
+                _soldier = new Soldier(mod.getSoldier(type), null);
+                _soldier.load(soldier, mod, save);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
+                //this = null;
+                return false;
+            }
+        }
+        if (node["craft"] is YamlNode craft)
+        {
+            string type = craft["type"].ToString();
+            if (mod.getCraft(type) != null)
+            {
+                _craft = new Craft(mod.getCraft(type), @base);
+                _craft.load(craft, mod, null);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load craft {type}");
+                //this = null;
+                return false;
+            }
 
-	    }
-	    if (node["itemId"] is YamlNode item)
-	    {
-		    _itemId = item.ToString();
-		    if (mod.getItem(_itemId) == null)
-		    {
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {_itemId}");
-			    //this = null;
-			    return false;
-		    }
-	    }
-	    _itemQty = int.Parse(node["itemQty"].ToString());
-	    _scientists = int.Parse(node["scientists"].ToString());
-	    _engineers = int.Parse(node["engineers"].ToString());
-	    _delivered = bool.Parse(node["delivered"].ToString());
-	    return true;
+        }
+        if (node["itemId"] is YamlNode item)
+        {
+            _itemId = item.ToString();
+            if (mod.getItem(_itemId) == null)
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {_itemId}");
+                //this = null;
+                return false;
+            }
+        }
+        _itemQty = int.Parse(node["itemQty"].ToString());
+        _scientists = int.Parse(node["scientists"].ToString());
+        _engineers = int.Parse(node["engineers"].ToString());
+        _delivered = bool.Parse(node["delivered"].ToString());
+        return true;
     }
 }

@@ -32,14 +32,14 @@ struct RuleSlot
     internal static RuleSlot decode(YamlNode node)
     {
         if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 2)
-    		return default;
+            return default;
 
         var rs = new RuleSlot
         {
             x = int.Parse(node[0].ToString()),
             y = int.Parse(node[1].ToString())
         };
-    	return rs;
+        return rs;
     }
 
     /**
@@ -48,8 +48,8 @@ struct RuleSlot
      */
     static YamlNode encode(RuleSlot rs)
     {
-    	var node = new YamlSequenceNode(rs.x.ToString(), rs.y.ToString());
-    	return node;
+        var node = new YamlSequenceNode(rs.x.ToString(), rs.y.ToString());
+        return node;
     }
 }
 
@@ -99,7 +99,7 @@ internal class RuleInventory : IListOrder, IRule
      * @return The inventory type.
      */
     internal InventoryType getType() =>
-	    _type;
+        _type;
 
     /**
      * Gets the language string that names
@@ -107,10 +107,10 @@ internal class RuleInventory : IListOrder, IRule
      * @return The section name.
      */
     internal string getId() =>
-	    _id;
+        _id;
 
     public int getListOrder() =>
-	    _listOrder;
+        _listOrder;
 
     /**
      * Loads the inventory from a YAML file.
@@ -119,13 +119,13 @@ internal class RuleInventory : IListOrder, IRule
      */
     internal void load(YamlNode node, int listOrder)
     {
-	    _id = node["id"].ToString();
-	    _x = int.Parse(node["x"].ToString());
-	    _y = int.Parse(node["y"].ToString());
-	    _type = (InventoryType)int.Parse(node["type"].ToString());
+        _id = node["id"].ToString();
+        _x = int.Parse(node["x"].ToString());
+        _y = int.Parse(node["y"].ToString());
+        _type = (InventoryType)int.Parse(node["type"].ToString());
         _slots = ((YamlSequenceNode)node["slots"]).Children.Select(x => RuleSlot.decode(x)).ToList();
         _costs = ((YamlMappingNode)node["costs"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
-	    _listOrder = node["listOrder"] != null ? int.Parse(node["listOrder"].ToString()) : listOrder;
+        _listOrder = node["listOrder"] != null ? int.Parse(node["listOrder"].ToString()) : listOrder;
     }
 
     /**
@@ -133,7 +133,7 @@ internal class RuleInventory : IListOrder, IRule
      * @return The list of slots.
      */
     internal List<RuleSlot> getSlots() =>
-	    _slots;
+        _slots;
 
     /**
      * Checks if an item completely fits when
@@ -145,41 +145,41 @@ internal class RuleInventory : IListOrder, IRule
      */
     internal bool fitItemInSlot(RuleItem item, int x, int y)
     {
-	    if (_type == InventoryType.INV_HAND)
-	    {
-		    return true;
-	    }
-	    else if (_type == InventoryType.INV_GROUND)
-	    {
-		    int width = (320 - _x) / SLOT_W;
-		    int height = (200 - _y) / SLOT_H;
-		    int xOffset = 0;
-		    while (x >= xOffset + width)
-			    xOffset += width;
-		    for (int xx = x; xx < x + item.getInventoryWidth(); ++xx)
-		    {
-			    for (int yy = y; yy < y + item.getInventoryHeight(); ++yy)
-			    {
-				    if (!(xx >= xOffset && xx < xOffset + width && yy >= 0 && yy < height))
-					    return false;
-			    }
-		    }
-		    return true;
-	    }
-	    else
-	    {
-		    int totalSlots = item.getInventoryWidth() * item.getInventoryHeight();
-		    int foundSlots = 0;
-		    for (var i = 0; i < _slots.Count && foundSlots < totalSlots; ++i)
-		    {
-			    if (_slots[i].x >= x && _slots[i].x < x + item.getInventoryWidth() &&
+        if (_type == InventoryType.INV_HAND)
+        {
+            return true;
+        }
+        else if (_type == InventoryType.INV_GROUND)
+        {
+            int width = (320 - _x) / SLOT_W;
+            int height = (200 - _y) / SLOT_H;
+            int xOffset = 0;
+            while (x >= xOffset + width)
+                xOffset += width;
+            for (int xx = x; xx < x + item.getInventoryWidth(); ++xx)
+            {
+                for (int yy = y; yy < y + item.getInventoryHeight(); ++yy)
+                {
+                    if (!(xx >= xOffset && xx < xOffset + width && yy >= 0 && yy < height))
+                        return false;
+                }
+            }
+            return true;
+        }
+        else
+        {
+            int totalSlots = item.getInventoryWidth() * item.getInventoryHeight();
+            int foundSlots = 0;
+            for (var i = 0; i < _slots.Count && foundSlots < totalSlots; ++i)
+            {
+                if (_slots[i].x >= x && _slots[i].x < x + item.getInventoryWidth() &&
                     _slots[i].y >= y && _slots[i].y < y + item.getInventoryHeight())
-			    {
-				    foundSlots++;
-			    }
-		    }
-		    return (foundSlots == totalSlots);
-	    }
+                {
+                    foundSlots++;
+                }
+            }
+            return (foundSlots == totalSlots);
+        }
     }
 
     /**
@@ -187,14 +187,14 @@ internal class RuleInventory : IListOrder, IRule
      * @return The X position in pixels.
      */
     internal int getX() =>
-	    _x;
+        _x;
 
     /**
      * Gets the Y position of the inventory section on the screen.
      * @return The Y position in pixels.
      */
     internal int getY() =>
-	    _y;
+        _y;
 
     /**
      * Gets the time unit cost to place an item in another section.
@@ -203,9 +203,9 @@ internal class RuleInventory : IListOrder, IRule
      */
     internal int getCost(RuleInventory slot)
     {
-	    if (slot == this)
-		    return 0;
-	    return _costs[slot.getId()];
+        if (slot == this)
+            return 0;
+        return _costs[slot.getId()];
     }
 
     /**
@@ -216,45 +216,45 @@ internal class RuleInventory : IListOrder, IRule
      */
     internal bool checkSlotInPosition(ref int x, ref int y)
     {
-	    int mouseX = x, mouseY = y;
-	    if (_type == InventoryType.INV_HAND)
-	    {
-		    for (int xx = 0; xx < HAND_W; ++xx)
-		    {
-			    for (int yy = 0; yy < HAND_H; ++yy)
-			    {
-				    if (mouseX >= _x + xx * SLOT_W && mouseX < _x + (xx + 1) * SLOT_W &&
-					    mouseY >= _y + yy * SLOT_H && mouseY < _y + (yy + 1) * SLOT_H)
-				    {
-					    x = 0;
-					    y = 0;
-					    return true;
-				    }
-			    }
-		    }
-	    }
-	    else if (_type == InventoryType.INV_GROUND)
-	    {
-		    if (mouseX >= _x && mouseX < 320 && mouseY >= _y && mouseY < 200)
-		    {
-			    x = (int)Math.Floor((double)(mouseX - _x) / SLOT_W);
-			    y = (int)Math.Floor((double)(mouseY - _y) / SLOT_H);
-			    return true;
-		    }
-	    }
-	    else
-	    {
-		    foreach (var i in _slots)
-		    {
-			    if (mouseX >= _x + i.x * SLOT_W && mouseX < _x + (i.x + 1) * SLOT_W &&
-				    mouseY >= _y + i.y * SLOT_H && mouseY < _y + (i.y + 1) * SLOT_H)
-			    {
-				    x = i.x;
-				    y = i.y;
-				    return true;
-			    }
-		    }
-	    }
-	    return false;
+        int mouseX = x, mouseY = y;
+        if (_type == InventoryType.INV_HAND)
+        {
+            for (int xx = 0; xx < HAND_W; ++xx)
+            {
+                for (int yy = 0; yy < HAND_H; ++yy)
+                {
+                    if (mouseX >= _x + xx * SLOT_W && mouseX < _x + (xx + 1) * SLOT_W &&
+                        mouseY >= _y + yy * SLOT_H && mouseY < _y + (yy + 1) * SLOT_H)
+                    {
+                        x = 0;
+                        y = 0;
+                        return true;
+                    }
+                }
+            }
+        }
+        else if (_type == InventoryType.INV_GROUND)
+        {
+            if (mouseX >= _x && mouseX < 320 && mouseY >= _y && mouseY < 200)
+            {
+                x = (int)Math.Floor((double)(mouseX - _x) / SLOT_W);
+                y = (int)Math.Floor((double)(mouseY - _y) / SLOT_H);
+                return true;
+            }
+        }
+        else
+        {
+            foreach (var i in _slots)
+            {
+                if (mouseX >= _x + i.x * SLOT_W && mouseX < _x + (i.x + 1) * SLOT_W &&
+                    mouseY >= _y + i.y * SLOT_H && mouseY < _y + (i.y + 1) * SLOT_H)
+                {
+                    x = i.x;
+                    y = i.y;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

@@ -39,7 +39,7 @@ internal class Waypoint : Target
      * @return Marker sprite, -1 if none.
      */
     internal override int getMarker() =>
-	    6;
+        6;
 
     /**
      * Returns the waypoint's unique type used for
@@ -47,5 +47,5 @@ internal class Waypoint : Target
      * @return ID.
      */
     internal override string getType() =>
-	    "STR_WAY_POINT";
+        "STR_WAY_POINT";
 }

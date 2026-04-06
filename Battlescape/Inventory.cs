@@ -147,7 +147,7 @@ internal class Inventory : InteractiveSurface
      * @return Pointer to selected item, or NULL if none.
      */
     internal BattleItem getSelectedItem() =>
-	    _selItem;
+        _selItem;
 
     /**
      * Changes the inventory's Time Units mode.
@@ -174,7 +174,7 @@ internal class Inventory : InteractiveSurface
      * @return Pointer to selected item, or 0 if none.
      */
     internal BattleItem getMouseOverItem() =>
-	    _mouseOverItem;
+        _mouseOverItem;
 
     /**
      * Arranges items on the ground for the inventory display.
@@ -304,7 +304,7 @@ internal class Inventory : InteractiveSurface
      * @param msg The message to show.
      */
     internal void showWarning(string msg) =>
-	    _warning.showMessage(msg);
+        _warning.showMessage(msg);
 
     /**
      * Unloads the selected weapon, placing the gun
@@ -513,8 +513,8 @@ internal class Inventory : InteractiveSurface
      */
     internal override void think()
     {
-	    _warning.think();
-	    _animTimer.think(null, this);
+        _warning.think();
+        _animTimer.think(null, this);
     }
 
     /**
@@ -522,8 +522,8 @@ internal class Inventory : InteractiveSurface
      */
     internal override void draw()
     {
-	    drawGrid();
-	    drawItems();
+        drawGrid();
+        drawItems();
     }
 
     /**
@@ -531,79 +531,79 @@ internal class Inventory : InteractiveSurface
      */
     void drawGrid()
     {
-	    _grid.clear();
-	    Text text = new Text(80, 9, 0, 0);
-	    text.setPalette(_grid.getPalette());
-	    text.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+        _grid.clear();
+        Text text = new Text(80, 9, 0, 0);
+        text.setPalette(_grid.getPalette());
+        text.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
 
-	    RuleInterface rule = _game.getMod().getInterface("inventory");
+        RuleInterface rule = _game.getMod().getInterface("inventory");
 
-	    text.setColor((byte)rule.getElement("textSlots").color);
-	    text.setHighContrast(true);
+        text.setColor((byte)rule.getElement("textSlots").color);
+        text.setHighContrast(true);
 
-	    byte color = (byte)rule.getElement("grid").color;
+        byte color = (byte)rule.getElement("grid").color;
 
-	    foreach (var i in _game.getMod().getInventories())
-	    {
-		    // Draw grid
-		    if (i.Value.getType() == InventoryType.INV_SLOT)
-		    {
-			    foreach (var j in i.Value.getSlots())
-			    {
-				    SDL_Rect r;
-				    r.x = i.Value.getX() + RuleInventory.SLOT_W * j.x;
-				    r.y = i.Value.getY() + RuleInventory.SLOT_H * j.y;
-				    r.w = RuleInventory.SLOT_W + 1;
-				    r.h = RuleInventory.SLOT_H + 1;
-				    _grid.drawRect(ref r, color);
-				    r.x++;
-				    r.y++;
-				    r.w -= 2;
-				    r.h -= 2;
-				    _grid.drawRect(ref r, 0);
-			    }
-		    }
-		    else if (i.Value.getType() == InventoryType.INV_HAND)
-		    {
-			    SDL_Rect r;
-			    r.x = i.Value.getX();
-			    r.y = i.Value.getY();
-			    r.w = RuleInventory.HAND_W * RuleInventory.SLOT_W;
-			    r.h = RuleInventory.HAND_H * RuleInventory.SLOT_H;
-			    _grid.drawRect(ref r, color);
-			    r.x++;
-			    r.y++;
-			    r.w -= 2;
-			    r.h -= 2;
-			    _grid.drawRect(ref r, 0);
-		    }
-		    else if (i.Value.getType() == InventoryType.INV_GROUND)
-		    {
-			    for (int x = i.Value.getX(); x <= 320; x += RuleInventory.SLOT_W)
-			    {
-				    for (int y = i.Value.getY(); y <= 200; y += RuleInventory.SLOT_H)
-				    {
-					    SDL_Rect r;
-					    r.x = x;
-					    r.y = y;
-					    r.w = RuleInventory.SLOT_W + 1;
-					    r.h = RuleInventory.SLOT_H + 1;
-					    _grid.drawRect(ref r, color);
-					    r.x++;
-					    r.y++;
-					    r.w -= 2;
-					    r.h -= 2;
-					    _grid.drawRect(ref r, 0);
-				    }
-			    }
-		    }
+        foreach (var i in _game.getMod().getInventories())
+        {
+            // Draw grid
+            if (i.Value.getType() == InventoryType.INV_SLOT)
+            {
+                foreach (var j in i.Value.getSlots())
+                {
+                    SDL_Rect r;
+                    r.x = i.Value.getX() + RuleInventory.SLOT_W * j.x;
+                    r.y = i.Value.getY() + RuleInventory.SLOT_H * j.y;
+                    r.w = RuleInventory.SLOT_W + 1;
+                    r.h = RuleInventory.SLOT_H + 1;
+                    _grid.drawRect(ref r, color);
+                    r.x++;
+                    r.y++;
+                    r.w -= 2;
+                    r.h -= 2;
+                    _grid.drawRect(ref r, 0);
+                }
+            }
+            else if (i.Value.getType() == InventoryType.INV_HAND)
+            {
+                SDL_Rect r;
+                r.x = i.Value.getX();
+                r.y = i.Value.getY();
+                r.w = RuleInventory.HAND_W * RuleInventory.SLOT_W;
+                r.h = RuleInventory.HAND_H * RuleInventory.SLOT_H;
+                _grid.drawRect(ref r, color);
+                r.x++;
+                r.y++;
+                r.w -= 2;
+                r.h -= 2;
+                _grid.drawRect(ref r, 0);
+            }
+            else if (i.Value.getType() == InventoryType.INV_GROUND)
+            {
+                for (int x = i.Value.getX(); x <= 320; x += RuleInventory.SLOT_W)
+                {
+                    for (int y = i.Value.getY(); y <= 200; y += RuleInventory.SLOT_H)
+                    {
+                        SDL_Rect r;
+                        r.x = x;
+                        r.y = y;
+                        r.w = RuleInventory.SLOT_W + 1;
+                        r.h = RuleInventory.SLOT_H + 1;
+                        _grid.drawRect(ref r, color);
+                        r.x++;
+                        r.y++;
+                        r.w -= 2;
+                        r.h -= 2;
+                        _grid.drawRect(ref r, 0);
+                    }
+                }
+            }
 
-		    // Draw label
-		    text.setX(i.Value.getX());
-		    text.setY(i.Value.getY() - text.getFont().getHeight() - text.getFont().getSpacing());
-		    text.setText(_game.getLanguage().getString(i.Value.getId()));
-		    text.blit(_grid);
-	    }
+            // Draw label
+            text.setX(i.Value.getX());
+            text.setY(i.Value.getY() - text.getFont().getHeight() - text.getFont().getSpacing());
+            text.setText(_game.getLanguage().getString(i.Value.getId()));
+            text.blit(_grid);
+        }
     }
 
     /**
@@ -612,12 +612,12 @@ internal class Inventory : InteractiveSurface
      */
     internal override void blit(Surface surface)
     {
-	    clear();
-	    _grid.blit(this);
-	    _items.blit(this);
-	    _selection.blit(this);
-	    _warning.blit(this);
-	    base.blit(surface);
+        clear();
+        _grid.blit(this);
+        _items.blit(this);
+        _selection.blit(this);
+        _warning.blit(this);
+        base.blit(surface);
     }
 
     /**
@@ -627,294 +627,294 @@ internal class Inventory : InteractiveSurface
      */
     protected override void mouseClick(Action action, State state)
     {
-	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-	    {
-		    if (_selUnit == null)
-			    return;
-		    // Pickup item
-		    if (_selItem == null)
-		    {
-			    int x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX(),
-				    y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
-			    RuleInventory slot = getSlotInPosition(ref x, ref y);
-			    if (slot != null)
-			    {
-				    if (slot.getType() == InventoryType.INV_GROUND)
-				    {
-					    x += _groundOffset;
-				    }
-				    BattleItem item = _selUnit.getItem(slot, x, y);
-				    if (item != null && !item.getRules().isFixed())
-				    {
-					    if ((SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
-					    {
-						    RuleInventory newSlot = _game.getMod().getInventory("STR_GROUND", true);
-						    string warning = "STR_NOT_ENOUGH_SPACE";
-						    bool placed = false;
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+        {
+            if (_selUnit == null)
+                return;
+            // Pickup item
+            if (_selItem == null)
+            {
+                int x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX(),
+                    y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
+                RuleInventory slot = getSlotInPosition(ref x, ref y);
+                if (slot != null)
+                {
+                    if (slot.getType() == InventoryType.INV_GROUND)
+                    {
+                        x += _groundOffset;
+                    }
+                    BattleItem item = _selUnit.getItem(slot, x, y);
+                    if (item != null && !item.getRules().isFixed())
+                    {
+                        if ((SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                        {
+                            RuleInventory newSlot = _game.getMod().getInventory("STR_GROUND", true);
+                            string warning = "STR_NOT_ENOUGH_SPACE";
+                            bool placed = false;
 
-						    if (slot.getType() == InventoryType.INV_GROUND)
-						    {
-							    switch (item.getRules().getBattleType())
-							    {
-							    case BattleType.BT_FIREARM:
-								    newSlot = _game.getMod().getInventory("STR_RIGHT_HAND", true);
-								    break;
-							    case BattleType.BT_MINDPROBE:
-							    case BattleType.BT_PSIAMP:
-							    case BattleType.BT_MELEE:
-							    case BattleType.BT_CORPSE:
-								    newSlot = _game.getMod().getInventory("STR_LEFT_HAND", true);
-								    break;
-							    default:
-								    if (item.getRules().getInventoryHeight() > 2)
-								    {
-									    newSlot = _game.getMod().getInventory("STR_BACK_PACK", true);
-								    }
-								    else
-								    {
-									    newSlot = _game.getMod().getInventory("STR_BELT", true);
-								    }
-								    break;
-							    }
-						    }
+                            if (slot.getType() == InventoryType.INV_GROUND)
+                            {
+                                switch (item.getRules().getBattleType())
+                                {
+                                    case BattleType.BT_FIREARM:
+                                        newSlot = _game.getMod().getInventory("STR_RIGHT_HAND", true);
+                                        break;
+                                    case BattleType.BT_MINDPROBE:
+                                    case BattleType.BT_PSIAMP:
+                                    case BattleType.BT_MELEE:
+                                    case BattleType.BT_CORPSE:
+                                        newSlot = _game.getMod().getInventory("STR_LEFT_HAND", true);
+                                        break;
+                                    default:
+                                        if (item.getRules().getInventoryHeight() > 2)
+                                        {
+                                            newSlot = _game.getMod().getInventory("STR_BACK_PACK", true);
+                                        }
+                                        else
+                                        {
+                                            newSlot = _game.getMod().getInventory("STR_BELT", true);
+                                        }
+                                        break;
+                                }
+                            }
 
-						    if (newSlot.getType() != InventoryType.INV_GROUND)
-						    {
-							    _stackLevel[item.getSlotX()][item.getSlotY()] -= 1;
+                            if (newSlot.getType() != InventoryType.INV_GROUND)
+                            {
+                                _stackLevel[item.getSlotX()][item.getSlotY()] -= 1;
 
-							    placed = fitItem(newSlot, item, ref warning);
+                                placed = fitItem(newSlot, item, ref warning);
 
-							    if (!placed)
-							    {
+                                if (!placed)
+                                {
                                     var inventories = _game.getMod().getInventories().GetEnumerator();
                                     while (inventories.MoveNext() && !placed)
-								    {
-									    newSlot = inventories.Current.Value;
-									    if (newSlot.getType() == InventoryType.INV_GROUND)
-									    {
-										    continue;
-									    }
-									    placed = fitItem(newSlot, item, ref warning);
-								    }
-							    }
-							    if (!placed)
-							    {
-								    _stackLevel[item.getSlotX()][item.getSlotY()] += 1;
-							    }
-						    }
-						    else
-						    {
-							    if (!_tu || _selUnit.spendTimeUnits(item.getSlot().getCost(newSlot)))
-							    {
-								    placed = true;
-								    moveItem(item, newSlot, 0, 0);
-								    _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
-								    arrangeGround(false);
-							    }
-							    else
-							    {
-								    warning = "STR_NOT_ENOUGH_TIME_UNITS";
-							    }
-						    }
+                                    {
+                                        newSlot = inventories.Current.Value;
+                                        if (newSlot.getType() == InventoryType.INV_GROUND)
+                                        {
+                                            continue;
+                                        }
+                                        placed = fitItem(newSlot, item, ref warning);
+                                    }
+                                }
+                                if (!placed)
+                                {
+                                    _stackLevel[item.getSlotX()][item.getSlotY()] += 1;
+                                }
+                            }
+                            else
+                            {
+                                if (!_tu || _selUnit.spendTimeUnits(item.getSlot().getCost(newSlot)))
+                                {
+                                    placed = true;
+                                    moveItem(item, newSlot, 0, 0);
+                                    _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
+                                    arrangeGround(false);
+                                }
+                                else
+                                {
+                                    warning = "STR_NOT_ENOUGH_TIME_UNITS";
+                                }
+                            }
 
-						    if (!placed)
-						    {
-							    _warning.showMessage(_game.getLanguage().getString(warning));
-						    }
-					    }
-					    else
-					    {
-						    setSelectedItem(item);
-						    if (item.getFuseTimer() >= 0)
-						    {
-							    _warning.showMessage(_game.getLanguage().getString("STR_GRENADE_IS_ACTIVATED"));
-						    }
-					    }
-				    }
-			    }
-		    }
-		    // Drop item
-		    else
-		    {
-			    int x = _selection.getX() + (RuleInventory.HAND_W - _selItem.getRules().getInventoryWidth()) * RuleInventory.SLOT_W/2 + RuleInventory.SLOT_W/2,
-				    y = _selection.getY() + (RuleInventory.HAND_H - _selItem.getRules().getInventoryHeight()) * RuleInventory.SLOT_H/2 + RuleInventory.SLOT_H/2;
-			    RuleInventory slot = getSlotInPosition(ref x, ref y);
-			    if (slot != null)
-			    {
-				    if (slot.getType() == InventoryType.INV_GROUND)
-				    {
-					    x += _groundOffset;
-				    }
-				    BattleItem item = _selUnit.getItem(slot, x, y);
+                            if (!placed)
+                            {
+                                _warning.showMessage(_game.getLanguage().getString(warning));
+                            }
+                        }
+                        else
+                        {
+                            setSelectedItem(item);
+                            if (item.getFuseTimer() >= 0)
+                            {
+                                _warning.showMessage(_game.getLanguage().getString("STR_GRENADE_IS_ACTIVATED"));
+                            }
+                        }
+                    }
+                }
+            }
+            // Drop item
+            else
+            {
+                int x = _selection.getX() + (RuleInventory.HAND_W - _selItem.getRules().getInventoryWidth()) * RuleInventory.SLOT_W / 2 + RuleInventory.SLOT_W / 2,
+                    y = _selection.getY() + (RuleInventory.HAND_H - _selItem.getRules().getInventoryHeight()) * RuleInventory.SLOT_H / 2 + RuleInventory.SLOT_H / 2;
+                RuleInventory slot = getSlotInPosition(ref x, ref y);
+                if (slot != null)
+                {
+                    if (slot.getType() == InventoryType.INV_GROUND)
+                    {
+                        x += _groundOffset;
+                    }
+                    BattleItem item = _selUnit.getItem(slot, x, y);
 
-				    bool canStack = slot.getType() == InventoryType.INV_GROUND && canBeStacked(item, _selItem);
+                    bool canStack = slot.getType() == InventoryType.INV_GROUND && canBeStacked(item, _selItem);
 
-				    // Put item in empty slot, or stack it, if possible.
-				    if (item == null || item == _selItem || canStack)
-				    {
-					    if (!overlapItems(_selUnit, _selItem, slot, x, y) && slot.fitItemInSlot(_selItem.getRules(), x, y))
-					    {
-						    if (!_tu || _selUnit.spendTimeUnits(_selItem.getSlot().getCost(slot)))
-						    {
-							    moveItem(_selItem, slot, x, y);
-							    if (slot.getType() == InventoryType.INV_GROUND)
-							    {
-								    _stackLevel[x][y] += 1;
-							    }
-							    setSelectedItem(null);
-							    _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
-						    }
-						    else
-						    {
-							    _warning.showMessage(_game.getLanguage().getString("STR_NOT_ENOUGH_TIME_UNITS"));
-						    }
-					    }
-					    else if (canStack)
-					    {
-						    if (!_tu || _selUnit.spendTimeUnits(_selItem.getSlot().getCost(slot)))
-						    {
-							    moveItem(_selItem, slot, item.getSlotX(), item.getSlotY());
-							    _stackLevel[item.getSlotX()][item.getSlotY()] += 1;
-							    setSelectedItem(null);
-							    _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
-						    }
-						    else
-						    {
-							    _warning.showMessage(_game.getLanguage().getString("STR_NOT_ENOUGH_TIME_UNITS"));
-						    }
-					    }
-				    }
-				    // Put item in weapon
-				    else if (item.getRules().getCompatibleAmmo().Any())
-				    {
-					    bool wrong = true;
-					    foreach (var i in item.getRules().getCompatibleAmmo())
-					    {
-						    if (i == _selItem.getRules().getType())
-						    {
-							    wrong = false;
-							    break;
-						    }
-					    }
-					    if (wrong)
-					    {
-						    _warning.showMessage(_game.getLanguage().getString("STR_WRONG_AMMUNITION_FOR_THIS_WEAPON"));
-					    }
-					    else
-					    {
-						    if (item.getAmmoItem() != null)
-						    {
-							    _warning.showMessage(_game.getLanguage().getString("STR_WEAPON_IS_ALREADY_LOADED"));
-						    }
-						    else if (!_tu || _selUnit.spendTimeUnits(15))
-						    {
-							    moveItem(_selItem, null, 0, 0);
-							    item.setAmmoItem(_selItem);
-							    _selItem.moveToOwner(null);
-							    setSelectedItem(null);
-							    _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_RELOAD).play();
-							    if (item.getSlot().getType() == InventoryType.INV_GROUND)
-							    {
-								    arrangeGround(false);
-							    }
-						    }
-						    else
-						    {
-							    _warning.showMessage(_game.getLanguage().getString("STR_NOT_ENOUGH_TIME_UNITS"));
-						    }
-					    }
-				    }
-				    // else swap the item positions?
-			    }
-			    else
-			    {
-				    // try again, using the position of the mouse cursor, not the item (slightly more intuitive for stacking)
-				    x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX();
-				    y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
-				    slot = getSlotInPosition(ref x, ref y);
-				    if (slot != null && slot.getType() == InventoryType.INV_GROUND)
-				    {
-					    x += _groundOffset;
-					    BattleItem item = _selUnit.getItem(slot, x, y);
-					    if (canBeStacked(item, _selItem))
-					    {
-						    if (!_tu || _selUnit.spendTimeUnits(_selItem.getSlot().getCost(slot)))
-						    {
-							    moveItem(_selItem, slot, item.getSlotX(), item.getSlotY());
-							    _stackLevel[item.getSlotX()][item.getSlotY()] += 1;
-							    setSelectedItem(null);
-							    _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
-						    }
-						    else
-						    {
-							    _warning.showMessage(_game.getLanguage().getString("STR_NOT_ENOUGH_TIME_UNITS"));
-						    }
-					    }
-				    }
-			    }
-		    }
-	    }
-	    else if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
-	    {
-		    if (_selItem == null)
-		    {
-			    if (!_base || Options.includePrimeStateInSavedLayout)
-			    {
-				    if (!_tu)
-				    {
-					    int x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX(),
-						    y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
-					    RuleInventory slot = getSlotInPosition(ref x, ref y);
-					    if (slot != null)
-					    {
-						    if (slot.getType() == InventoryType.INV_GROUND)
-						    {
-							    x += _groundOffset;
-						    }
-						    BattleItem item = _selUnit.getItem(slot, x, y);
-						    if (item != null)
-						    {
-							    BattleType itemType = item.getRules().getBattleType();
-							    if (BattleType.BT_GRENADE == itemType || BattleType.BT_PROXIMITYGRENADE == itemType)
-							    {
-								    if (item.getFuseTimer() == -1)
-								    {
-									    // Prime that grenade!
-									    if (BattleType.BT_PROXIMITYGRENADE == itemType)
-									    {
-										    _warning.showMessage(_game.getLanguage().getString("STR_GRENADE_IS_ACTIVATED"));
-										    item.setFuseTimer(0);
-										    arrangeGround(false);
-									    }
-									    else _game.pushState(new PrimeGrenadeState(default, true, item));
-								    }
-								    else
-								    {
-									    _warning.showMessage(_game.getLanguage().getString("STR_GRENADE_IS_DEACTIVATED"));
-									    item.setFuseTimer(-1);  // Unprime the grenade
-									    arrangeGround(false);
-								    }
-							    }
-						    }
-					    }
-				    }
-				    else
-				    {
-					    _game.popState(); // Closes the inventory window on right-click (if not in preBattle equip screen!)
-				    }
-			    }
-		    }
-		    else
-		    {
-			    if (_selItem.getSlot().getType() == InventoryType.INV_GROUND)
-			    {
-				    _stackLevel[_selItem.getSlotX()][_selItem.getSlotY()] += 1;
-			    }
-			    // Return item to original position
-			    setSelectedItem(null);
-		    }
-	    }
-	    base.mouseClick(action, state);
+                    // Put item in empty slot, or stack it, if possible.
+                    if (item == null || item == _selItem || canStack)
+                    {
+                        if (!overlapItems(_selUnit, _selItem, slot, x, y) && slot.fitItemInSlot(_selItem.getRules(), x, y))
+                        {
+                            if (!_tu || _selUnit.spendTimeUnits(_selItem.getSlot().getCost(slot)))
+                            {
+                                moveItem(_selItem, slot, x, y);
+                                if (slot.getType() == InventoryType.INV_GROUND)
+                                {
+                                    _stackLevel[x][y] += 1;
+                                }
+                                setSelectedItem(null);
+                                _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
+                            }
+                            else
+                            {
+                                _warning.showMessage(_game.getLanguage().getString("STR_NOT_ENOUGH_TIME_UNITS"));
+                            }
+                        }
+                        else if (canStack)
+                        {
+                            if (!_tu || _selUnit.spendTimeUnits(_selItem.getSlot().getCost(slot)))
+                            {
+                                moveItem(_selItem, slot, item.getSlotX(), item.getSlotY());
+                                _stackLevel[item.getSlotX()][item.getSlotY()] += 1;
+                                setSelectedItem(null);
+                                _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
+                            }
+                            else
+                            {
+                                _warning.showMessage(_game.getLanguage().getString("STR_NOT_ENOUGH_TIME_UNITS"));
+                            }
+                        }
+                    }
+                    // Put item in weapon
+                    else if (item.getRules().getCompatibleAmmo().Any())
+                    {
+                        bool wrong = true;
+                        foreach (var i in item.getRules().getCompatibleAmmo())
+                        {
+                            if (i == _selItem.getRules().getType())
+                            {
+                                wrong = false;
+                                break;
+                            }
+                        }
+                        if (wrong)
+                        {
+                            _warning.showMessage(_game.getLanguage().getString("STR_WRONG_AMMUNITION_FOR_THIS_WEAPON"));
+                        }
+                        else
+                        {
+                            if (item.getAmmoItem() != null)
+                            {
+                                _warning.showMessage(_game.getLanguage().getString("STR_WEAPON_IS_ALREADY_LOADED"));
+                            }
+                            else if (!_tu || _selUnit.spendTimeUnits(15))
+                            {
+                                moveItem(_selItem, null, 0, 0);
+                                item.setAmmoItem(_selItem);
+                                _selItem.moveToOwner(null);
+                                setSelectedItem(null);
+                                _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_RELOAD).play();
+                                if (item.getSlot().getType() == InventoryType.INV_GROUND)
+                                {
+                                    arrangeGround(false);
+                                }
+                            }
+                            else
+                            {
+                                _warning.showMessage(_game.getLanguage().getString("STR_NOT_ENOUGH_TIME_UNITS"));
+                            }
+                        }
+                    }
+                    // else swap the item positions?
+                }
+                else
+                {
+                    // try again, using the position of the mouse cursor, not the item (slightly more intuitive for stacking)
+                    x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX();
+                    y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
+                    slot = getSlotInPosition(ref x, ref y);
+                    if (slot != null && slot.getType() == InventoryType.INV_GROUND)
+                    {
+                        x += _groundOffset;
+                        BattleItem item = _selUnit.getItem(slot, x, y);
+                        if (canBeStacked(item, _selItem))
+                        {
+                            if (!_tu || _selUnit.spendTimeUnits(_selItem.getSlot().getCost(slot)))
+                            {
+                                moveItem(_selItem, slot, item.getSlotX(), item.getSlotY());
+                                _stackLevel[item.getSlotX()][item.getSlotY()] += 1;
+                                setSelectedItem(null);
+                                _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
+                            }
+                            else
+                            {
+                                _warning.showMessage(_game.getLanguage().getString("STR_NOT_ENOUGH_TIME_UNITS"));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
+        {
+            if (_selItem == null)
+            {
+                if (!_base || Options.includePrimeStateInSavedLayout)
+                {
+                    if (!_tu)
+                    {
+                        int x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX(),
+                            y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
+                        RuleInventory slot = getSlotInPosition(ref x, ref y);
+                        if (slot != null)
+                        {
+                            if (slot.getType() == InventoryType.INV_GROUND)
+                            {
+                                x += _groundOffset;
+                            }
+                            BattleItem item = _selUnit.getItem(slot, x, y);
+                            if (item != null)
+                            {
+                                BattleType itemType = item.getRules().getBattleType();
+                                if (BattleType.BT_GRENADE == itemType || BattleType.BT_PROXIMITYGRENADE == itemType)
+                                {
+                                    if (item.getFuseTimer() == -1)
+                                    {
+                                        // Prime that grenade!
+                                        if (BattleType.BT_PROXIMITYGRENADE == itemType)
+                                        {
+                                            _warning.showMessage(_game.getLanguage().getString("STR_GRENADE_IS_ACTIVATED"));
+                                            item.setFuseTimer(0);
+                                            arrangeGround(false);
+                                        }
+                                        else _game.pushState(new PrimeGrenadeState(default, true, item));
+                                    }
+                                    else
+                                    {
+                                        _warning.showMessage(_game.getLanguage().getString("STR_GRENADE_IS_DEACTIVATED"));
+                                        item.setFuseTimer(-1);  // Unprime the grenade
+                                        arrangeGround(false);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _game.popState(); // Closes the inventory window on right-click (if not in preBattle equip screen!)
+                    }
+                }
+            }
+            else
+            {
+                if (_selItem.getSlot().getType() == InventoryType.INV_GROUND)
+                {
+                    _stackLevel[_selItem.getSlotX()][_selItem.getSlotY()] += 1;
+                }
+                // Return item to original position
+                setSelectedItem(null);
+            }
+        }
+        base.mouseClick(action, state);
     }
 
     /**
@@ -925,14 +925,14 @@ internal class Inventory : InteractiveSurface
      */
     RuleInventory getSlotInPosition(ref int x, ref int y)
     {
-	    foreach (var i in _game.getMod().getInventories())
-	    {
-		    if (i.Value.checkSlotInPosition(ref x, ref y))
-		    {
-			    return i.Value;
-		    }
-	    }
-	    return null;
+        foreach (var i in _game.getMod().getInventories())
+        {
+            if (i.Value.checkSlotInPosition(ref x, ref y))
+            {
+                return i.Value;
+            }
+        }
+        return null;
     }
 
     /**
@@ -944,35 +944,35 @@ internal class Inventory : InteractiveSurface
      */
     bool fitItem(RuleInventory newSlot, BattleItem item, ref string warning)
     {
-	    bool placed = false;
-	    int maxSlotX = 0;
-	    int maxSlotY = 0;
-	    foreach (var j in newSlot.getSlots())
-	    {
-		    if (j.x > maxSlotX) maxSlotX = j.x;
-		    if (j.y > maxSlotY) maxSlotY = j.y;
-	    }
-	    for (int y2 = 0; y2 <= maxSlotY && !placed; ++y2)
-	    {
-		    for (int x2 = 0; x2 <= maxSlotX && !placed; ++x2)
-		    {
-			    if (!overlapItems(_selUnit, item, newSlot, x2, y2) && newSlot.fitItemInSlot(item.getRules(), x2, y2))
-			    {
-				    if (!_tu || _selUnit.spendTimeUnits(item.getSlot().getCost(newSlot)))
-				    {
-					    placed = true;
-					    moveItem(item, newSlot, x2, y2);
-					    _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
-					    drawItems();
-				    }
-				    else
-				    {
-					    warning = "STR_NOT_ENOUGH_TIME_UNITS";
-				    }
-			    }
-		    }
-	    }
-	    return placed;
+        bool placed = false;
+        int maxSlotX = 0;
+        int maxSlotY = 0;
+        foreach (var j in newSlot.getSlots())
+        {
+            if (j.x > maxSlotX) maxSlotX = j.x;
+            if (j.y > maxSlotY) maxSlotY = j.y;
+        }
+        for (int y2 = 0; y2 <= maxSlotY && !placed; ++y2)
+        {
+            for (int x2 = 0; x2 <= maxSlotX && !placed; ++x2)
+            {
+                if (!overlapItems(_selUnit, item, newSlot, x2, y2) && newSlot.fitItemInSlot(item.getRules(), x2, y2))
+                {
+                    if (!_tu || _selUnit.spendTimeUnits(item.getSlot().getCost(newSlot)))
+                    {
+                        placed = true;
+                        moveItem(item, newSlot, x2, y2);
+                        _game.getMod().getSoundByDepth((uint)_depth, (uint)Mod.Mod.ITEM_DROP).play();
+                        drawItems();
+                    }
+                    else
+                    {
+                        warning = "STR_NOT_ENOUGH_TIME_UNITS";
+                    }
+                }
+            }
+        }
+        return placed;
     }
 
     /**
@@ -982,31 +982,31 @@ internal class Inventory : InteractiveSurface
      */
     protected override void mouseOver(Action action, State state)
     {
-	    _selection.setX((int)Math.Floor(action.getAbsoluteXMouse()) - _selection.getWidth()/2 - getX());
-	    _selection.setY((int)Math.Floor(action.getAbsoluteYMouse()) - _selection.getHeight()/2 - getY());
-	    if (_selUnit == null)
-		    return;
+        _selection.setX((int)Math.Floor(action.getAbsoluteXMouse()) - _selection.getWidth() / 2 - getX());
+        _selection.setY((int)Math.Floor(action.getAbsoluteYMouse()) - _selection.getHeight() / 2 - getY());
+        if (_selUnit == null)
+            return;
 
-	    int x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX(),
-		    y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
-	    RuleInventory slot = getSlotInPosition(ref x, ref y);
+        int x = (int)Math.Floor(action.getAbsoluteXMouse()) - getX(),
+            y = (int)Math.Floor(action.getAbsoluteYMouse()) - getY();
+        RuleInventory slot = getSlotInPosition(ref x, ref y);
         if (slot != null)
-	    {
-		    if (slot.getType() == InventoryType.INV_GROUND)
-		    {
-			    x += _groundOffset;
-		    }
-		    BattleItem item = _selUnit.getItem(slot, x, y);
-		    setMouseOverItem(item);
-	    }
-	    else
-	    {
-		    setMouseOverItem(null);
-	    }
+        {
+            if (slot.getType() == InventoryType.INV_GROUND)
+            {
+                x += _groundOffset;
+            }
+            BattleItem item = _selUnit.getItem(slot, x, y);
+            setMouseOverItem(item);
+        }
+        else
+        {
+            setMouseOverItem(null);
+        }
 
-	    _selection.setX((int)Math.Floor(action.getAbsoluteXMouse()) - _selection.getWidth()/2 - getX());
-	    _selection.setY((int)Math.Floor(action.getAbsoluteYMouse()) - _selection.getHeight()/2 - getY());
-	    base.mouseOver(action, state);
+        _selection.setX((int)Math.Floor(action.getAbsoluteXMouse()) - _selection.getWidth() / 2 - getX());
+        _selection.setY((int)Math.Floor(action.getAbsoluteYMouse()) - _selection.getHeight() / 2 - getY());
+        base.mouseOver(action, state);
     }
 
     /**
@@ -1014,7 +1014,7 @@ internal class Inventory : InteractiveSurface
      * @param item Pointer to selected item, or NULL if none.
      */
     void setMouseOverItem(BattleItem item) =>
-	    _mouseOverItem = (item != null && !item.getRules().isFixed()) ? item : null;
+        _mouseOverItem = (item != null && !item.getRules().isFixed()) ? item : null;
 
     /**
      * Replaces a certain amount of colors in the inventory's palette.
@@ -1024,11 +1024,11 @@ internal class Inventory : InteractiveSurface
      */
     internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-	    base.setPalette(colors, firstcolor, ncolors);
-	    _grid.setPalette(colors, firstcolor, ncolors);
-	    _items.setPalette(colors, firstcolor, ncolors);
-	    _selection.setPalette(colors, firstcolor, ncolors);
-	    _warning.setPalette(colors, firstcolor, ncolors);
-	    _stackNumber.setPalette(getPalette());
+        base.setPalette(colors, firstcolor, ncolors);
+        _grid.setPalette(colors, firstcolor, ncolors);
+        _items.setPalette(colors, firstcolor, ncolors);
+        _selection.setPalette(colors, firstcolor, ncolors);
+        _warning.setPalette(colors, firstcolor, ncolors);
+        _stackNumber.setPalette(getPalette());
     }
 }

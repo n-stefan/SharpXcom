@@ -24,45 +24,45 @@ namespace SharpXcom.Ufopaedia;
  */
 internal class ArticleStateTextImage : ArticleState
 {
-	Text _txtTitle;
-	Text _txtInfo;
+    Text _txtTitle;
+    Text _txtInfo;
 
-	internal ArticleStateTextImage(ArticleDefinitionTextImage defs) : base(defs.id)
-	{
-		// add screen elements
-		_txtTitle = new Text(defs.text_width, 48, 5, 22);
+    internal ArticleStateTextImage(ArticleDefinitionTextImage defs) : base(defs.id)
+    {
+        // add screen elements
+        _txtTitle = new Text(defs.text_width, 48, 5, 22);
 
-		// Set palette
-		setPalette("PAL_UFOPAEDIA");
+        // Set palette
+        setPalette("PAL_UFOPAEDIA");
 
-		base.initLayout();
+        base.initLayout();
 
-		// add other elements
-		add(_txtTitle);
+        // add other elements
+        add(_txtTitle);
 
-		// Set up objects
-		_game.getMod().getSurface(defs.image_id).blit(_bg);
-		_btnOk.setColor((byte)(Palette.blockOffset(5)+3));
-		_btnPrev.setColor((byte)(Palette.blockOffset(5)+3));
-		_btnNext.setColor((byte)(Palette.blockOffset(5)+3));
+        // Set up objects
+        _game.getMod().getSurface(defs.image_id).blit(_bg);
+        _btnOk.setColor((byte)(Palette.blockOffset(5) + 3));
+        _btnPrev.setColor((byte)(Palette.blockOffset(5) + 3));
+        _btnNext.setColor((byte)(Palette.blockOffset(5) + 3));
 
-		_txtTitle.setColor((byte)(Palette.blockOffset(15)+4));
-		_txtTitle.setBig();
-		_txtTitle.setWordWrap(true);
-		_txtTitle.setText(tr(defs.title));
+        _txtTitle.setColor((byte)(Palette.blockOffset(15) + 4));
+        _txtTitle.setBig();
+        _txtTitle.setWordWrap(true);
+        _txtTitle.setText(tr(defs.title));
 
-		int text_height = _txtTitle.getTextHeight();
+        int text_height = _txtTitle.getTextHeight();
 
-		_txtInfo = new Text(defs.text_width, 162, 5, 23 + text_height);
-		add(_txtInfo);
+        _txtInfo = new Text(defs.text_width, 162, 5, 23 + text_height);
+        add(_txtInfo);
 
-		_txtInfo.setColor((byte)(Palette.blockOffset(15)-1));
-		_txtInfo.setWordWrap(true);
-		_txtInfo.setScrollable(true);
-		_txtInfo.setText(tr(defs.text));
+        _txtInfo.setColor((byte)(Palette.blockOffset(15) - 1));
+        _txtInfo.setWordWrap(true);
+        _txtInfo.setScrollable(true);
+        _txtInfo.setText(tr(defs.text));
 
-		centerAllSurfaces();
-	}
+        centerAllSurfaces();
+    }
 
-	~ArticleStateTextImage() { }
+    ~ArticleStateTextImage() { }
 }

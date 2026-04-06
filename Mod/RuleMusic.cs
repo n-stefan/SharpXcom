@@ -50,14 +50,14 @@ internal class RuleMusic : IRule
      * @return the track's index in the file.
      */
     internal int getCatPos() =>
-	    _catPos;
+        _catPos;
 
     /**
      * Gets the track's normalization level (Adlib only).
      * @return the track's normalization value.
      */
     internal float getNormalization() =>
-	    _normalization;
+        _normalization;
 
     /**
      * Gets the track's filename in the SOUND folder.
@@ -65,9 +65,9 @@ internal class RuleMusic : IRule
      */
     internal string getName()
     {
-	    if (string.IsNullOrEmpty(_name))
-		    return _type;
-	    return _name;
+        if (string.IsNullOrEmpty(_name))
+            return _type;
+        return _name;
     }
 
     /**
@@ -76,8 +76,8 @@ internal class RuleMusic : IRule
      */
     internal void load(YamlNode node)
     {
-	    _name = node["name"].ToString();
-	    _catPos = int.Parse(node["catPos"].ToString());
-	    _normalization = float.Parse(node["normalization"].ToString());
+        _name = node["name"].ToString();
+        _catPos = int.Parse(node["catPos"].ToString());
+        _normalization = float.Parse(node["normalization"].ToString());
     }
 }

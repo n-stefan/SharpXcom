@@ -58,7 +58,7 @@ internal class RuleCountry : IRule
      * @return The monthly funding.
      */
     internal int generateFunding() =>
-	    RNG.generate(_fundingBase, _fundingBase * 2) * 1000;
+        RNG.generate(_fundingBase, _fundingBase * 2) * 1000;
 
     /**
      * Gets the language string that names
@@ -67,7 +67,7 @@ internal class RuleCountry : IRule
      * @return The country's name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Loads the country type from a YAML file.
@@ -75,26 +75,26 @@ internal class RuleCountry : IRule
      */
     internal void load(YamlNode node)
     {
-	    _type = node["type"].ToString();
-	    _fundingBase = int.Parse(node["fundingBase"].ToString());
-	    _fundingCap = int.Parse(node["fundingCap"].ToString());
-	    if (node["labelLon"] != null)
-		    _labelLon = Deg2Rad(double.Parse(node["labelLon"].ToString()));
-	    if (node["labelLat"] != null)
-		    _labelLat = Deg2Rad(double.Parse(node["labelLat"].ToString()));
-	    var areas = new List<List<double>>();
-	    foreach (var i in ((YamlSequenceNode)node["areas"]).Children)
+        _type = node["type"].ToString();
+        _fundingBase = int.Parse(node["fundingBase"].ToString());
+        _fundingCap = int.Parse(node["fundingCap"].ToString());
+        if (node["labelLon"] != null)
+            _labelLon = Deg2Rad(double.Parse(node["labelLon"].ToString()));
+        if (node["labelLat"] != null)
+            _labelLat = Deg2Rad(double.Parse(node["labelLat"].ToString()));
+        var areas = new List<List<double>>();
+        foreach (var i in ((YamlSequenceNode)node["areas"]).Children)
         {
             areas.Add(((YamlSequenceNode)i).Children.Select(x => double.Parse(x.ToString())).ToList());
         }
-	    for (var i = 0; i != areas.Count; ++i)
-	    {
-		    _lonMin.Add(Deg2Rad(areas[i][0]));
-		    _lonMax.Add(Deg2Rad(areas[i][1]));
-		    _latMin.Add(Deg2Rad(areas[i][2]));
-		    _latMax.Add(Deg2Rad(areas[i][3]));
+        for (var i = 0; i != areas.Count; ++i)
+        {
+            _lonMin.Add(Deg2Rad(areas[i][0]));
+            _lonMax.Add(Deg2Rad(areas[i][1]));
+            _latMin.Add(Deg2Rad(areas[i][2]));
+            _latMax.Add(Deg2Rad(areas[i][3]));
 
-		    if (_latMin[^1] > _latMax[^1])
+            if (_latMin[^1] > _latMax[^1])
                 (_latMax[^1], _latMin[^1]) = (_latMin[^1], _latMax[^1]);
         }
     }
@@ -107,21 +107,21 @@ internal class RuleCountry : IRule
      */
     internal bool insideCountry(double lon, double lat)
     {
-	    for (int i = 0; i < _lonMin.Count; ++i)
-	    {
-		    bool inLon, inLat;
+        for (int i = 0; i < _lonMin.Count; ++i)
+        {
+            bool inLon, inLat;
 
-		    if (_lonMin[i] <= _lonMax[i])
-			    inLon = (lon >= _lonMin[i] && lon < _lonMax[i]);
-		    else
-			    inLon = ((lon >= _lonMin[i] && lon < M_PI*2.0) || (lon >= 0 && lon < _lonMax[i]));
+            if (_lonMin[i] <= _lonMax[i])
+                inLon = (lon >= _lonMin[i] && lon < _lonMax[i]);
+            else
+                inLon = ((lon >= _lonMin[i] && lon < M_PI * 2.0) || (lon >= 0 && lon < _lonMax[i]));
 
-		    inLat = (lat >= _latMin[i] && lat < _latMax[i]);
+            inLat = (lat >= _latMin[i] && lat < _latMax[i]);
 
-		    if (inLon && inLat)
-			    return true;
-	    }
-	    return false;
+            if (inLon && inLat)
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -129,14 +129,14 @@ internal class RuleCountry : IRule
      * @return The longitude in radians.
      */
     internal double getLabelLongitude() =>
-	    _labelLon;
+        _labelLon;
 
     /**
      * Gets the latitude of the country's label on the globe.
      * @return The latitude in radians.
      */
     internal double getLabelLatitude() =>
-	    _labelLat;
+        _labelLat;
 
     /**
      * Gets the country's funding cap.
@@ -144,17 +144,17 @@ internal class RuleCountry : IRule
      * @return The funding cap, in thousands.
      */
     internal int getFundingCap() =>
-	    _fundingCap;
+        _fundingCap;
 
-	internal List<double> getLonMax() =>
+    internal List<double> getLonMax() =>
         _lonMax;
 
-	internal List<double> getLonMin() =>
+    internal List<double> getLonMin() =>
         _lonMin;
 
-	internal List<double> getLatMax() =>
+    internal List<double> getLatMax() =>
         _latMax;
 
-	internal List<double> getLatMin() =>
+    internal List<double> getLatMin() =>
         _latMin;
 }

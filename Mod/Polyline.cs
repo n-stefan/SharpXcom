@@ -27,7 +27,7 @@ namespace SharpXcom.Mod;
 internal class Polyline
 {
     double[] _lat, _lon;
-	int _points;
+    int _points;
 
     /**
      * Initializes the polyline with arrays to store each point's coordinates.
@@ -56,20 +56,20 @@ internal class Polyline
      */
     internal void load(YamlNode node)
     {
-	    _lat = null;
-	    _lon = null;
+        _lat = null;
+        _lon = null;
 
         var coords = ((YamlSequenceNode)node).Children.Select(x => double.Parse(x.ToString())).ToList();
         _points = coords.Count / 2;
-	    _lat = new double[_points];
-	    _lon = new double[_points];
+        _lat = new double[_points];
+        _lon = new double[_points];
 
-	    for (var i = 0; i < coords.Count; i += 2)
-	    {
+        for (var i = 0; i < coords.Count; i += 2)
+        {
             uint j = (uint)(i / 2);
-		    _lon[j] = Deg2Rad(coords[i]);
-		    _lat[j] = Deg2Rad(coords[i+1]);
-	    }
+            _lon[j] = Deg2Rad(coords[i]);
+            _lat[j] = Deg2Rad(coords[i + 1]);
+        }
     }
 
     /**
@@ -78,7 +78,7 @@ internal class Polyline
      * @return Point's latitude.
      */
     internal double getLatitude(int i) =>
-	    _lat[i];
+        _lat[i];
 
     /**
      * Returns the longitude (Y) of a given point.
@@ -86,14 +86,14 @@ internal class Polyline
      * @return Point's longitude.
      */
     internal double getLongitude(int i) =>
-	    _lon[i];
+        _lon[i];
 
     /**
      * Returns the number of points (vertexes) that make up the polyline.
      * @return Number of points.
      */
     internal int getPoints() =>
-	    _points;
+        _points;
 
     /**
      * Changes the latitude of a given point.
@@ -101,7 +101,7 @@ internal class Polyline
      * @param lat Point's latitude.
      */
     void setLatitude(int i, double lat) =>
-	    _lat[i] = lat;
+        _lat[i] = lat;
 
     /**
      * Changes the latitude of a given point.
@@ -109,5 +109,5 @@ internal class Polyline
      * @param lon Point's longitude.
      */
     void setLongitude(int i, double lon) =>
-	    _lon[i] = lon;
+        _lon[i] = lon;
 }

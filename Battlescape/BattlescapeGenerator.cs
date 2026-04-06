@@ -2241,64 +2241,64 @@ internal class BattlescapeGenerator
      */
     bool addLine(MapDirection direction, List<SDL_Rect> rects)
     {
-	    if (direction == MapDirection.MD_BOTH)
-	    {
-		    if (addLine(MapDirection.MD_VERTICAL, rects))
-		    {
-			    addLine(MapDirection.MD_HORIZONTAL, rects);
-			    return true;
-		    }
-		    return false;
-	    }
+        if (direction == MapDirection.MD_BOTH)
+        {
+            if (addLine(MapDirection.MD_VERTICAL, rects))
+            {
+                addLine(MapDirection.MD_HORIZONTAL, rects);
+                return true;
+            }
+            return false;
+        }
 
-	    int tries = 0;
-	    bool placed = false;
+        int tries = 0;
+        bool placed = false;
 
-	    int roadX = 0, roadY = 0;
-	    int iteratorValue = roadX;
-	    MapBlockType comparator = MapBlockType.MT_NSROAD;
-	    MapBlockType typeToAdd = MapBlockType.MT_EWROAD;
-	    int limit = _mapsize_x / 10;
-	    if (direction == MapDirection.MD_VERTICAL)
-	    {
-		    iteratorValue = roadY;
-		    comparator = MapBlockType.MT_EWROAD;
-		    typeToAdd = MapBlockType.MT_NSROAD;
-		    limit = _mapsize_y / 10;
-	    }
-	    while (!placed)
-	    {
-		    selectPosition(rects, out roadX, out roadY, 10, 10);
-		    placed = true;
-		    for (iteratorValue = 0; iteratorValue < limit; iteratorValue += 1)
-		    {
-			    if (_blocks[roadX][roadY] != null && _blocks[roadX][roadY].isInGroup((int)comparator) == false)
-			    {
-				    placed = false;
-				    break;
-			    }
-		    }
-		    if (tries++ > 20)
-		    {
-			    return false;
-		    }
-	    }
-	    iteratorValue = 0;
-	    while (iteratorValue < limit)
-	    {
-		    if (_blocks[roadX][roadY] == null)
-		    {
-			    addBlock(roadX, roadY, _terrain.getRandomMapBlock(10, 10, (int)typeToAdd));
-		    }
-		    else if (_blocks[roadX][roadY].isInGroup((int)comparator))
-		    {
-			    _blocks[roadX][roadY] = _terrain.getRandomMapBlock(10, 10, (int)MapBlockType.MT_CROSSING);
-			    clearModule(roadX * 10, roadY * 10, 10, 10);
-			    loadMAP(_blocks[roadX][roadY], roadX * 10, roadY * 10, _terrain, 0);
-		    }
-		    iteratorValue += 1;
-	    }
-	    return true;
+        int roadX = 0, roadY = 0;
+        int iteratorValue = roadX;
+        MapBlockType comparator = MapBlockType.MT_NSROAD;
+        MapBlockType typeToAdd = MapBlockType.MT_EWROAD;
+        int limit = _mapsize_x / 10;
+        if (direction == MapDirection.MD_VERTICAL)
+        {
+            iteratorValue = roadY;
+            comparator = MapBlockType.MT_EWROAD;
+            typeToAdd = MapBlockType.MT_NSROAD;
+            limit = _mapsize_y / 10;
+        }
+        while (!placed)
+        {
+            selectPosition(rects, out roadX, out roadY, 10, 10);
+            placed = true;
+            for (iteratorValue = 0; iteratorValue < limit; iteratorValue += 1)
+            {
+                if (_blocks[roadX][roadY] != null && _blocks[roadX][roadY].isInGroup((int)comparator) == false)
+                {
+                    placed = false;
+                    break;
+                }
+            }
+            if (tries++ > 20)
+            {
+                return false;
+            }
+        }
+        iteratorValue = 0;
+        while (iteratorValue < limit)
+        {
+            if (_blocks[roadX][roadY] == null)
+            {
+                addBlock(roadX, roadY, _terrain.getRandomMapBlock(10, 10, (int)typeToAdd));
+            }
+            else if (_blocks[roadX][roadY].isInGroup((int)comparator))
+            {
+                _blocks[roadX][roadY] = _terrain.getRandomMapBlock(10, 10, (int)MapBlockType.MT_CROSSING);
+                clearModule(roadX * 10, roadY * 10, 10, 10);
+                loadMAP(_blocks[roadX][roadY], roadX * 10, roadY * 10, _terrain, 0);
+            }
+            iteratorValue += 1;
+        }
+        return true;
     }
 
     /**
@@ -2334,124 +2334,124 @@ internal class BattlescapeGenerator
      */
     void drillModules(TunnelData data, List<SDL_Rect> rects, MapDirection dir)
     {
-	    MCDReplacement wWall = data.getMCDReplacement("westWall");
-	    MCDReplacement nWall = data.getMCDReplacement("northWall");
-	    MCDReplacement corner = data.getMCDReplacement("corner");
-	    MCDReplacement floor = data.getMCDReplacement("floor");
-	    SDL_Rect rect;
-	    rect.x = rect.y = rect.w = rect.h = 3;
-	    if (rects.Any())
-	    {
-		    rect = rects.First();
-	    }
+        MCDReplacement wWall = data.getMCDReplacement("westWall");
+        MCDReplacement nWall = data.getMCDReplacement("northWall");
+        MCDReplacement corner = data.getMCDReplacement("corner");
+        MCDReplacement floor = data.getMCDReplacement("floor");
+        SDL_Rect rect;
+        rect.x = rect.y = rect.w = rect.h = 3;
+        if (rects.Any())
+        {
+            rect = rects.First();
+        }
 
-	    for (int i = 0; i < (_mapsize_x / 10); ++i)
-	    {
-		    for (int j = 0; j < (_mapsize_y / 10); ++j)
-		    {
-			    if (_blocks[i][j] == null)
-				    continue;
+        for (int i = 0; i < (_mapsize_x / 10); ++i)
+        {
+            for (int j = 0; j < (_mapsize_y / 10); ++j)
+            {
+                if (_blocks[i][j] == null)
+                    continue;
 
-			    MapData md;
+                MapData md;
 
-			    if (dir != MapDirection.MD_VERTICAL)
-			    {
-				    // drill east
-				    if (i < (_mapsize_x / 10)-1 && (_drillMap[i][j] == (int)MapDirection.MD_HORIZONTAL || _drillMap[i][j] == (int)MapDirection.MD_BOTH) && _blocks[i+1][j] != null)
-				    {
-					    Tile tile;
-					    // remove stuff
-					    for (int k = rect.y; k != rect.y + rect.h; ++k)
-					    {
-						    tile = _save.getTile(new Position((i*10)+9, (j*10)+k, data.level));
-						    if (tile != null)
-						    {
-							    tile.setMapData(null, -1, -1, TilePart.O_WESTWALL);
-							    tile.setMapData(null, -1, -1, TilePart.O_OBJECT);
-							    if (floor != default)
-							    {
-								    md = _terrain.getMapDataSets()[floor.set].getObject((uint)floor.entry);
-								    tile.setMapData(md, floor.entry, floor.set, TilePart.O_FLOOR);
-							    }
+                if (dir != MapDirection.MD_VERTICAL)
+                {
+                    // drill east
+                    if (i < (_mapsize_x / 10) - 1 && (_drillMap[i][j] == (int)MapDirection.MD_HORIZONTAL || _drillMap[i][j] == (int)MapDirection.MD_BOTH) && _blocks[i + 1][j] != null)
+                    {
+                        Tile tile;
+                        // remove stuff
+                        for (int k = rect.y; k != rect.y + rect.h; ++k)
+                        {
+                            tile = _save.getTile(new Position((i * 10) + 9, (j * 10) + k, data.level));
+                            if (tile != null)
+                            {
+                                tile.setMapData(null, -1, -1, TilePart.O_WESTWALL);
+                                tile.setMapData(null, -1, -1, TilePart.O_OBJECT);
+                                if (floor != default)
+                                {
+                                    md = _terrain.getMapDataSets()[floor.set].getObject((uint)floor.entry);
+                                    tile.setMapData(md, floor.entry, floor.set, TilePart.O_FLOOR);
+                                }
 
-							    tile = _save.getTile(new Position((i+1)*10, (j*10)+k, data.level));
-							    tile.setMapData(null, -1, -1, TilePart.O_WESTWALL);
-							    MapData obj = tile.getMapData(TilePart.O_OBJECT);
-							    if (obj != null && obj.getTUCost(MovementType.MT_WALK) == 0)
-							    {
-								    tile.setMapData(null, -1, -1, TilePart.O_OBJECT);
-							    }
-						    }
-					    }
+                                tile = _save.getTile(new Position((i + 1) * 10, (j * 10) + k, data.level));
+                                tile.setMapData(null, -1, -1, TilePart.O_WESTWALL);
+                                MapData obj = tile.getMapData(TilePart.O_OBJECT);
+                                if (obj != null && obj.getTUCost(MovementType.MT_WALK) == 0)
+                                {
+                                    tile.setMapData(null, -1, -1, TilePart.O_OBJECT);
+                                }
+                            }
+                        }
 
-					    if (nWall != default)
-					    {
-						    md = _terrain.getMapDataSets()[nWall.set].getObject((uint)nWall.entry);
-						    tile = _save.getTile(new Position((i*10)+9, (j*10)+rect.y, data.level));
-						    tile.setMapData(md, nWall.entry, nWall.set, TilePart.O_NORTHWALL);
-						    tile = _save.getTile(new Position((i*10)+9, (j*10)+rect.y+rect.h, data.level));
-						    tile.setMapData(md, nWall.entry, nWall.set, TilePart.O_NORTHWALL);
-					    }
+                        if (nWall != default)
+                        {
+                            md = _terrain.getMapDataSets()[nWall.set].getObject((uint)nWall.entry);
+                            tile = _save.getTile(new Position((i * 10) + 9, (j * 10) + rect.y, data.level));
+                            tile.setMapData(md, nWall.entry, nWall.set, TilePart.O_NORTHWALL);
+                            tile = _save.getTile(new Position((i * 10) + 9, (j * 10) + rect.y + rect.h, data.level));
+                            tile.setMapData(md, nWall.entry, nWall.set, TilePart.O_NORTHWALL);
+                        }
 
-					    if (corner != default)
-					    {
-						    md = _terrain.getMapDataSets()[corner.set].getObject((uint)corner.entry);
-						    tile = _save.getTile(new Position((i+1)*10, (j*10)+rect.y, data.level));
-						    if (tile.getMapData(TilePart.O_NORTHWALL) == null)
-							    tile.setMapData(md, corner.entry, corner.set, TilePart.O_NORTHWALL);
-					    }
-				    }
-			    }
+                        if (corner != default)
+                        {
+                            md = _terrain.getMapDataSets()[corner.set].getObject((uint)corner.entry);
+                            tile = _save.getTile(new Position((i + 1) * 10, (j * 10) + rect.y, data.level));
+                            if (tile.getMapData(TilePart.O_NORTHWALL) == null)
+                                tile.setMapData(md, corner.entry, corner.set, TilePart.O_NORTHWALL);
+                        }
+                    }
+                }
 
-			    if (dir != MapDirection.MD_HORIZONTAL)
-			    {
-				    // drill south
-				    if (j < (_mapsize_y / 10)-1 && (_drillMap[i][j] == (int)MapDirection.MD_VERTICAL || _drillMap[i][j] == (int)MapDirection.MD_BOTH) && _blocks[i][j+1] != null)
-				    {
-					    // remove stuff
-					    for (int k = rect.x; k != rect.x + rect.w; ++k)
-					    {
-						    Tile tile = _save.getTile(new Position((i*10)+k, (j*10)+9, data.level));
-						    if (tile != null)
-						    {
-							    tile.setMapData(null, -1, -1, TilePart.O_NORTHWALL);
-							    tile.setMapData(null, -1, -1, TilePart.O_OBJECT);
-							    if (floor != default)
-							    {
-								    md = _terrain.getMapDataSets()[floor.set].getObject((uint)floor.entry);
-								    tile.setMapData(md, floor.entry, floor.set, TilePart.O_FLOOR);
-							    }
+                if (dir != MapDirection.MD_HORIZONTAL)
+                {
+                    // drill south
+                    if (j < (_mapsize_y / 10) - 1 && (_drillMap[i][j] == (int)MapDirection.MD_VERTICAL || _drillMap[i][j] == (int)MapDirection.MD_BOTH) && _blocks[i][j + 1] != null)
+                    {
+                        // remove stuff
+                        for (int k = rect.x; k != rect.x + rect.w; ++k)
+                        {
+                            Tile tile = _save.getTile(new Position((i * 10) + k, (j * 10) + 9, data.level));
+                            if (tile != null)
+                            {
+                                tile.setMapData(null, -1, -1, TilePart.O_NORTHWALL);
+                                tile.setMapData(null, -1, -1, TilePart.O_OBJECT);
+                                if (floor != default)
+                                {
+                                    md = _terrain.getMapDataSets()[floor.set].getObject((uint)floor.entry);
+                                    tile.setMapData(md, floor.entry, floor.set, TilePart.O_FLOOR);
+                                }
 
-							    tile = _save.getTile(new Position((i*10)+k, (j+1)*10, data.level));
-							    tile.setMapData(null, -1, -1, TilePart.O_NORTHWALL);
-							    MapData obj = tile.getMapData(TilePart.O_OBJECT);
-							    if (obj != null && obj.getTUCost(MovementType.MT_WALK) == 0)
-							    {
-								    tile.setMapData(null, -1, -1, TilePart.O_OBJECT);
-							    }
-						    }
-					    }
+                                tile = _save.getTile(new Position((i * 10) + k, (j + 1) * 10, data.level));
+                                tile.setMapData(null, -1, -1, TilePart.O_NORTHWALL);
+                                MapData obj = tile.getMapData(TilePart.O_OBJECT);
+                                if (obj != null && obj.getTUCost(MovementType.MT_WALK) == 0)
+                                {
+                                    tile.setMapData(null, -1, -1, TilePart.O_OBJECT);
+                                }
+                            }
+                        }
 
-					    if (wWall != default)
-					    {
-						    md = _terrain.getMapDataSets()[wWall.set].getObject((uint)wWall.entry);
-						    Tile tile = _save.getTile(new Position((i*10)+rect.x, (j*10)+9, data.level));
-						    tile.setMapData(md, wWall.entry, wWall.set, TilePart.O_WESTWALL);
-						    tile = _save.getTile(new Position((i*10)+rect.x+rect.w, (j*10)+9, data.level));
-						    tile.setMapData(md, wWall.entry, wWall.set, TilePart.O_WESTWALL);
-					    }
+                        if (wWall != default)
+                        {
+                            md = _terrain.getMapDataSets()[wWall.set].getObject((uint)wWall.entry);
+                            Tile tile = _save.getTile(new Position((i * 10) + rect.x, (j * 10) + 9, data.level));
+                            tile.setMapData(md, wWall.entry, wWall.set, TilePart.O_WESTWALL);
+                            tile = _save.getTile(new Position((i * 10) + rect.x + rect.w, (j * 10) + 9, data.level));
+                            tile.setMapData(md, wWall.entry, wWall.set, TilePart.O_WESTWALL);
+                        }
 
-					    if (corner != default)
-					    {
-						    md = _terrain.getMapDataSets()[corner.set].getObject((uint)corner.entry);
-						    Tile tile = _save.getTile(new Position((i*10)+rect.x, (j+1)*10, data.level));
-						    if (tile.getMapData(TilePart.O_WESTWALL) == null)
-							    tile.setMapData(md, corner.entry, corner.set, TilePart.O_WESTWALL);
-					    }
-				    }
-			    }
-		    }
-	    }
+                        if (corner != default)
+                        {
+                            md = _terrain.getMapDataSets()[corner.set].getObject((uint)corner.entry);
+                            Tile tile = _save.getTile(new Position((i * 10) + rect.x, (j + 1) * 10, data.level));
+                            if (tile.getMapData(TilePart.O_WESTWALL) == null)
+                                tile.setMapData(md, corner.entry, corner.set, TilePart.O_WESTWALL);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -3059,7 +3059,7 @@ internal class BattlescapeGenerator
      * @param terrain Pointer to the terrain rules.
      */
     internal void setTerrain(RuleTerrain terrain) =>
-	    _terrain = terrain;
+        _terrain = terrain;
 
     /**
      * Sets the alien item level. This is used to determine how advanced the equipment of the aliens will be.
@@ -3070,7 +3070,7 @@ internal class BattlescapeGenerator
      * @param alienItemLevel AlienItemLevel.
      */
     internal void setAlienItemlevel(int alienItemLevel) =>
-	    _alienItemLevel = alienItemLevel;
+        _alienItemLevel = alienItemLevel;
 
     /**
      * Creates a mini-battle-save for managing inventory from the Geoscape.
@@ -3079,20 +3079,20 @@ internal class BattlescapeGenerator
      */
     internal void runInventory(Craft craft)
     {
-	    // we need to fake a map for soldier placement
-	    _baseInventory = true;
-	    _mapsize_x = 2;
-	    _mapsize_y = 2;
-	    _mapsize_z = 1;
-	    _save.initMap(_mapsize_x, _mapsize_y, _mapsize_z);
-	    MapDataSet set = new MapDataSet("dummy");
-	    MapData data = new MapData(set);
-	    _craftInventoryTile = _save.getTiles()[0];
+        // we need to fake a map for soldier placement
+        _baseInventory = true;
+        _mapsize_x = 2;
+        _mapsize_y = 2;
+        _mapsize_z = 1;
+        _save.initMap(_mapsize_x, _mapsize_y, _mapsize_z);
+        MapDataSet set = new MapDataSet("dummy");
+        MapData data = new MapData(set);
+        _craftInventoryTile = _save.getTiles()[0];
 
-	    // ok now generate the battleitems for inventory
-	    setCraft(craft);
-	    deployXCOM();
-	    data = null;
-	    set = null;
+        // ok now generate the battleitems for inventory
+        setCraft(craft);
+        deployXCOM();
+        data = null;
+        set = null;
     }
 }

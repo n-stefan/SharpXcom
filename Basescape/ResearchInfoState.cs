@@ -335,9 +335,9 @@ internal class ResearchInfoState : State
      */
     internal override void think()
     {
-	    base.think();
+        base.think();
 
-	    _timerLess.think(this, null);
-	    _timerMore.think(this, null);
+        _timerLess.think(this, null);
+        _timerMore.think(this, null);
     }
 }

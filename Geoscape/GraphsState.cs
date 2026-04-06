@@ -19,7 +19,8 @@
 
 namespace SharpXcom.Geoscape;
 
-/* struct */ class GraphButInfo
+/* struct */
+class GraphButInfo
 {
     internal LocalizedText _name;
     internal int _color;

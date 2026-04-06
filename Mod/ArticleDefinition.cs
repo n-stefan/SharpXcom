@@ -76,102 +76,102 @@ internal class ArticleDefinition
 	 * @return The list weight of the article.
 	 */
     internal int getListOrder() =>
-		_listOrder;
+        _listOrder;
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal virtual void load(YamlNode node, int listOrder)
-	{
-		id = title = node["id"] != null ? node["id"].ToString() : id;
-		section = node["section"].ToString();
+    internal virtual void load(YamlNode node, int listOrder)
+    {
+        id = title = node["id"] != null ? node["id"].ToString() : id;
+        section = node["section"].ToString();
         requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
-		title = node["title"].ToString();
+        title = node["title"].ToString();
         //_type_id = (UfopaediaTypeId)node["type_id"].as<int>(_type_id);
         _listOrder = int.Parse(node["listOrder"].ToString());
-		if (_listOrder == 0)
-		{
+        if (_listOrder == 0)
+        {
             _listOrder = listOrder;
-		}
-	}
+        }
+    }
 
     /**
 	 * Gets the article definition type. (Text, TextImage, Craft, ...)
 	 * @return The type of article definition of this instance.
 	 */
     internal UfopaediaTypeId getType() =>
-		_type_id;
+        _type_id;
 }
 
 class ArticleDefinitionRect
 {
-	internal int x;
-	internal int y;
-	internal int width;
-	internal int height;
+    internal int x;
+    internal int y;
+    internal int width;
+    internal int height;
 
-	/**
+    /**
 	 * Constructor.
 	 */
-	internal ArticleDefinitionRect()
-	{
-		x = 0;
-		y = 0;
-		width = 0;
-		height = 0;
-	}
+    internal ArticleDefinitionRect()
+    {
+        x = 0;
+        y = 0;
+        width = 0;
+        height = 0;
+    }
 
-	/**
+    /**
 	 * Sets the rectangle parameters in a function.
 	 * @param set_x X.
 	 * @param set_y Y.
 	 * @param set_width Width.
 	 * @param set_height Height.
 	 */
-	void set(int set_x, int set_y, int set_width, int set_height)
-	{
-		x = set_x;
-		y = set_y;
-		width = set_width;
-		height = set_height;
-	}
+    void set(int set_x, int set_y, int set_width, int set_height)
+    {
+        x = set_x;
+        y = set_y;
+        width = set_width;
+        height = set_height;
+    }
 
     /**
 	 * Loads the ArticleDefinitionRect from a YAML file.
 	 * @param node YAML node.
 	 */
-	internal static ArticleDefinitionRect decode(YamlNode node)
-	{
-		if (node.NodeType != YamlNodeType.Mapping)
-			return null;
+    internal static ArticleDefinitionRect decode(YamlNode node)
+    {
+        if (node.NodeType != YamlNodeType.Mapping)
+            return null;
 
-		var adr = new ArticleDefinitionRect
-		{
-			x = int.Parse(node["x"].ToString()),
-			y = int.Parse(node["y"].ToString()),
-			width = int.Parse(node["width"].ToString()),
-			height = int.Parse(node["height"].ToString())
-		};
-		return adr;
-	}
+        var adr = new ArticleDefinitionRect
+        {
+            x = int.Parse(node["x"].ToString()),
+            y = int.Parse(node["y"].ToString()),
+            width = int.Parse(node["width"].ToString()),
+            height = int.Parse(node["height"].ToString())
+        };
+        return adr;
+    }
 
     /**
      * Saves the ArticleDefinitionRect to a YAML file.
      * @return YAML node.
      */
-	static YamlNode encode(ArticleDefinitionRect adr)
-	{
-		var node = new YamlMappingNode
-		{
-			{ "x", adr.x.ToString() },
-			{ "y", adr.y.ToString() },
-			{ "width", adr.width.ToString() },
-			{ "height", adr.height.ToString() }
-		};
-		return node;
-	}
+    static YamlNode encode(ArticleDefinitionRect adr)
+    {
+        var node = new YamlMappingNode
+        {
+            { "x", adr.x.ToString() },
+            { "y", adr.y.ToString() },
+            { "width", adr.width.ToString() },
+            { "height", adr.height.ToString() }
+        };
+        return node;
+    }
 }
 
 /**
@@ -180,9 +180,9 @@ class ArticleDefinitionRect
  */
 class ArticleDefinitionCraft : ArticleDefinition
 {
-	internal string image_id;
-	internal ArticleDefinitionRect rect_stats;
-	internal ArticleDefinitionRect rect_text;
+    internal string image_id;
+    internal ArticleDefinitionRect rect_stats;
+    internal ArticleDefinitionRect rect_text;
     internal string text;
 
     /**
@@ -190,19 +190,19 @@ class ArticleDefinitionCraft : ArticleDefinition
 	 */
     internal ArticleDefinitionCraft() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_CRAFT) { }
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		image_id = node["image_id"].ToString();
-		rect_stats = ArticleDefinitionRect.decode(node["rect_stats"]);
-		rect_text = ArticleDefinitionRect.decode(node["rect_text"]);
-		text = node["text"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        image_id = node["image_id"].ToString();
+        rect_stats = ArticleDefinitionRect.decode(node["rect_stats"]);
+        rect_text = ArticleDefinitionRect.decode(node["rect_text"]);
+        text = node["text"].ToString();
+    }
 }
 
 /**
@@ -211,25 +211,25 @@ class ArticleDefinitionCraft : ArticleDefinition
  */
 class ArticleDefinitionCraftWeapon : ArticleDefinition
 {
-	internal string image_id;
-	internal string text;
+    internal string image_id;
+    internal string text;
 
     /**
 	 * Constructor (only setting type of base class).
 	 */
     internal ArticleDefinitionCraftWeapon() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_CRAFT_WEAPON) { }
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		image_id = node["image_id"].ToString();
-		text = node["text"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        image_id = node["image_id"].ToString();
+        text = node["text"].ToString();
+    }
 }
 
 /**
@@ -238,25 +238,25 @@ class ArticleDefinitionCraftWeapon : ArticleDefinition
  */
 class ArticleDefinitionVehicle : ArticleDefinition
 {
-	internal string text;
-	internal string weapon;
+    internal string text;
+    internal string weapon;
 
     /**
 	 * Constructor (only setting type of base class)
 	 */
     internal ArticleDefinitionVehicle() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_VEHICLE) { }
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		weapon = node["weapon"].ToString();
-		text = node["text"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        weapon = node["weapon"].ToString();
+        text = node["text"].ToString();
+    }
 }
 
 /**
@@ -265,23 +265,23 @@ class ArticleDefinitionVehicle : ArticleDefinition
  */
 class ArticleDefinitionItem : ArticleDefinition
 {
-	internal string text;
+    internal string text;
 
     /**
 	 * Constructor (only setting type of base class).
 	 */
     internal ArticleDefinitionItem() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_ITEM) { }
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		text = node["text"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        text = node["text"].ToString();
+    }
 }
 
 /**
@@ -290,23 +290,23 @@ class ArticleDefinitionItem : ArticleDefinition
  */
 class ArticleDefinitionArmor : ArticleDefinition
 {
-	internal string text;
+    internal string text;
 
     /**
 	 * Constructor (only setting type of base class).
 	 */
     internal ArticleDefinitionArmor() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_ARMOR) { }
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		text = node["text"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        text = node["text"].ToString();
+    }
 }
 
 /**
@@ -315,23 +315,23 @@ class ArticleDefinitionArmor : ArticleDefinition
  */
 class ArticleDefinitionBaseFacility : ArticleDefinition
 {
-	internal string text;
+    internal string text;
 
     /**
 	 * Constructor (only setting type of base class).
 	 */
     internal ArticleDefinitionBaseFacility() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_BASE_FACILITY) { }
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		text = node["text"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        text = node["text"].ToString();
+    }
 }
 
 /**
@@ -341,8 +341,8 @@ class ArticleDefinitionBaseFacility : ArticleDefinition
 class ArticleDefinitionTextImage : ArticleDefinition
 {
     internal int text_width;
-	internal string image_id;
-	internal string text;
+    internal string image_id;
+    internal string text;
 
     /**
 	 * Constructor (only setting type of base class).
@@ -350,18 +350,18 @@ class ArticleDefinitionTextImage : ArticleDefinition
     internal ArticleDefinitionTextImage() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_TEXTIMAGE) =>
         text_width = 0;
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		image_id = node["image_id"].ToString();
-		text = node["text"].ToString();
-		text_width = int.Parse(node["text_width"].ToString());
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        image_id = node["image_id"].ToString();
+        text = node["text"].ToString();
+        text_width = int.Parse(node["text_width"].ToString());
+    }
 }
 
 /**
@@ -369,23 +369,23 @@ class ArticleDefinitionTextImage : ArticleDefinition
  */
 class ArticleDefinitionText : ArticleDefinition
 {
-	internal string text;
+    internal string text;
 
     /**
 	 * Constructor (only setting type of base class).
 	 */
     internal ArticleDefinitionText() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_TEXT) { }
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		text = node["text"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        text = node["text"].ToString();
+    }
 }
 
 /**
@@ -394,23 +394,23 @@ class ArticleDefinitionText : ArticleDefinition
  */
 class ArticleDefinitionUfo : ArticleDefinition
 {
-	internal string text;
+    internal string text;
 
     /**
 	 * Constructor (only setting type of base class).
 	 */
     internal ArticleDefinitionUfo() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_UFO) { }
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		text = node["text"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        text = node["text"].ToString();
+    }
 }
 
 /**
@@ -419,10 +419,10 @@ class ArticleDefinitionUfo : ArticleDefinition
  */
 class ArticleDefinitionTFTD : ArticleDefinition
 {
-	internal int text_width;
-	internal string image_id;
-	internal string text;
-	internal string weapon;
+    internal int text_width;
+    internal string image_id;
+    internal string text;
+    internal string weapon;
 
     /**
 	 * Constructor (only setting type of base class).
@@ -430,18 +430,18 @@ class ArticleDefinitionTFTD : ArticleDefinition
     internal ArticleDefinitionTFTD() : base(UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD) =>
         text_width = 0;
 
-	/**
+    /**
 	 * Loads the article definition from a YAML file.
 	 * @param node YAML node.
 	 * @param listOrder The list weight for this article.
 	 */
-	internal override void load(YamlNode node, int listOrder)
-	{
-		base.load(node, listOrder);
-		_type_id = (UfopaediaTypeId)int.Parse(node["type_id"].ToString());
-		image_id = node["image_id"].ToString();
-		text = node["text"].ToString();
-		text_width = node["text_width"] != null ? int.Parse(node["text_width"].ToString()) : 157; // 95% of these won't need to be defined, so let's give it a default
-		weapon = node["weapon"].ToString();
-	}
+    internal override void load(YamlNode node, int listOrder)
+    {
+        base.load(node, listOrder);
+        _type_id = (UfopaediaTypeId)int.Parse(node["type_id"].ToString());
+        image_id = node["image_id"].ToString();
+        text = node["text"].ToString();
+        text_width = node["text_width"] != null ? int.Parse(node["text_width"].ToString()) : 157; // 95% of these won't need to be defined, so let's give it a default
+        weapon = node["weapon"].ToString();
+    }
 }

@@ -27,7 +27,8 @@ enum LoadingPhase { LOADING_STARTED, LOADING_FAILED, LOADING_SUCCESSFUL, LOADING
 internal class StartState : State
 {
     int _anim;
-    /* SDL_Thread */ Thread _thread;
+    /* SDL_Thread */
+    Thread _thread;
     string _oldMaster;
     Font _font;
     Language _lang;
@@ -120,11 +121,11 @@ internal class StartState : State
     void addLine(string str)
     {
         _output = $"{_output}{Environment.NewLine}{str}";
-	    _text.setText(_output);
-	    int y = _text.getTextHeight() - _font.getHeight();
-	    int x = _text.getTextWidth(y / _font.getHeight());
-	    _cursor.setX(x);
-	    _cursor.setY(y);
+        _text.setText(_output);
+        int y = _text.getTextHeight() - _font.getHeight();
+        int x = _text.getTextWidth(y / _font.getHeight());
+        _cursor.setX(x);
+        _cursor.setY(y);
     }
 
     /**
@@ -213,8 +214,8 @@ internal class StartState : State
     void load(object game_ptr)
     {
         var game = (Game)game_ptr;
-	    try
-	    {
+        try
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Loading data...");
             Options.updateMods();
             game.loadMods();
@@ -222,14 +223,14 @@ internal class StartState : State
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Loading language...");
             game.loadLanguages();
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Language loaded successfully.");
-		    loading = LoadingPhase.LOADING_SUCCESSFUL;
-	    }
-	    catch (Exception e)
-	    {
-		    error = e.Message;
+            loading = LoadingPhase.LOADING_SUCCESSFUL;
+        }
+        catch (Exception e)
+        {
+            error = e.Message;
             Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {error}");
-		    loading = LoadingPhase.LOADING_FAILED;
-	    }
+            loading = LoadingPhase.LOADING_FAILED;
+        }
     }
 
     /**
@@ -280,13 +281,13 @@ internal class StartState : State
      */
     internal override void handle(Action action)
     {
-	    base.handle(action);
-	    if (loading == LoadingPhase.LOADING_DONE)
-	    {
-		    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
-		    {
-			    _game.quit();
-		    }
-	    }
+        base.handle(action);
+        if (loading == LoadingPhase.LOADING_DONE)
+        {
+            if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+            {
+                _game.quit();
+            }
+        }
     }
 }

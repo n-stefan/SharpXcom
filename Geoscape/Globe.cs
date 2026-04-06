@@ -39,39 +39,39 @@ struct GlobeStaticData
 
             if (j < -66) j = -16;
             else
-            if (j < -48) j = -15;
-            else
-            if (j < -33) j = -14;
-            else
-            if (j < -22) j = -13;
-            else
-            if (j < -15) j = -12;
-            else
-            if (j < -11) j = -11;
-            else
-            if (j < -9) j = -10;
+                if (j < -48) j = -15;
+                else
+                    if (j < -33) j = -14;
+                    else
+                        if (j < -22) j = -13;
+                        else
+                            if (j < -15) j = -12;
+                            else
+                                if (j < -11) j = -11;
+                                else
+                                    if (j < -9) j = -10;
 
             if (j > 120) j = 19;
             else
-            if (j > 98) j = 18;
-            else
-            if (j > 86) j = 17;
-            else
-            if (j > 74) j = 16;
-            else
-            if (j > 54) j = 15;
-            else
-            if (j > 38) j = 14;
-            else
-            if (j > 26) j = 13;
-            else
-            if (j > 18) j = 12;
-            else
-            if (j > 13) j = 11;
-            else
-            if (j > 10) j = 10;
-            else
-            if (j > 8) j = 9;
+                if (j > 98) j = 18;
+                else
+                    if (j > 86) j = 17;
+                    else
+                        if (j > 74) j = 16;
+                        else
+                            if (j > 54) j = 15;
+                            else
+                                if (j > 38) j = 14;
+                                else
+                                    if (j > 26) j = 13;
+                                    else
+                                        if (j > 18) j = 12;
+                                        else
+                                            if (j > 13) j = 11;
+                                            else
+                                                if (j > 10) j = 10;
+                                                else
+                                                    if (j > 8) j = 9;
 
             shade_gradient[i] = (short)(j + 16);
         }
@@ -113,71 +113,71 @@ struct GlobeStaticData
 
 struct CreateShadow : IColorFunc<byte, Cord, Cord, short, int>
 {
-	internal static byte getShadowValue(Cord earth, Cord sun, short noise)
-	{
-		Cord temp = earth;
-		//diff
-		temp -= sun;
-		//norm
-		temp.x *= temp.x;
-		temp.y *= temp.y;
-		temp.z *= temp.z;
-		temp.x += temp.z + temp.y;
-		//we have norm of distance between 2 vectors, now stored in `x`
+    internal static byte getShadowValue(Cord earth, Cord sun, short noise)
+    {
+        Cord temp = earth;
+        //diff
+        temp -= sun;
+        //norm
+        temp.x *= temp.x;
+        temp.y *= temp.y;
+        temp.z *= temp.z;
+        temp.x += temp.z + temp.y;
+        //we have norm of distance between 2 vectors, now stored in `x`
 
-		temp.x -= 2;
-		temp.x *= 125.0;
+        temp.x -= 2;
+        temp.x *= 125.0;
 
-		if (temp.x < -110)
-			temp.x = -31;
-		else if (temp.x > 120)
-			temp.x = 50;
-		else
-			temp.x = GlobeStaticData.shade_gradient[(short)temp.x + 120];
+        if (temp.x < -110)
+            temp.x = -31;
+        else if (temp.x > 120)
+            temp.x = 50;
+        else
+            temp.x = GlobeStaticData.shade_gradient[(short)temp.x + 120];
 
-		temp.x -= noise;
+        temp.x -= noise;
 
-		return (byte)Math.Clamp(temp.x, 0.0, 31.0);
-	}
+        return (byte)Math.Clamp(temp.x, 0.0, 31.0);
+    }
 
-	internal static bool isOcean(byte dest) =>
-		Globe.OCEAN_SHADING && dest >= Globe.OCEAN_COLOR && dest < Globe.OCEAN_COLOR + 32;
+    internal static bool isOcean(byte dest) =>
+        Globe.OCEAN_SHADING && dest >= Globe.OCEAN_COLOR && dest < Globe.OCEAN_COLOR + 32;
 
-	internal static byte getOceanShadow(byte shadow) =>
+    internal static byte getOceanShadow(byte shadow) =>
         (byte)(Globe.OCEAN_COLOR + shadow);
 
-	internal static byte getLandShadow(byte dest, byte shadow)
-	{
-		if (shadow == 0) return dest;
-		int s = shadow / 3;
-		int e = dest + s;
-		int d = dest & ColorGroup;
-		if (e > d + ColorShade)
-			return (byte)(d + ColorShade);
-		return (byte)e;
-	}
+    internal static byte getLandShadow(byte dest, byte shadow)
+    {
+        if (shadow == 0) return dest;
+        int s = shadow / 3;
+        int e = dest + s;
+        int d = dest & ColorGroup;
+        if (e > d + ColorShade)
+            return (byte)(d + ColorShade);
+        return (byte)e;
+    }
 
-	public void func(ref byte dest, Cord earth, Cord sun, short noise, int _)
-	{
-		if (dest != 0 && earth.z != 0)
-		{
-			byte shadow = getShadowValue(earth, sun, noise);
-			//this pixel is ocean
-			if (isOcean(dest))
-			{
-				dest = getOceanShadow(shadow);
-			}
-			//this pixel is land
-			else
-			{
-				dest = getLandShadow(dest, shadow);
-			}
-		}
-		else
-		{
-			dest = 0;
-		}
-	}
+    public void func(ref byte dest, Cord earth, Cord sun, short noise, int _)
+    {
+        if (dest != 0 && earth.z != 0)
+        {
+            byte shadow = getShadowValue(earth, sun, noise);
+            //this pixel is ocean
+            if (isOcean(dest))
+            {
+                dest = getOceanShadow(shadow);
+            }
+            //this pixel is land
+            else
+            {
+                dest = getLandShadow(dest, shadow);
+            }
+        }
+        else
+        {
+            dest = 0;
+        }
+    }
 }
 
 /**
@@ -879,29 +879,29 @@ internal class Globe : InteractiveSurface
      */
     internal void cartToPolar(short x, short y, out double lon, out double lat)
     {
-	    // Orthographic projection
-	    x -= _cenX;
-	    y -= _cenY;
+        // Orthographic projection
+        x -= _cenX;
+        y -= _cenY;
 
-	    double rho = Math.Sqrt((double)(x*x + y*y));
-	    double c = Math.Asin(rho / _radius);
-	    if ( AreSame(rho, 0.0) )
-	    {
-		    lat = _cenLat;
-		    lon = _cenLon;
+        double rho = Math.Sqrt((double)(x * x + y * y));
+        double c = Math.Asin(rho / _radius);
+        if (AreSame(rho, 0.0))
+        {
+            lat = _cenLat;
+            lon = _cenLon;
 
-	    }
-	    else
-	    {
-		    lat = Math.Asin((y * Math.Sin(c) * Math.Cos(_cenLat)) / rho + Math.Cos(c) * Math.Sin(_cenLat));
-		    lon = Math.Atan2(x * Math.Sin(c),(rho * Math.Cos(_cenLat) * Math.Cos(c) - y * Math.Sin(_cenLat) * Math.Sin(c))) + _cenLon;
-	    }
+        }
+        else
+        {
+            lat = Math.Asin((y * Math.Sin(c) * Math.Cos(_cenLat)) / rho + Math.Cos(c) * Math.Sin(_cenLat));
+            lon = Math.Atan2(x * Math.Sin(c), (rho * Math.Cos(_cenLat) * Math.Cos(c) - y * Math.Sin(_cenLat) * Math.Sin(c))) + _cenLon;
+        }
 
-	    // Keep between 0 and 2xPI
-	    while (lon < 0)
-		    lon += 2 * M_PI;
-	    while (lon >= 2 * M_PI)
-		    lon -= 2 * M_PI;
+        // Keep between 0 and 2xPI
+        while (lon < 0)
+            lon += 2 * M_PI;
+        while (lon >= 2 * M_PI)
+            lon -= 2 * M_PI;
     }
 
     /**
@@ -914,67 +914,67 @@ internal class Globe : InteractiveSurface
      */
     internal List<Target> getTargets(int x, int y, bool craft)
     {
-	    var v = new List<Target>();
-	    if (!craft)
-	    {
-		    foreach (var i in _game.getSavedGame().getBases())
-		    {
-			    if (i.getLongitude() == 0.0 && i.getLatitude() == 0.0)
-				    continue;
+        var v = new List<Target>();
+        if (!craft)
+        {
+            foreach (var i in _game.getSavedGame().getBases())
+            {
+                if (i.getLongitude() == 0.0 && i.getLatitude() == 0.0)
+                    continue;
 
-			    if (targetNear(i, x, y))
-			    {
-				    v.Add(i);
-			    }
+                if (targetNear(i, x, y))
+                {
+                    v.Add(i);
+                }
 
-			    foreach (var j in i.getCrafts())
-			    {
-				    if (j.getLongitude() == i.getLongitude() && j.getLatitude() == i.getLatitude() && j.getDestination() == null)
-					    continue;
+                foreach (var j in i.getCrafts())
+                {
+                    if (j.getLongitude() == i.getLongitude() && j.getLatitude() == i.getLatitude() && j.getDestination() == null)
+                        continue;
 
-				    if (targetNear(j, x, y))
-				    {
-					    v.Add(j);
-				    }
-			    }
-		    }
-	    }
-	    foreach (var i in _game.getSavedGame().getUfos())
-	    {
-		    if (!i.getDetected())
-			    continue;
+                    if (targetNear(j, x, y))
+                    {
+                        v.Add(j);
+                    }
+                }
+            }
+        }
+        foreach (var i in _game.getSavedGame().getUfos())
+        {
+            if (!i.getDetected())
+                continue;
 
-		    if (targetNear(i, x, y))
-		    {
-			    v.Add(i);
-		    }
-	    }
-	    foreach (var i in _game.getSavedGame().getWaypoints())
-	    {
-		    if (targetNear(i, x, y))
-		    {
-			    v.Add(i);
-		    }
-	    }
-	    foreach (var i in _game.getSavedGame().getMissionSites())
-	    {
-		    if (targetNear(i, x, y))
-		    {
-			    v.Add(i);
-		    }
-	    }
-	    foreach (var i in _game.getSavedGame().getAlienBases())
-	    {
-		    if (!i.isDiscovered())
-		    {
-			    continue;
-		    }
-		    if (targetNear(i, x, y))
-		    {
-			    v.Add(i);
-		    }
-	    }
-	    return v;
+            if (targetNear(i, x, y))
+            {
+                v.Add(i);
+            }
+        }
+        foreach (var i in _game.getSavedGame().getWaypoints())
+        {
+            if (targetNear(i, x, y))
+            {
+                v.Add(i);
+            }
+        }
+        foreach (var i in _game.getSavedGame().getMissionSites())
+        {
+            if (targetNear(i, x, y))
+            {
+                v.Add(i);
+            }
+        }
+        foreach (var i in _game.getSavedGame().getAlienBases())
+        {
+            if (!i.isDiscovered())
+            {
+                continue;
+            }
+            if (targetNear(i, x, y))
+            {
+                v.Add(i);
+            }
+        }
+        return v;
     }
 
     /**
@@ -987,14 +987,14 @@ internal class Globe : InteractiveSurface
      */
     bool targetNear(Target target, int x, int y)
     {
-	    short tx, ty;
-	    if (pointBack(target.getLongitude(), target.getLatitude()))
-		    return false;
-	    polarToCart(target.getLongitude(), target.getLatitude(), out tx, out ty);
+        short tx, ty;
+        if (pointBack(target.getLongitude(), target.getLatitude()))
+            return false;
+        polarToCart(target.getLongitude(), target.getLatitude(), out tx, out ty);
 
-	    int dx = x - tx;
-	    int dy = y - ty;
-	    return (dx * dx + dy * dy <= NEAR_RADIUS);
+        int dx = x - tx;
+        int dy = y - ty;
+        return (dx * dx + dy * dy <= NEAR_RADIUS);
     }
 
     internal void setNewBaseHoverPos(double lon, double lat)
@@ -1011,8 +1011,8 @@ internal class Globe : InteractiveSurface
      */
     internal override void think()
     {
-	    _blinkTimer.think(null, this);
-	    _rotTimer.think(null, this);
+        _blinkTimer.think(null, this);
+        _rotTimer.think(null, this);
     }
 
     /*
@@ -1020,22 +1020,22 @@ internal class Globe : InteractiveSurface
      */
     internal void resize()
     {
-	    Surface[] surfaces = {this, _markers, _countries, _radars};
-	    int width = Options.baseXGeoscape - 64;
-	    int height = Options.baseYGeoscape;
+        Surface[] surfaces = { this, _markers, _countries, _radars };
+        int width = Options.baseXGeoscape - 64;
+        int height = Options.baseYGeoscape;
 
-	    for (int i = 0; i < 4; ++i)
-	    {
-		    surfaces[i].setWidth(width);
-		    surfaces[i].setHeight(height);
-		    surfaces[i].invalidate();
-	    }
-	    _clipper.Wxrig = width;
-	    _clipper.Wybot = height;
-	    _cenX = (short)(width / 2);
-	    _cenY = (short)(height / 2);
-	    setupRadii(width, height);
-	    invalidate();
+        for (int i = 0; i < 4; ++i)
+        {
+            surfaces[i].setWidth(width);
+            surfaces[i].setHeight(height);
+            surfaces[i].invalidate();
+        }
+        _clipper.Wxrig = width;
+        _clipper.Wybot = height;
+        _cenX = (short)(width / 2);
+        _cenY = (short)(height / 2);
+        setupRadii(width, height);
+        invalidate();
     }
 
     /**
@@ -1043,18 +1043,18 @@ internal class Globe : InteractiveSurface
      */
     internal override void draw()
     {
-	    if (_redraw)
-	    {
-		    cachePolygons();
-	    }
-	    base.draw();
-	    drawOcean();
-	    drawLand();
-	    drawRadars();
-	    drawFlights();
-	    drawShadow();
-	    drawMarkers();
-	    drawDetail();
+        if (_redraw)
+        {
+            cachePolygons();
+        }
+        base.draw();
+        drawOcean();
+        drawLand();
+        drawRadars();
+        drawFlights();
+        drawShadow();
+        drawMarkers();
+        drawDetail();
     }
 
     /**
@@ -1062,10 +1062,10 @@ internal class Globe : InteractiveSurface
      */
     void drawOcean()
     {
-	    @lock();
-	    drawCircle((short)(_cenX + 1), _cenY, (short)(_radius + 20), OCEAN_COLOR);
-    //	ShaderDraw<Ocean>(ShaderSurface(this));
-	    unlock();
+        @lock();
+        drawCircle((short)(_cenX + 1), _cenY, (short)(_radius + 20), OCEAN_COLOR);
+        //	ShaderDraw<Ocean>(ShaderSurface(this));
+        unlock();
     }
 
     /**
@@ -1074,20 +1074,20 @@ internal class Globe : InteractiveSurface
      */
     void drawLand()
     {
-	    short[] x = new short[4], y = new short[4];
+        short[] x = new short[4], y = new short[4];
 
-	    foreach (var i in _cacheLand)
-	    {
-		    // Convert coordinates
-		    for (int j = 0; j < i.getPoints(); ++j)
-		    {
-			    x[j] = i.getX(j);
-			    y[j] = i.getY(j);
-		    }
+        foreach (var i in _cacheLand)
+        {
+            // Convert coordinates
+            for (int j = 0; j < i.getPoints(); ++j)
+            {
+                x[j] = i.getX(j);
+                y[j] = i.getY(j);
+            }
 
-		    // Apply textures according to zoom and shade
-		    drawTexturedPolygon(x, y, i.getPoints(), _texture.getFrame((int)(i.getTexture() + _zoomTexture)), 0, 0);
-	    }
+            // Apply textures according to zoom and shade
+            drawTexturedPolygon(x, y, i.getPoints(), _texture.getFrame((int)(i.getTexture() + _zoomTexture)), 0, 0);
+        }
     }
 
     /**
@@ -1095,87 +1095,87 @@ internal class Globe : InteractiveSurface
      */
     void drawRadars()
     {
-	    _radars.clear();
+        _radars.clear();
 
-	    // Draw craft circle instead of radar circles to avoid confusion
-	    if (_craft)
-	    {
-		    _radars.@lock();
+        // Draw craft circle instead of radar circles to avoid confusion
+        if (_craft)
+        {
+            _radars.@lock();
 
-		    if (_craftRange < M_PI)
-		    {
-			    drawGlobeCircle(_craftLat, _craftLon, _craftRange, 64);
-			    drawGlobeCircle(_craftLat, _craftLon, _craftRange - 0.025, 64, 2);
-		    }
+            if (_craftRange < M_PI)
+            {
+                drawGlobeCircle(_craftLat, _craftLon, _craftRange, 64);
+                drawGlobeCircle(_craftLat, _craftLon, _craftRange - 0.025, 64, 2);
+            }
 
-		    _radars.unlock();
-		    return;
-	    }
+            _radars.unlock();
+            return;
+        }
 
-	    if (!Options.globeRadarLines)
-		    return;
+        if (!Options.globeRadarLines)
+            return;
 
-	    double tr, range;
-	    double lat, lon;
-	    var ranges = new List<double>();
+        double tr, range;
+        double lat, lon;
+        var ranges = new List<double>();
 
-	    _radars.@lock();
+        _radars.@lock();
 
-	    if (_hover)
-	    {
-		    List<string> facilities = _game.getMod().getBaseFacilitiesList();
-		    foreach (var i in facilities)
-		    {
-			    range = Nautical(_game.getMod().getBaseFacility(i).getRadarRange());
-			    drawGlobeCircle(_hoverLat,_hoverLon,range,48);
-			    if (Options.globeAllRadarsOnBaseBuild) ranges.Add(range);
-		    }
-	    }
+        if (_hover)
+        {
+            List<string> facilities = _game.getMod().getBaseFacilitiesList();
+            foreach (var i in facilities)
+            {
+                range = Nautical(_game.getMod().getBaseFacility(i).getRadarRange());
+                drawGlobeCircle(_hoverLat, _hoverLon, range, 48);
+                if (Options.globeAllRadarsOnBaseBuild) ranges.Add(range);
+            }
+        }
 
-	    // Draw radars around bases
-	    foreach (var i in _game.getSavedGame().getBases())
-	    {
-		    lat = i.getLatitude();
-		    lon = i.getLongitude();
-		    // Cheap hack to hide bases when they haven't been placed yet
-		    if (( !(AreSame(lon, 0.0) && AreSame(lat, 0.0)) )/* &&
+        // Draw radars around bases
+        foreach (var i in _game.getSavedGame().getBases())
+        {
+            lat = i.getLatitude();
+            lon = i.getLongitude();
+            // Cheap hack to hide bases when they haven't been placed yet
+            if ((!(AreSame(lon, 0.0) && AreSame(lat, 0.0)))/* &&
 			    !pointBack(i.getLongitude(), i.getLatitude())*/)
-		    {
-			    if (_hover && Options.globeAllRadarsOnBaseBuild)
-			    {
-				    for (int j=0; j<ranges.Count; j++) drawGlobeCircle(lat,lon,ranges[j],48);
-			    }
-			    else
-			    {
-				    range = 0;
-				    foreach (var j in i.getFacilities())
-				    {
-					    if (j.getBuildTime() == 0)
-					    {
-						    tr = j.getRules().getRadarRange();
-						    if (tr > range) range = tr;
-					    }
-				    }
-				    range = Nautical(range);
+            {
+                if (_hover && Options.globeAllRadarsOnBaseBuild)
+                {
+                    for (int j = 0; j < ranges.Count; j++) drawGlobeCircle(lat, lon, ranges[j], 48);
+                }
+                else
+                {
+                    range = 0;
+                    foreach (var j in i.getFacilities())
+                    {
+                        if (j.getBuildTime() == 0)
+                        {
+                            tr = j.getRules().getRadarRange();
+                            if (tr > range) range = tr;
+                        }
+                    }
+                    range = Nautical(range);
 
-				    if (range>0) drawGlobeCircle(lat,lon,range,48);
-			    }
+                    if (range > 0) drawGlobeCircle(lat, lon, range, 48);
+                }
 
-		    }
+            }
 
-		    foreach (var j in i.getCrafts())
-		    {
-			    if (j.getStatus() != "STR_OUT")
-				    continue;
-			    lat=j.getLatitude();
-			    lon=j.getLongitude();
-			    range = Nautical(j.getRules().getRadarRange());
+            foreach (var j in i.getCrafts())
+            {
+                if (j.getStatus() != "STR_OUT")
+                    continue;
+                lat = j.getLatitude();
+                lon = j.getLongitude();
+                range = Nautical(j.getRules().getRadarRange());
 
-			    if (range>0) drawGlobeCircle(lat,lon,range,24);
-		    }
-	    }
+                if (range > 0) drawGlobeCircle(lat, lon, range, 24);
+            }
+        }
 
-	    _radars.unlock();
+        _radars.unlock();
     }
 
     /**
@@ -1183,96 +1183,106 @@ internal class Globe : InteractiveSurface
      */
     void drawGlobeCircle(double lat, double lon, double radius, int segments, int frac = 1)
     {
-	    double x, y, x2 = 0, y2 = 0;
-	    double lat1, lon1;
-	    double seg = M_PI / ((double)segments / 2);
-	    int i = 0;
-	    for (double az = 0; az <= M_PI*2+0.01; az+=seg) //48 circle segments
-	    {
-		    //calculating sphere-projected circle
-		    lat1 = Math.Asin(Math.Sin(lat) * Math.Cos(radius) + Math.Cos(lat) * Math.Sin(radius) * Math.Cos(az));
-		    lon1 = lon + Math.Atan2(Math.Sin(az) * Math.Sin(radius) * Math.Cos(lat), Math.Cos(radius) - Math.Sin(lat) * Math.Sin(lat1));
-		    polarToCart(lon1, lat1, out x, out y);
-		    if ( AreSame(az, 0.0) ) //first vertex is for initialization only
-		    {
-			    x2=x;
-			    y2=y;
-			    continue;
-		    }
-		    if (!pointBack(lon1,lat1) && i % frac == 0)
-			    XuLine(_radars, this, x, y, x2, y2, 6);
-		    x2=x; y2=y;
-		    i++;
-	    }
+        double x, y, x2 = 0, y2 = 0;
+        double lat1, lon1;
+        double seg = M_PI / ((double)segments / 2);
+        int i = 0;
+        for (double az = 0; az <= M_PI * 2 + 0.01; az += seg) //48 circle segments
+        {
+            //calculating sphere-projected circle
+            lat1 = Math.Asin(Math.Sin(lat) * Math.Cos(radius) + Math.Cos(lat) * Math.Sin(radius) * Math.Cos(az));
+            lon1 = lon + Math.Atan2(Math.Sin(az) * Math.Sin(radius) * Math.Cos(lat), Math.Cos(radius) - Math.Sin(lat) * Math.Sin(lat1));
+            polarToCart(lon1, lat1, out x, out y);
+            if (AreSame(az, 0.0)) //first vertex is for initialization only
+            {
+                x2 = x;
+                y2 = y;
+                continue;
+            }
+            if (!pointBack(lon1, lat1) && i % frac == 0)
+                XuLine(_radars, this, x, y, x2, y2, 6);
+            x2 = x; y2 = y;
+            i++;
+        }
     }
 
     void polarToCart(double lon, double lat, out double x, out double y)
     {
-	    // Orthographic projection
-	    x = _cenX + _radius * Math.Cos(lat) * Math.Sin(lon - _cenLon);
-	    y = _cenY + _radius * (Math.Cos(_cenLat) * Math.Sin(lat) - Math.Sin(_cenLat) * Math.Cos(lat) * Math.Cos(lon - _cenLon));
+        // Orthographic projection
+        x = _cenX + _radius * Math.Cos(lat) * Math.Sin(lon - _cenLon);
+        y = _cenY + _radius * (Math.Cos(_cenLat) * Math.Sin(lat) - Math.Sin(_cenLat) * Math.Cos(lat) * Math.Cos(lon - _cenLon));
     }
 
     void XuLine(Surface surface, Surface src, double x1, double y1, double x2, double y2, int shade)
     {
-	    if (_clipper.LineClip(ref x1,ref y1,ref x2,ref y2) != 1) return; //empty line
+        if (_clipper.LineClip(ref x1, ref y1, ref x2, ref y2) != 1) return; //empty line
 
-	    double deltax = x2-x1, deltay = y2-y1;
-	    bool inv;
-	    short tcol;
-	    double len,x0,y0,SX,SY;
-	    if (Math.Abs((int)y2-(int)y1) > Math.Abs((int)x2-(int)x1))
-	    {
-		    len=Math.Abs((int)y2-(int)y1);
-		    inv=false;
-	    }
-	    else
-	    {
-		    len=Math.Abs((int)x2-(int)x1);
-		    inv=true;
-	    }
+        double deltax = x2 - x1, deltay = y2 - y1;
+        bool inv;
+        short tcol;
+        double len, x0, y0, SX, SY;
+        if (Math.Abs((int)y2 - (int)y1) > Math.Abs((int)x2 - (int)x1))
+        {
+            len = Math.Abs((int)y2 - (int)y1);
+            inv = false;
+        }
+        else
+        {
+            len = Math.Abs((int)x2 - (int)x1);
+            inv = true;
+        }
 
-	    if (y2<y1) {
-	    SY=-1;
-      } else if ( AreSame(deltay, 0.0) ) {
-	    SY=0;
-      } else {
-	    SY=1;
-      }
+        if (y2 < y1)
+        {
+            SY = -1;
+        }
+        else if (AreSame(deltay, 0.0))
+        {
+            SY = 0;
+        }
+        else
+        {
+            SY = 1;
+        }
 
-	    if (x2<x1) {
-	    SX=-1;
-      } else if ( AreSame(deltax, 0.0) ) {
-	    SX=0;
-      } else {
-	    SX=1;
-      }
+        if (x2 < x1)
+        {
+            SX = -1;
+        }
+        else if (AreSame(deltax, 0.0))
+        {
+            SX = 0;
+        }
+        else
+        {
+            SX = 1;
+        }
 
-	    x0=x1;  y0=y1;
-	    if (inv)
-		    SY=(deltay/len);
-	    else
-		    SX=(deltax/len);
+        x0 = x1; y0 = y1;
+        if (inv)
+            SY = (deltay / len);
+        else
+            SX = (deltax / len);
 
-	    while (len>0)
-	    {
-		    tcol=src.getPixel((int)x0,(int)y0);
-		    if (tcol != 0)
-		    {
-			    if (CreateShadow.isOcean((byte)tcol))
-			    {
-				    tcol = CreateShadow.getOceanShadow((byte)(shade + 8));
-			    }
-			    else
-			    {
-				    tcol = CreateShadow.getLandShadow((byte)tcol, (byte)(shade * 3));
-			    }
-			    surface.setPixel((int)x0, (int)y0, (byte)tcol);
-		    }
-		    x0+=SX;
-		    y0+=SY;
-		    len-=1.0;
-	    }
+        while (len > 0)
+        {
+            tcol = src.getPixel((int)x0, (int)y0);
+            if (tcol != 0)
+            {
+                if (CreateShadow.isOcean((byte)tcol))
+                {
+                    tcol = CreateShadow.getOceanShadow((byte)(shade + 8));
+                }
+                else
+                {
+                    tcol = CreateShadow.getLandShadow((byte)tcol, (byte)(shade * 3));
+                }
+                surface.setPixel((int)x0, (int)y0, (byte)tcol);
+            }
+            x0 += SX;
+            y0 += SY;
+            len -= 1.0;
+        }
     }
 
     /**
@@ -1280,329 +1290,329 @@ internal class Globe : InteractiveSurface
      */
     void drawFlights()
     {
-	    //_radars.clear();
+        //_radars.clear();
 
-	    if (!Options.globeFlightPaths)
-		    return;
+        if (!Options.globeFlightPaths)
+            return;
 
-	    // Lock the surface
-	    _radars.@lock();
+        // Lock the surface
+        _radars.@lock();
 
-	    // Draw the craft flight paths
-	    foreach (var i in _game.getSavedGame().getBases())
-	    {
-		    foreach (var j in i.getCrafts())
-		    {
-			    // Hide crafts docked at base
-			    if (j.getStatus() != "STR_OUT" || j.getDestination() == null /*|| pointBack(j.getLongitude(), j.getLatitude())*/)
-				    continue;
+        // Draw the craft flight paths
+        foreach (var i in _game.getSavedGame().getBases())
+        {
+            foreach (var j in i.getCrafts())
+            {
+                // Hide crafts docked at base
+                if (j.getStatus() != "STR_OUT" || j.getDestination() == null /*|| pointBack(j.getLongitude(), j.getLatitude())*/)
+                    continue;
 
-			    double lon1 = j.getLongitude();
-			    double lat1 = j.getLatitude();
-			    double lon2 = j.getDestination().getLongitude();
-			    double lat2 = j.getDestination().getLatitude();
+                double lon1 = j.getLongitude();
+                double lat1 = j.getLatitude();
+                double lon2 = j.getDestination().getLongitude();
+                double lat2 = j.getDestination().getLatitude();
 
-			    if (j.isMeetCalculated())
-			    {
-				    lon2 = j.getMeetLongitude();
-				    lat2 = j.getMeetLatitude();
-			    }
-			    drawPath(_radars, lon1, lat1, lon2, lat2);
+                if (j.isMeetCalculated())
+                {
+                    lon2 = j.getMeetLongitude();
+                    lat2 = j.getMeetLatitude();
+                }
+                drawPath(_radars, lon1, lat1, lon2, lat2);
 
-			    if (j.isMeetCalculated())
-			    {
-				    lon1 = j.getDestination().getLongitude();
-				    lat1 = j.getDestination().getLatitude();
+                if (j.isMeetCalculated())
+                {
+                    lon1 = j.getDestination().getLongitude();
+                    lat1 = j.getDestination().getLatitude();
 
-				    drawPath(_radars, lon1, lat1, lon2, lat2);
-			    }
-		    }
-	    }
+                    drawPath(_radars, lon1, lat1, lon2, lat2);
+                }
+            }
+        }
 
-	    // Unlock the surface
-	    _radars.unlock();
+        // Unlock the surface
+        _radars.unlock();
     }
 
     void drawPath(Surface surface, double lon1, double lat1, double lon2, double lat2)
     {
-	    double length;
-	    short count;
-	    double x1, y1, x2, y2;
-	    CordPolar p1, p2;
-	    Cord a = (Cord)new CordPolar(lon1, lat1);
-	    Cord b = (Cord)new CordPolar(lon2, lat2);
+        double length;
+        short count;
+        double x1, y1, x2, y2;
+        CordPolar p1, p2;
+        Cord a = (Cord)new CordPolar(lon1, lat1);
+        Cord b = (Cord)new CordPolar(lon2, lat2);
 
-	    if (-b == a)
-		    return;
+        if (-b == a)
+            return;
 
-	    b -= a;
+        b -= a;
 
-	    //longer path have more parts
-	    length = b.norm();
-	    length *= length*15;
-	    count = (short)(length + 1);
-	    b /= count;
-	    p1 = (CordPolar)a;
-	    polarToCart(p1.lon, p1.lat, out x1, out y1);
-	    for (int i = 0; i < count; ++i)
-	    {
-		    a += b;
-		    p2 = (CordPolar)a;
-		    polarToCart(p2.lon, p2.lat, out x2, out y2);
+        //longer path have more parts
+        length = b.norm();
+        length *= length * 15;
+        count = (short)(length + 1);
+        b /= count;
+        p1 = (CordPolar)a;
+        polarToCart(p1.lon, p1.lat, out x1, out y1);
+        for (int i = 0; i < count; ++i)
+        {
+            a += b;
+            p2 = (CordPolar)a;
+            polarToCart(p2.lon, p2.lat, out x2, out y2);
 
-		    if (!pointBack(p1.lon, p1.lat) && !pointBack(p2.lon, p2.lat))
-		    {
-			    XuLine(surface, this, x1, y1, x2, y2, 8);
-		    }
+            if (!pointBack(p1.lon, p1.lat) && !pointBack(p2.lon, p2.lat))
+            {
+                XuLine(surface, this, x1, y1, x2, y2, 8);
+            }
 
-		    p1 = p2;
-		    x1 = x2;
-		    y1 = y2;
-	    }
+            p1 = p2;
+            x1 = x2;
+            y1 = y2;
+        }
     }
 
     void drawShadow()
     {
-	    ShaderMove<Cord> earth = new ShaderMove<Cord>(_earthData[(int)_zoom], getWidth(), getHeight());
-	    ShaderRepeat<short> noise = new ShaderRepeat<short>(_randomNoiseData, GlobeStaticData.random_surf_size, GlobeStaticData.random_surf_size);
+        ShaderMove<Cord> earth = new ShaderMove<Cord>(_earthData[(int)_zoom], getWidth(), getHeight());
+        ShaderRepeat<short> noise = new ShaderRepeat<short>(_randomNoiseData, GlobeStaticData.random_surf_size, GlobeStaticData.random_surf_size);
 
-	    earth.setMove(_cenX-getWidth()/2, _cenY-getHeight()/2);
+        earth.setMove(_cenX - getWidth() / 2, _cenY - getHeight() / 2);
 
-	    @lock();
-	    ShaderDraw(new CreateShadow(), ShaderSurface(this), earth, ShaderScalar(getSunDirection(_cenLon, _cenLat)), noise);
-	    unlock();
+        @lock();
+        ShaderDraw(new CreateShadow(), ShaderSurface(this), earth, ShaderScalar(getSunDirection(_cenLon, _cenLat)), noise);
+        unlock();
     }
 
-	static int debugType = 0;
-	static bool canSwitchDebugType = false;
+    static int debugType = 0;
+    static bool canSwitchDebugType = false;
     /**
      * Draws the details of the countries on the globe,
      * based on the current zoom level.
      */
     void drawDetail()
     {
-	    _countries.clear();
+        _countries.clear();
 
-	    if (!Options.globeDetail)
-		    return;
+        if (!Options.globeDetail)
+            return;
 
-	    // Draw the country borders
-	    if (_zoom >= 1)
-	    {
-		    // Lock the surface
-		    _countries.@lock();
+        // Draw the country borders
+        if (_zoom >= 1)
+        {
+            // Lock the surface
+            _countries.@lock();
 
-		    foreach (var i in _rules.getPolylines())
-		    {
-			    short[] x = [2], y = [2];
-			    for (int j = 0; j < i.getPoints() - 1; ++j)
-			    {
-				    // Don't draw if polyline is facing back
-				    if (pointBack(i.getLongitude(j), i.getLatitude(j)) || pointBack(i.getLongitude(j + 1), i.getLatitude(j + 1)))
-					    continue;
+            foreach (var i in _rules.getPolylines())
+            {
+                short[] x = [2], y = [2];
+                for (int j = 0; j < i.getPoints() - 1; ++j)
+                {
+                    // Don't draw if polyline is facing back
+                    if (pointBack(i.getLongitude(j), i.getLatitude(j)) || pointBack(i.getLongitude(j + 1), i.getLatitude(j + 1)))
+                        continue;
 
-				    // Convert coordinates
-				    polarToCart(i.getLongitude(j), i.getLatitude(j), out x[0], out y[0]);
-				    polarToCart(i.getLongitude(j + 1), i.getLatitude(j + 1), out x[1], out y[1]);
+                    // Convert coordinates
+                    polarToCart(i.getLongitude(j), i.getLatitude(j), out x[0], out y[0]);
+                    polarToCart(i.getLongitude(j + 1), i.getLatitude(j + 1), out x[1], out y[1]);
 
-				    _countries.drawLine(x[0], y[0], x[1], y[1], LINE_COLOR);
-			    }
-		    }
+                    _countries.drawLine(x[0], y[0], x[1], y[1], LINE_COLOR);
+                }
+            }
 
-		    // Unlock the surface
-		    _countries.unlock();
-	    }
+            // Unlock the surface
+            _countries.unlock();
+        }
 
-	    // Draw the country names
-	    if (_zoom >= 2)
-	    {
-		    Text label = new Text(100, 9, 0, 0);
-		    label.setPalette(getPalette());
-		    label.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
-		    label.setAlign(TextHAlign.ALIGN_CENTER);
-		    label.setColor(COUNTRY_LABEL_COLOR);
+        // Draw the country names
+        if (_zoom >= 2)
+        {
+            Text label = new Text(100, 9, 0, 0);
+            label.setPalette(getPalette());
+            label.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+            label.setAlign(TextHAlign.ALIGN_CENTER);
+            label.setColor(COUNTRY_LABEL_COLOR);
 
-		    short x, y;
-		    foreach (var i in _game.getSavedGame().getCountries())
-		    {
-			    // Don't draw if label is facing back
-			    if (pointBack(i.getRules().getLabelLongitude(), i.getRules().getLabelLatitude()))
-				    continue;
+            short x, y;
+            foreach (var i in _game.getSavedGame().getCountries())
+            {
+                // Don't draw if label is facing back
+                if (pointBack(i.getRules().getLabelLongitude(), i.getRules().getLabelLatitude()))
+                    continue;
 
-			    // Convert coordinates
-			    polarToCart(i.getRules().getLabelLongitude(), i.getRules().getLabelLatitude(), out x, out y);
+                // Convert coordinates
+                polarToCart(i.getRules().getLabelLongitude(), i.getRules().getLabelLatitude(), out x, out y);
 
-			    label.setX(x - 50);
-			    label.setY(y);
-			    label.setText(_game.getLanguage().getString(i.getRules().getType()));
-			    label.blit(_countries);
-		    }
+                label.setX(x - 50);
+                label.setY(y);
+                label.setText(_game.getLanguage().getString(i.getRules().getType()));
+                label.blit(_countries);
+            }
 
-		    label = null;
-	    }
+            label = null;
+        }
 
-	    // Draw the city and base markers
-	    if (_zoom >= 3)
-	    {
-		    Text label = new Text(100, 9, 0, 0);
-		    label.setPalette(getPalette());
-		    label.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
-		    label.setAlign(TextHAlign.ALIGN_CENTER);
-		    label.setColor(CITY_LABEL_COLOR);
+        // Draw the city and base markers
+        if (_zoom >= 3)
+        {
+            Text label = new Text(100, 9, 0, 0);
+            label.setPalette(getPalette());
+            label.initText(_game.getMod().getFont("FONT_BIG"), _game.getMod().getFont("FONT_SMALL"), _game.getLanguage());
+            label.setAlign(TextHAlign.ALIGN_CENTER);
+            label.setColor(CITY_LABEL_COLOR);
 
-		    short x, y;
-		    foreach (var i in _game.getSavedGame().getRegions())
-		    {
-			    foreach (var j in i.getRules().getCities())
-			    {
-				    drawTarget(j, _countries);
+            short x, y;
+            foreach (var i in _game.getSavedGame().getRegions())
+            {
+                foreach (var j in i.getRules().getCities())
+                {
+                    drawTarget(j, _countries);
 
-				    // Don't draw if city is facing back
-				    if (pointBack(j.getLongitude(), j.getLatitude()))
-					    continue;
+                    // Don't draw if city is facing back
+                    if (pointBack(j.getLongitude(), j.getLatitude()))
+                        continue;
 
-				    // Convert coordinates
-				    polarToCart(j.getLongitude(), j.getLatitude(), out x, out y);
+                    // Convert coordinates
+                    polarToCart(j.getLongitude(), j.getLatitude(), out x, out y);
 
-				    label.setX(x - 50);
-				    label.setY(y + 2);
-				    label.setText(j.getName(_game.getLanguage()));
-				    label.blit(_countries);
-			    }
-		    }
-		    // Draw bases names
-		    foreach (var j in _game.getSavedGame().getBases())
-		    {
-			    if (j.getMarker() == -1 || pointBack(j.getLongitude(), j.getLatitude()))
-				    continue;
-			    polarToCart(j.getLongitude(), j.getLatitude(), out x, out y);
-			    label.setX(x - 50);
-			    label.setY(y + 2);
-			    label.setColor(BASE_LABEL_COLOR);
-			    label.setText(j.getName());
-			    label.blit(_countries);
-		    }
+                    label.setX(x - 50);
+                    label.setY(y + 2);
+                    label.setText(j.getName(_game.getLanguage()));
+                    label.blit(_countries);
+                }
+            }
+            // Draw bases names
+            foreach (var j in _game.getSavedGame().getBases())
+            {
+                if (j.getMarker() == -1 || pointBack(j.getLongitude(), j.getLatitude()))
+                    continue;
+                polarToCart(j.getLongitude(), j.getLatitude(), out x, out y);
+                label.setX(x - 50);
+                label.setY(y + 2);
+                label.setColor(BASE_LABEL_COLOR);
+                label.setText(j.getName());
+                label.blit(_countries);
+            }
 
-		    label = null;
-	    }
+            label = null;
+        }
 
-	    if (_game.getSavedGame().getDebugMode())
-	    {
-		    int color;
-		    canSwitchDebugType = true;
-		    if (debugType == 0)
-		    {
-			    color = 0;
-			    foreach (var i in _game.getSavedGame().getCountries())
-			    {
-				    color += 10;
-				    for (int k = 0; k != i.getRules().getLatMax().Count; ++k)
-				    {
-					    double lon2 = i.getRules().getLonMax()[k];
-					    double lon1 = i.getRules().getLonMin()[k];
-					    double lat2 = i.getRules().getLatMax()[k];
-					    double lat1 = i.getRules().getLatMin()[k];
+        if (_game.getSavedGame().getDebugMode())
+        {
+            int color;
+            canSwitchDebugType = true;
+            if (debugType == 0)
+            {
+                color = 0;
+                foreach (var i in _game.getSavedGame().getCountries())
+                {
+                    color += 10;
+                    for (int k = 0; k != i.getRules().getLatMax().Count; ++k)
+                    {
+                        double lon2 = i.getRules().getLonMax()[k];
+                        double lon1 = i.getRules().getLonMin()[k];
+                        double lat2 = i.getRules().getLatMax()[k];
+                        double lat1 = i.getRules().getLatMin()[k];
 
-					    drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
-					    drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
-					    drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
-					    drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
-				    }
-			    }
-		    }
-		    else if (debugType == 1)
-		    {
-			    color = 0;
-			    foreach (var i in _game.getSavedGame().getRegions())
-			    {
-				    color += 10;
-				    for (int k = 0; k != i.getRules().getLatMax().Count; ++k)
-				    {
-					    double lon2 = i.getRules().getLonMax()[k];
-					    double lon1 = i.getRules().getLonMin()[k];
-					    double lat2 = i.getRules().getLatMax()[k];
-					    double lat1 = i.getRules().getLatMin()[k];
+                        drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
+                        drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
+                        drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
+                        drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
+                    }
+                }
+            }
+            else if (debugType == 1)
+            {
+                color = 0;
+                foreach (var i in _game.getSavedGame().getRegions())
+                {
+                    color += 10;
+                    for (int k = 0; k != i.getRules().getLatMax().Count; ++k)
+                    {
+                        double lon2 = i.getRules().getLonMax()[k];
+                        double lon1 = i.getRules().getLonMin()[k];
+                        double lat2 = i.getRules().getLatMax()[k];
+                        double lat1 = i.getRules().getLatMin()[k];
 
-					    drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
-					    drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
-					    drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
-					    drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
-				    }
-			    }
-		    }
-		    else if (debugType == 2)
-		    {
-			    foreach (var i in _game.getSavedGame().getRegions())
-			    {
-				    color = -1;
-				    foreach (var j in i.getRules().getMissionZones())
-				    {
-					    color += 2;
-					    foreach (var k in j.areas)
-					    {
-						    double lon2 = k.lonMax;
-						    double lon1 = k.lonMin;
-						    double lat2 = k.latMax;
-						    double lat1 = k.latMin;
+                        drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
+                        drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
+                        drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
+                        drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
+                    }
+                }
+            }
+            else if (debugType == 2)
+            {
+                foreach (var i in _game.getSavedGame().getRegions())
+                {
+                    color = -1;
+                    foreach (var j in i.getRules().getMissionZones())
+                    {
+                        color += 2;
+                        foreach (var k in j.areas)
+                        {
+                            double lon2 = k.lonMax;
+                            double lon1 = k.lonMin;
+                            double lat2 = k.latMax;
+                            double lat1 = k.latMin;
 
-						    drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
-						    drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
-						    drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
-						    drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
-					    }
-				    }
-			    }
-		    }
-	    }
-	    else
-	    {
-		    if (canSwitchDebugType)
-		    {
-			    ++debugType;
-			    if (debugType > 2) debugType = 0;
-			    canSwitchDebugType = false;
-		    }
-	    }
+                            drawVHLine(_countries, lon1, lat1, lon2, lat1, (byte)color);
+                            drawVHLine(_countries, lon1, lat2, lon2, lat2, (byte)color);
+                            drawVHLine(_countries, lon1, lat1, lon1, lat2, (byte)color);
+                            drawVHLine(_countries, lon2, lat1, lon2, lat2, (byte)color);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (canSwitchDebugType)
+            {
+                ++debugType;
+                if (debugType > 2) debugType = 0;
+                canSwitchDebugType = false;
+            }
+        }
     }
 
     void drawVHLine(Surface surface, double lon1, double lat1, double lon2, double lat2, byte color)
     {
-	    double sx = lon2 - lon1;
-	    double sy = lat2 - lat1;
-	    double ln1, lt1, ln2, lt2;
-	    int seg;
-	    short x1, y1, x2, y2;
+        double sx = lon2 - lon1;
+        double sy = lat2 - lat1;
+        double ln1, lt1, ln2, lt2;
+        int seg;
+        short x1, y1, x2, y2;
 
-	    if (sx<0) sx += 2*M_PI;
+        if (sx < 0) sx += 2 * M_PI;
 
-	    if (Math.Abs(sx)<0.01)
-	    {
-		    seg = (int)Math.Abs(sy/(2*M_PI)*48);
-		    if (seg == 0) ++seg;
-	    }
-	    else
-	    {
-		    seg = (int)Math.Abs(sx/(2*M_PI)*96);
-		    if (seg == 0) ++seg;
-	    }
+        if (Math.Abs(sx) < 0.01)
+        {
+            seg = (int)Math.Abs(sy / (2 * M_PI) * 48);
+            if (seg == 0) ++seg;
+        }
+        else
+        {
+            seg = (int)Math.Abs(sx / (2 * M_PI) * 96);
+            if (seg == 0) ++seg;
+        }
 
-	    sx /= seg;
-	    sy /= seg;
+        sx /= seg;
+        sy /= seg;
 
-	    for (int i = 0; i < seg; ++i)
-	    {
-		    ln1 = lon1 + sx*i;
-		    lt1 = lat1 + sy*i;
-		    ln2 = lon1 + sx*(i+1);
-		    lt2 = lat1 + sy*(i+1);
+        for (int i = 0; i < seg; ++i)
+        {
+            ln1 = lon1 + sx * i;
+            lt1 = lat1 + sy * i;
+            ln2 = lon1 + sx * (i + 1);
+            lt2 = lat1 + sy * (i + 1);
 
-		    if (!pointBack(ln2, lt2)&&!pointBack(ln1, lt1))
-		    {
-			    polarToCart(ln1,lt1,out x1,out y1);
-			    polarToCart(ln2,lt2,out x2,out y2);
-			    surface.drawLine(x1, y1, x2, y2, color);
-		    }
-	    }
+            if (!pointBack(ln2, lt2) && !pointBack(ln1, lt1))
+            {
+                polarToCart(ln1, lt1, out x1, out y1);
+                polarToCart(ln2, lt2, out x2, out y2);
+                surface.drawLine(x1, y1, x2, y2, color);
+            }
+        }
     }
 
     /**
@@ -1611,10 +1621,10 @@ internal class Globe : InteractiveSurface
      */
     internal override void blit(Surface surface)
     {
-	    base.blit(surface);
-	    _radars.blit(surface);
-	    _countries.blit(surface);
-	    _markers.blit(surface);
+        base.blit(surface);
+        _radars.blit(surface);
+        _countries.blit(surface);
+        _markers.blit(surface);
     }
 
     /**
@@ -1624,25 +1634,25 @@ internal class Globe : InteractiveSurface
      */
     internal override void mousePress(Action action, State state)
     {
-	    double lon, lat;
-	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
+        double lon, lat;
+        cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
 
-	    if (action.getDetails().button.button == Options.geoDragScrollButton)
-	    {
-		    _isMouseScrolling = true;
-		    _isMouseScrolled = false;
-		    SDL_GetMouseState(out _xBeforeMouseScrolling, out _yBeforeMouseScrolling);
-		    _lonBeforeMouseScrolling = _cenLon;
-		    _latBeforeMouseScrolling = _cenLat;
-		    _totalMouseMoveX = 0; _totalMouseMoveY = 0;
-		    _mouseMovedOverThreshold = false;
-		    _mouseScrollingStartTime = SDL_GetTicks();
-	    }
-	    // Check for errors
-	    //if (lat == lat && lon == lon)
-	    //{
-		    base.mousePress(action, state);
-	    //}
+        if (action.getDetails().button.button == Options.geoDragScrollButton)
+        {
+            _isMouseScrolling = true;
+            _isMouseScrolled = false;
+            SDL_GetMouseState(out _xBeforeMouseScrolling, out _yBeforeMouseScrolling);
+            _lonBeforeMouseScrolling = _cenLon;
+            _latBeforeMouseScrolling = _cenLat;
+            _totalMouseMoveX = 0; _totalMouseMoveY = 0;
+            _mouseMovedOverThreshold = false;
+            _mouseScrollingStartTime = SDL_GetTicks();
+        }
+        // Check for errors
+        //if (lat == lat && lon == lon)
+        //{
+        base.mousePress(action, state);
+        //}
     }
 
     /**
@@ -1652,17 +1662,17 @@ internal class Globe : InteractiveSurface
      */
     protected override void mouseRelease(Action action, State state)
     {
-	    double lon, lat;
-	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
-	    if (action.getDetails().button.button == Options.geoDragScrollButton)
-	    {
-		    stopScrolling(action);
-	    }
-	    // Check for errors
-	    //if (lat == lat && lon == lon)
-	    //{
-		    base.mouseRelease(action, state);
-	    //}
+        double lon, lat;
+        cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
+        if (action.getDetails().button.button == Options.geoDragScrollButton)
+        {
+            stopScrolling(action);
+        }
+        // Check for errors
+        //if (lat == lat && lon == lon)
+        //{
+        base.mouseRelease(action, state);
+        //}
     }
 
     /**
@@ -1671,8 +1681,8 @@ internal class Globe : InteractiveSurface
      */
     void stopScrolling(Action action)
     {
-	    SDL_WarpMouseGlobal(_xBeforeMouseScrolling, _yBeforeMouseScrolling);
-	    action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
+        SDL_WarpMouseGlobal(_xBeforeMouseScrolling, _yBeforeMouseScrolling);
+        action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
     }
 
     /**
@@ -1684,68 +1694,68 @@ internal class Globe : InteractiveSurface
     protected override void mouseClick(Action action, State state)
     {
         if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
-	    {
-		    zoomIn();
-	    }
+        {
+            zoomIn();
+        }
         else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
-	    {
-		    zoomOut();
-	    }
+        {
+            zoomOut();
+        }
 
-	    double lon, lat;
-	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
+        double lon, lat;
+        cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
 
-	    // The following is the workaround for a rare problem where sometimes
-	    // the mouse-release event is missed for any reason.
-	    // However if the SDL is also missed the release event, then it is to no avail :(
-	    // (this part handles the release if it is missed and now an other button is used)
-	    if (_isMouseScrolling)
-	    {
-		    if (action.getDetails().button.button != Options.geoDragScrollButton
-			    && 0 == (SDL_GetMouseState(0, 0)&SDL_BUTTON((uint)Options.geoDragScrollButton)))
-		    { // so we missed again the mouse-release :(
-			    // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
-			    if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
-			    {
-				    center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
-			    }
-			    _isMouseScrolled = _isMouseScrolling = false;
-			    stopScrolling(action);
-		    }
-	    }
+        // The following is the workaround for a rare problem where sometimes
+        // the mouse-release event is missed for any reason.
+        // However if the SDL is also missed the release event, then it is to no avail :(
+        // (this part handles the release if it is missed and now an other button is used)
+        if (_isMouseScrolling)
+        {
+            if (action.getDetails().button.button != Options.geoDragScrollButton
+                && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.geoDragScrollButton)))
+            { // so we missed again the mouse-release :(
+              // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+                if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+                {
+                    center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
+                }
+                _isMouseScrolled = _isMouseScrolling = false;
+                stopScrolling(action);
+            }
+        }
 
-	    // DragScroll-Button release: release mouse-scroll-mode
-	    if (_isMouseScrolling)
-	    {
-		    // While scrolling, other buttons are ineffective
-		    if (action.getDetails().button.button == Options.geoDragScrollButton)
-		    {
-			    _isMouseScrolling = false;
-			    stopScrolling(action);
-		    }
-		    else
-		    {
-			    return;
-		    }
-		    // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
-		    if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
-		    {
-			    _isMouseScrolled = false;
-			    stopScrolling(action);
-			    center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
-		    }
-		    if (_isMouseScrolled) return;
-	    }
+        // DragScroll-Button release: release mouse-scroll-mode
+        if (_isMouseScrolling)
+        {
+            // While scrolling, other buttons are ineffective
+            if (action.getDetails().button.button == Options.geoDragScrollButton)
+            {
+                _isMouseScrolling = false;
+                stopScrolling(action);
+            }
+            else
+            {
+                return;
+            }
+            // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+            if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+            {
+                _isMouseScrolled = false;
+                stopScrolling(action);
+                center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
+            }
+            if (_isMouseScrolled) return;
+        }
 
-	    // Check for errors
-	    //if (lat == lat && lon == lon)
-	    //{
-		    base.mouseClick(action, state);
-		    if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
-		    {
-			    center(lon, lat);
-		    }
-	    //}
+        // Check for errors
+        //if (lat == lat && lon == lon)
+        //{
+        base.mouseClick(action, state);
+        if (action.getDetails().button.button == SDL_BUTTON_RIGHT)
+        {
+            center(lon, lat);
+        }
+        //}
     }
 
     /**
@@ -1755,81 +1765,81 @@ internal class Globe : InteractiveSurface
      */
     protected override void mouseOver(Action action, State state)
     {
-	    double lon, lat;
-	    cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
+        double lon, lat;
+        cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
 
-	    if (_isMouseScrolling && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
-	    {
-		    // The following is the workaround for a rare problem where sometimes
-		    // the mouse-release event is missed for any reason.
-		    // (checking: is the dragScroll-mouse-button still pressed?)
-		    // However if the SDL is also missed the release event, then it is to no avail :(
-		    if (0 == (SDL_GetMouseState(0, 0)&SDL_BUTTON((uint)Options.geoDragScrollButton)))
-		    { // so we missed again the mouse-release :(
-			    // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
-			    if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
-			    {
-				    center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
-			    }
-			    _isMouseScrolled = _isMouseScrolling = false;
-			    stopScrolling(action);
-			    return;
-		    }
+        if (_isMouseScrolling && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+        {
+            // The following is the workaround for a rare problem where sometimes
+            // the mouse-release event is missed for any reason.
+            // (checking: is the dragScroll-mouse-button still pressed?)
+            // However if the SDL is also missed the release event, then it is to no avail :(
+            if (0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.geoDragScrollButton)))
+            { // so we missed again the mouse-release :(
+              // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
+                if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
+                {
+                    center(_lonBeforeMouseScrolling, _latBeforeMouseScrolling);
+                }
+                _isMouseScrolled = _isMouseScrolling = false;
+                stopScrolling(action);
+                return;
+            }
 
-		    _isMouseScrolled = true;
+            _isMouseScrolled = true;
 
-		    if (Options.touchEnabled == false)
-		    {
-			    // Set the mouse cursor back
-			    SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_IGNORE);
-			    SDL_WarpMouseGlobal((_game.getScreen().getWidth() - 100) / 2 , _game.getScreen().getHeight() / 2);
-			    SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_ENABLE);
-		    }
+            if (Options.touchEnabled == false)
+            {
+                // Set the mouse cursor back
+                SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_IGNORE);
+                SDL_WarpMouseGlobal((_game.getScreen().getWidth() - 100) / 2, _game.getScreen().getHeight() / 2);
+                SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_ENABLE);
+            }
 
-		    // Check the threshold
-		    _totalMouseMoveX += action.getDetails().motion.xrel;
-		    _totalMouseMoveY += action.getDetails().motion.yrel;
+            // Check the threshold
+            _totalMouseMoveX += action.getDetails().motion.xrel;
+            _totalMouseMoveY += action.getDetails().motion.yrel;
 
-		    if (!_mouseMovedOverThreshold)
-			    _mouseMovedOverThreshold = ((Math.Abs(_totalMouseMoveX) > Options.dragScrollPixelTolerance) || (Math.Abs(_totalMouseMoveY) > Options.dragScrollPixelTolerance));
+            if (!_mouseMovedOverThreshold)
+                _mouseMovedOverThreshold = ((Math.Abs(_totalMouseMoveX) > Options.dragScrollPixelTolerance) || (Math.Abs(_totalMouseMoveY) > Options.dragScrollPixelTolerance));
 
-		    // Scrolling
-		    if (Options.geoDragScrollInvert)
-		    {
-			    double newLon = ((double)_totalMouseMoveX / action.getXScale()) * ROTATE_LONGITUDE/(_zoom+1)/2;
-			    double newLat = ((double)_totalMouseMoveY / action.getYScale()) * ROTATE_LATITUDE/(_zoom+1)/2;
-			    center(_lonBeforeMouseScrolling + newLon / (Options.geoScrollSpeed / 10), _latBeforeMouseScrolling + newLat / (Options.geoScrollSpeed / 10));
-		    }
-		    else
-		    {
-			    double newLon = -action.getDetails().motion.xrel * ROTATE_LONGITUDE/(_zoom+1)/2;
-			    double newLat = -action.getDetails().motion.yrel * ROTATE_LATITUDE/(_zoom+1)/2;
-			    center(_cenLon + newLon / (Options.geoScrollSpeed / 10), _cenLat + newLat / (Options.geoScrollSpeed / 10));
-		    }
+            // Scrolling
+            if (Options.geoDragScrollInvert)
+            {
+                double newLon = ((double)_totalMouseMoveX / action.getXScale()) * ROTATE_LONGITUDE / (_zoom + 1) / 2;
+                double newLat = ((double)_totalMouseMoveY / action.getYScale()) * ROTATE_LATITUDE / (_zoom + 1) / 2;
+                center(_lonBeforeMouseScrolling + newLon / (Options.geoScrollSpeed / 10), _latBeforeMouseScrolling + newLat / (Options.geoScrollSpeed / 10));
+            }
+            else
+            {
+                double newLon = -action.getDetails().motion.xrel * ROTATE_LONGITUDE / (_zoom + 1) / 2;
+                double newLat = -action.getDetails().motion.yrel * ROTATE_LATITUDE / (_zoom + 1) / 2;
+                center(_cenLon + newLon / (Options.geoScrollSpeed / 10), _cenLat + newLat / (Options.geoScrollSpeed / 10));
+            }
 
-		    if (Options.touchEnabled == false)
-		    {
-			    // We don't want to see the mouse-cursor jumping :)
-			    action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
-			    action.getDetails().motion.x = _xBeforeMouseScrolling; action.getDetails().motion.y = _yBeforeMouseScrolling;
-		    }
+            if (Options.touchEnabled == false)
+            {
+                // We don't want to see the mouse-cursor jumping :)
+                action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
+                action.getDetails().motion.x = _xBeforeMouseScrolling; action.getDetails().motion.y = _yBeforeMouseScrolling;
+            }
 
-		    _game.getCursor().handle(action);
-	    }
+            _game.getCursor().handle(action);
+        }
 
-	    if (Options.touchEnabled == false &&
-		    _isMouseScrolling &&
-		    (action.getDetails().motion.x != _xBeforeMouseScrolling ||
-		    action.getDetails().motion.y != _yBeforeMouseScrolling))
-	    {
-		    action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
-		    action.getDetails().motion.x = _xBeforeMouseScrolling; action.getDetails().motion.y = _yBeforeMouseScrolling;
-	    }
-	    // Check for errors
-	    //if (lat == lat && lon == lon)
-	    //{
-		    base.mouseOver(action, state);
-	    //}
+        if (Options.touchEnabled == false &&
+            _isMouseScrolling &&
+            (action.getDetails().motion.x != _xBeforeMouseScrolling ||
+            action.getDetails().motion.y != _yBeforeMouseScrolling))
+        {
+            action.setMouseAction(_xBeforeMouseScrolling, _yBeforeMouseScrolling, getX(), getY());
+            action.getDetails().motion.x = _xBeforeMouseScrolling; action.getDetails().motion.y = _yBeforeMouseScrolling;
+        }
+        // Check for errors
+        //if (lat == lat && lon == lon)
+        //{
+        base.mouseOver(action, state);
+        //}
     }
 
     /**
@@ -1839,15 +1849,15 @@ internal class Globe : InteractiveSurface
      */
     protected override void keyboardPress(Action action, State state)
     {
-	    base.keyboardPress(action, state);
-	    if (action.getDetails().key.keysym.sym == Options.keyGeoToggleDetail)
-	    {
-		    toggleDetail();
-	    }
-	    if (action.getDetails().key.keysym.sym == Options.keyGeoToggleRadar)
-	    {
-		    toggleRadarLines();
-	    }
+        base.keyboardPress(action, state);
+        if (action.getDetails().key.keysym.sym == Options.keyGeoToggleDetail)
+        {
+            toggleDetail();
+        }
+        if (action.getDetails().key.keysym.sym == Options.keyGeoToggleRadar)
+        {
+            toggleRadarLines();
+        }
     }
 
     /**
@@ -1856,8 +1866,8 @@ internal class Globe : InteractiveSurface
      */
     void toggleDetail()
     {
-	    Options.globeDetail = !Options.globeDetail;
-	    drawDetail();
+        Options.globeDetail = !Options.globeDetail;
+        drawDetail();
     }
 
     /*
@@ -1865,8 +1875,8 @@ internal class Globe : InteractiveSurface
      */
     void toggleRadarLines()
     {
-	    Options.globeRadarLines = !Options.globeRadarLines;
-	    drawRadars();
+        Options.globeRadarLines = !Options.globeRadarLines;
+        drawRadars();
     }
 
     /**
@@ -1877,13 +1887,13 @@ internal class Globe : InteractiveSurface
      */
     internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-	    base.setPalette(colors, firstcolor, ncolors);
+        base.setPalette(colors, firstcolor, ncolors);
 
-	    _texture.setPalette(colors, firstcolor, ncolors);
-	    _markerSet.setPalette(colors, firstcolor, ncolors);
+        _texture.setPalette(colors, firstcolor, ncolors);
+        _markerSet.setPalette(colors, firstcolor, ncolors);
 
-	    _countries.setPalette(colors, firstcolor, ncolors);
-	    _markers.setPalette(colors, firstcolor, ncolors);
-	    _radars.setPalette(colors, firstcolor, ncolors);
+        _countries.setPalette(colors, firstcolor, ncolors);
+        _markers.setPalette(colors, firstcolor, ncolors);
+        _radars.setPalette(colors, firstcolor, ncolors);
     }
 }

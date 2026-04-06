@@ -454,42 +454,42 @@ internal class BattleUnit
      */
     /// Get armor value.
     internal int getArmor(UnitSide side) =>
-	    _currentArmor[(int)side];
+        _currentArmor[(int)side];
 
     /**
      * Gets the unit's armor.
      * @return Pointer to armor.
      */
     internal Armor getArmor() =>
-	    _armor;
+        _armor;
 
     /**
      * Gets the BattleUnit's position.
      * @return position
      */
     internal Position getPosition() =>
-	    _pos;
+        _pos;
 
     /**
      * Returns the soldier's amount of time units.
      * @return Time units.
      */
     internal int getTimeUnits() =>
-	    _tu;
+        _tu;
 
     /**
      * Is kneeled down?
      * @return true/false
      */
     internal bool isKneeled() =>
-	    _kneeled;
+        _kneeled;
 
     /**
      * Returns the soldier's amount of energy.
      * @return Energy.
      */
     internal int getEnergy() =>
-	    _energy;
+        _energy;
 
     /**
      * Get the number of time units a certain action takes.
@@ -566,7 +566,7 @@ internal class BattleUnit
      * @return unit type.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
 	 * Checks if there's an inventory item in
@@ -577,42 +577,42 @@ internal class BattleUnit
 	 * @return Item in the slot, or NULL if none.
 	 */
     internal BattleItem getItem(string slot, int x = 0, int y = 0)
-	{
-		// Soldier items
-		if (slot != "STR_GROUND")
-		{
-			foreach (var item in _inventory)
-			{
-				if (item.getSlot() != null && item.getSlot().getId() == slot && item.occupiesSlot(x, y))
-				{
-					return item;
-				}
-			}
-		}
-		// Ground items
-		else if (_tile != null)
-		{
-			foreach (var item in _tile.getInventory())
-			{
-				if (item.getSlot() != null && item.occupiesSlot(x, y))
-				{
-					return item;
-				}
-			}
-		}
-		return null;
-	}
+    {
+        // Soldier items
+        if (slot != "STR_GROUND")
+        {
+            foreach (var item in _inventory)
+            {
+                if (item.getSlot() != null && item.getSlot().getId() == slot && item.occupiesSlot(x, y))
+                {
+                    return item;
+                }
+            }
+        }
+        // Ground items
+        else if (_tile != null)
+        {
+            foreach (var item in _tile.getInventory())
+            {
+                if (item.getSlot() != null && item.occupiesSlot(x, y))
+                {
+                    return item;
+                }
+            }
+        }
+        return null;
+    }
 
-	/**
+    /**
 	 * Get unit's active hand.
 	 * @return active hand.
 	 */
-	internal string getActiveHand()
-	{
-		if (getItem(_activeHand) != null) return _activeHand;
-		if (getItem("STR_LEFT_HAND") != null) return "STR_LEFT_HAND";
-		return "STR_RIGHT_HAND";
-	}
+    internal string getActiveHand()
+    {
+        if (getItem(_activeHand) != null) return _activeHand;
+        if (getItem("STR_LEFT_HAND") != null) return "STR_LEFT_HAND";
+        return "STR_RIGHT_HAND";
+    }
 
     /**
      * Get the "main hand weapon" from the unit.
@@ -621,78 +621,78 @@ internal class BattleUnit
      */
     internal BattleItem getMainHandWeapon(bool quickest = true)
     {
-	    BattleItem weaponRightHand = getItem("STR_RIGHT_HAND");
+        BattleItem weaponRightHand = getItem("STR_RIGHT_HAND");
         BattleItem weaponLeftHand = getItem("STR_LEFT_HAND");
 
-	    // ignore weapons without ammo (rules out grenades)
-	    if (weaponRightHand == null || weaponRightHand.getAmmoItem() == null || weaponRightHand.getAmmoItem().getAmmoQuantity() == 0)
-		    weaponRightHand = null;
-	    if (weaponLeftHand == null || weaponLeftHand.getAmmoItem() == null || weaponLeftHand.getAmmoItem().getAmmoQuantity() == 0)
-		    weaponLeftHand = null;
+        // ignore weapons without ammo (rules out grenades)
+        if (weaponRightHand == null || weaponRightHand.getAmmoItem() == null || weaponRightHand.getAmmoItem().getAmmoQuantity() == 0)
+            weaponRightHand = null;
+        if (weaponLeftHand == null || weaponLeftHand.getAmmoItem() == null || weaponLeftHand.getAmmoItem().getAmmoQuantity() == 0)
+            weaponLeftHand = null;
 
-	    // if there is only one weapon, it's easy:
-	    if (weaponRightHand != null && weaponLeftHand == null)
-		    return weaponRightHand;
-	    else if (weaponRightHand == null && weaponLeftHand != null)
-		    return weaponLeftHand;
-	    else if (weaponRightHand == null && weaponLeftHand == null)
-		    return null;
+        // if there is only one weapon, it's easy:
+        if (weaponRightHand != null && weaponLeftHand == null)
+            return weaponRightHand;
+        else if (weaponRightHand == null && weaponLeftHand != null)
+            return weaponLeftHand;
+        else if (weaponRightHand == null && weaponLeftHand == null)
+            return null;
 
-	    // otherwise pick the one with the least snapshot TUs
-	    int tuRightHand = weaponRightHand.getRules().getTUSnap();
-	    int tuLeftHand = weaponLeftHand.getRules().getTUSnap();
-	    BattleItem weaponCurrentHand = getItem(getActiveHand());
-	    //prioritize blasters
-	    if (!quickest && _faction != UnitFaction.FACTION_PLAYER)
-	    {
-		    if (weaponRightHand.getRules().getWaypoints() != 0 || weaponRightHand.getAmmoItem().getRules().getWaypoints() != 0)
-		    {
-			    return weaponRightHand;
-		    }
-		    if (weaponLeftHand.getRules().getWaypoints() != 0 || weaponLeftHand.getAmmoItem().getRules().getWaypoints() != 0)
-		    {
-			    return weaponLeftHand;
-		    }
-	    }
-	    // if only one weapon has snapshot, pick that one
-	    if (tuLeftHand <= 0 && tuRightHand > 0)
-		    return weaponRightHand;
-	    else if (tuRightHand <= 0 && tuLeftHand > 0)
-		    return weaponLeftHand;
-	    // else pick the better one
-	    else
-	    {
-		    if (tuLeftHand >= tuRightHand)
-		    {
-			    if (quickest)
-			    {
-				    return weaponRightHand;
-			    }
-			    else if (_faction == UnitFaction.FACTION_PLAYER)
-			    {
-				    return weaponCurrentHand;
-			    }
-			    else
-			    {
-				    return weaponLeftHand;
-			    }
-		    }
-		    else
-		    {
-			    if (quickest)
-			    {
-				    return weaponLeftHand;
-			    }
-			    else if (_faction == UnitFaction.FACTION_PLAYER)
-			    {
-				    return weaponCurrentHand;
-			    }
-			    else
-			    {
-				    return weaponRightHand;
-			    }
-		    }
-	    }
+        // otherwise pick the one with the least snapshot TUs
+        int tuRightHand = weaponRightHand.getRules().getTUSnap();
+        int tuLeftHand = weaponLeftHand.getRules().getTUSnap();
+        BattleItem weaponCurrentHand = getItem(getActiveHand());
+        //prioritize blasters
+        if (!quickest && _faction != UnitFaction.FACTION_PLAYER)
+        {
+            if (weaponRightHand.getRules().getWaypoints() != 0 || weaponRightHand.getAmmoItem().getRules().getWaypoints() != 0)
+            {
+                return weaponRightHand;
+            }
+            if (weaponLeftHand.getRules().getWaypoints() != 0 || weaponLeftHand.getAmmoItem().getRules().getWaypoints() != 0)
+            {
+                return weaponLeftHand;
+            }
+        }
+        // if only one weapon has snapshot, pick that one
+        if (tuLeftHand <= 0 && tuRightHand > 0)
+            return weaponRightHand;
+        else if (tuRightHand <= 0 && tuLeftHand > 0)
+            return weaponLeftHand;
+        // else pick the better one
+        else
+        {
+            if (tuLeftHand >= tuRightHand)
+            {
+                if (quickest)
+                {
+                    return weaponRightHand;
+                }
+                else if (_faction == UnitFaction.FACTION_PLAYER)
+                {
+                    return weaponCurrentHand;
+                }
+                else
+                {
+                    return weaponLeftHand;
+                }
+            }
+            else
+            {
+                if (quickest)
+                {
+                    return weaponLeftHand;
+                }
+                else if (_faction == UnitFaction.FACTION_PLAYER)
+                {
+                    return weaponCurrentHand;
+                }
+                else
+                {
+                    return weaponRightHand;
+                }
+            }
+        }
     }
 
     /**
@@ -700,42 +700,42 @@ internal class BattleUnit
      * @return Faction. (player, hostile or neutral)
      */
     internal UnitFaction getFaction() =>
-	    _faction;
+        _faction;
 
     /**
      * Returns the current AI state.
      * @return Pointer to AI state.
      */
     internal AIModule getAIModule() =>
-	    _currentAIState;
+        _currentAIState;
 
     /**
      * Get the number of turns an AI unit remembers a soldier's position.
      * @return intelligence.
      */
     internal int getIntelligence() =>
-	    _intelligence;
+        _intelligence;
 
     /**
      * Get this unit's original Faction.
      * @return original faction
      */
     internal UnitFaction getOriginalFaction() =>
-	    _originalFaction;
+        _originalFaction;
 
     /**
      * Gets the BattleUnit's (horizontal) direction.
      * @return horizontal direction
      */
     internal int getDirection() =>
-	    _direction;
+        _direction;
 
     /**
      * Get the list of units spotted this turn.
      * @return List of units.
      */
     internal List<BattleUnit> getUnitsSpottedThisTurn() =>
-	    _unitsSpottedThisTurn;
+        _unitsSpottedThisTurn;
 
     /**
      * Returns whether the soldier is out of combat, dead or unconscious.
@@ -743,7 +743,7 @@ internal class BattleUnit
      * @return flag if out or not.
      */
     internal bool isOut() =>
-	    _status == UnitStatus.STATUS_DEAD || _status == UnitStatus.STATUS_UNCONSCIOUS || _status == UnitStatus.STATUS_IGNORE_ME;
+        _status == UnitStatus.STATUS_DEAD || _status == UnitStatus.STATUS_UNCONSCIOUS || _status == UnitStatus.STATUS_IGNORE_ME;
 
     /**
      * Get whether this unit is visible.
@@ -751,14 +751,14 @@ internal class BattleUnit
      */
     internal bool getVisible()
     {
-	    if (getFaction() == UnitFaction.FACTION_PLAYER)
-	    {
-		    return true;
-	    }
-	    else
-	    {
+        if (getFaction() == UnitFaction.FACTION_PLAYER)
+        {
+            return true;
+        }
+        else
+        {
             return _visible;
-	    }
+        }
     }
 
     /**
@@ -773,27 +773,27 @@ internal class BattleUnit
       * @return The unit's height in voxels, when kneeling.
       */
     int getKneelHeight() =>
-	    _kneelHeight;
+        _kneelHeight;
 
     /**
       * Get the unit's stand height.
       * @return The unit's height in voxels, when standing up.
       */
     internal int getStandHeight() =>
-	    _standHeight;
+        _standHeight;
 
     /**
       * Get the unit's floating elevation.
       * @return The unit's elevation over the ground in voxels, when flying.
       */
     internal int getFloatHeight() =>
-	    _floatHeight;
+        _floatHeight;
 
     /**
      * use this instead of checking the rules of the armor.
      */
     internal MovementType getMovementType() =>
-	    _movementType;
+        _movementType;
 
     /**
      * Returns the unit's special ability.
@@ -807,14 +807,14 @@ internal class BattleUnit
      * @return int murderer id.
      */
     internal int getMurdererId() =>
-	    _murdererId;
+        _murdererId;
 
     /**
      * Gets the unit's status.
      * @return the unit's status
      */
     internal UnitStatus getStatus() =>
-	    _status;
+        _status;
 
     /**
      * Morale change with bounds check.
@@ -837,28 +837,28 @@ internal class BattleUnit
      * @return Is the unit affected by morale?
      */
     bool isFearable() =>
-	    (_armor.getSize() == 1);
+        (_armor.getSize() == 1);
 
     /**
      * Return the numeric version of the unit's rank.
      * @return unit rank, 0 = lowest
      */
     internal int getRankInt() =>
-	    _rankInt;
+        _rankInt;
 
     /**
      * Get the geoscape-soldier object.
      * @return soldier.
      */
     internal Soldier getGeoscapeSoldier() =>
-	    _geoscapeSoldier;
+        _geoscapeSoldier;
 
     /**
      * Returns the BattleUnit's unique ID.
      * @return Unique ID.
      */
     internal int getId() =>
-	    _id;
+        _id;
 
     /**
      * Get the unit's statistics.
@@ -872,10 +872,10 @@ internal class BattleUnit
      * @return Health.
      */
     internal int getHealth() =>
-	    _health;
+        _health;
 
     internal int getStunlevel() =>
-	    _stunlevel;
+        _stunlevel;
 
     internal Unit getUnitRules() =>
         _unitRules;
@@ -892,28 +892,28 @@ internal class BattleUnit
      * @return int murderer weapon.
      */
     internal string getMurdererWeapon() =>
-	    _murdererWeapon;
+        _murdererWeapon;
 
     /**
      * Gets the unit murderer's weapon's ammo.
      * @return int murderer weapon ammo.
      */
     internal string getMurdererWeaponAmmo() =>
-	    _murdererWeaponAmmo;
+        _murdererWeaponAmmo;
 
     /**
      * Gets the unit mind controller's id.
      * @return int mind controller id.
      */
     internal int getMindControllerId() =>
-	    _mindControllerID;
+        _mindControllerID;
 
     /**
      * Get information on the unit's fatal shot's side.
      * @return UnitSide fatal shot's side.
      */
     internal UnitSide getFatalShotSide() =>
-	    _fatalShotSide;
+        _fatalShotSide;
 
     /**
      * Get information on the unit's fatal shot's body part.
@@ -947,14 +947,14 @@ internal class BattleUnit
      */
     internal BattleItem getSpecialWeapon(BattleType type)
     {
-	    for (int i = 0; i < SPEC_WEAPON_MAX; ++i)
-	    {
-		    if (_specWeapon[i] != null && _specWeapon[i].getRules().getBattleType() == type)
-		    {
-			    return _specWeapon[i];
-		    }
-	    }
-	    return null;
+        for (int i = 0; i < SPEC_WEAPON_MAX; ++i)
+        {
+            if (_specWeapon[i] != null && _specWeapon[i].getRules().getBattleType() == type)
+            {
+                return _specWeapon[i];
+            }
+        }
+        return null;
     }
 
     /**
@@ -1050,7 +1050,7 @@ internal class BattleUnit
      * @return True if an inventory is available, false otherwise.
      */
     internal bool hasInventory() =>
-	    (_armor.hasInventory());
+        (_armor.hasInventory());
 
     /**
      * Sets the unit's tile it's standing on
@@ -1139,7 +1139,7 @@ internal class BattleUnit
      * @return Tile
      */
     internal Tile getTile() =>
-	    _tile;
+        _tile;
 
     /**
      * Set whether this unit is visible.
@@ -1202,14 +1202,14 @@ internal class BattleUnit
       * @return type
       */
     internal int getTurretType() =>
-	    _turretType;
+        _turretType;
 
     /**
      * Gets the BattleUnit's turret direction.
      * @return direction
      */
     internal int getTurretDirection() =>
-	    _directionTurret;
+        _directionTurret;
 
     /**
       * Get the unit's loft ID, one per unit tile.
@@ -1278,39 +1278,39 @@ internal class BattleUnit
             { "moraleRestored", _moraleRestored.ToString() }
         };
         if (getAIModule() != null)
-	    {
+        {
             node.Add("AI", getAIModule().save());
-	    }
+        }
         node.Add("killedBy", ((int)_killedBy).ToString());
-	    if (_originalFaction != _faction)
-		    node.Add("originalFaction", ((int)_originalFaction).ToString());
+        if (_originalFaction != _faction)
+            node.Add("originalFaction", ((int)_originalFaction).ToString());
         if (_kills != 0)
             node.Add("kills", _kills.ToString());
-	    if (_faction == UnitFaction.FACTION_PLAYER && _dontReselect)
-		    node.Add("dontReselect", _dontReselect.ToString());
-	    if (!string.IsNullOrEmpty(_spawnUnit))
-		    node.Add("spawnUnit", _spawnUnit);
-	    node.Add("motionPoints", _motionPoints.ToString());
-	    node.Add("respawn", _respawn.ToString());
-	    node.Add("activeHand", _activeHand);
+        if (_faction == UnitFaction.FACTION_PLAYER && _dontReselect)
+            node.Add("dontReselect", _dontReselect.ToString());
+        if (!string.IsNullOrEmpty(_spawnUnit))
+            node.Add("spawnUnit", _spawnUnit);
+        node.Add("motionPoints", _motionPoints.ToString());
+        node.Add("respawn", _respawn.ToString());
+        node.Add("activeHand", _activeHand);
         node.Add("tempUnitStatistics", _statistics.save());
-	    node.Add("murdererId", _murdererId.ToString());
-	    node.Add("fatalShotSide", ((int)_fatalShotSide).ToString());
-	    node.Add("fatalShotBodyPart", ((int)_fatalShotBodyPart).ToString());
-	    node.Add("murdererWeapon", _murdererWeapon);
+        node.Add("murdererId", _murdererId.ToString());
+        node.Add("fatalShotSide", ((int)_fatalShotSide).ToString());
+        node.Add("fatalShotBodyPart", ((int)_fatalShotBodyPart).ToString());
+        node.Add("murdererWeapon", _murdererWeapon);
         node.Add("murdererWeaponAmmo", _murdererWeaponAmmo);
 
         node.Add("recolor", new YamlSequenceNode());
         for (var i = 0; i < _recolor.Count; ++i)
-	    {
+        {
             var p = new YamlSequenceNode
             {
                 ((int)_recolor[i].Key).ToString(),
                 ((int)_recolor[i].Value).ToString()
             };
             ((YamlSequenceNode)node["recolor"]).Add(p);
-	    }
-	    node.Add("mindControllerID", _mindControllerID.ToString());
+        }
+        node.Add("mindControllerID", _mindControllerID.ToString());
 
         return node;
     }
@@ -1320,7 +1320,7 @@ internal class BattleUnit
      * @return fire : amount of turns this tile is on fire.
      */
     internal int getFire() =>
-	    _fire;
+        _fire;
 
     /**
       * Set the turret type. -1 is no turret.
@@ -1348,24 +1348,24 @@ internal class BattleUnit
      */
     void adjustStats(StatAdjustment adjustment)
     {
-	    _stats.tu += adjustment.statGrowth.tu * adjustment.growthMultiplier * _stats.tu / 100;
-	    _stats.stamina += adjustment.statGrowth.stamina * adjustment.growthMultiplier * _stats.stamina / 100;
-	    _stats.health += adjustment.statGrowth.health * adjustment.growthMultiplier * _stats.health / 100;
-	    _stats.bravery += adjustment.statGrowth.bravery * adjustment.growthMultiplier * _stats.bravery / 100;
-	    _stats.reactions += adjustment.statGrowth.reactions * adjustment.growthMultiplier * _stats.reactions / 100;
-	    _stats.firing += adjustment.statGrowth.firing * adjustment.growthMultiplier * _stats.firing / 100;
-	    _stats.throwing += adjustment.statGrowth.throwing * adjustment.growthMultiplier * _stats.throwing / 100;
-	    _stats.strength += adjustment.statGrowth.strength * adjustment.growthMultiplier * _stats.strength / 100;
-	    _stats.psiStrength += adjustment.statGrowth.psiStrength * adjustment.growthMultiplier * _stats.psiStrength / 100;
-	    _stats.psiSkill += adjustment.statGrowth.psiSkill * adjustment.growthMultiplier * _stats.psiSkill / 100;
-	    _stats.melee += adjustment.statGrowth.melee * adjustment.growthMultiplier * _stats.melee / 100;
+        _stats.tu += adjustment.statGrowth.tu * adjustment.growthMultiplier * _stats.tu / 100;
+        _stats.stamina += adjustment.statGrowth.stamina * adjustment.growthMultiplier * _stats.stamina / 100;
+        _stats.health += adjustment.statGrowth.health * adjustment.growthMultiplier * _stats.health / 100;
+        _stats.bravery += adjustment.statGrowth.bravery * adjustment.growthMultiplier * _stats.bravery / 100;
+        _stats.reactions += adjustment.statGrowth.reactions * adjustment.growthMultiplier * _stats.reactions / 100;
+        _stats.firing += adjustment.statGrowth.firing * adjustment.growthMultiplier * _stats.firing / 100;
+        _stats.throwing += adjustment.statGrowth.throwing * adjustment.growthMultiplier * _stats.throwing / 100;
+        _stats.strength += adjustment.statGrowth.strength * adjustment.growthMultiplier * _stats.strength / 100;
+        _stats.psiStrength += adjustment.statGrowth.psiStrength * adjustment.growthMultiplier * _stats.psiStrength / 100;
+        _stats.psiSkill += adjustment.statGrowth.psiSkill * adjustment.growthMultiplier * _stats.psiSkill / 100;
+        _stats.melee += adjustment.statGrowth.melee * adjustment.growthMultiplier * _stats.melee / 100;
 
-	    _stats.firing = (int)(_stats.firing * adjustment.aimAndArmorMultiplier);
-	    _maxArmor[0] = (int)(_maxArmor[0] * adjustment.aimAndArmorMultiplier);
-	    _maxArmor[1] = (int)(_maxArmor[1] * adjustment.aimAndArmorMultiplier);
-	    _maxArmor[2] = (int)(_maxArmor[2] * adjustment.aimAndArmorMultiplier);
-	    _maxArmor[3] = (int)(_maxArmor[3] * adjustment.aimAndArmorMultiplier);
-	    _maxArmor[4] = (int)(_maxArmor[4] * adjustment.aimAndArmorMultiplier);
+        _stats.firing = (int)(_stats.firing * adjustment.aimAndArmorMultiplier);
+        _maxArmor[0] = (int)(_maxArmor[0] * adjustment.aimAndArmorMultiplier);
+        _maxArmor[1] = (int)(_maxArmor[1] * adjustment.aimAndArmorMultiplier);
+        _maxArmor[2] = (int)(_maxArmor[2] * adjustment.aimAndArmorMultiplier);
+        _maxArmor[3] = (int)(_maxArmor[3] * adjustment.aimAndArmorMultiplier);
+        _maxArmor[4] = (int)(_maxArmor[4] * adjustment.aimAndArmorMultiplier);
     }
 
     /**
@@ -1376,22 +1376,22 @@ internal class BattleUnit
      */
     void setRecolor(int basicLook, int utileLook, int rankLook)
     {
-	    const int colorsMax = 4;
-	    KeyValuePair<int, int>[] colors =
-	    {
-		    KeyValuePair.Create(_armor.getFaceColorGroup(), _armor.getFaceColor(basicLook)),
-		    KeyValuePair.Create(_armor.getHairColorGroup(), _armor.getHairColor(basicLook)),
-		    KeyValuePair.Create(_armor.getUtileColorGroup(), _armor.getUtileColor(utileLook)),
-		    KeyValuePair.Create(_armor.getRankColorGroup(), _armor.getRankColor(rankLook)),
-	    };
+        const int colorsMax = 4;
+        KeyValuePair<int, int>[] colors =
+        {
+            KeyValuePair.Create(_armor.getFaceColorGroup(), _armor.getFaceColor(basicLook)),
+            KeyValuePair.Create(_armor.getHairColorGroup(), _armor.getHairColor(basicLook)),
+            KeyValuePair.Create(_armor.getUtileColorGroup(), _armor.getUtileColor(utileLook)),
+            KeyValuePair.Create(_armor.getRankColorGroup(), _armor.getRankColor(rankLook)),
+        };
 
-	    for (int i = 0; i < colorsMax; ++i)
-	    {
-		    if (colors[i].Key > 0 && colors[i].Value > 0)
-		    {
-			    _recolor.Add(KeyValuePair.Create((byte)(colors[i].Key << 4), (byte)colors[i].Value));
-		    }
-	    }
+        for (int i = 0; i < colorsMax; ++i)
+        {
+            if (colors[i].Key > 0 && colors[i].Value > 0)
+            {
+                _recolor.Add(KeyValuePair.Create((byte)(colors[i].Key << 4), (byte)colors[i].Value));
+            }
+        }
     }
 
     /**
@@ -1400,10 +1400,10 @@ internal class BattleUnit
      */
     internal int getFatalWounds()
     {
-	    int sum = 0;
-	    for (int i = 0; i < 6; ++i)
-		    sum += _fatalWounds[i];
-	    return sum;
+        int sum = 0;
+        for (int i = 0; i < 6; ++i)
+            sum += _fatalWounds[i];
+        return sum;
     }
 
     /**
@@ -1547,7 +1547,7 @@ internal class BattleUnit
      * @return Is the unit affected by wounds?
      */
     internal bool isWoundable() =>
-	    (_type=="SOLDIER" || (Options.alienBleeding && _originalFaction != UnitFaction.FACTION_PLAYER && _armor.getSize() == 1));
+        (_type == "SOLDIER" || (Options.alienBleeding && _originalFaction != UnitFaction.FACTION_PLAYER && _armor.getSize() == 1));
 
     /**
      * Set the armor value of a certain armor side.
@@ -1594,13 +1594,13 @@ internal class BattleUnit
     * Set health to 0 - used when getting killed unconscious.
     */
     internal void kill() =>
-	    _health = 0;
+        _health = 0;
 
     /**
      * Gets whether this unit can be captured alive (applies to aliens).
      */
     internal bool getCapturable() =>
-	    _capturable;
+        _capturable;
 
     /**
      * Check if this unit is in the exit area.
@@ -1608,7 +1608,7 @@ internal class BattleUnit
      * @return Is in the exit area?
      */
     internal bool isInExitArea(SpecialTileType stt = SpecialTileType.START_POINT) =>
-	    _tile != null && _tile.getMapData(TilePart.O_FLOOR) != null && (_tile.getMapData(TilePart.O_FLOOR).getSpecialType() == stt);
+        _tile != null && _tile.getMapData(TilePart.O_FLOOR) != null && (_tile.getMapData(TilePart.O_FLOOR).getSpecialType() == stt);
 
     /**
      * Get unit's name.
@@ -1620,23 +1620,23 @@ internal class BattleUnit
      */
     internal string getName(Language lang, bool debugAppendId = false)
     {
-	    if (_type != "SOLDIER" && lang != null)
-	    {
-		    var ret = new StringBuilder();
+        if (_type != "SOLDIER" && lang != null)
+        {
+            var ret = new StringBuilder();
 
-		    if (_type.Contains("STR_"))
-			    ret.Append(lang.getString(_type));
-		    else
-			    ret.Append(lang.getString(_race));
+            if (_type.Contains("STR_"))
+                ret.Append(lang.getString(_type));
+            else
+                ret.Append(lang.getString(_race));
 
-		    if (debugAppendId)
-		    {
-			    ret.Append($" {_id}");
-		    }
-		    return ret.ToString();
-	    }
+            if (debugAppendId)
+            {
+                ret.Append($" {_id}");
+            }
+            return ret.ToString();
+        }
 
-	    return _name;
+        return _name;
     }
 
     /**
@@ -1644,7 +1644,7 @@ internal class BattleUnit
      * @return Morale.
      */
     internal int getMorale() =>
-	    _morale;
+        _morale;
 
     /**
      * Get the units carried weight in strength units.
@@ -1653,14 +1653,14 @@ internal class BattleUnit
      */
     internal int getCarriedWeight(BattleItem draggingItem = null)
     {
-	    int weight = _armor.getWeight();
-	    foreach (var i in _inventory)
-	    {
-		    if (i == draggingItem) continue;
-		    weight += i.getRules().getWeight();
-		    if (i.getAmmoItem() != i && i.getAmmoItem() != null) weight += i.getAmmoItem().getRules().getWeight();
-	    }
-	    return Math.Max(0,weight);
+        int weight = _armor.getWeight();
+        foreach (var i in _inventory)
+        {
+            if (i == draggingItem) continue;
+            weight += i.getRules().getWeight();
+            if (i.getAmmoItem() != i && i.getAmmoItem() != null) weight += i.getAmmoItem().getRules().getWeight();
+        }
+        return Math.Max(0, weight);
     }
 
     /**
@@ -1669,30 +1669,30 @@ internal class BattleUnit
      */
     internal void setSpecialWeapon(SavedBattleGame save, Mod.Mod mod)
     {
-	    RuleItem item = null;
-	    int i = 0;
+        RuleItem item = null;
+        int i = 0;
 
-	    if (getUnitRules() != null)
-	    {
-		    item = mod.getItem(getUnitRules().getMeleeWeapon());
-		    if (item != null)
-		    {
-			    _specWeapon[i++] = createItem(save, this, item);
-		    }
-	    }
-	    item = mod.getItem(getArmor().getSpecialWeapon());
-	    if (item != null)
-	    {
-		    _specWeapon[i++] = createItem(save, this, item);
-	    }
-	    if (getBaseStats().psiSkill > 0 && getOriginalFaction() == UnitFaction.FACTION_HOSTILE)
-	    {
-		    item = mod.getItem(getUnitRules().getPsiWeapon());
-		    if (item != null)
-		    {
-			    _specWeapon[i++] = createItem(save, this, item);
-		    }
-	    }
+        if (getUnitRules() != null)
+        {
+            item = mod.getItem(getUnitRules().getMeleeWeapon());
+            if (item != null)
+            {
+                _specWeapon[i++] = createItem(save, this, item);
+            }
+        }
+        item = mod.getItem(getArmor().getSpecialWeapon());
+        if (item != null)
+        {
+            _specWeapon[i++] = createItem(save, this, item);
+        }
+        if (getBaseStats().psiSkill > 0 && getOriginalFaction() == UnitFaction.FACTION_HOSTILE)
+        {
+            item = mod.getItem(getUnitRules().getPsiWeapon());
+            if (item != null)
+            {
+                _specWeapon[i++] = createItem(save, this, item);
+            }
+        }
     }
 
     /**
@@ -1746,46 +1746,46 @@ internal class BattleUnit
      */
     internal int directionTo(Position point)
     {
-	    double ox = point.x - _pos.x;
-	    double oy = point.y - _pos.y;
-	    double angle = Math.Atan2(ox, -oy);
-	    // divide the pie in 4 angles each at 1/8th before each quarter
-	    double[] pie = {(M_PI_4 * 4.0) - M_PI_4 / 2.0, (M_PI_4 * 3.0) - M_PI_4 / 2.0, (M_PI_4 * 2.0) - M_PI_4 / 2.0, (M_PI_4 * 1.0) - M_PI_4 / 2.0};
-	    int dir = 0;
+        double ox = point.x - _pos.x;
+        double oy = point.y - _pos.y;
+        double angle = Math.Atan2(ox, -oy);
+        // divide the pie in 4 angles each at 1/8th before each quarter
+        double[] pie = { (M_PI_4 * 4.0) - M_PI_4 / 2.0, (M_PI_4 * 3.0) - M_PI_4 / 2.0, (M_PI_4 * 2.0) - M_PI_4 / 2.0, (M_PI_4 * 1.0) - M_PI_4 / 2.0 };
+        int dir = 0;
 
-	    if (angle > pie[0] || angle < -pie[0])
-	    {
-		    dir = 4;
-	    }
-	    else if (angle > pie[1])
-	    {
-		    dir = 3;
-	    }
-	    else if (angle > pie[2])
-	    {
-		    dir = 2;
-	    }
-	    else if (angle > pie[3])
-	    {
-		    dir = 1;
-	    }
-	    else if (angle < -pie[1])
-	    {
-		    dir = 5;
-	    }
-	    else if (angle < -pie[2])
-	    {
-		    dir = 6;
-	    }
-	    else if (angle < -pie[3])
-	    {
-		    dir = 7;
-	    }
-	    else if (angle < pie[0])
-	    {
-		    dir = 0;
-	    }
-	    return dir;
+        if (angle > pie[0] || angle < -pie[0])
+        {
+            dir = 4;
+        }
+        else if (angle > pie[1])
+        {
+            dir = 3;
+        }
+        else if (angle > pie[2])
+        {
+            dir = 2;
+        }
+        else if (angle > pie[3])
+        {
+            dir = 1;
+        }
+        else if (angle < -pie[1])
+        {
+            dir = 5;
+        }
+        else if (angle < -pie[2])
+        {
+            dir = 6;
+        }
+        else if (angle < -pie[3])
+        {
+            dir = 7;
+        }
+        else if (angle < pie[0])
+        {
+            dir = 0;
+        }
+        return dir;
     }
 
     /**
@@ -1795,7 +1795,7 @@ internal class BattleUnit
      * @return Is in the exit area?
      */
     internal bool liesInExitArea(Tile tile, SpecialTileType stt = SpecialTileType.START_POINT) =>
-	    tile != null && tile.getMapData(TilePart.O_FLOOR) != null && (tile.getMapData(TilePart.O_FLOOR).getSpecialType() == stt);
+        tile != null && tile.getMapData(TilePart.O_FLOOR) != null && (tile.getMapData(TilePart.O_FLOOR).getSpecialType() == stt);
 
     /**
      * Elevates the unit to grand galactic inquisitor status,
@@ -1822,7 +1822,7 @@ internal class BattleUnit
      * @return bool
      */
     internal bool reselectAllowed() =>
-	    !_dontReselect;
+        !_dontReselect;
 
     /**
      * Checks if this unit can be selected. Only alive units
@@ -1833,7 +1833,7 @@ internal class BattleUnit
      * @return True if the unit can be selected, false otherwise.
      */
     internal bool isSelectable(UnitFaction faction, bool checkReselect, bool checkInventory) =>
-	    (_faction == faction && !isOut() && (!checkReselect || reselectAllowed()) && (!checkInventory || hasInventory()));
+        (_faction == faction && !isOut() && (!checkReselect || reselectAllowed()) && (!checkInventory || hasInventory()));
 
     /**
      * Prepare for a new turn.
@@ -1981,29 +1981,29 @@ internal class BattleUnit
      */
     internal BattleItem getItem(RuleInventory slot, int x = 0, int y = 0)
     {
-	    // Soldier items
-	    if (slot.getType() != InventoryType.INV_GROUND)
-	    {
-		    foreach (var i in _inventory)
-		    {
-			    if (i.getSlot() == slot && i.occupiesSlot(x, y))
-			    {
-				    return i;
-			    }
-		    }
-	    }
-	    // Ground items
-	    else if (_tile != null)
-	    {
-		    foreach (var i in _tile.getInventory())
-		    {
-			    if (i.occupiesSlot(x, y))
-			    {
-				    return i;
-			    }
-		    }
-	    }
-	    return null;
+        // Soldier items
+        if (slot.getType() != InventoryType.INV_GROUND)
+        {
+            foreach (var i in _inventory)
+            {
+                if (i.getSlot() == slot && i.occupiesSlot(x, y))
+                {
+                    return i;
+                }
+            }
+        }
+        // Ground items
+        else if (_tile != null)
+        {
+            foreach (var i in _tile.getInventory())
+            {
+                if (i.occupiesSlot(x, y))
+                {
+                    return i;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -2030,21 +2030,21 @@ internal class BattleUnit
      * @return Amount of armor.
      */
     internal int getMaxArmor(UnitSide side) =>
-	    _maxArmor[(int)side];
+        _maxArmor[(int)side];
 
     /**
      * Get the units's rank string.
      * @return rank.
      */
     internal string getRankString() =>
-	    _rank;
+        _rank;
 
     /**
      * Get how long since this unit was exposed.
      * @return number of turns
      */
     internal int getTurnsSinceSpotted() =>
-	    _turnsSinceSpotted;
+        _turnsSinceSpotted;
 
     /**
      * did this unit already take fire damage this turn?
@@ -2052,13 +2052,13 @@ internal class BattleUnit
      * @return ow it burns
      */
     internal bool tookFireDamage() =>
-	    _hitByFire;
+        _hitByFire;
 
     /**
      * toggle the state of the fire damage tracking boolean.
      */
     internal void toggleFireDamage() =>
-	    _hitByFire = !_hitByFire;
+        _hitByFire = !_hitByFire;
 
     /**
      * Kneel down.
@@ -2066,8 +2066,8 @@ internal class BattleUnit
      */
     internal void kneel(bool kneeled)
     {
-	    _kneeled = kneeled;
-	    _cacheInvalid = true;
+        _kneeled = kneeled;
+        _cacheInvalid = true;
     }
 
     /**
@@ -2076,78 +2076,96 @@ internal class BattleUnit
      */
     internal void turn(bool turret = false)
     {
-	    int a = 0;
+        int a = 0;
 
-	    if (turret)
-	    {
-		    if (_directionTurret == _toDirectionTurret)
-		    {
-			    abortTurn();
-			    return;
-		    }
-		    a = _toDirectionTurret - _directionTurret;
-	    }
-	    else
-	    {
-		    if (_direction == _toDirection)
-		    {
-			    abortTurn();
-			    return;
-		    }
-		    a = _toDirection - _direction;
-	    }
+        if (turret)
+        {
+            if (_directionTurret == _toDirectionTurret)
+            {
+                abortTurn();
+                return;
+            }
+            a = _toDirectionTurret - _directionTurret;
+        }
+        else
+        {
+            if (_direction == _toDirection)
+            {
+                abortTurn();
+                return;
+            }
+            a = _toDirection - _direction;
+        }
 
-	    if (a != 0) {
-		    if (a > 0) {
-			    if (a <= 4) {
-				    if (!turret) {
-					    if (_turretType > -1)
-						    _directionTurret++;
-					    _direction++;
-				    } else _directionTurret++;
-			    } else {
-				    if (!turret) {
-					    if (_turretType > -1)
-						    _directionTurret--;
-					    _direction--;
-				    } else _directionTurret--;
-			    }
-		    } else {
-			    if (a > -4) {
-				    if (!turret) {
-					    if (_turretType > -1)
-						    _directionTurret--;
-					    _direction--;
-				    } else _directionTurret--;
-			    } else {
-				    if (!turret) {
-					    if (_turretType > -1)
-						    _directionTurret++;
-					    _direction++;
-				    } else _directionTurret++;
-			    }
-		    }
-		    if (_direction < 0) _direction = 7;
-		    if (_direction > 7) _direction = 0;
-		    if (_directionTurret < 0) _directionTurret = 7;
-		    if (_directionTurret > 7) _directionTurret = 0;
-		    if (_visible || _faction == UnitFaction.FACTION_PLAYER)
-			    _cacheInvalid = true;
-	    }
+        if (a != 0)
+        {
+            if (a > 0)
+            {
+                if (a <= 4)
+                {
+                    if (!turret)
+                    {
+                        if (_turretType > -1)
+                            _directionTurret++;
+                        _direction++;
+                    }
+                    else _directionTurret++;
+                }
+                else
+                {
+                    if (!turret)
+                    {
+                        if (_turretType > -1)
+                            _directionTurret--;
+                        _direction--;
+                    }
+                    else _directionTurret--;
+                }
+            }
+            else
+            {
+                if (a > -4)
+                {
+                    if (!turret)
+                    {
+                        if (_turretType > -1)
+                            _directionTurret--;
+                        _direction--;
+                    }
+                    else _directionTurret--;
+                }
+                else
+                {
+                    if (!turret)
+                    {
+                        if (_turretType > -1)
+                            _directionTurret++;
+                        _direction++;
+                    }
+                    else _directionTurret++;
+                }
+            }
+            if (_direction < 0) _direction = 7;
+            if (_direction > 7) _direction = 0;
+            if (_directionTurret < 0) _directionTurret = 7;
+            if (_directionTurret > 7) _directionTurret = 0;
+            if (_visible || _faction == UnitFaction.FACTION_PLAYER)
+                _cacheInvalid = true;
+        }
 
-	    if (turret)
-	    {
-		     if (_toDirectionTurret == _directionTurret)
-		     {
-			    // we officially reached our destination
-			    _status = UnitStatus.STATUS_STANDING;
-		     }
-	    }
-	    else if (_toDirection == _direction || _status == UnitStatus.STATUS_UNCONSCIOUS)
-	    {
-		    // we officially reached our destination
-		    _status = UnitStatus.STATUS_STANDING;
-	    }
+        if (turret)
+        {
+            if (_toDirectionTurret == _directionTurret)
+            {
+                // we officially reached our destination
+                _status = UnitStatus.STATUS_STANDING;
+            }
+        }
+        else if (_toDirection == _direction || _status == UnitStatus.STATUS_UNCONSCIOUS)
+        {
+            // we officially reached our destination
+            _status = UnitStatus.STATUS_STANDING;
+        }
     }
 
     /**
@@ -2156,7 +2174,7 @@ internal class BattleUnit
      * @return True if it needs to be re-cached.
      */
     internal bool isCacheInvalid() =>
-	    _cacheInvalid;
+        _cacheInvalid;
 
     /**
      * Returns the current cache surface.
@@ -2166,8 +2184,8 @@ internal class BattleUnit
      */
     internal Surface getCache(int part = 0)
     {
-	    if (part < 0) part = 0;
-	    return _cache[part];
+        if (part < 0) part = 0;
+        return _cache[part];
     }
 
     /**
@@ -2175,8 +2193,8 @@ internal class BattleUnit
      */
     internal void instaKill()
     {
-	    _health = 0;
-	    _status = UnitStatus.STATUS_DEAD;
+        _health = 0;
+        _status = UnitStatus.STATUS_DEAD;
     }
 
     /**
@@ -2184,33 +2202,33 @@ internal class BattleUnit
       * @return value score
       */
     internal int getValue() =>
-	    _value;
+        _value;
 
     /**
      * Get the faction the unit was killed by.
      * @return faction
      */
     internal UnitFaction killedBy() =>
-	    _killedBy;
+        _killedBy;
 
     /**
      * Get the unit that is spawned when this one dies.
      * @return unit.
      */
     internal string getSpawnUnit() =>
-	    _spawnUnit;
+        _spawnUnit;
 
     /**
      * Converts unit to another faction (original faction is still stored).
      * @param f faction.
      */
     internal void convertToFaction(UnitFaction f) =>
-	    _faction = f;
+        _faction = f;
 
     internal void updateGeoscapeStats(Soldier soldier)
     {
-	    soldier.addMissionCount();
-	    soldier.addKillCount(_kills);
+        soldier.addMissionCount();
+        soldier.addKillCount(_kills);
     }
 
     /**
@@ -2223,70 +2241,70 @@ internal class BattleUnit
     internal bool postMissionProcedures(SavedGame geoscape, out UnitStats statsDiff)
     {
         statsDiff = default;
-	    Soldier s = geoscape.getSoldier(_id);
-	    if (s == null)
-	    {
-		    return false;
-	    }
+        Soldier s = geoscape.getSoldier(_id);
+        if (s == null)
+        {
+            return false;
+        }
 
-	    updateGeoscapeStats(s);
+        updateGeoscapeStats(s);
 
-	    UnitStats stats = s.getCurrentStats();
-	    statsDiff -= stats;        // subtract old stats
-	    UnitStats caps = s.getRules().getStatCaps();
-	    int healthLoss = _stats.health - _health;
+        UnitStats stats = s.getCurrentStats();
+        statsDiff -= stats;        // subtract old stats
+        UnitStats caps = s.getRules().getStatCaps();
+        int healthLoss = _stats.health - _health;
 
-	    s.setWoundRecovery((int)RNG.generate((healthLoss*0.5),(healthLoss*1.5)));
+        s.setWoundRecovery((int)RNG.generate((healthLoss * 0.5), (healthLoss * 1.5)));
 
-	    if (_expBravery != 0 && stats.bravery < caps.bravery)
-	    {
-		    if (_expBravery > RNG.generate(0,10)) stats.bravery += 10;
-	    }
-	    if (_expReactions != 0 && stats.reactions < caps.reactions)
-	    {
-		    stats.reactions += improveStat(_expReactions);
-	    }
-	    if (_expFiring != 0 && stats.firing < caps.firing)
-	    {
-		    stats.firing += improveStat(_expFiring);
-	    }
-	    if (_expMelee != 0 && stats.melee < caps.melee)
-	    {
-		    stats.melee += improveStat(_expMelee);
-	    }
-	    if (_expThrowing != 0 && stats.throwing < caps.throwing)
-	    {
-		    stats.throwing += improveStat(_expThrowing);
-	    }
-	    if (_expPsiSkill != 0 && stats.psiSkill < caps.psiSkill)
-	    {
-		    stats.psiSkill += improveStat(_expPsiSkill);
-	    }
-	    if (_expPsiStrength != 0 && stats.psiStrength < caps.psiStrength)
-	    {
-		    stats.psiStrength += improveStat(_expPsiStrength);
-	    }
+        if (_expBravery != 0 && stats.bravery < caps.bravery)
+        {
+            if (_expBravery > RNG.generate(0, 10)) stats.bravery += 10;
+        }
+        if (_expReactions != 0 && stats.reactions < caps.reactions)
+        {
+            stats.reactions += improveStat(_expReactions);
+        }
+        if (_expFiring != 0 && stats.firing < caps.firing)
+        {
+            stats.firing += improveStat(_expFiring);
+        }
+        if (_expMelee != 0 && stats.melee < caps.melee)
+        {
+            stats.melee += improveStat(_expMelee);
+        }
+        if (_expThrowing != 0 && stats.throwing < caps.throwing)
+        {
+            stats.throwing += improveStat(_expThrowing);
+        }
+        if (_expPsiSkill != 0 && stats.psiSkill < caps.psiSkill)
+        {
+            stats.psiSkill += improveStat(_expPsiSkill);
+        }
+        if (_expPsiStrength != 0 && stats.psiStrength < caps.psiStrength)
+        {
+            stats.psiStrength += improveStat(_expPsiStrength);
+        }
 
-	    bool hasImproved = false;
-	    if (_expBravery != 0 || _expReactions != 0 || _expFiring != 0 || _expPsiSkill != 0 || _expPsiStrength != 0 || _expMelee != 0)
-	    {
-		    hasImproved = true;
-		    if (s.getRank() == SoldierRank.RANK_ROOKIE)
-			    s.promoteRank();
-		    int v;
-		    v = caps.tu - stats.tu;
-		    if (v > 0) stats.tu += RNG.generate(0, v/10 + 2);
-		    v = caps.health - stats.health;
-		    if (v > 0) stats.health += RNG.generate(0, v/10 + 2);
-		    v = caps.strength - stats.strength;
-		    if (v > 0) stats.strength += RNG.generate(0, v/10 + 2);
-		    v = caps.stamina - stats.stamina;
-		    if (v > 0) stats.stamina += RNG.generate(0, v/10 + 2);
-	    }
+        bool hasImproved = false;
+        if (_expBravery != 0 || _expReactions != 0 || _expFiring != 0 || _expPsiSkill != 0 || _expPsiStrength != 0 || _expMelee != 0)
+        {
+            hasImproved = true;
+            if (s.getRank() == SoldierRank.RANK_ROOKIE)
+                s.promoteRank();
+            int v;
+            v = caps.tu - stats.tu;
+            if (v > 0) stats.tu += RNG.generate(0, v / 10 + 2);
+            v = caps.health - stats.health;
+            if (v > 0) stats.health += RNG.generate(0, v / 10 + 2);
+            v = caps.strength - stats.strength;
+            if (v > 0) stats.strength += RNG.generate(0, v / 10 + 2);
+            v = caps.stamina - stats.stamina;
+            if (v > 0) stats.stamina += RNG.generate(0, v / 10 + 2);
+        }
 
-	    statsDiff += stats; // add new stats
+        statsDiff += stats; // add new stats
 
-	    return hasImproved;
+        return hasImproved;
     }
 
     /**
@@ -2296,11 +2314,11 @@ internal class BattleUnit
      */
     int improveStat(int exp)
     {
-	    if      (exp > 10) return RNG.generate(2, 6);
-	    else if (exp > 5)  return RNG.generate(1, 4);
-	    else if (exp > 2)  return RNG.generate(1, 3);
-	    else if (exp > 0)  return RNG.generate(0, 1);
-	    else               return 0;
+        if (exp > 10) return RNG.generate(2, 6);
+        else if (exp > 5) return RNG.generate(1, 4);
+        else if (exp > 2) return RNG.generate(1, 3);
+        else if (exp > 0) return RNG.generate(0, 1);
+        else return 0;
     }
 
     /**
@@ -2310,26 +2328,26 @@ internal class BattleUnit
      */
     internal void lookAt(Position point, bool turret = false)
     {
-	    int dir = directionTo(point);
+        int dir = directionTo(point);
 
-	    if (turret)
-	    {
-		    _toDirectionTurret = dir;
-		    if (_toDirectionTurret != _directionTurret)
-		    {
-			    _status = UnitStatus.STATUS_TURNING;
-		    }
-	    }
-	    else
-	    {
-		    _toDirection = dir;
-		    if (_toDirection != _direction
-			    && _toDirection < 8
-			    && _toDirection > -1)
-		    {
-			    _status = UnitStatus.STATUS_TURNING;
-		    }
-	    }
+        if (turret)
+        {
+            _toDirectionTurret = dir;
+            if (_toDirectionTurret != _directionTurret)
+            {
+                _status = UnitStatus.STATUS_TURNING;
+            }
+        }
+        else
+        {
+            _toDirection = dir;
+            if (_toDirection != _direction
+                && _toDirection < 8
+                && _toDirection > -1)
+            {
+                _status = UnitStatus.STATUS_TURNING;
+            }
+        }
     }
 
     /**
@@ -2338,13 +2356,13 @@ internal class BattleUnit
      */
     internal void aim(bool aiming)
     {
-	    if (aiming)
-		    _status = UnitStatus.STATUS_AIMING;
-	    else
-		    _status = UnitStatus.STATUS_STANDING;
+        if (aiming)
+            _status = UnitStatus.STATUS_AIMING;
+        else
+            _status = UnitStatus.STATUS_STANDING;
 
-	    if (_visible || _faction == UnitFaction.FACTION_PLAYER)
-		    _cacheInvalid = true;
+        if (_visible || _faction == UnitFaction.FACTION_PLAYER)
+            _cacheInvalid = true;
     }
 
     /**
@@ -2352,7 +2370,7 @@ internal class BattleUnit
      * @return throwing Accuracy
      */
     internal double getThrowingAccuracy() =>
-	    (double)(getBaseStats().throwing * getAccuracyModifier()) / 100.0;
+        (double)(getBaseStats().throwing * getAccuracyModifier()) / 100.0;
 
     /**
      * Calculate firing accuracy.
@@ -2363,44 +2381,44 @@ internal class BattleUnit
      */
     internal int getFiringAccuracy(BattleActionType actionType, BattleItem item)
     {
-	    int weaponAcc = item.getRules().getAccuracySnap();
-	    if (actionType == BattleActionType.BA_AIMEDSHOT || actionType == BattleActionType.BA_LAUNCH)
-		    weaponAcc = item.getRules().getAccuracyAimed();
-	    else if (actionType == BattleActionType.BA_AUTOSHOT)
-		    weaponAcc = item.getRules().getAccuracyAuto();
-	    else if (actionType == BattleActionType.BA_HIT)
-	    {
-		    if (item.getRules().isSkillApplied())
-		    {
-			    return (getBaseStats().melee * item.getRules().getAccuracyMelee() / 100) * getAccuracyModifier(item) / 100;
-		    }
-		    return item.getRules().getAccuracyMelee() * getAccuracyModifier(item) / 100;
-	    }
+        int weaponAcc = item.getRules().getAccuracySnap();
+        if (actionType == BattleActionType.BA_AIMEDSHOT || actionType == BattleActionType.BA_LAUNCH)
+            weaponAcc = item.getRules().getAccuracyAimed();
+        else if (actionType == BattleActionType.BA_AUTOSHOT)
+            weaponAcc = item.getRules().getAccuracyAuto();
+        else if (actionType == BattleActionType.BA_HIT)
+        {
+            if (item.getRules().isSkillApplied())
+            {
+                return (getBaseStats().melee * item.getRules().getAccuracyMelee() / 100) * getAccuracyModifier(item) / 100;
+            }
+            return item.getRules().getAccuracyMelee() * getAccuracyModifier(item) / 100;
+        }
 
-	    int result = getBaseStats().firing * weaponAcc / 100;
+        int result = getBaseStats().firing * weaponAcc / 100;
 
-	    if (_kneeled)
-	    {
-		    result = result * 115 / 100;
-	    }
+        if (_kneeled)
+        {
+            result = result * 115 / 100;
+        }
 
-	    if (item.getRules().isTwoHanded())
-	    {
-		    // two handed weapon, means one hand should be empty
-		    if (getItem("STR_RIGHT_HAND") != null && getItem("STR_LEFT_HAND") != null)
-		    {
-			    result = result * 80 / 100;
-		    }
-	    }
+        if (item.getRules().isTwoHanded())
+        {
+            // two handed weapon, means one hand should be empty
+            if (getItem("STR_RIGHT_HAND") != null && getItem("STR_LEFT_HAND") != null)
+            {
+                result = result * 80 / 100;
+            }
+        }
 
-	    return result * getAccuracyModifier(item) / 100;
+        return result * getAccuracyModifier(item) / 100;
     }
 
     /**
      * Adds one to the throwing exp counter.
      */
     internal void addThrowingExp() =>
-	    _expThrowing++;
+        _expThrowing++;
 
     /**
      * To calculate firing accuracy. Takes health and fatal wounds into account.
@@ -2410,79 +2428,79 @@ internal class BattleUnit
      */
     int getAccuracyModifier(BattleItem item = null)
     {
-	    int wounds = _fatalWounds[(int)UnitBodyPart.BODYPART_HEAD];
+        int wounds = _fatalWounds[(int)UnitBodyPart.BODYPART_HEAD];
 
-	    if (item != null)
-	    {
-		    if (item.getRules().isTwoHanded())
-		    {
-			    wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_RIGHTARM] + _fatalWounds[(int)UnitBodyPart.BODYPART_LEFTARM];
-		    }
-		    else
-		    {
-			    if (getItem("STR_RIGHT_HAND") == item)
-			    {
-				    wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_RIGHTARM];
-			    }
-			    else
-			    {
-				    wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_LEFTARM];
-			    }
-		    }
-	    }
-	    return Math.Max(10, 25 * _health / getBaseStats().health + 75 + -10 * wounds);
+        if (item != null)
+        {
+            if (item.getRules().isTwoHanded())
+            {
+                wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_RIGHTARM] + _fatalWounds[(int)UnitBodyPart.BODYPART_LEFTARM];
+            }
+            else
+            {
+                if (getItem("STR_RIGHT_HAND") == item)
+                {
+                    wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_RIGHTARM];
+                }
+                else
+                {
+                    wounds += _fatalWounds[(int)UnitBodyPart.BODYPART_LEFTARM];
+                }
+            }
+        }
+        return Math.Max(10, 25 * _health / getBaseStats().health + 75 + -10 * wounds);
     }
 
     /**
      * reset the unit hit state.
      */
     internal void resetHitState() =>
-	    _hitByAnything = false;
+        _hitByAnything = false;
 
     /**
      * Gets the soldier's gender.
      */
     internal SoldierGender getGender() =>
-	    _gender;
+        _gender;
 
     /**
      * Gets this unit's respawn flag.
      */
     internal bool getRespawn() =>
-	    _respawn;
+        _respawn;
 
     /**
      * Sets this unit to respawn (or not).
      * @param respawn whether it should respawn.
      */
     internal void setRespawn(bool respawn) =>
-	    _respawn = respawn;
+        _respawn = respawn;
 
     /**
      * Get the unit's total firing xp for this mission.
      */
     internal int getFiringXP() =>
-	    _expFiring;
+        _expFiring;
 
     /**
      * Set the murderer's weapon.
      * @param string murderer's weapon.
      */
     internal void setMurdererWeapon(string weapon) =>
-	    _murdererWeapon = weapon;
+        _murdererWeapon = weapon;
 
     /**
      * Set the murderer's weapon's ammo.
      * @param string murderer weapon ammo.
      */
     internal void setMurdererWeaponAmmo(string weaponAmmo) =>
-	    _murdererWeaponAmmo = weaponAmmo;
+        _murdererWeaponAmmo = weaponAmmo;
 
     /**
      * Artificially alter a unit's firing xp. (used for shotguns)
      */
     internal void nerfFiringXP(int newXP) =>
-	    _expFiring = newXP;
+        _expFiring = newXP;
 
     /**
      * Little formula to calculate reaction score.
@@ -2490,22 +2508,22 @@ internal class BattleUnit
      */
     internal double getReactionScore()
     {
-	    //(Reactions Stat) x (Current Time Units / Max TUs)
-	    double score = ((double)getBaseStats().reactions * (double)getTimeUnits()) / (double)getBaseStats().tu;
-	    return score;
+        //(Reactions Stat) x (Current Time Units / Max TUs)
+        double score = ((double)getBaseStats().reactions * (double)getTimeUnits()) / (double)getBaseStats().tu;
+        return score;
     }
 
     /**
      * Adds one to the reaction exp counter.
      */
     internal void addReactionExp() =>
-	    _expReactions++;
+        _expReactions++;
 
     /**
      * Was this unit just hit?
      */
     internal bool getHitState() =>
-	    _hitByAnything;
+        _hitByAnything;
 
     /**
      * this function checks if a tile is visible, using maths.
@@ -2514,47 +2532,47 @@ internal class BattleUnit
      */
     internal bool checkViewSector(Position pos)
     {
-	    int deltaX = pos.x - _pos.x;
-	    int deltaY = _pos.y - pos.y;
+        int deltaX = pos.x - _pos.x;
+        int deltaY = _pos.y - pos.y;
 
-	    switch (_direction)
-	    {
-		    case 0:
-			    if ( (deltaX + deltaY >= 0) && (deltaY - deltaX >= 0) )
-				    return true;
-			    break;
-		    case 1:
-			    if ( (deltaX >= 0) && (deltaY >= 0) )
-				    return true;
-			    break;
-		    case 2:
-			    if ( (deltaX + deltaY >= 0) && (deltaY - deltaX <= 0) )
-				    return true;
-			    break;
-		    case 3:
-			    if ( (deltaY <= 0) && (deltaX >= 0) )
-				    return true;
-			    break;
-		    case 4:
-			    if ( (deltaX + deltaY <= 0) && (deltaY - deltaX <= 0) )
-				    return true;
-			    break;
-		    case 5:
-			    if ( (deltaX <= 0) && (deltaY <= 0) )
-				    return true;
-			    break;
-		    case 6:
-			    if ( (deltaX + deltaY <= 0) && (deltaY - deltaX >= 0) )
-				    return true;
-			    break;
-		    case 7:
-			    if ( (deltaY >= 0) && (deltaX <= 0) )
-				    return true;
-			    break;
-		    default:
-			    return false;
-	    }
-	    return false;
+        switch (_direction)
+        {
+            case 0:
+                if ((deltaX + deltaY >= 0) && (deltaY - deltaX >= 0))
+                    return true;
+                break;
+            case 1:
+                if ((deltaX >= 0) && (deltaY >= 0))
+                    return true;
+                break;
+            case 2:
+                if ((deltaX + deltaY >= 0) && (deltaY - deltaX <= 0))
+                    return true;
+                break;
+            case 3:
+                if ((deltaY <= 0) && (deltaX >= 0))
+                    return true;
+                break;
+            case 4:
+                if ((deltaX + deltaY <= 0) && (deltaY - deltaX <= 0))
+                    return true;
+                break;
+            case 5:
+                if ((deltaX <= 0) && (deltaY <= 0))
+                    return true;
+                break;
+            case 6:
+                if ((deltaX + deltaY <= 0) && (deltaY - deltaX >= 0))
+                    return true;
+                break;
+            case 7:
+                if ((deltaY >= 0) && (deltaX <= 0))
+                    return true;
+                break;
+            default:
+                return false;
+        }
+        return false;
     }
 
     /**
@@ -2563,53 +2581,53 @@ internal class BattleUnit
      */
     internal BattleItem getMeleeWeapon()
     {
-	    BattleItem melee = getItem("STR_RIGHT_HAND");
-	    if (melee != null && melee.getRules().getBattleType() == BattleType.BT_MELEE)
-	    {
-		    return melee;
-	    }
-	    melee = getItem("STR_LEFT_HAND");
-	    if (melee != null && melee.getRules().getBattleType() == BattleType.BT_MELEE)
-	    {
-		    return melee;
-	    }
-	    melee = getSpecialWeapon(BattleType.BT_MELEE);
-	    if (melee != null)
-	    {
-		    return melee;
-	    }
-	    return null;
+        BattleItem melee = getItem("STR_RIGHT_HAND");
+        if (melee != null && melee.getRules().getBattleType() == BattleType.BT_MELEE)
+        {
+            return melee;
+        }
+        melee = getItem("STR_LEFT_HAND");
+        if (melee != null && melee.getRules().getBattleType() == BattleType.BT_MELEE)
+        {
+            return melee;
+        }
+        melee = getSpecialWeapon(BattleType.BT_MELEE);
+        if (melee != null)
+        {
+            return melee;
+        }
+        return null;
     }
 
     /**
      * Adds one to the melee exp counter.
      */
     internal void addMeleeExp() =>
-	    _expMelee++;
+        _expMelee++;
 
     /**
      * Set the unit that is spawned when this one dies.
      * @param spawnUnit unit.
      */
     internal void setSpawnUnit(string spawnUnit) =>
-	    _spawnUnit = spawnUnit;
+        _spawnUnit = spawnUnit;
 
     /**
      * Get sound to play when unit aggros.
      * @return sound
      */
     internal int getAggroSound() =>
-	    _aggroSound;
+        _aggroSound;
 
     /**
      * Get the units we are charging towards.
      * @return Charge Target
      */
     internal BattleUnit getCharging() =>
-	    _charging;
+        _charging;
 
-	/// Sets this unit is in hiding for a turn (or not).
-	internal void setHiding(bool hiding) =>
+    /// Sets this unit is in hiding for a turn (or not).
+    internal void setHiding(bool hiding) =>
         _hidingForTurn = hiding;
 
     /**
@@ -2618,39 +2636,39 @@ internal class BattleUnit
      */
     internal bool checkAmmo()
     {
-	    BattleItem weapon = getItem("STR_RIGHT_HAND");
-	    if (weapon == null || weapon.getAmmoItem() != null || weapon.getRules().getBattleType() == BattleType.BT_MELEE || getTimeUnits() < 15)
-	    {
-		    weapon = getItem("STR_LEFT_HAND");
-		    if (weapon == null || weapon.getAmmoItem() != null || weapon.getRules().getBattleType() == BattleType.BT_MELEE || getTimeUnits() < 15)
-		    {
-			    return false;
-		    }
-	    }
-	    // we have a non-melee weapon with no ammo and 15 or more TUs - we might need to look for ammo then
-	    BattleItem ammo = null;
-	    bool wrong = true;
-	    foreach (var i in getInventory())
-	    {
-		    ammo = i;
-		    foreach (var c in weapon.getRules().getCompatibleAmmo())
-		    {
-			    if (c == ammo.getRules().getType())
-			    {
-				    wrong = false;
-				    break;
-			    }
-		    }
-		    if (!wrong) break;
-	    }
+        BattleItem weapon = getItem("STR_RIGHT_HAND");
+        if (weapon == null || weapon.getAmmoItem() != null || weapon.getRules().getBattleType() == BattleType.BT_MELEE || getTimeUnits() < 15)
+        {
+            weapon = getItem("STR_LEFT_HAND");
+            if (weapon == null || weapon.getAmmoItem() != null || weapon.getRules().getBattleType() == BattleType.BT_MELEE || getTimeUnits() < 15)
+            {
+                return false;
+            }
+        }
+        // we have a non-melee weapon with no ammo and 15 or more TUs - we might need to look for ammo then
+        BattleItem ammo = null;
+        bool wrong = true;
+        foreach (var i in getInventory())
+        {
+            ammo = i;
+            foreach (var c in weapon.getRules().getCompatibleAmmo())
+            {
+                if (c == ammo.getRules().getType())
+                {
+                    wrong = false;
+                    break;
+                }
+            }
+            if (!wrong) break;
+        }
 
-	    if (wrong) return false; // didn't find any compatible ammo in inventory
+        if (wrong) return false; // didn't find any compatible ammo in inventory
 
-	    spendTimeUnits(15);
-	    weapon.setAmmoItem(ammo);
-	    ammo.moveToOwner(null);
+        spendTimeUnits(15);
+        weapon.setAmmoItem(ammo);
+        ammo.moveToOwner(null);
 
-	    return true;
+        return true;
     }
 
     /**
@@ -2659,8 +2677,8 @@ internal class BattleUnit
      */
     internal void think(ref BattleAction action)
     {
-	    checkAmmo();
-	    _currentAIState.think(ref action);
+        checkAmmo();
+        _currentAIState.think(ref action);
     }
 
     /**
@@ -2668,14 +2686,14 @@ internal class BattleUnit
      * @param chargeTarget Charge Target
      */
     internal void setCharging(BattleUnit chargeTarget) =>
-	    _charging = chargeTarget;
+        _charging = chargeTarget;
 
     /**
      * Get the unit's aggression.
      * @return aggression.
      */
     internal int getAggression() =>
-	    _aggression;
+        _aggression;
 
     /**
      * Get a grenade from the belt (used for AI)
@@ -2683,14 +2701,14 @@ internal class BattleUnit
      */
     internal BattleItem getGrenadeFromBelt()
     {
-	    foreach (var i in _inventory)
-	    {
-		    if (i.getRules().getBattleType() == BattleType.BT_GRENADE)
-		    {
-			    return i;
-		    }
-	    }
-	    return null;
+        foreach (var i in _inventory)
+        {
+            if (i.getRules().getBattleType() == BattleType.BT_GRENADE)
+            {
+                return i;
+            }
+        }
+        return null;
     }
 
     /**
@@ -2700,46 +2718,46 @@ internal class BattleUnit
      */
     internal void lookAt(int direction, bool force = false)
     {
-	    if (!force)
-	    {
-		    if (direction < 0 || direction >= 8) return;
-		    _toDirection = direction;
-		    if (_toDirection != _direction)
-		    {
-			    _status = UnitStatus.STATUS_TURNING;
-		    }
-	    }
-	    else
-	    {
-		    _toDirection = direction;
-		    _direction = direction;
-	    }
+        if (!force)
+        {
+            if (direction < 0 || direction >= 8) return;
+            _toDirection = direction;
+            if (_toDirection != _direction)
+            {
+                _status = UnitStatus.STATUS_TURNING;
+            }
+        }
+        else
+        {
+            _toDirection = direction;
+            _direction = direction;
+        }
     }
 
     /**
      * Adds one to the psi skill exp counter.
      */
     internal void addPsiSkillExp() =>
-	    _expPsiSkill++;
+        _expPsiSkill++;
 
     /**
      * Adds one to the psi strength exp counter.
      */
     internal void addPsiStrengthExp() =>
-	    _expPsiStrength++;
+        _expPsiStrength++;
 
     /**
      * Sets the unit mind controller's id.
      * @param int mind controller id.
      */
     internal void setMindControllerId(int id) =>
-	    _mindControllerID = id;
+        _mindControllerID = id;
 
     /**
      * Mark this unit as reselectable.
      */
     internal void allowReselect() =>
-	    _dontReselect = false;
+        _dontReselect = false;
 
     /**
      * Get the unit's death sounds.
@@ -2747,14 +2765,14 @@ internal class BattleUnit
      */
     internal List<int> getDeathSounds()
     {
-	    if (!_deathSound.Any() && _geoscapeSoldier != null)
-	    {
-		    if (_gender == SoldierGender.GENDER_MALE)
-			    return _geoscapeSoldier.getRules().getMaleDeathSounds();
-		    else
-			    return _geoscapeSoldier.getRules().getFemaleDeathSounds();
-	    }
-	    return _deathSound;
+        if (!_deathSound.Any() && _geoscapeSoldier != null)
+        {
+            if (_gender == SoldierGender.GENDER_MALE)
+                return _geoscapeSoldier.getRules().getMaleDeathSounds();
+            else
+                return _geoscapeSoldier.getRules().getFemaleDeathSounds();
+        }
+        return _deathSound;
     }
 
     /**
@@ -2762,14 +2780,14 @@ internal class BattleUnit
      * @return position
      */
     internal Position getLastPosition() =>
-	    _lastPos;
+        _lastPos;
 
     /**
      * Gets the walking phase for animation and sound.
      * @return phase will always go from 0-7
      */
     internal int getWalkingPhase() =>
-	    _walkPhase % 8;
+        _walkPhase % 8;
 
     /**
      * Raises a unit's stun level sufficiently so that the unit is ready to become unconscious.
@@ -2779,16 +2797,16 @@ internal class BattleUnit
      */
     internal void knockOut(BattlescapeGame battle)
     {
-	    if (!string.IsNullOrEmpty(_spawnUnit))
-	    {
-		    setRespawn(false);
-		    BattleUnit newUnit = battle.convertUnit(this);
-		    newUnit.knockOut(battle);
-	    }
-	    else
-	    {
-		    _stunlevel = _health;
-	    }
+        if (!string.IsNullOrEmpty(_spawnUnit))
+        {
+            setRespawn(false);
+            BattleUnit newUnit = battle.convertUnit(this);
+            newUnit.knockOut(battle);
+        }
+        else
+        {
+            _stunlevel = _health;
+        }
     }
 
     /**
@@ -2798,78 +2816,79 @@ internal class BattleUnit
      */
     internal void keepWalking(Tile tileBelowMe, bool cache)
     {
-	    int middle, end;
-	    if (_verticalDirection != 0)
-	    {
-		    middle = 4;
-		    end = 8;
-	    }
-	    else
-	    {
-		    // diagonal walking takes double the steps
-		    middle = 4 + 4 * (_direction % 2);
-		    end = 8 + 8 * (_direction % 2);
-		    if (_armor.getSize() > 1)
-		    {
-			    if (_direction < 1 || _direction > 5)
-				    middle = end;
-			    else if (_direction == 5)
-				    middle = 12;
-			    else if (_direction == 1)
-				    middle = 5;
-			    else
-				    middle = 1;
-		    }
-	    }
-	    if (!cache)
-	    {
-		    _pos = _destination;
-		    end = 2;
-	    }
+        int middle, end;
+        if (_verticalDirection != 0)
+        {
+            middle = 4;
+            end = 8;
+        }
+        else
+        {
+            // diagonal walking takes double the steps
+            middle = 4 + 4 * (_direction % 2);
+            end = 8 + 8 * (_direction % 2);
+            if (_armor.getSize() > 1)
+            {
+                if (_direction < 1 || _direction > 5)
+                    middle = end;
+                else if (_direction == 5)
+                    middle = 12;
+                else if (_direction == 1)
+                    middle = 5;
+                else
+                    middle = 1;
+            }
+        }
+        if (!cache)
+        {
+            _pos = _destination;
+            end = 2;
+        }
 
-	    _walkPhase++;
+        _walkPhase++;
 
-	    if (_walkPhase == middle)
-	    {
-		    // we assume we reached our destination tile
-		    // this is actually a drawing hack, so soldiers are not overlapped by floortiles
-		    _pos = _destination;
-	    }
+        if (_walkPhase == middle)
+        {
+            // we assume we reached our destination tile
+            // this is actually a drawing hack, so soldiers are not overlapped by floortiles
+            _pos = _destination;
+        }
 
-	    if (_walkPhase >= end)
-	    {
-		    if (_floating && !_tile.hasNoFloor(tileBelowMe))
-		    {
-			    _floating = false;
-		    }
-		    // we officially reached our destination tile
-		    _status = UnitStatus.STATUS_STANDING;
-		    _walkPhase = 0;
-		    _verticalDirection = 0;
-		    if (_faceDirection >= 0) {
-			    // Finish strafing move facing the correct way.
-			    _direction = _faceDirection;
-			    _faceDirection = -1;
-		    }
+        if (_walkPhase >= end)
+        {
+            if (_floating && !_tile.hasNoFloor(tileBelowMe))
+            {
+                _floating = false;
+            }
+            // we officially reached our destination tile
+            _status = UnitStatus.STATUS_STANDING;
+            _walkPhase = 0;
+            _verticalDirection = 0;
+            if (_faceDirection >= 0)
+            {
+                // Finish strafing move facing the correct way.
+                _direction = _faceDirection;
+                _faceDirection = -1;
+            }
 
-		    // motion points calculation for the motion scanner blips
-		    if (_armor.getSize() > 1)
-		    {
-			    _motionPoints += 30;
-		    }
-		    else
-		    {
-			    // sectoids actually have less motion points
-			    // but instead of create yet another variable,
-			    // I used the height of the unit instead (logical)
-			    if (getStandHeight() > 16)
-				    _motionPoints += 4;
-			    else
-				    _motionPoints += 3;
-		    }
-	    }
+            // motion points calculation for the motion scanner blips
+            if (_armor.getSize() > 1)
+            {
+                _motionPoints += 30;
+            }
+            else
+            {
+                // sectoids actually have less motion points
+                // but instead of create yet another variable,
+                // I used the height of the unit instead (logical)
+                if (getStandHeight() > 16)
+                    _motionPoints += 4;
+                else
+                    _motionPoints += 3;
+            }
+        }
 
-	    _cacheInvalid = cache;
+        _cacheInvalid = cache;
     }
 
     /**
@@ -2877,7 +2896,7 @@ internal class BattleUnit
      * @return destination
      */
     internal Position getDestination() =>
-	    _destination;
+        _destination;
 
     /**
      * Gets the BattleUnit's (horizontal) face direction.
@@ -2885,7 +2904,7 @@ internal class BattleUnit
      * @return face direction
      */
     internal int getFaceDirection() =>
-	    _faceDirection;
+        _faceDirection;
 
     /**
      * Changes the BattleUnit's (horizontal) face direction.
@@ -2893,7 +2912,7 @@ internal class BattleUnit
      * @param direction new face direction
      */
     internal void setFaceDirection(int direction) =>
-	    _faceDirection = direction;
+        _faceDirection = direction;
 
     /**
      * Spend energy  if it can. Return false if it can't.
@@ -2902,17 +2921,17 @@ internal class BattleUnit
      */
     internal bool spendEnergy(int tu)
     {
-	    int eu = tu / 2;
+        int eu = tu / 2;
 
-	    if (eu <= _energy)
-	    {
-		    _energy -= eu;
-		    return true;
-	    }
-	    else
-	    {
-		    return false;
-	    }
+        if (eu <= _energy)
+        {
+            _energy -= eu;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -2920,17 +2939,17 @@ internal class BattleUnit
      * @return true/false
      */
     internal bool isFloating() =>
-	    _floating;
+        _floating;
 
     /**
      * Get the unit's move sound.
      * @return id.
      */
     internal int getMoveSound() =>
-	    _moveSound;
+        _moveSound;
 
-	/// Checks if this unit is in hiding for a turn.
-	internal bool isHiding() =>
+    /// Checks if this unit is in hiding for a turn.
+    internal bool isHiding() =>
         _hidingForTurn;
 
     /**
@@ -2941,22 +2960,22 @@ internal class BattleUnit
      */
     internal void heal(int part, int woundAmount, int healthAmount)
     {
-	    if (part < 0 || part > 5 || _fatalWounds[part] == 0)
-	    {
-		    return;
-	    }
+        if (part < 0 || part > 5 || _fatalWounds[part] == 0)
+        {
+            return;
+        }
 
-	    _fatalWounds[part] -= woundAmount;
-	    if (_fatalWounds[part] < 0)
-	    {
-		    _fatalWounds[part] = 0;
-	    }
+        _fatalWounds[part] -= woundAmount;
+        if (_fatalWounds[part] < 0)
+        {
+            _fatalWounds[part] = 0;
+        }
 
-	    _health += healthAmount;
-	    if (_health > getBaseStats().health)
-	    {
-		    _health = getBaseStats().health;
-	    }
+        _health += healthAmount;
+        if (_health > getBaseStats().health)
+        {
+            _health = getBaseStats().health;
+        }
     }
 
     /**
@@ -2966,10 +2985,10 @@ internal class BattleUnit
      */
     internal void stimulant(int energy, int s)
     {
-	    _energy += energy;
-	    if (_energy > getBaseStats().stamina)
-		    _energy = getBaseStats().stamina;
-	    healStun(s);
+        _energy += energy;
+        if (_energy > getBaseStats().stamina)
+            _energy = getBaseStats().stamina;
+        healStun(s);
     }
 
     /**
@@ -2977,12 +2996,12 @@ internal class BattleUnit
      */
     internal void painKillers()
     {
-	    int lostHealth = getBaseStats().health - _health;
-	    if (lostHealth > _moraleRestored)
-	    {
-		    _morale = Math.Min(100, (lostHealth - _moraleRestored + _morale));
-		    _moraleRestored = lostHealth;
-	    }
+        int lostHealth = getBaseStats().health - _health;
+        if (lostHealth > _moraleRestored)
+        {
+            _morale = Math.Min(100, (lostHealth - _moraleRestored + _morale));
+            _moraleRestored = lostHealth;
+        }
     }
 
     /**
@@ -2991,8 +3010,8 @@ internal class BattleUnit
      */
     internal void setActiveHand(string hand)
     {
-	    if (_activeHand != hand) _cacheInvalid = true;
-	    _activeHand = hand;
+        if (_activeHand != hand) _cacheInvalid = true;
+        _activeHand = hand;
     }
 
     /**
@@ -3000,40 +3019,40 @@ internal class BattleUnit
      * @return if we're under cover.
      */
     internal bool getFloorAbove() =>
-	    _floorAbove;
+        _floorAbove;
 
     /**
      * Decides if we should start producing bubbles, and/or updates which bubble frame we are on.
      */
     internal void breathe()
     {
-	    // _breathFrame of -1 means this unit doesn't produce bubbles
-	    if (_breathFrame < 0 || isOut())
-	    {
-		    _breathing = false;
-		    return;
-	    }
+        // _breathFrame of -1 means this unit doesn't produce bubbles
+        if (_breathFrame < 0 || isOut())
+        {
+            _breathing = false;
+            return;
+        }
 
-	    if (!_breathing || _status == UnitStatus.STATUS_WALKING)
-	    {
-		    // deviation from original: TFTD used a static 10% chance for every animation frame,
-		    // instead let's use 5%, but allow morale to affect it.
-		    _breathing = (_status != UnitStatus.STATUS_WALKING && RNG.seedless(0, 99) < (105 - _morale));
-		    _breathFrame = 0;
-	    }
+        if (!_breathing || _status == UnitStatus.STATUS_WALKING)
+        {
+            // deviation from original: TFTD used a static 10% chance for every animation frame,
+            // instead let's use 5%, but allow morale to affect it.
+            _breathing = (_status != UnitStatus.STATUS_WALKING && RNG.seedless(0, 99) < (105 - _morale));
+            _breathFrame = 0;
+        }
 
-	    if (_breathing)
-	    {
-		    // advance the bubble frame
-		    _breathFrame++;
+        if (_breathing)
+        {
+            // advance the bubble frame
+            _breathFrame++;
 
-		    // we've reached the end of the cycle, get rid of the bubbles
-		    if (_breathFrame >= 17)
-		    {
-			    _breathFrame = 0;
-			    _breathing = false;
-		    }
-	    }
+            // we've reached the end of the cycle, get rid of the bubbles
+            if (_breathFrame >= 17)
+            {
+                _breathFrame = 0;
+                _breathing = false;
+            }
+        }
     }
 
     /**
@@ -3043,9 +3062,9 @@ internal class BattleUnit
      */
     internal int getFatalWound(int part)
     {
-	    if (part < 0 || part > 5)
-		    return 0;
-	    return _fatalWounds[part];
+        if (part < 0 || part > 5)
+            return 0;
+        return _fatalWounds[part];
     }
 
     /**
@@ -3054,7 +3073,7 @@ internal class BattleUnit
      * @return Pairs of value, where first is color group to replace and second is new color group with shade.
      */
     internal List<KeyValuePair<byte, byte>> getRecolor() =>
-	    _recolor;
+        _recolor;
 
     /**
      * If this unit is breathing, what frame should be displayed?
@@ -3062,9 +3081,9 @@ internal class BattleUnit
      */
     internal int getBreathFrame()
     {
-	    if (_floorAbove)
-		    return 0;
-	    return _breathFrame;
+        if (_floorAbove)
+            return 0;
+        return _breathFrame;
     }
 
     /**
@@ -3072,21 +3091,21 @@ internal class BattleUnit
      * @param floor is there a floor.
      */
     internal void setFloorAbove(bool floor) =>
-	    _floorAbove = floor;
+        _floorAbove = floor;
 
     /**
      * Gets the BattleUnit's vertical direction. This is when going up or down.
      * @return direction
      */
     internal int getVerticalDirection() =>
-	    _verticalDirection;
+        _verticalDirection;
 
     /**
      * Gets the walking phase for diagonal walking.
      * @return phase this will be 0 or 8
      */
     internal int getDiagonalWalkingPhase() =>
-	    (_walkPhase / 8) * 8;
+        (_walkPhase / 8) * 8;
 
     /**
      * Get the unit's minimap sprite index. Used to display the unit on the minimap
@@ -3094,35 +3113,35 @@ internal class BattleUnit
      */
     internal int getMiniMapSpriteIndex()
     {
-	    //minimap sprite index:
-	    // * 0-2   : Xcom soldier
-	    // * 3-5   : Alien
-	    // * 6-8   : Civilian
-	    // * 9-11  : Item
-	    // * 12-23 : Xcom HWP
-	    // * 24-35 : Alien big terror unit(cyberdisk, ...)
-	    if (isOut())
-	    {
-		    return 9;
-	    }
-	    switch (getFaction())
-	    {
-	        case UnitFaction.FACTION_HOSTILE:
-		        if (_armor.getSize() == 1)
-			        return 3;
-		        else
-			        return 24;
-	        case UnitFaction.FACTION_NEUTRAL:
-		        if (_armor.getSize() == 1)
-			        return 6;
-		        else
-			        return 12;
-	        default:
-		        if (_armor.getSize() == 1)
-			        return 0;
-		        else
-			        return 12;
-	    }
+        //minimap sprite index:
+        // * 0-2   : Xcom soldier
+        // * 3-5   : Alien
+        // * 6-8   : Civilian
+        // * 9-11  : Item
+        // * 12-23 : Xcom HWP
+        // * 24-35 : Alien big terror unit(cyberdisk, ...)
+        if (isOut())
+        {
+            return 9;
+        }
+        switch (getFaction())
+        {
+            case UnitFaction.FACTION_HOSTILE:
+                if (_armor.getSize() == 1)
+                    return 3;
+                else
+                    return 24;
+            case UnitFaction.FACTION_NEUTRAL:
+                if (_armor.getSize() == 1)
+                    return 6;
+                else
+                    return 12;
+            default:
+                if (_armor.getSize() == 1)
+                    return 0;
+                else
+                    return 12;
+        }
     }
 
     /**
@@ -3131,14 +3150,14 @@ internal class BattleUnit
      * @return points.
      */
     internal int getMotionPoints() =>
-	    _motionPoints;
+        _motionPoints;
 
     /**
      * Returns the phase of the falling sequence.
      * @return phase
      */
     internal int getFallingPhase() =>
-	    _fallPhase;
+        _fallPhase;
 
     /**
      * Loads the unit from a YAML file.
@@ -3146,64 +3165,64 @@ internal class BattleUnit
      */
     internal void load(YamlNode node)
     {
-	    _id = int.Parse(node["id"].ToString());
-	    _faction = _originalFaction = (UnitFaction)int.Parse(node["faction"].ToString());
-	    _status = (UnitStatus)int.Parse(node["status"].ToString());
+        _id = int.Parse(node["id"].ToString());
+        _faction = _originalFaction = (UnitFaction)int.Parse(node["faction"].ToString());
+        _status = (UnitStatus)int.Parse(node["status"].ToString());
         _pos = Position.decode(node["position"]);
-	    _direction = _toDirection = int.Parse(node["direction"].ToString());
-	    _directionTurret = _toDirectionTurret = int.Parse(node["directionTurret"].ToString());
-	    _tu = int.Parse(node["tu"].ToString());
-	    _health = int.Parse(node["health"].ToString());
-	    _stunlevel = int.Parse(node["stunlevel"].ToString());
-	    _energy = int.Parse(node["energy"].ToString());
-	    _morale = int.Parse(node["morale"].ToString());
-	    _kneeled = bool.Parse(node["kneeled"].ToString());
-	    _floating = bool.Parse(node["floating"].ToString());
-	    for (int i=0; i < 5; i++)
-		    _currentArmor[i] = int.Parse(node["armor"][i].ToString());
-	    for (int i=0; i < 6; i++)
-		    _fatalWounds[i] = int.Parse(node["fatalWounds"][i].ToString());
-	    _fire = int.Parse(node["fire"].ToString());
-	    _expBravery = int.Parse(node["expBravery"].ToString());
-	    _expReactions = int.Parse(node["expReactions"].ToString());
-	    _expFiring = int.Parse(node["expFiring"].ToString());
-	    _expThrowing = int.Parse(node["expThrowing"].ToString());
-	    _expPsiSkill = int.Parse(node["expPsiSkill"].ToString());
-	    _expPsiStrength = int.Parse(node["expPsiStrength"].ToString());
-	    _expMelee = int.Parse(node["expMelee"].ToString());
-	    _turretType = int.Parse(node["turretType"].ToString());
-	    _visible = bool.Parse(node["visible"].ToString());
-	    _turnsSinceSpotted = int.Parse(node["turnsSinceSpotted"].ToString());
-	    _killedBy = (UnitFaction)int.Parse(node["killedBy"].ToString());
-	    _moraleRestored = int.Parse(node["moraleRestored"].ToString());
-	    _rankInt = int.Parse(node["rankInt"].ToString());
-	    _originalFaction = (UnitFaction)int.Parse(node["originalFaction"].ToString());
-	    _kills = int.Parse(node["kills"].ToString());
-	    _dontReselect = bool.Parse(node["dontReselect"].ToString());
-	    _charging = null;
-	    _spawnUnit = node["spawnUnit"].ToString();
-	    _motionPoints = int.Parse(node["motionPoints"].ToString());
-	    _respawn = bool.Parse(node["respawn"].ToString());
-	    _activeHand = node["activeHand"].ToString();
-	    if (node["tempUnitStatistics"] != null)
-	    {
-		    _statistics.load(node["tempUnitStatistics"]);
-	    }
-	    _murdererId = int.Parse(node["murdererId"].ToString());
-	    _fatalShotSide = (UnitSide)int.Parse(node["fatalShotSide"].ToString());
-	    _fatalShotBodyPart = (UnitBodyPart)int.Parse(node["fatalShotBodyPart"].ToString());
-	    _murdererWeapon = node["murdererWeapon"].ToString();
-	    _murdererWeaponAmmo = node["murdererWeaponAmmo"].ToString();
+        _direction = _toDirection = int.Parse(node["direction"].ToString());
+        _directionTurret = _toDirectionTurret = int.Parse(node["directionTurret"].ToString());
+        _tu = int.Parse(node["tu"].ToString());
+        _health = int.Parse(node["health"].ToString());
+        _stunlevel = int.Parse(node["stunlevel"].ToString());
+        _energy = int.Parse(node["energy"].ToString());
+        _morale = int.Parse(node["morale"].ToString());
+        _kneeled = bool.Parse(node["kneeled"].ToString());
+        _floating = bool.Parse(node["floating"].ToString());
+        for (int i = 0; i < 5; i++)
+            _currentArmor[i] = int.Parse(node["armor"][i].ToString());
+        for (int i = 0; i < 6; i++)
+            _fatalWounds[i] = int.Parse(node["fatalWounds"][i].ToString());
+        _fire = int.Parse(node["fire"].ToString());
+        _expBravery = int.Parse(node["expBravery"].ToString());
+        _expReactions = int.Parse(node["expReactions"].ToString());
+        _expFiring = int.Parse(node["expFiring"].ToString());
+        _expThrowing = int.Parse(node["expThrowing"].ToString());
+        _expPsiSkill = int.Parse(node["expPsiSkill"].ToString());
+        _expPsiStrength = int.Parse(node["expPsiStrength"].ToString());
+        _expMelee = int.Parse(node["expMelee"].ToString());
+        _turretType = int.Parse(node["turretType"].ToString());
+        _visible = bool.Parse(node["visible"].ToString());
+        _turnsSinceSpotted = int.Parse(node["turnsSinceSpotted"].ToString());
+        _killedBy = (UnitFaction)int.Parse(node["killedBy"].ToString());
+        _moraleRestored = int.Parse(node["moraleRestored"].ToString());
+        _rankInt = int.Parse(node["rankInt"].ToString());
+        _originalFaction = (UnitFaction)int.Parse(node["originalFaction"].ToString());
+        _kills = int.Parse(node["kills"].ToString());
+        _dontReselect = bool.Parse(node["dontReselect"].ToString());
+        _charging = null;
+        _spawnUnit = node["spawnUnit"].ToString();
+        _motionPoints = int.Parse(node["motionPoints"].ToString());
+        _respawn = bool.Parse(node["respawn"].ToString());
+        _activeHand = node["activeHand"].ToString();
+        if (node["tempUnitStatistics"] != null)
+        {
+            _statistics.load(node["tempUnitStatistics"]);
+        }
+        _murdererId = int.Parse(node["murdererId"].ToString());
+        _fatalShotSide = (UnitSide)int.Parse(node["fatalShotSide"].ToString());
+        _fatalShotBodyPart = (UnitBodyPart)int.Parse(node["fatalShotBodyPart"].ToString());
+        _murdererWeapon = node["murdererWeapon"].ToString();
+        _murdererWeaponAmmo = node["murdererWeaponAmmo"].ToString();
 
-	    if (node["recolor"] is YamlSequenceNode p)
-	    {
-		    _recolor.Clear();
-		    for (var i = 0; i < p.Children.Count; ++i)
-		    {
-			    _recolor.Add(KeyValuePair.Create(byte.Parse(p.Children[i][0].ToString()), byte.Parse(p.Children[i][1].ToString())));
-		    }
-	    }
-	    _mindControllerID = int.Parse(node["mindControllerID"].ToString());
+        if (node["recolor"] is YamlSequenceNode p)
+        {
+            _recolor.Clear();
+            for (var i = 0; i < p.Children.Count; ++i)
+            {
+                _recolor.Add(KeyValuePair.Create(byte.Parse(p.Children[i][0].ToString()), byte.Parse(p.Children[i][1].ToString())));
+            }
+        }
+        _mindControllerID = int.Parse(node["mindControllerID"].ToString());
     }
 
     /**
@@ -3211,14 +3230,14 @@ internal class BattleUnit
      * @return toDirectionTurret
      */
     int getTurretToDirection() =>
-	    _toDirectionTurret;
+        _toDirectionTurret;
 
     /**
      * invalidate cache; call after copying object :(
      */
     void invalidateCache()
     {
-	    for (int i = 0; i < 5; ++i) { _cache[i] = null; }
-	    _cacheInvalid = true;
+        for (int i = 0; i < 5; ++i) { _cache[i] = null; }
+        _cacheInvalid = true;
     }
 }

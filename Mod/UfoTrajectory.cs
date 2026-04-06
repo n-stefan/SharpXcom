@@ -37,8 +37,8 @@ struct TrajectoryWaypoint
 	 */
     internal static TrajectoryWaypoint decode(YamlNode node)
     {
-    	if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 3)
-    		return default;
+        if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 3)
+            return default;
 
         var tw = new TrajectoryWaypoint
         {
@@ -46,7 +46,7 @@ struct TrajectoryWaypoint
             altitude = uint.Parse(node[1].ToString()),
             speed = uint.Parse(node[2].ToString())
         };
-    	return tw;
+        return tw;
     }
 
     /**
@@ -56,7 +56,7 @@ struct TrajectoryWaypoint
     static YamlNode encode(TrajectoryWaypoint tw)
     {
         var node = new YamlSequenceNode(tw.zone.ToString(), tw.altitude.ToString(), tw.speed.ToString());
-    	return node;
+        return node;
     }
 }
 
@@ -95,8 +95,8 @@ internal class UfoTrajectory : IRule
      */
     internal void load(YamlNode node)
     {
-	    _id = node["id"].ToString();
-	    _groundTimer = uint.Parse(node["groundTimer"].ToString());
+        _id = node["id"].ToString();
+        _groundTimer = uint.Parse(node["groundTimer"].ToString());
         _waypoints = ((YamlSequenceNode)node["waypoints"]).Children.Select(x => TrajectoryWaypoint.decode(x)).ToList();
     }
 
@@ -121,7 +121,7 @@ internal class UfoTrajectory : IRule
      * @return The altitude.
      */
     internal string getAltitude(uint wp) =>
-	    Ufo.ALTITUDE_STRING[_waypoints[(int)wp].altitude];
+        Ufo.ALTITUDE_STRING[_waypoints[(int)wp].altitude];
 
     /**
 	 * Gets the speed percentage at a waypoint.

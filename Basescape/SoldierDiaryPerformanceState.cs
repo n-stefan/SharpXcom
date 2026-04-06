@@ -474,12 +474,12 @@ internal class SoldierDiaryPerformanceState : State
      */
     internal override void think()
     {
-	    base.think();
+        base.think();
 
-	    if ((uint)_lastScrollPos != _lstCommendations.getScroll())
-	    {
-		    drawSprites();
-		    _lastScrollPos = (int)_lstCommendations.getScroll();
-	    }
+        if ((uint)_lastScrollPos != _lstCommendations.getScroll())
+        {
+            drawSprites();
+            _lastScrollPos = (int)_lstCommendations.getScroll();
+        }
     }
 }

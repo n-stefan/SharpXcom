@@ -56,7 +56,7 @@ internal class ExtraSprites
      * @return The sprite name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Loads the external sprite into a new or existing surface.
@@ -88,202 +88,202 @@ internal class ExtraSprites
      * @return True/false
      */
     internal bool isLoaded() =>
-	    _loaded;
+        _loaded;
 
     /**
      * Returns whether this is a single surface as opposed to a set of surfaces.
      * @return True if this is a single surface.
      */
     internal bool getSingleImage() =>
-	    _singleImage;
+        _singleImage;
 
-	/**
+    /**
 	 * Loads the external sprite into a new or existing surface set.
 	 * @param set Existing surface set.
 	 * @return New surface set.
 	 */
-	internal SurfaceSet loadSurfaceSet(SurfaceSet set)
-	{
-		if (_singleImage)
-			return set;
-		_loaded = true;
+    internal SurfaceSet loadSurfaceSet(SurfaceSet set)
+    {
+        if (_singleImage)
+            return set;
+        _loaded = true;
 
-		bool subdivision = (_subX != 0 && _subY != 0);
-		int surfaceSetX = subdivision ? _subX : _width;
-		int surfaceSetY = subdivision ? _subY : _height;
-		if (set == null)
-		{
+        bool subdivision = (_subX != 0 && _subY != 0);
+        int surfaceSetX = subdivision ? _subX : _width;
+        int surfaceSetY = subdivision ? _subY : _height;
+        if (set == null)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Creating new surface set: {_type}");
-			set = new SurfaceSet(surfaceSetX, surfaceSetY);
-		}
-		else
-		{
+            set = new SurfaceSet(surfaceSetX, surfaceSetY);
+        }
+        else
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Adding/Replacing items in surface set: {_type}");
-			if (set.getTotalFrames() == 0 && (set.getWidth() != surfaceSetX || set.getHeight() != surfaceSetY))
-			{
+            if (set.getTotalFrames() == 0 && (set.getWidth() != surfaceSetX || set.getHeight() != surfaceSetY))
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Resize empty set to: {surfaceSetX} x {surfaceSetY}");
-				int shared = set.getMaxSharedFrames();
-				set = null;
-				set = new SurfaceSet(surfaceSetX, surfaceSetY);
-				set.setMaxSharedFrames(shared);
-			}
-		}
+                int shared = set.getMaxSharedFrames();
+                set = null;
+                set = new SurfaceSet(surfaceSetX, surfaceSetY);
+                set.setMaxSharedFrames(shared);
+            }
+        }
 
-		foreach (var sprite in _sprites)
-		{
-			int startFrame = sprite.Key;
-			string fileName = sprite.Value;
-			if (fileName[fileName.Length - 1] == '/')
-			{
+        foreach (var sprite in _sprites)
+        {
+            int startFrame = sprite.Key;
+            string fileName = sprite.Value;
+            if (fileName[fileName.Length - 1] == '/')
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Loading surface set from folder: {fileName} starting at frame: {startFrame}");
-				int offset = startFrame;
-				HashSet<string> contents = FileMap.getVFolderContents(fileName);
-				foreach (var item in contents)
-				{
-					if (!isImageFile(item))
-						continue;
-					try
-					{
-						string fullPath = FileMap.getFilePath(fileName + item);
-						getFrame(set, offset).loadImage(fullPath);
-						offset++;
-					}
-					catch (Exception e)
-					{
+                int offset = startFrame;
+                HashSet<string> contents = FileMap.getVFolderContents(fileName);
+                foreach (var item in contents)
+                {
+                    if (!isImageFile(item))
+                        continue;
+                    try
+                    {
+                        string fullPath = FileMap.getFilePath(fileName + item);
+                        getFrame(set, offset).loadImage(fullPath);
+                        offset++;
+                    }
+                    catch (Exception e)
+                    {
                         Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {e.Message}");
-					}
-				}
-			}
-			else
-			{
-				string fullPath = FileMap.getFilePath(fileName);
-				if (!subdivision)
-				{
-					getFrame(set, startFrame).loadImage(fullPath);
-				}
-				else
-				{
-					var temp = new Surface(_width, _height);
-					temp.loadImage(fullPath);
-					int xDivision = _width / _subX;
-					int yDivision = _height / _subY;
-					int frames = xDivision * yDivision;
+                    }
+                }
+            }
+            else
+            {
+                string fullPath = FileMap.getFilePath(fileName);
+                if (!subdivision)
+                {
+                    getFrame(set, startFrame).loadImage(fullPath);
+                }
+                else
+                {
+                    var temp = new Surface(_width, _height);
+                    temp.loadImage(fullPath);
+                    int xDivision = _width / _subX;
+                    int yDivision = _height / _subY;
+                    int frames = xDivision * yDivision;
                     Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Subdividing into {frames} frames.");
-					int offset = startFrame;
+                    int offset = startFrame;
 
-					for (int y = 0; y != yDivision; ++y)
-					{
-						for (int x = 0; x != xDivision; ++x)
-						{
-							Surface frame = getFrame(set, offset);
-							// for some reason regular blit() doesn't work here how i want it, so i use this function instead.
-							temp.blitNShade(frame, 0 - (x * _subX), 0 - (y * _subY), 0);
-							++offset;
-						}
-					}
-				}
-			}
-		}
-		return set;
-	}
+                    for (int y = 0; y != yDivision; ++y)
+                    {
+                        for (int x = 0; x != xDivision; ++x)
+                        {
+                            Surface frame = getFrame(set, offset);
+                            // for some reason regular blit() doesn't work here how i want it, so i use this function instead.
+                            temp.blitNShade(frame, 0 - (x * _subX), 0 - (y * _subY), 0);
+                            ++offset;
+                        }
+                    }
+                }
+            }
+        }
+        return set;
+    }
 
-	Surface getFrame(SurfaceSet set, int index)
-	{
-		int indexWithOffset = index;
-		if (indexWithOffset >= set.getMaxSharedFrames())
-		{
-			if ((uint)indexWithOffset >= _current.size)
-			{
-				string err = $"ExtraSprites '{_type}' frame '{indexWithOffset}' exceeds mod '{_current.name}' size limit {_current.size}";
-				throw new Exception(err);
-			}
-			indexWithOffset = (int)(indexWithOffset + _current.offset);
-		}
-		else if (indexWithOffset < 0)
-		{
-			string err = $"ExtraSprites '{_type}' frame '{indexWithOffset}' in mod '{_current.name}' is not allowed.";
-			throw new Exception(err);
-		}
+    Surface getFrame(SurfaceSet set, int index)
+    {
+        int indexWithOffset = index;
+        if (indexWithOffset >= set.getMaxSharedFrames())
+        {
+            if ((uint)indexWithOffset >= _current.size)
+            {
+                string err = $"ExtraSprites '{_type}' frame '{indexWithOffset}' exceeds mod '{_current.name}' size limit {_current.size}";
+                throw new Exception(err);
+            }
+            indexWithOffset = (int)(indexWithOffset + _current.offset);
+        }
+        else if (indexWithOffset < 0)
+        {
+            string err = $"ExtraSprites '{_type}' frame '{indexWithOffset}' in mod '{_current.name}' is not allowed.";
+            throw new Exception(err);
+        }
 
-		Surface frame = set.getFrame(indexWithOffset);
-		if (frame != null)
-		{
+        Surface frame = set.getFrame(indexWithOffset);
+        if (frame != null)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Replacing frame: {index}, using index: {indexWithOffset}");
-			frame.clear();
-		}
-		else
-		{
+            frame.clear();
+        }
+        else
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Adding frame: {index}, using index: {indexWithOffset}");
-			frame = set.addFrame(indexWithOffset);
-		}
-		return frame;
-	}
+            frame = set.addFrame(indexWithOffset);
+        }
+        return frame;
+    }
 
-	static string[] exts = { "PNG", "GIF", "BMP", "LBM", "IFF", "PCX", "TGA", "TIF", "TIFF" };
-	/**
+    static string[] exts = { "PNG", "GIF", "BMP", "LBM", "IFF", "PCX", "TGA", "TIF", "TIFF" };
+    /**
 	 * Determines if an image file is an acceptable format for the game.
 	 * @param filename Image filename.
 	 * @return True/false
 	 */
-	static bool isImageFile(string filename)
-	{
-		for (var i = 0; i < exts.Length; ++i)
-		{
-			if (CrossPlatform.compareExt(filename, exts[i]))
-				return true;
-		}
-		return false;
-	}
+    static bool isImageFile(string filename)
+    {
+        for (var i = 0; i < exts.Length; ++i)
+        {
+            if (CrossPlatform.compareExt(filename, exts[i]))
+                return true;
+        }
+        return false;
+    }
 
-	/**
+    /**
 	 * Loads the extra sprite set from YAML.
 	 * @param node YAML node.
 	 * @param modIndex the internal index of the associated mod.
 	 */
-	internal void load(YamlNode node, ModData current)
-	{
-		_type = node["type"].ToString();
-		_sprites = ((YamlMappingNode)node["files"]).Children.ToDictionary(x => int.Parse(x.Key.ToString()), x => x.Value.ToString());
-		_width = int.Parse(node["width"].ToString());
-		_height = int.Parse(node["height"].ToString());
-		_singleImage = bool.Parse(node["singleImage"].ToString());
-		_subX = int.Parse(node["subX"].ToString());
-		_subY = int.Parse(node["subY"].ToString());
-		_current = current;
-	}
+    internal void load(YamlNode node, ModData current)
+    {
+        _type = node["type"].ToString();
+        _sprites = ((YamlMappingNode)node["files"]).Children.ToDictionary(x => int.Parse(x.Key.ToString()), x => x.Value.ToString());
+        _width = int.Parse(node["width"].ToString());
+        _height = int.Parse(node["height"].ToString());
+        _singleImage = bool.Parse(node["singleImage"].ToString());
+        _subX = int.Parse(node["subX"].ToString());
+        _subY = int.Parse(node["subY"].ToString());
+        _current = current;
+    }
 
-	/**
+    /**
 	 * Gets the list of sprites defined my this mod.
 	 * @return The list of sprites.
 	 */
-	Dictionary<int, string> getSprites() =>
-		_sprites;
+    Dictionary<int, string> getSprites() =>
+        _sprites;
 
-	/**
+    /**
 	 * Gets the width of the surfaces (used for single images and new spritesets).
 	 * @return The width of the surfaces.
 	 */
-	int getWidth() =>
-		_width;
+    int getWidth() =>
+        _width;
 
-	/**
+    /**
 	 * Gets the height of the surfaces (used for single images and new spritesets).
 	 * @return The height of the surfaces.
 	 */
-	int getHeight() =>
-		_height;
+    int getHeight() =>
+        _height;
 
-	/**
+    /**
 	 * Gets the x subdivision.
 	 * @return The x subdivision.
 	 */
-	int getSubX() =>
-		_subX;
+    int getSubX() =>
+        _subX;
 
-	/**
+    /**
 	 * Gets the y subdivision.
 	 * @return The y subdivision.
 	 */
-	int getSubY() =>
-		_subY;
+    int getSubY() =>
+        _subY;
 }

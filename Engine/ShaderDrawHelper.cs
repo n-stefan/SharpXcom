@@ -33,21 +33,21 @@ interface IShaderParam { }
  */
 class ShaderBase<TPixel> : IShaderParam
 {
-	protected TPixel _origin;
+    protected TPixel _origin;
     protected GraphSubset _range_base;
     protected GraphSubset _range_domain;
     protected int _pitch;
 
-	///copy constructor
-	internal ShaderBase(ShaderBase<TPixel> s)
-	{
-		_origin = s.ptr();
-		_range_base = s._range_base;
-		_range_domain = s.getDomain();
-		_pitch = s.pitch();
-	}
+    ///copy constructor
+    internal ShaderBase(ShaderBase<TPixel> s)
+    {
+        _origin = s.ptr();
+        _range_base = s._range_base;
+        _range_domain = s.getDomain();
+        _pitch = s.pitch();
+    }
 
-	/**
+    /**
 	 * create surface using vector `f` as data source.
 	 * surface will have `max_y` x `max_x` dimensions.
 	 * size of `f` should be bigger than `max_y*max_x`.
@@ -57,13 +57,13 @@ class ShaderBase<TPixel> : IShaderParam
      * @param max_x x dimension of `f`
      * @param max_y y dimension of `f`
      */
-	internal ShaderBase(List<TPixel> f, int max_x, int max_y)
-	{
-		_origin = f[0];
-		_range_base = new GraphSubset(max_x, max_y);
-		_range_domain = new GraphSubset(max_x, max_y);
-		_pitch = max_x;
-	}
+    internal ShaderBase(List<TPixel> f, int max_x, int max_y)
+    {
+        _origin = f[0];
+        _range_base = new GraphSubset(max_x, max_y);
+        _range_domain = new GraphSubset(max_x, max_y);
+        _pitch = max_x;
+    }
 
     /**
 	 * create surface using surface `s` as data source.
@@ -76,27 +76,27 @@ class ShaderBase<TPixel> : IShaderParam
     {
         _origin = (TPixel)(object)s.getSurface().pixels;
         _range_base = new GraphSubset(s.getWidth(), s.getHeight());
-		_range_domain = new GraphSubset(s.getWidth(), s.getHeight());
-		_pitch = s.getSurface().pitch;
+        _range_domain = new GraphSubset(s.getWidth(), s.getHeight());
+        _pitch = s.getSurface().pitch;
     }
 
     internal GraphSubset getDomain() =>
-		_range_domain;
+        _range_domain;
 
     internal GraphSubset getBaseDomain() =>
-		_range_base;
+        _range_base;
 
     internal void setDomain(GraphSubset g) =>
-		_range_domain = GraphSubset.intersection(g, _range_base);
+        _range_domain = GraphSubset.intersection(g, _range_base);
 
     internal ref TPixel ptr() =>
-		ref _origin;
+        ref _origin;
 
     internal int pitch() =>
-		_pitch;
+        _pitch;
 
     internal GraphSubset getImage() =>
-		_range_domain;
+        _range_domain;
 }
 
 /**
@@ -108,7 +108,7 @@ class Scalar<T> : IShaderParam
     T @ref;
 
     internal Scalar(T t) =>
-		@ref = t;
+        @ref = t;
 }
 
 /**
@@ -118,66 +118,66 @@ class Scalar<T> : IShaderParam
 class Nothing : IShaderParam { }
 
 class controller_base<T, TPixel>
-	where T : ShaderBase<TPixel>
-	where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
+    where T : ShaderBase<TPixel>
+    where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
 {
-	TPixel data;
-	TPixel ptr_pos_y;
-	TPixel ptr_pos_x;
-	GraphSubset range;
-	int start_x;
-	int start_y;
-	KeyValuePair<int, int> step;
+    TPixel data;
+    TPixel ptr_pos_y;
+    TPixel ptr_pos_x;
+    GraphSubset range;
+    int start_x;
+    int start_y;
+    KeyValuePair<int, int> step;
 
-	protected controller_base(TPixel @base, GraphSubset d, GraphSubset r, KeyValuePair<int, int> s)
-	{
-		data = @base + (TPixel)(object)(d.beg_x * s.Key) + (TPixel)(object)(d.beg_y * s.Value);
-		ptr_pos_y = default;
-		ptr_pos_x = default;
-		range = r;
-		start_x = 0;
-		start_y = 0;
-		step = s;
-	}
+    protected controller_base(TPixel @base, GraphSubset d, GraphSubset r, KeyValuePair<int, int> s)
+    {
+        data = @base + (TPixel)(object)(d.beg_x * s.Key) + (TPixel)(object)(d.beg_y * s.Value);
+        ptr_pos_y = default;
+        ptr_pos_x = default;
+        range = r;
+        start_x = 0;
+        start_y = 0;
+        step = s;
+    }
 
     internal GraphSubset get_range() =>
-		range;
+        range;
 
     internal void mod_range(ref GraphSubset r) =>
-		r = GraphSubset.intersection(range, r);
+        r = GraphSubset.intersection(range, r);
 
     internal void set_range(GraphSubset r)
-	{
-		start_x = r.beg_x - range.beg_x;
-		start_y = r.beg_y - range.beg_y;
-		range = r;
-	}
+    {
+        start_x = r.beg_x - range.beg_x;
+        start_y = r.beg_y - range.beg_y;
+        range = r;
+    }
 
     internal void mod_y(int _, int __) =>
-		ptr_pos_y = data + (TPixel)(object)(step.Key * start_x) + (TPixel)(object)(step.Value * start_y);
+        ptr_pos_y = data + (TPixel)(object)(step.Key * start_x) + (TPixel)(object)(step.Value * start_y);
 
     internal void set_y(int begin, int _) =>
-		ptr_pos_y += (TPixel)(object)(step.Value * begin);
+        ptr_pos_y += (TPixel)(object)(step.Value * begin);
 
     internal void inc_y() =>
-		ptr_pos_y += (TPixel)(object)step.Value;
+        ptr_pos_y += (TPixel)(object)step.Value;
 
     internal void mod_x(int _, int __) =>
-		ptr_pos_x = ptr_pos_y;
+        ptr_pos_x = ptr_pos_y;
 
     internal void set_x(int begin, int _) =>
-		ptr_pos_x += (TPixel)(object)(step.Key * begin);
+        ptr_pos_x += (TPixel)(object)(step.Key * begin);
 
     internal void inc_x() =>
-		ptr_pos_x += (TPixel)(object)step.Key;
+        ptr_pos_x += (TPixel)(object)step.Key;
 
     internal ref TPixel get_ref() =>
-		ref ptr_pos_x;
+        ref ptr_pos_x;
 }
 
 class controller<T, TPixel> : controller_base<T, TPixel>
-	where T : ShaderBase<TPixel>
-	where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
+    where T : ShaderBase<TPixel>
+    where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
 {
-	internal controller(ShaderBase<TPixel> f) : base(f.ptr(), f.getDomain(), f.getImage(), KeyValuePair.Create(1, f.pitch())) { }
+    internal controller(ShaderBase<TPixel> f) : base(f.ptr(), f.getDomain(), f.getImage(), KeyValuePair.Create(1, f.pitch())) { }
 }

@@ -178,12 +178,12 @@ internal class CraftArmorState : State
      */
     internal override void init()
     {
-	    base.init();
-	    uint row = 0;
-	    foreach (var i in _base.getSoldiers())
-	    {
-		    _lstSoldiers.setCellText(row, 2, tr(i.getArmor().getType()));
-		    row++;
-	    }
+        base.init();
+        uint row = 0;
+        foreach (var i in _base.getSoldiers())
+        {
+            _lstSoldiers.setCellText(row, 2, tr(i.getArmor().getType()));
+            row++;
+        }
     }
 }

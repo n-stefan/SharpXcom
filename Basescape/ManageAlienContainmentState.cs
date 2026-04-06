@@ -426,9 +426,9 @@ internal class ManageAlienContainmentState : State
      */
     internal override void think()
     {
-	    base.think();
+        base.think();
 
-	    _timerInc.think(this, null);
-	    _timerDec.think(this, null);
+        _timerInc.think(this, null);
+        _timerDec.think(this, null);
     }
 }

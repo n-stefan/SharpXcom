@@ -69,9 +69,9 @@ internal class BattlescapeMessage : Surface
      */
     internal override void blit(Surface surface)
     {
-	    base.blit(surface);
-	    _window.blit(surface);
-	    _text.blit(surface);
+        base.blit(surface);
+        _window.blit(surface);
+        _text.blit(surface);
     }
 
     /**
@@ -85,8 +85,8 @@ internal class BattlescapeMessage : Surface
      */
     internal override void initText(Font big, Font small, Language lang)
     {
-	    _text.initText(big, small, lang);
-	    _text.setBig();
+        _text.initText(big, small, lang);
+        _text.setBig();
     }
 
     /**
@@ -97,9 +97,9 @@ internal class BattlescapeMessage : Surface
      */
     internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-	    base.setPalette(colors, firstcolor, ncolors);
-	    _window.setPalette(colors, firstcolor, ncolors);
-	    _text.setPalette(colors, firstcolor, ncolors);
+        base.setPalette(colors, firstcolor, ncolors);
+        _window.setPalette(colors, firstcolor, ncolors);
+        _text.setPalette(colors, firstcolor, ncolors);
     }
 
     /**
@@ -107,14 +107,14 @@ internal class BattlescapeMessage : Surface
      * @param background Pointer to background surface.
      */
     internal void setBackground(Surface background) =>
-	    _window.setBackground(background);
+        _window.setBackground(background);
 
     /**
      * Changes the message text.
      * @param message Message string.
      */
     internal void setText(string message) =>
-	    _text.setText(message);
+        _text.setText(message);
 
     /**
      * Changes the position of the surface in the X axis.
@@ -122,9 +122,9 @@ internal class BattlescapeMessage : Surface
      */
     internal override void setX(int x)
     {
-	    base.setX(x);
-	    _window.setX(x);
-	    _text.setX(x);
+        base.setX(x);
+        _window.setX(x);
+        _text.setX(x);
     }
 
     /**
@@ -133,9 +133,9 @@ internal class BattlescapeMessage : Surface
      */
     internal override void setY(int y)
     {
-	    base.setY(y);
-	    _window.setY(y);
-	    _text.setY(y);
+        base.setY(y);
+        _window.setY(y);
+        _text.setY(y);
     }
 
     /*
@@ -144,8 +144,8 @@ internal class BattlescapeMessage : Surface
      */
     internal override void setHeight(int height)
     {
-	    base.setHeight(height);
-	    _window.setHeight(height);
-	    _text.setHeight(height);
+        base.setHeight(height);
+        _window.setHeight(height);
+        _text.setHeight(height);
     }
 }

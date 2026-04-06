@@ -156,9 +156,9 @@ internal class ConfirmLandingState : State
      */
     internal override void init()
     {
-	    base.init();
-	    Base b = (Base)_craft.getDestination();
-	    if (b == _craft.getBase())
-		    _game.popState();
+        base.init();
+        Base b = (Base)_craft.getDestination();
+        if (b == _craft.getBase())
+            _game.popState();
     }
 }

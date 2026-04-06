@@ -293,11 +293,11 @@ internal class OptionsBaseState : State
      */
     internal override void init()
     {
-	    base.init();
-	    if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
-	    {
-		    applyBattlescapeTheme();
-	    }
+        base.init();
+        if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
+        {
+            applyBattlescapeTheme();
+        }
     }
 
     /**
@@ -307,8 +307,8 @@ internal class OptionsBaseState : State
      */
     internal override void resize(ref int dX, ref int dY)
     {
-	    Options.newDisplayWidth = Options.displayWidth;
-	    Options.newDisplayHeight = Options.displayHeight;
-	    base.resize(ref dX, ref dY);
+        Options.newDisplayWidth = Options.displayWidth;
+        Options.newDisplayHeight = Options.displayHeight;
+        base.resize(ref dX, ref dY);
     }
 }

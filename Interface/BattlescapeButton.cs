@@ -118,7 +118,7 @@ internal class BattlescapeButton : InteractiveSurface
      * @return TFTD mode.
      */
     internal bool isTFTDMode() =>
-	    _tftdMode;
+        _tftdMode;
 
     /**
      * Invert a button explicitly either ON or OFF and keep track of the state using our internal variables.
@@ -139,22 +139,22 @@ internal class BattlescapeButton : InteractiveSurface
      */
     internal void setGroup(BattlescapeButton group)
     {
-	    _group = group;
-	    if (_group != null && _group == this)
-		    _inverted = true;
+        _group = group;
+        if (_group != null && _group == this)
+            _inverted = true;
     }
 
     /**
      * Toggle inversion mode: click to press, click to unpress.
      */
     internal void allowToggleInversion() =>
-	    _toggleMode = InversionType.INVERT_TOGGLE;
+        _toggleMode = InversionType.INVERT_TOGGLE;
 
     /**
      * Click inversion mode: click to press, release to unpress.
      */
     internal void allowClickInversion() =>
-	    _toggleMode = InversionType.INVERT_CLICK;
+        _toggleMode = InversionType.INVERT_CLICK;
 
     /**
      * Blits this surface or the alternate surface onto another one,
@@ -163,14 +163,14 @@ internal class BattlescapeButton : InteractiveSurface
      */
     internal override void blit(Surface surface)
     {
-	    if (_inverted)
-	    {
-		    _altSurface.blit(surface);
-	    }
-	    else
-	    {
-		    base.blit(surface);
-	    }
+        if (_inverted)
+        {
+            _altSurface.blit(surface);
+        }
+        else
+        {
+            base.blit(surface);
+        }
     }
 
     /**
@@ -181,20 +181,20 @@ internal class BattlescapeButton : InteractiveSurface
      */
     internal override void mousePress(Action action, State state)
     {
-	    if (_group != null)
-	    {
-		    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-		    {
-			    _group.toggle(false);
-			    _group = this;
-			    _inverted = true;
-		    }
-	    }
-	    else if ((_tftdMode || _toggleMode == InversionType.INVERT_CLICK) && !_inverted && isButtonPressed() && isButtonHandled(action.getDetails().button.button))
-	    {
-		    _inverted = true;
-	    }
-	    base.mousePress(action, state);
+        if (_group != null)
+        {
+            if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+            {
+                _group.toggle(false);
+                _group = this;
+                _inverted = true;
+            }
+        }
+        else if ((_tftdMode || _toggleMode == InversionType.INVERT_CLICK) && !_inverted && isButtonPressed() && isButtonHandled(action.getDetails().button.button))
+        {
+            _inverted = true;
+        }
+        base.mousePress(action, state);
     }
 
     /*
@@ -204,11 +204,11 @@ internal class BattlescapeButton : InteractiveSurface
      */
     protected override void mouseRelease(Action action, State state)
     {
-	    if (_inverted && isButtonHandled(action.getDetails().button.button))
-	    {
-		    _inverted = false;
-	    }
-	    base.mouseRelease(action, state);
+        if (_inverted && isButtonHandled(action.getDetails().button.button))
+        {
+            _inverted = false;
+        }
+        base.mouseRelease(action, state);
     }
 
     /**
@@ -217,11 +217,11 @@ internal class BattlescapeButton : InteractiveSurface
      */
     internal override void setX(int x)
     {
-	    base.setX(x);
-	    if (_altSurface != null)
-	    {
-		    _altSurface.setX(x);
-	    }
+        base.setX(x);
+        if (_altSurface != null)
+        {
+            _altSurface.setX(x);
+        }
     }
 
     /**
@@ -230,11 +230,11 @@ internal class BattlescapeButton : InteractiveSurface
      */
     internal override void setY(int y)
     {
-	    base.setY(y);
-	    if (_altSurface != null)
-	    {
-		    _altSurface.setY(y);
-	    }
+        base.setY(y);
+        if (_altSurface != null)
+        {
+            _altSurface.setY(y);
+        }
     }
 
     /**
@@ -242,12 +242,12 @@ internal class BattlescapeButton : InteractiveSurface
      * @param color Color value.
      */
     internal override void setColor(byte color) =>
-	    _color = color;
+        _color = color;
 
     /**
      * Returns the color for the battlescape button.
      * @return Color value.
      */
     byte getColor() =>
-	    _color;
+        _color;
 }

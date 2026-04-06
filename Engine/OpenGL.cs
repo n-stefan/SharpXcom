@@ -175,15 +175,15 @@ unsafe internal class OpenGL
     internal static void glErrorCheck([CallerFilePath] string file = default, [CallerLineNumber] int line = default)
     {
         uint glErr;
-	    if (checkErrors && !reported && (glErr = glGetError()) != GL_NO_ERROR)
-	    {
-		    reported = true;
+        if (checkErrors && !reported && (glErr = glGetError()) != GL_NO_ERROR)
+        {
+            reported = true;
 
-		    do
-		    {
+            do
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {file}:{line}: glGetError() complaint: {strGLError(glErr)}");
-		    } while ((glErr = glGetError()) != GL_NO_ERROR);
-	    }
+            } while ((glErr = glGetError()) != GL_NO_ERROR);
+        }
     }
 
     static string strGLError(uint glErr)
@@ -338,7 +338,7 @@ unsafe internal class OpenGL
 
     internal void refresh(bool smooth, uint inwidth, uint inheight, uint outwidth, uint outheight, int topBlackBand, int bottomBlackBand, int leftBlackBand, int rightBlackBand)
     {
-        while (glGetError() != GL_NO_ERROR); // clear possible error from who knows where
+        while (glGetError() != GL_NO_ERROR) ; // clear possible error from who knows where
         clear();
         if (shader_support && glprogram != 0)
         {
@@ -466,145 +466,145 @@ unsafe internal class OpenGL
 
     internal bool set_shader(string source_yaml_filename)
     {
-	    if (!shader_support) return false;
+        if (!shader_support) return false;
 
-	    if (glprogram != 0)
-	    {
-		    glDeleteProgram(glprogram);
-		    glprogram = 0;
-	    }
+        if (glprogram != 0)
+        {
+            glDeleteProgram(glprogram);
+            glprogram = 0;
+        }
 
-	    if (!string.IsNullOrEmpty(source_yaml_filename) && source_yaml_filename[0] != '\0')
-	    {
-		    glprogram = glCreateProgram();
-		    if (glprogram == 0)
-		    {
+        if (!string.IsNullOrEmpty(source_yaml_filename) && source_yaml_filename[0] != '\0')
+        {
+            glprogram = glCreateProgram();
+            if (glprogram == 0)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to create GLSL shader program");
-			    return false;
-		    }
-		    try
-		    {
+                return false;
+            }
+            try
+            {
                 using var input = new StreamReader(source_yaml_filename);
                 var yaml = new YamlStream();
                 yaml.Load(input);
                 var document = (YamlMappingNode)yaml.Documents[0].RootNode; //YAML.Node document = YAML.LoadFile(source_yaml_filename);
 
                 bool is_glsl;
-			    string language = document.Children["language"].ToString();
-			    is_glsl = (language == "GLSL");
+                string language = document.Children["language"].ToString();
+                is_glsl = (language == "GLSL");
 
-			    linear = bool.Parse(document.Children["linear"].ToString()); // some shaders want texture linear interpolation and some don't
-			    string fragment_source = document.Children["fragment"] != null ? document.Children["fragment"].ToString() : string.Empty;
-			    string vertex_source = document.Children["vertex"] != null ? document.Children["vertex"].ToString() : string.Empty;
+                linear = bool.Parse(document.Children["linear"].ToString()); // some shaders want texture linear interpolation and some don't
+                string fragment_source = document.Children["fragment"] != null ? document.Children["fragment"].ToString() : string.Empty;
+                string vertex_source = document.Children["vertex"] != null ? document.Children["vertex"].ToString() : string.Empty;
 
-			    if (is_glsl)
-			    {
-				    if (!string.IsNullOrEmpty(fragment_source)) set_fragment_shader(fragment_source);
-				    if (!string.IsNullOrEmpty(vertex_source)) set_vertex_shader(vertex_source);
-			    }
-			    else
-			    {
+                if (is_glsl)
+                {
+                    if (!string.IsNullOrEmpty(fragment_source)) set_fragment_shader(fragment_source);
+                    if (!string.IsNullOrEmpty(vertex_source)) set_vertex_shader(vertex_source);
+                }
+                else
+                {
                     Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Unexpected shader language \"{document.Children["language"]}\"");
-			    }
-		    }
-		    catch (YamlException e)
-		    {
+                }
+            }
+            catch (YamlException e)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {source_yaml_filename}: {e.Message}");
-			    glDeleteProgram(glprogram);
-			    glprogram = 0;
-			    return false;
-		    }
+                glDeleteProgram(glprogram);
+                glprogram = 0;
+                return false;
+            }
 
             glLinkProgram(glprogram);
             glErrorCheck();
             glGetProgramiv(glprogram, GL_LINK_STATUS, out int linkStatus);
-		    glErrorCheck();
-		    if (linkStatus != GL_TRUE)
-		    {
+            glErrorCheck();
+            if (linkStatus != GL_TRUE)
+            {
                 glGetProgramiv(glprogram, GL_INFO_LOG_LENGTH, out int infoLogLength);
-			    glErrorCheck();
-			    if (infoLogLength == 0)
-			    {
+                glErrorCheck();
+                if (infoLogLength == 0)
+                {
                     Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} OpenGL shader link failed: No log returned from driver");
-			    }
-			    else
-			    {
-				    glGetProgramInfoLog(glprogram, infoLogLength, null, out string infoLog);
-				    glErrorCheck();
+                }
+                else
+                {
+                    glGetProgramInfoLog(glprogram, infoLogLength, null, out string infoLog);
+                    glErrorCheck();
 
                     Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} OpenGL shader link failed \"{infoLog}\"");
 
-				    infoLog = null;
-			    }
-			    glDeleteProgram(glprogram);
-			    glErrorCheck();
-			    glprogram = 0;
-		    }
-	    }
-	    return glprogram != 0;
+                    infoLog = null;
+                }
+                glDeleteProgram(glprogram);
+                glErrorCheck();
+                glprogram = 0;
+            }
+        }
+        return glprogram != 0;
     }
 
     void set_fragment_shader(string source)
     {
         int fragmentshader = (int)createShader(GL_FRAGMENT_SHADER, source);
-	    if (fragmentshader != 0)
-	    {
-		    glAttachShader(glprogram, (uint)fragmentshader);
-		    glErrorCheck();
-		    glDeleteShader((uint)fragmentshader);
-	    }
+        if (fragmentshader != 0)
+        {
+            glAttachShader(glprogram, (uint)fragmentshader);
+            glErrorCheck();
+            glDeleteShader((uint)fragmentshader);
+        }
     }
 
     void set_vertex_shader(string source)
     {
         int vertexshader = (int)createShader(GL_VERTEX_SHADER, source);
-	    if (vertexshader != 0)
-	    {
-		    glAttachShader(glprogram, (uint)vertexshader);
-		    glErrorCheck();
-		    glDeleteShader((uint)vertexshader);
-	    }
+        if (vertexshader != 0)
+        {
+            glAttachShader(glprogram, (uint)vertexshader);
+            glErrorCheck();
+            glDeleteShader((uint)vertexshader);
+        }
     }
 
     static uint createShader(uint type, string source)
     {
         uint shader = glCreateShader(type);
-	    glErrorCheck();
+        glErrorCheck();
         glShaderSource(shader, 1, source, 0);
-	    glErrorCheck();
-	    glCompileShader(shader);
-	    glErrorCheck();
+        glErrorCheck();
+        glCompileShader(shader);
+        glErrorCheck();
 
-	    glGetShaderiv(shader, GL_COMPILE_STATUS, out int compileSuccess);
-	    glErrorCheck();
-	    if (compileSuccess != GL_TRUE)
-	    {
-		    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, out int infoLogLength);
-		    glErrorCheck();
-		    if (infoLogLength == 0)
-		    {
+        glGetShaderiv(shader, GL_COMPILE_STATUS, out int compileSuccess);
+        glErrorCheck();
+        if (compileSuccess != GL_TRUE)
+        {
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, out int infoLogLength);
+            glErrorCheck();
+            if (infoLogLength == 0)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} OpenGL shader compilation failed: No log returned from driver");
-		    }
-		    else
-		    {
+            }
+            else
+            {
                 glGetShaderInfoLog(shader, infoLogLength, null, out string infoLog);
-			    glErrorCheck();
+                glErrorCheck();
 
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} OpenGL shader compilation failed: \"{infoLog}\"");
 
-			    infoLog = null;
-		    }
-		    glDeleteShader(shader);
-		    glErrorCheck();
-		    shader = 0;
-	    }
+                infoLog = null;
+            }
+            glDeleteShader(shader);
+            glErrorCheck();
+            shader = 0;
+        }
 
         return shader;
     }
 
     void @lock(ref nint data, ref uint pitch)
     {
-	    pitch = iwidth * ibpp;
-	    data = buffer;
+        pitch = iwidth * ibpp;
+        data = buffer;
     }
 }

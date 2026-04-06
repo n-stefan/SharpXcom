@@ -51,14 +51,14 @@ internal class AlienBase : Target
      */
     internal override YamlNode save()
     {
-	    var node = (YamlMappingNode)base.save();
-	    node.Add("race", _race);
-	    if (_inBattlescape)
-		    node.Add("inBattlescape", _inBattlescape.ToString());
+        var node = (YamlMappingNode)base.save();
+        node.Add("race", _race);
+        if (_inBattlescape)
+            node.Add("inBattlescape", _inBattlescape.ToString());
         if (_discovered)
             node.Add("discovered", _discovered.ToString());
-	    node.Add("deployment", _deployment.getType());
-	    return node;
+        node.Add("deployment", _deployment.getType());
+        return node;
     }
 
     /**
@@ -67,9 +67,9 @@ internal class AlienBase : Target
      */
     internal override int getMarker()
     {
-	    if (!_discovered)
-		    return -1;
-	    return _deployment.getMarkerIcon();
+        if (!_discovered)
+            return -1;
+        return _deployment.getMarkerIcon();
     }
 
     /**
@@ -77,7 +77,7 @@ internal class AlienBase : Target
      * @param race Alien race.
      */
     internal void setAlienRace(string race) =>
-	    _race = race;
+        _race = race;
 
     /**
      * Sets the alien base's geoscape status.
@@ -87,28 +87,28 @@ internal class AlienBase : Target
         _discovered = discovered;
 
     internal AlienDeployment getDeployment() =>
-	    _deployment;
+        _deployment;
 
     /**
      * Gets the alien base's geoscape status.
      * @return Has the base been discovered?
      */
     internal bool isDiscovered() =>
-	    _discovered;
+        _discovered;
 
     /**
      * Returns the alien race currently residing in the alien base.
      * @return Alien race.
      */
     internal string getAlienRace() =>
-	    _race;
+        _race;
 
     /**
      * Gets the alien base's battlescape status.
      * @return Is the base on the battlescape?
      */
     internal bool isInBattlescape() =>
-	    _inBattlescape;
+        _inBattlescape;
 
     /**
      * Sets the alien base's battlescape status.
@@ -123,7 +123,7 @@ internal class AlienBase : Target
      * @return ID.
      */
     internal override string getType() =>
-	    _deployment.getMarkerName();
+        _deployment.getMarkerName();
 
     /**
      * Loads the alien base from a YAML file.
@@ -131,9 +131,9 @@ internal class AlienBase : Target
      */
     internal override void load(YamlNode node)
     {
-	    base.load(node);
-	    _race = node["race"].ToString();
-	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
-	    _discovered = bool.Parse(node["discovered"].ToString());
+        base.load(node);
+        _race = node["race"].ToString();
+        _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+        _discovered = bool.Parse(node["discovered"].ToString());
     }
 }

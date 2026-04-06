@@ -194,7 +194,7 @@ internal class ManufactureState : State
      */
     internal override void init()
     {
-	    base.init();
-	    fillProductionList();
+        base.init();
+        fillProductionList();
     }
 }

@@ -62,7 +62,7 @@ internal class RuleCommendations
             var value = ((YamlSequenceNode)i.Value).Children.Select(x => int.Parse(x.ToString())).ToList();
             _criteria.Add(key, value);
         }
-	    _sprite = int.Parse(node["sprite"].ToString());
+        _sprite = int.Parse(node["sprite"].ToString());
         _killCriteria = new List<List<KeyValuePair<int, List<string>>>>();
         foreach (var i in ((YamlSequenceNode)node["killCriteria"]).Children)
         {
@@ -82,14 +82,14 @@ internal class RuleCommendations
      * @return string Commendation description.
      */
     internal string getDescription() =>
-	    _description;
+        _description;
 
     /**
      * Get the commendation's sprite.
      * @return int Sprite number.
      */
     internal int getSprite() =>
-	    _sprite;
+        _sprite;
 
     /**
      * Get the commendation's award criteria.
@@ -103,5 +103,5 @@ internal class RuleCommendations
      * @return vecotr<string> Commendation kill criteria.
      */
     internal List<List<KeyValuePair<int, List<string>>>> getKillCriteria() =>
-	    _killCriteria;
+        _killCriteria;
 }

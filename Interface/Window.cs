@@ -171,13 +171,13 @@ internal class Window : Surface
      */
     internal override void think()
     {
-	    if (_hidden && _popupStep < 1.0)
-	    {
-		    _state.hideAll();
-		    setHidden(false);
-	    }
+        if (_hidden && _popupStep < 1.0)
+        {
+            _state.hideAll();
+            setHidden(false);
+        }
 
-	    _timer.think(null, this);
+        _timer.think(null, this);
     }
 
     /**
@@ -188,104 +188,104 @@ internal class Window : Surface
      */
     internal override void draw()
     {
-	    base.draw();
-	    SDL_Rect square;
+        base.draw();
+        SDL_Rect square;
 
-	    if (_popup == WindowPopup.POPUP_HORIZONTAL || _popup == WindowPopup.POPUP_BOTH)
-	    {
-		    square.x = (int)((getWidth() - getWidth() * _popupStep) / 2);
-		    square.w = (int)(getWidth() * _popupStep);
-	    }
-	    else
-	    {
-		    square.x = 0;
-		    square.w = getWidth();
-	    }
-	    if (_popup == WindowPopup.POPUP_VERTICAL || _popup == WindowPopup.POPUP_BOTH)
-	    {
-		    square.y = (int)((getHeight() - getHeight() * _popupStep) / 2);
-		    square.h = (int)(getHeight() * _popupStep);
-	    }
-	    else
-	    {
-		    square.y = 0;
-		    square.h = getHeight();
-	    }
+        if (_popup == WindowPopup.POPUP_HORIZONTAL || _popup == WindowPopup.POPUP_BOTH)
+        {
+            square.x = (int)((getWidth() - getWidth() * _popupStep) / 2);
+            square.w = (int)(getWidth() * _popupStep);
+        }
+        else
+        {
+            square.x = 0;
+            square.w = getWidth();
+        }
+        if (_popup == WindowPopup.POPUP_VERTICAL || _popup == WindowPopup.POPUP_BOTH)
+        {
+            square.y = (int)((getHeight() - getHeight() * _popupStep) / 2);
+            square.h = (int)(getHeight() * _popupStep);
+        }
+        else
+        {
+            square.y = 0;
+            square.h = getHeight();
+        }
 
-	    int mul = 1;
-	    if (_contrast)
-	    {
-		    mul = 2;
-	    }
-	    byte color = (byte)(_color + 3 * mul);
+        int mul = 1;
+        if (_contrast)
+        {
+            mul = 2;
+        }
+        byte color = (byte)(_color + 3 * mul);
 
-	    if (_thinBorder)
-	    {
-		    color = (byte)(_color + 1 * mul);
-		    for (int i = 0; i < 5; ++i)
-		    {
-			    drawRect(ref square, color);
+        if (_thinBorder)
+        {
+            color = (byte)(_color + 1 * mul);
+            for (int i = 0; i < 5; ++i)
+            {
+                drawRect(ref square, color);
 
-			    if (i % 2 == 0)
-			    {
-				    square.x++;
-				    square.y++;
-			    }
-			    square.w--;
-			    square.h--;
+                if (i % 2 == 0)
+                {
+                    square.x++;
+                    square.y++;
+                }
+                square.w--;
+                square.h--;
 
-			    switch (i)
-			    {
-			        case 0:
-				        color = (byte)(_color + 5 * mul);
-				        setPixel(square.w, 0, color);
-				        break;
-			        case 1:
-				        color = (byte)(_color + 2 * mul);
-				        break;
-			        case 2:
-				        color = (byte)(_color + 4 * mul);
-				        setPixel(square.w+1, 1, color);
-				        break;
-			        case 3:
-				        color = (byte)(_color + 3 * mul);
-				        break;
-			    }
-		    }
-	    }
-	    else
-	    {
-		    for (int i = 0; i < 5; ++i)
-		    {
-			    drawRect(ref square, color);
-			    if (i < 2)
-				    color = (byte)(color - 1 * mul);
-			    else
-				    color = (byte)(color + 1 * mul);
-			    square.x++;
-			    square.y++;
-			    if (square.w >= 2)
-				    square.w -= 2;
-			    else
-				    square.w = 1;
+                switch (i)
+                {
+                    case 0:
+                        color = (byte)(_color + 5 * mul);
+                        setPixel(square.w, 0, color);
+                        break;
+                    case 1:
+                        color = (byte)(_color + 2 * mul);
+                        break;
+                    case 2:
+                        color = (byte)(_color + 4 * mul);
+                        setPixel(square.w + 1, 1, color);
+                        break;
+                    case 3:
+                        color = (byte)(_color + 3 * mul);
+                        break;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 5; ++i)
+            {
+                drawRect(ref square, color);
+                if (i < 2)
+                    color = (byte)(color - 1 * mul);
+                else
+                    color = (byte)(color + 1 * mul);
+                square.x++;
+                square.y++;
+                if (square.w >= 2)
+                    square.w -= 2;
+                else
+                    square.w = 1;
 
-			    if (square.h >= 2)
-				    square.h -= 2;
-			    else
-				    square.h = 1;
-		    }
-	    }
+                if (square.h >= 2)
+                    square.h -= 2;
+                else
+                    square.h = 1;
+            }
+        }
 
-	    if (_bg != null)
-	    {
-		    _bg.getCrop().x = square.x - _dx;
-		    _bg.getCrop().y = square.y - _dy;
-		    _bg.getCrop().w = square.w ;
-		    _bg.getCrop().h = square.h ;
-		    _bg.setX(square.x);
-		    _bg.setY(square.y);
-		    _bg.blit(this);
-	    }
+        if (_bg != null)
+        {
+            _bg.getCrop().x = square.x - _dx;
+            _bg.getCrop().y = square.y - _dy;
+            _bg.getCrop().w = square.w;
+            _bg.getCrop().h = square.h;
+            _bg.setX(square.x);
+            _bg.setY(square.y);
+            _bg.blit(this);
+        }
     }
 
     /**
@@ -293,12 +293,12 @@ internal class Window : Surface
      * @return Color value.
      */
     byte getColor() =>
-	    _color;
+        _color;
 
     /**
      * Changes the horizontal offset of the surface in the X axis.
      * @param dx X position in pixels.
      */
     void setDX(int dx) =>
-	    _dx = dx;
+        _dx = dx;
 }

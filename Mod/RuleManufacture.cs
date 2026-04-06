@@ -52,14 +52,14 @@ internal class RuleManufacture : IListOrder, IRule
      * @return The name.
      */
     internal string getName() =>
-	    _name;
+        _name;
 
     /**
      * Gets the list weight for this manufacture item.
      * @return The list weight for this manufacture item.
      */
     public int getListOrder() =>
-	    _listOrder;
+        _listOrder;
 
     /**
      * Loads the manufacture project from a YAML file.
@@ -68,26 +68,26 @@ internal class RuleManufacture : IListOrder, IRule
      */
     internal void load(YamlNode node, int listOrder)
     {
-	    bool same = (1 == _producedItems.Count && _name == _producedItems.First().Key);
-	    _name = node["name"].ToString();
-	    if (same)
-	    {
-		    int value = _producedItems.First().Value;
-		    _producedItems.Clear();
-		    _producedItems[_name] = value;
-	    }
-	    _category = node["category"].ToString();
+        bool same = (1 == _producedItems.Count && _name == _producedItems.First().Key);
+        _name = node["name"].ToString();
+        if (same)
+        {
+            int value = _producedItems.First().Value;
+            _producedItems.Clear();
+            _producedItems[_name] = value;
+        }
+        _category = node["category"].ToString();
         _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
         _space = int.Parse(node["space"].ToString());
         _time = int.Parse(node["time"].ToString());
-	    _cost = int.Parse(node["cost"].ToString());
+        _cost = int.Parse(node["cost"].ToString());
         _requiredItems = ((YamlMappingNode)node["requiredItems"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
         _producedItems = ((YamlMappingNode)node["producedItems"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
-	    _listOrder = int.Parse(node["listOrder"].ToString());
-	    if (_listOrder == 0)
-	    {
-		    _listOrder = listOrder;
-	    }
+        _listOrder = int.Parse(node["listOrder"].ToString());
+        if (_listOrder == 0)
+        {
+            _listOrder = listOrder;
+        }
     }
 
     /**
@@ -95,7 +95,7 @@ internal class RuleManufacture : IListOrder, IRule
      * @return The time needed to manufacture one object (in man/hour).
      */
     internal int getManufactureTime() =>
-	    _time;
+        _time;
 
     /**
      * Gets the list of research required to
@@ -103,21 +103,21 @@ internal class RuleManufacture : IListOrder, IRule
      * @return A list of research IDs.
      */
     internal List<string> getRequirements() =>
-	    _requires;
+        _requires;
 
     /**
      * Gets the list of items produced by completing "one object" of this project.
      * @return The list of items produced by completing "one object" of this project.
      */
     internal Dictionary<string, int> getProducedItems() =>
-	    _producedItems;
+        _producedItems;
 
     /**
      * Gets the category shown in the manufacture list.
      * @return The category.
      */
     internal string getCategory() =>
-	    _category;
+        _category;
 
     /**
      * Checks if there's enough funds to manufacture one object.
@@ -125,27 +125,27 @@ internal class RuleManufacture : IListOrder, IRule
      * @return True if manufacture is possible.
      */
     internal bool haveEnoughMoneyForOneMoreUnit(long funds) =>
-	    // either we have enough money, or the production doesn't cost anything
-	    funds >= _cost || _cost <= 0;
+        // either we have enough money, or the production doesn't cost anything
+        funds >= _cost || _cost <= 0;
 
     /**
      * Gets the list of items required to manufacture one object.
      * @return The list of items required to manufacture one object.
      */
     internal Dictionary<string, int> getRequiredItems() =>
-	    _requiredItems;
+        _requiredItems;
 
     /**
      * Gets the cost of manufacturing one object.
      * @return The cost of manufacturing one object.
      */
     internal int getManufactureCost() =>
-	    _cost;
+        _cost;
 
     /**
      * Gets the required workspace to start production.
      * @return The required workspace.
      */
     internal int getRequiredSpace() =>
-	    _space;
+        _space;
 }

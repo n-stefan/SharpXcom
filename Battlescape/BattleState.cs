@@ -78,5 +78,5 @@ internal class BattleState
      * @return Error or empty string when everything is fine.
      */
     internal BattleAction getAction() =>
-	    _action;
+        _action;
 }

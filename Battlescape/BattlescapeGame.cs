@@ -414,7 +414,7 @@ internal class BattlescapeGame
             // Possible causes of death: bleed out, fire.
             // Possible causes of unconciousness: wounds, smoke.
             // Assumption : The last person to hit the victim is the murderer.
-		    if (murderer == null && !terrainExplosion)
+            if (murderer == null && !terrainExplosion)
             {
                 foreach (var i in _save.getUnits())
                 {
@@ -955,7 +955,7 @@ internal class BattlescapeGame
      * @return Whether a playable unit is selected.
      */
     internal bool playableUnitSelected() =>
-	    _save.getSelectedUnit() != null && (_save.getSide() == UnitFaction.FACTION_PLAYER || _save.getDebugMode());
+        _save.getSelectedUnit() != null && (_save.getSide() == UnitFaction.FACTION_PLAYER || _save.getDebugMode());
 
     /// Returns whether panic has been handled.
     internal bool getPanicHandled() =>
@@ -966,7 +966,7 @@ internal class BattlescapeGame
      * @return true or false.
      */
     internal bool isBusy() =>
-	    _states.Any();
+        _states.Any();
 
     internal List<BattleState> getStates() =>
         _states;
@@ -1000,17 +1000,17 @@ internal class BattlescapeGame
      * @param reserved Should we reserve an extra 4 TUs to kneel?
      */
     internal void setKneelReserved(bool reserved) =>
-	    _save.setKneelReserved(reserved);
+        _save.setKneelReserved(reserved);
 
     /**
      * Initializes the Battlescape game.
      */
     internal void init()
     {
-	    if (_save.getSide() == UnitFaction.FACTION_PLAYER && _save.getTurn() > 1)
-	    {
-		    _playerPanicHandled = false;
-	    }
+        if (_save.getSide() == UnitFaction.FACTION_PLAYER && _save.getTurn() > 1)
+        {
+            _playerPanicHandled = false;
+        }
     }
 
     /**
@@ -1018,7 +1018,7 @@ internal class BattlescapeGame
      * @return the depth of the battlescape.
      */
     internal int getDepth() =>
-	    _save.getDepth();
+        _save.getDepth();
 
     /**
      * Removes the current state.
@@ -1029,133 +1029,133 @@ internal class BattlescapeGame
      */
     internal void popState()
     {
-	    if (Options.traceAI)
-	    {
+        if (Options.traceAI)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} BattlescapeGame.popState() #{_AIActionCounter} with {(_save.getSelectedUnit() != null ? _save.getSelectedUnit().getTimeUnits() : -9999)} TU");
-	    }
-	    bool actionFailed = false;
+        }
+        bool actionFailed = false;
 
-	    if (!_states.Any()) return;
+        if (!_states.Any()) return;
 
-	    BattleAction action = _states.First().getAction();
+        BattleAction action = _states.First().getAction();
 
-	    if (action.actor != null && action.result.Any() && action.actor.getFaction() == UnitFaction.FACTION_PLAYER
-		    && _playerPanicHandled && (_save.getSide() == UnitFaction.FACTION_PLAYER || _debugPlay))
-	    {
-		    _parentState.warning(action.result);
-		    actionFailed = true;
-	    }
-	    _deleted.Add(_states.First());
-	    _states.RemoveAt(0);
+        if (action.actor != null && action.result.Any() && action.actor.getFaction() == UnitFaction.FACTION_PLAYER
+            && _playerPanicHandled && (_save.getSide() == UnitFaction.FACTION_PLAYER || _debugPlay))
+        {
+            _parentState.warning(action.result);
+            actionFailed = true;
+        }
+        _deleted.Add(_states.First());
+        _states.RemoveAt(0);
 
-	    // handle the end of this unit's actions
-	    if (action.actor != null && noActionsPending(action.actor))
-	    {
-		    if (action.actor.getFaction() == UnitFaction.FACTION_PLAYER)
-		    {
-			    // spend TUs of "target triggered actions" (shooting, throwing) only
-			    // the other actions' TUs (healing,scanning,..) are already take care of
-			    if (action.targeting && _save.getSelectedUnit() != null && !actionFailed)
-			    {
-				    action.actor.spendTimeUnits(action.TU);
-			    }
-			    if (_save.getSide() == UnitFaction.FACTION_PLAYER)
-			    {
-				    // after throwing the cursor returns to default cursor, after shooting it stays in targeting mode and the player can shoot again in the same mode (autoshot,snap,aimed)
-				    if ((action.type == BattleActionType.BA_THROW || action.type == BattleActionType.BA_LAUNCH) && !actionFailed)
-				    {
-					    // clean up the waypoints
-					    if (action.type == BattleActionType.BA_LAUNCH)
-					    {
-						    _currentAction.waypoints.Clear();
-					    }
+        // handle the end of this unit's actions
+        if (action.actor != null && noActionsPending(action.actor))
+        {
+            if (action.actor.getFaction() == UnitFaction.FACTION_PLAYER)
+            {
+                // spend TUs of "target triggered actions" (shooting, throwing) only
+                // the other actions' TUs (healing,scanning,..) are already take care of
+                if (action.targeting && _save.getSelectedUnit() != null && !actionFailed)
+                {
+                    action.actor.spendTimeUnits(action.TU);
+                }
+                if (_save.getSide() == UnitFaction.FACTION_PLAYER)
+                {
+                    // after throwing the cursor returns to default cursor, after shooting it stays in targeting mode and the player can shoot again in the same mode (autoshot,snap,aimed)
+                    if ((action.type == BattleActionType.BA_THROW || action.type == BattleActionType.BA_LAUNCH) && !actionFailed)
+                    {
+                        // clean up the waypoints
+                        if (action.type == BattleActionType.BA_LAUNCH)
+                        {
+                            _currentAction.waypoints.Clear();
+                        }
 
-					    cancelCurrentAction(true);
-				    }
-				    _parentState.getGame().getCursor().setVisible(true);
-				    setupCursor();
-			    }
-		    }
-		    else
-		    {
-			    // spend TUs
-			    action.actor.spendTimeUnits(action.TU);
-			    if (_save.getSide() != UnitFaction.FACTION_PLAYER && !_debugPlay)
-			    {
-				    // AI does three things per unit, before switching to the next, or it got killed before doing the second thing
-				    if (_AIActionCounter > 2 || _save.getSelectedUnit() == null || _save.getSelectedUnit().isOut())
-				    {
-					    if (_save.getSelectedUnit() != null)
-					    {
-						    _save.getSelectedUnit().setCache(null);
-						    getMap().cacheUnit(_save.getSelectedUnit());
-					    }
-					    _AIActionCounter = 0;
-					    if (!_states.Any() && _save.selectNextPlayerUnit(true) == null)
-					    {
-						    if (!_save.getDebugMode())
-						    {
-							    _endTurnRequested = true;
-							    statePushBack(null); // end AI turn
-						    }
-						    else
-						    {
-							    _save.selectNextPlayerUnit();
-							    _debugPlay = true;
-						    }
-					    }
-					    if (_save.getSelectedUnit() != null)
-					    {
-						    getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
-					    }
-				    }
-			    }
-			    else if (_debugPlay)
-			    {
-				    _parentState.getGame().getCursor().setVisible(true);
-				    setupCursor();
-			    }
-		    }
-	    }
+                        cancelCurrentAction(true);
+                    }
+                    _parentState.getGame().getCursor().setVisible(true);
+                    setupCursor();
+                }
+            }
+            else
+            {
+                // spend TUs
+                action.actor.spendTimeUnits(action.TU);
+                if (_save.getSide() != UnitFaction.FACTION_PLAYER && !_debugPlay)
+                {
+                    // AI does three things per unit, before switching to the next, or it got killed before doing the second thing
+                    if (_AIActionCounter > 2 || _save.getSelectedUnit() == null || _save.getSelectedUnit().isOut())
+                    {
+                        if (_save.getSelectedUnit() != null)
+                        {
+                            _save.getSelectedUnit().setCache(null);
+                            getMap().cacheUnit(_save.getSelectedUnit());
+                        }
+                        _AIActionCounter = 0;
+                        if (!_states.Any() && _save.selectNextPlayerUnit(true) == null)
+                        {
+                            if (!_save.getDebugMode())
+                            {
+                                _endTurnRequested = true;
+                                statePushBack(null); // end AI turn
+                            }
+                            else
+                            {
+                                _save.selectNextPlayerUnit();
+                                _debugPlay = true;
+                            }
+                        }
+                        if (_save.getSelectedUnit() != null)
+                        {
+                            getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+                        }
+                    }
+                }
+                else if (_debugPlay)
+                {
+                    _parentState.getGame().getCursor().setVisible(true);
+                    setupCursor();
+                }
+            }
+        }
 
-	    if (_states.Any())
-	    {
-		    // end turn request?
-		    if (_states.First() == null)
-		    {
-			    while (_states.Any())
-			    {
-				    if (_states.First() == null)
-					    _states.RemoveAt(0);
-				    else
-					    break;
-			    }
-			    if (!_states.Any())
-			    {
-				    endTurn();
-				    return;
-			    }
-			    else
-			    {
-				    _states.Add(null);
-			    }
-		    }
-		    // init the next state in queue
-		    _states.First().init();
-	    }
+        if (_states.Any())
+        {
+            // end turn request?
+            if (_states.First() == null)
+            {
+                while (_states.Any())
+                {
+                    if (_states.First() == null)
+                        _states.RemoveAt(0);
+                    else
+                        break;
+                }
+                if (!_states.Any())
+                {
+                    endTurn();
+                    return;
+                }
+                else
+                {
+                    _states.Add(null);
+                }
+            }
+            // init the next state in queue
+            _states.First().init();
+        }
 
-	    // the currently selected unit died or became unconscious or disappeared inexplicably
-	    if (_save.getSelectedUnit() == null || _save.getSelectedUnit().isOut())
-	    {
-		    cancelCurrentAction();
-		    getMap().setCursorType(CursorType.CT_NORMAL, 1);
-		    _parentState.getGame().getCursor().setVisible(true);
-		    if (_save.getSide() == UnitFaction.FACTION_PLAYER)
-			    _save.setSelectedUnit(null);
-		    else
-			    _save.selectNextPlayerUnit(true, true);
-	    }
-	    _parentState.updateSoldierInfo();
+        // the currently selected unit died or became unconscious or disappeared inexplicably
+        if (_save.getSelectedUnit() == null || _save.getSelectedUnit().isOut())
+        {
+            cancelCurrentAction();
+            getMap().setCursorType(CursorType.CT_NORMAL, 1);
+            _parentState.getGame().getCursor().setVisible(true);
+            if (_save.getSide() == UnitFaction.FACTION_PLAYER)
+                _save.setSelectedUnit(null);
+            else
+                _save.selectNextPlayerUnit(true, true);
+        }
+        _parentState.updateSoldierInfo();
     }
 
     /**
@@ -1165,15 +1165,15 @@ internal class BattlescapeGame
      */
     bool noActionsPending(BattleUnit bu)
     {
-	    if (!_states.Any()) return true;
+        if (!_states.Any()) return true;
 
-	    foreach (var i in _states)
-	    {
-		    if (i != null && i.getAction().actor == bu)
-			    return false;
-	    }
+        foreach (var i in _states)
+        {
+            if (i != null && i.getAction().actor == bu)
+                return false;
+        }
 
-	    return true;
+        return true;
     }
 
     /**
@@ -1182,8 +1182,8 @@ internal class BattlescapeGame
      */
     internal void statePushFront(BattleState bs)
     {
-	    _states.Insert(0, bs);
-	    bs.init();
+        _states.Insert(0, bs);
+        bs.init();
     }
 
     /**
@@ -1191,61 +1191,61 @@ internal class BattlescapeGame
      * @return pathfinding.
      */
     internal Pathfinding getPathfinding() =>
-	    _save.getPathfinding();
+        _save.getPathfinding();
 
     /**
      * Checks for units panicking or falling and so on.
      */
     internal void think()
     {
-	    // nothing is happening - see if we need some alien AI or units panicking or what have you
-	    if (!_states.Any())
-	    {
-		    if (_save.getUnitsFalling())
-		    {
-			    statePushFront(new UnitFallBState(this));
-			    _save.setUnitsFalling(false);
-			    return;
-		    }
-		    // it's a non player side (ALIENS or CIVILIANS)
-		    if (_save.getSide() != UnitFaction.FACTION_PLAYER)
-		    {
-			    _save.resetUnitHitStates();
-			    if (!_debugPlay)
-			    {
-				    if (_save.getSelectedUnit() != null)
-				    {
-					    if (!handlePanickingUnit(_save.getSelectedUnit()))
-						    handleAI(_save.getSelectedUnit());
-				    }
-				    else
-				    {
-					    if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
-					    {
-						    if (!_save.getDebugMode())
-						    {
-							    _endTurnRequested = true;
-							    statePushBack(null); // end AI turn
-						    }
-						    else
-						    {
-							    _save.selectNextPlayerUnit();
-							    _debugPlay = true;
-						    }
-					    }
-				    }
-			    }
-		    }
-		    else
-		    {
-			    // it's a player side && we have not handled all panicking units
-			    if (!_playerPanicHandled)
-			    {
-				    _playerPanicHandled = handlePanickingPlayer();
-				    _save.getBattleState().updateSoldierInfo();
-			    }
-		    }
-	    }
+        // nothing is happening - see if we need some alien AI or units panicking or what have you
+        if (!_states.Any())
+        {
+            if (_save.getUnitsFalling())
+            {
+                statePushFront(new UnitFallBState(this));
+                _save.setUnitsFalling(false);
+                return;
+            }
+            // it's a non player side (ALIENS or CIVILIANS)
+            if (_save.getSide() != UnitFaction.FACTION_PLAYER)
+            {
+                _save.resetUnitHitStates();
+                if (!_debugPlay)
+                {
+                    if (_save.getSelectedUnit() != null)
+                    {
+                        if (!handlePanickingUnit(_save.getSelectedUnit()))
+                            handleAI(_save.getSelectedUnit());
+                    }
+                    else
+                    {
+                        if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
+                        {
+                            if (!_save.getDebugMode())
+                            {
+                                _endTurnRequested = true;
+                                statePushBack(null); // end AI turn
+                            }
+                            else
+                            {
+                                _save.selectNextPlayerUnit();
+                                _debugPlay = true;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // it's a player side && we have not handled all panicking units
+                if (!_playerPanicHandled)
+                {
+                    _playerPanicHandled = handlePanickingPlayer();
+                    _save.getBattleState().updateSoldierInfo();
+                }
+            }
+        }
     }
 
     /**
@@ -1254,12 +1254,12 @@ internal class BattlescapeGame
      */
     bool handlePanickingPlayer()
     {
-	    foreach (var j in _save.getUnits())
-	    {
-		    if (j.getFaction() == UnitFaction.FACTION_PLAYER && j.getOriginalFaction() == UnitFaction.FACTION_PLAYER && handlePanickingUnit(j))
-			    return false;
-	    }
-	    return true;
+        foreach (var j in _save.getUnits())
+        {
+            if (j.getFaction() == UnitFaction.FACTION_PLAYER && j.getOriginalFaction() == UnitFaction.FACTION_PLAYER && handlePanickingUnit(j))
+                return false;
+        }
+        return true;
     }
 
     /**
@@ -1268,94 +1268,94 @@ internal class BattlescapeGame
      */
     bool handlePanickingUnit(BattleUnit unit)
     {
-	    UnitStatus status = unit.getStatus();
-	    if (status != UnitStatus.STATUS_PANICKING && status != UnitStatus.STATUS_BERSERK) return false;
-	    _save.setSelectedUnit(unit);
-	    _parentState.getMap().setCursorType(CursorType.CT_NONE);
+        UnitStatus status = unit.getStatus();
+        if (status != UnitStatus.STATUS_PANICKING && status != UnitStatus.STATUS_BERSERK) return false;
+        _save.setSelectedUnit(unit);
+        _parentState.getMap().setCursorType(CursorType.CT_NONE);
 
-	    // show a little infobox with the name of the unit and "... is panicking"
-	    Game game = _parentState.getGame();
-	    if (unit.getVisible() || !Options.noAlienPanicMessages)
-	    {
-		    getMap().getCamera().centerOnPosition(unit.getPosition());
-		    if (status == UnitStatus.STATUS_PANICKING)
-		    {
-			    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_PANICKED", (uint)unit.getGender()).arg(unit.getName(game.getLanguage()))));
-		    }
-		    else
-		    {
-			    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_GONE_BERSERK", (uint)unit.getGender()).arg(unit.getName(game.getLanguage()))));
-		    }
-	    }
+        // show a little infobox with the name of the unit and "... is panicking"
+        Game game = _parentState.getGame();
+        if (unit.getVisible() || !Options.noAlienPanicMessages)
+        {
+            getMap().getCamera().centerOnPosition(unit.getPosition());
+            if (status == UnitStatus.STATUS_PANICKING)
+            {
+                game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_PANICKED", (uint)unit.getGender()).arg(unit.getName(game.getLanguage()))));
+            }
+            else
+            {
+                game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_GONE_BERSERK", (uint)unit.getGender()).arg(unit.getName(game.getLanguage()))));
+            }
+        }
 
-	    int flee = RNG.generate(0,100);
-	    BattleAction ba = default;
-	    ba.actor = unit;
-	    if (status == UnitStatus.STATUS_PANICKING && flee <= 50) // 1/2 chance to freeze and 1/2 chance try to flee, STATUS_BERSERK is handled in the panic state.
-	    {
-		    BattleItem item = unit.getItem("STR_RIGHT_HAND");
-		    if (item != null)
-		    {
-			    dropItem(unit.getPosition(), item, false, true);
-		    }
-		    item = unit.getItem("STR_LEFT_HAND");
-		    if (item != null)
-		    {
-			    dropItem(unit.getPosition(), item, false, true);
-		    }
-		    unit.setCache(null);
-		    // let's try a few times to get a tile to run to.
-		    for (int i= 0; i < 20; i++)
-		    {
-			    ba.target = new Position(unit.getPosition().x + RNG.generate(-5,5), unit.getPosition().y + RNG.generate(-5,5), unit.getPosition().z);
+        int flee = RNG.generate(0, 100);
+        BattleAction ba = default;
+        ba.actor = unit;
+        if (status == UnitStatus.STATUS_PANICKING && flee <= 50) // 1/2 chance to freeze and 1/2 chance try to flee, STATUS_BERSERK is handled in the panic state.
+        {
+            BattleItem item = unit.getItem("STR_RIGHT_HAND");
+            if (item != null)
+            {
+                dropItem(unit.getPosition(), item, false, true);
+            }
+            item = unit.getItem("STR_LEFT_HAND");
+            if (item != null)
+            {
+                dropItem(unit.getPosition(), item, false, true);
+            }
+            unit.setCache(null);
+            // let's try a few times to get a tile to run to.
+            for (int i = 0; i < 20; i++)
+            {
+                ba.target = new Position(unit.getPosition().x + RNG.generate(-5, 5), unit.getPosition().y + RNG.generate(-5, 5), unit.getPosition().z);
 
-			    if (i >= 10 && ba.target.z > 0) // if we've had more than our fair share of failures, try going down.
-			    {
-				    ba.target.z--;
-				    if (i >= 15 && ba.target.z > 0) // still failing? try further down.
-				    {
-					    ba.target.z--;
-				    }
-			    }
-			    if (_save.getTile(ba.target) != null) // sanity check the tile.
-			    {
-				    _save.getPathfinding().calculate(ba.actor, ba.target);
-				    if (_save.getPathfinding().getStartDirection() != -1) // sanity check the path.
-				    {
-					    statePushBack(new UnitWalkBState(this, ba));
-					    break;
-				    }
-			    }
-		    }
-	    }
-	    // Time units can only be reset after everything else occurs
-	    statePushBack(new UnitPanicBState(this, ba.actor));
-	    unit.moraleChange(+15);
+                if (i >= 10 && ba.target.z > 0) // if we've had more than our fair share of failures, try going down.
+                {
+                    ba.target.z--;
+                    if (i >= 15 && ba.target.z > 0) // still failing? try further down.
+                    {
+                        ba.target.z--;
+                    }
+                }
+                if (_save.getTile(ba.target) != null) // sanity check the tile.
+                {
+                    _save.getPathfinding().calculate(ba.actor, ba.target);
+                    if (_save.getPathfinding().getStartDirection() != -1) // sanity check the path.
+                    {
+                        statePushBack(new UnitWalkBState(this, ba));
+                        break;
+                    }
+                }
+            }
+        }
+        // Time units can only be reset after everything else occurs
+        statePushBack(new UnitPanicBState(this, ba.actor));
+        unit.moraleChange(+15);
 
-	    return true;
+        return true;
     }
 
     internal bool convertInfected()
     {
-	    bool retVal = false;
+        bool retVal = false;
         var units = _save.getUnits();
-	    for (var i = 0; i < units.Count; i++)
-	    {
-		    if (units[i].getHealth() > 0 && units[i].getHealth() >= units[i].getStunlevel() && units[i].getRespawn())
-		    {
-			    retVal = true;
-			    units[i].setRespawn(false);
-			    if (Options.battleNotifyDeath && units[i].getFaction() == UnitFaction.FACTION_PLAYER)
-			    {
-				    Game game = _parentState.getGame();
-				    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_BEEN_KILLED", (uint)units[i].getGender()).arg(units[i].getName(game.getLanguage()))));
-			    }
+        for (var i = 0; i < units.Count; i++)
+        {
+            if (units[i].getHealth() > 0 && units[i].getHealth() >= units[i].getStunlevel() && units[i].getRespawn())
+            {
+                retVal = true;
+                units[i].setRespawn(false);
+                if (Options.battleNotifyDeath && units[i].getFaction() == UnitFaction.FACTION_PLAYER)
+                {
+                    Game game = _parentState.getGame();
+                    game.pushState(new InfoboxState(game.getLanguage().getString("STR_HAS_BEEN_KILLED", (uint)units[i].getGender()).arg(units[i].getName(game.getLanguage()))));
+                }
 
-			    convertUnit(units[i]);
-			    i = 0;
-		    }
-	    }
-	    return retVal;
+                convertUnit(units[i]);
+                i = 0;
+            }
+        }
+        return retVal;
     }
 
     /**
@@ -1363,49 +1363,49 @@ internal class BattlescapeGame
      */
     internal void handleNonTargetAction()
     {
-	    if (!_currentAction.targeting)
-	    {
-		    _currentAction.cameraPosition = new Position(0,0,-1);
-		    if (!string.IsNullOrEmpty(_currentAction.result))
-		    {
-			    _parentState.warning(_currentAction.result);
-			    _currentAction.result = string.Empty;
-		    }
-		    else if (_currentAction.type == BattleActionType.BA_PRIME && _currentAction.value > -1)
-		    {
-			    if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
-			    {
-				    _parentState.warning("STR_GRENADE_IS_ACTIVATED");
-				    _currentAction.weapon.setFuseTimer(_currentAction.value);
-			    }
-			    else
-			    {
-				    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
-			    }
-		    }
-		    else if (_currentAction.type == BattleActionType.BA_USE)
-		    {
-			    _save.reviveUnconsciousUnits();
-		    }
-		    else if (_currentAction.type == BattleActionType.BA_HIT)
-		    {
-			    if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
-			    {
-				    statePushBack(new MeleeAttackBState(this, _currentAction));
-			    }
-			    else
-			    {
-				    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
-			    }
-		    }
-		    if (_currentAction.type != BattleActionType.BA_HIT) // don't clear the action type if we're meleeing, let the melee action state take care of that
-		    {
-			    _currentAction.type = BattleActionType.BA_NONE;
-		    }
-		    _parentState.updateSoldierInfo();
-	    }
+        if (!_currentAction.targeting)
+        {
+            _currentAction.cameraPosition = new Position(0, 0, -1);
+            if (!string.IsNullOrEmpty(_currentAction.result))
+            {
+                _parentState.warning(_currentAction.result);
+                _currentAction.result = string.Empty;
+            }
+            else if (_currentAction.type == BattleActionType.BA_PRIME && _currentAction.value > -1)
+            {
+                if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
+                {
+                    _parentState.warning("STR_GRENADE_IS_ACTIVATED");
+                    _currentAction.weapon.setFuseTimer(_currentAction.value);
+                }
+                else
+                {
+                    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
+                }
+            }
+            else if (_currentAction.type == BattleActionType.BA_USE)
+            {
+                _save.reviveUnconsciousUnits();
+            }
+            else if (_currentAction.type == BattleActionType.BA_HIT)
+            {
+                if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
+                {
+                    statePushBack(new MeleeAttackBState(this, _currentAction));
+                }
+                else
+                {
+                    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
+                }
+            }
+            if (_currentAction.type != BattleActionType.BA_HIT) // don't clear the action type if we're meleeing, let the melee action state take care of that
+            {
+                _currentAction.type = BattleActionType.BA_NONE;
+            }
+            _parentState.updateSoldierInfo();
+        }
 
-	    setupCursor();
+        setupCursor();
     }
 
     /**
@@ -1415,10 +1415,10 @@ internal class BattlescapeGame
      */
     internal BattleUnit convertUnit(BattleUnit unit)
     {
-	    getSave().getBattleState().showPsiButton(false);
-	    BattleUnit newUnit = getSave().convertUnit(unit, _parentState.getGame().getSavedGame(), getMod());
-	    getMap().cacheUnit(newUnit);
-	    return newUnit;
+        getSave().getBattleState().showPsiButton(false);
+        BattleUnit newUnit = getSave().convertUnit(unit, _parentState.getGame().getSavedGame(), getMod());
+        getMap().cacheUnit(newUnit);
+        return newUnit;
     }
 
     /**
@@ -1427,158 +1427,158 @@ internal class BattlescapeGame
      */
     void handleAI(BattleUnit unit)
     {
-	    var ss = new StringBuilder();
+        var ss = new StringBuilder();
 
-	    if (unit.getTimeUnits() <= 5)
-	    {
-		    unit.dontReselect();
-	    }
-	    if (_AIActionCounter >= 2 || !unit.reselectAllowed())
-	    {
-		    if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
-		    {
-			    if (!_save.getDebugMode())
-			    {
-				    _endTurnRequested = true;
-				    statePushBack(null); // end AI turn
-			    }
-			    else
-			    {
-				    _save.selectNextPlayerUnit();
-				    _debugPlay = true;
-			    }
-		    }
-		    if (_save.getSelectedUnit() != null)
-		    {
-			    _parentState.updateSoldierInfo();
-			    getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
-			    if (_save.getSelectedUnit().getId() <= unit.getId())
-			    {
-				    _AISecondMove = true;
-			    }
-		    }
-		    _AIActionCounter = 0;
-		    return;
-	    }
+        if (unit.getTimeUnits() <= 5)
+        {
+            unit.dontReselect();
+        }
+        if (_AIActionCounter >= 2 || !unit.reselectAllowed())
+        {
+            if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
+            {
+                if (!_save.getDebugMode())
+                {
+                    _endTurnRequested = true;
+                    statePushBack(null); // end AI turn
+                }
+                else
+                {
+                    _save.selectNextPlayerUnit();
+                    _debugPlay = true;
+                }
+            }
+            if (_save.getSelectedUnit() != null)
+            {
+                _parentState.updateSoldierInfo();
+                getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+                if (_save.getSelectedUnit().getId() <= unit.getId())
+                {
+                    _AISecondMove = true;
+                }
+            }
+            _AIActionCounter = 0;
+            return;
+        }
 
-	    unit.setVisible(false);
+        unit.setVisible(false);
 
-	    _save.getTileEngine().calculateFOV(unit.getPosition()); // might need this populate _visibleUnit for a newly-created alien
-		    // it might also help chryssalids realize they've zombified someone and need to move on
-		    // it should also hide units when they've killed the guy spotting them
-		    // it's also for good luck
+        _save.getTileEngine().calculateFOV(unit.getPosition()); // might need this populate _visibleUnit for a newly-created alien
+                                                                // it might also help chryssalids realize they've zombified someone and need to move on
+                                                                // it should also hide units when they've killed the guy spotting them
+                                                                // it's also for good luck
 
-	    AIModule ai = unit.getAIModule();
-	    if (ai == null)
-	    {
-		    // for some reason the unit had no AI routine assigned..
-		    unit.setAIModule(new AIModule(_save, unit, null));
-		    ai = unit.getAIModule();
-	    }
-	    _AIActionCounter++;
-	    if (_AIActionCounter == 1)
-	    {
-		    _playedAggroSound = false;
-		    unit.setHiding(false);
+        AIModule ai = unit.getAIModule();
+        if (ai == null)
+        {
+            // for some reason the unit had no AI routine assigned..
+            unit.setAIModule(new AIModule(_save, unit, null));
+            ai = unit.getAIModule();
+        }
+        _AIActionCounter++;
+        if (_AIActionCounter == 1)
+        {
+            _playedAggroSound = false;
+            unit.setHiding(false);
             if (Options.traceAI) { Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} #{unit.getId()}--{unit.getType()}"); }
         }
 
-	    var action = new BattleAction();
-	    action.actor = unit;
-	    action.number = _AIActionCounter;
-	    unit.think(ref action);
+        var action = new BattleAction();
+        action.actor = unit;
+        action.number = _AIActionCounter;
+        unit.think(ref action);
 
-	    if (action.type == BattleActionType.BA_RETHINK)
-	    {
-		    _parentState.debug("Rethink");
-		    unit.think(ref action);
-	    }
+        if (action.type == BattleActionType.BA_RETHINK)
+        {
+            _parentState.debug("Rethink");
+            unit.think(ref action);
+        }
 
-	    _AIActionCounter = action.number;
-	    BattleItem weapon = unit.getMainHandWeapon();
-	    if (weapon == null || weapon.getAmmoItem() == null)
-	    {
-		    if (unit.getOriginalFaction() == UnitFaction.FACTION_HOSTILE && !unit.getVisibleUnits().Any())
-		    {
-			    findItem(ref action);
-		    }
-	    }
+        _AIActionCounter = action.number;
+        BattleItem weapon = unit.getMainHandWeapon();
+        if (weapon == null || weapon.getAmmoItem() == null)
+        {
+            if (unit.getOriginalFaction() == UnitFaction.FACTION_HOSTILE && !unit.getVisibleUnits().Any())
+            {
+                findItem(ref action);
+            }
+        }
 
-	    if (unit.getCharging() != null)
-	    {
-		    if (unit.getAggroSound() != -1 && !_playedAggroSound)
-		    {
-			    getMod().getSoundByDepth((uint)_save.getDepth(), (uint)unit.getAggroSound()).play(-1, getMap().getSoundAngle(unit.getPosition()));
-			    _playedAggroSound = true;
-		    }
-	    }
-	    if (action.type == BattleActionType.BA_WALK)
-	    {
-		    ss.Append($"Walking to {action.target}");
-		    _parentState.debug(ss.ToString());
+        if (unit.getCharging() != null)
+        {
+            if (unit.getAggroSound() != -1 && !_playedAggroSound)
+            {
+                getMod().getSoundByDepth((uint)_save.getDepth(), (uint)unit.getAggroSound()).play(-1, getMap().getSoundAngle(unit.getPosition()));
+                _playedAggroSound = true;
+            }
+        }
+        if (action.type == BattleActionType.BA_WALK)
+        {
+            ss.Append($"Walking to {action.target}");
+            _parentState.debug(ss.ToString());
 
-		    if (_save.getTile(action.target) != null)
-		    {
-			    _save.getPathfinding().calculate(action.actor, action.target);//, _save.getTile(action.target).getUnit());
-		    }
-		    if (_save.getPathfinding().getStartDirection() != -1)
-		    {
-			    statePushBack(new UnitWalkBState(this, action));
-		    }
-	    }
+            if (_save.getTile(action.target) != null)
+            {
+                _save.getPathfinding().calculate(action.actor, action.target);//, _save.getTile(action.target).getUnit());
+            }
+            if (_save.getPathfinding().getStartDirection() != -1)
+            {
+                statePushBack(new UnitWalkBState(this, action));
+            }
+        }
 
-	    if (action.type == BattleActionType.BA_SNAPSHOT || action.type == BattleActionType.BA_AUTOSHOT || action.type == BattleActionType.BA_AIMEDSHOT || action.type == BattleActionType.BA_THROW || action.type == BattleActionType.BA_HIT || action.type == BattleActionType.BA_MINDCONTROL || action.type == BattleActionType.BA_PANIC || action.type == BattleActionType.BA_LAUNCH)
-	    {
-		    ss.Clear();
-		    ss.Append($"Attack type={action.type} target={action.target} weapon={action.weapon.getRules().getName()}");
-		    _parentState.debug(ss.ToString());
-		    action.TU = unit.getActionTUs(action.type, action.weapon);
-		    if (action.type == BattleActionType.BA_MINDCONTROL || action.type == BattleActionType.BA_PANIC)
-		    {
-			    statePushBack(new PsiAttackBState(this, action));
-		    }
-		    else
-		    {
-			    statePushBack(new UnitTurnBState(this, action));
-			    if (action.type == BattleActionType.BA_HIT)
-			    {
-				    action.weapon = unit.getMeleeWeapon();
-				    statePushBack(new MeleeAttackBState(this, action));
-			    }
-			    else
-			    {
-				    statePushBack(new ProjectileFlyBState(this, action));
-			    }
-		    }
-	    }
+        if (action.type == BattleActionType.BA_SNAPSHOT || action.type == BattleActionType.BA_AUTOSHOT || action.type == BattleActionType.BA_AIMEDSHOT || action.type == BattleActionType.BA_THROW || action.type == BattleActionType.BA_HIT || action.type == BattleActionType.BA_MINDCONTROL || action.type == BattleActionType.BA_PANIC || action.type == BattleActionType.BA_LAUNCH)
+        {
+            ss.Clear();
+            ss.Append($"Attack type={action.type} target={action.target} weapon={action.weapon.getRules().getName()}");
+            _parentState.debug(ss.ToString());
+            action.TU = unit.getActionTUs(action.type, action.weapon);
+            if (action.type == BattleActionType.BA_MINDCONTROL || action.type == BattleActionType.BA_PANIC)
+            {
+                statePushBack(new PsiAttackBState(this, action));
+            }
+            else
+            {
+                statePushBack(new UnitTurnBState(this, action));
+                if (action.type == BattleActionType.BA_HIT)
+                {
+                    action.weapon = unit.getMeleeWeapon();
+                    statePushBack(new MeleeAttackBState(this, action));
+                }
+                else
+                {
+                    statePushBack(new ProjectileFlyBState(this, action));
+                }
+            }
+        }
 
-	    if (action.type == BattleActionType.BA_NONE)
-	    {
-		    _parentState.debug("Idle");
-		    _AIActionCounter = 0;
-		    if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
-		    {
-			    if (!_save.getDebugMode())
-			    {
-				    _endTurnRequested = true;
-				    statePushBack(null); // end AI turn
-			    }
-			    else
-			    {
-				    _save.selectNextPlayerUnit();
-				    _debugPlay = true;
-			    }
-		    }
-		    if (_save.getSelectedUnit() != null)
-		    {
-			    _parentState.updateSoldierInfo();
-			    getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
-			    if (_save.getSelectedUnit().getId() <= unit.getId())
-			    {
-				    _AISecondMove = true;
-			    }
-		    }
-	    }
+        if (action.type == BattleActionType.BA_NONE)
+        {
+            _parentState.debug("Idle");
+            _AIActionCounter = 0;
+            if (_save.selectNextPlayerUnit(true, _AISecondMove) == null)
+            {
+                if (!_save.getDebugMode())
+                {
+                    _endTurnRequested = true;
+                    statePushBack(null); // end AI turn
+                }
+                else
+                {
+                    _save.selectNextPlayerUnit();
+                    _debugPlay = true;
+                }
+            }
+            if (_save.getSelectedUnit() != null)
+            {
+                _parentState.updateSoldierInfo();
+                getMap().getCamera().centerOnPosition(_save.getSelectedUnit().getPosition());
+                if (_save.getSelectedUnit().getId() <= unit.getId())
+                {
+                    _AISecondMove = true;
+                }
+            }
+        }
     }
 
     /**
@@ -1586,36 +1586,36 @@ internal class BattlescapeGame
      */
     void findItem(ref BattleAction action)
     {
-	    // terrorists don't have hands.
-	    if (action.actor.getRankString() != "STR_LIVE_TERRORIST")
-	    {
-		    // pick the best available item
-		    BattleItem targetItem = surveyItems(action);
-		    // make sure it's worth taking
-		    if (targetItem != null && worthTaking(targetItem, action))
-		    {
-			    // if we're already standing on it...
-			    if (targetItem.getTile().getPosition() == action.actor.getPosition())
-			    {
-				    // try to pick it up
-				    if (takeItemFromGround(targetItem, action) == 0)
-				    {
-					    // if it isn't loaded or it is ammo
-					    if (targetItem.getAmmoItem() == null)
-					    {
-						    // try to load our weapon
-						    action.actor.checkAmmo();
-					    }
-				    }
-			    }
-			    else if (targetItem.getTile().getUnit() == null || targetItem.getTile().getUnit().isOut())
-			    {
-				    // if we're not standing on it, we should try to get to it.
-				    action.target = targetItem.getTile().getPosition();
-				    action.type = BattleActionType.BA_WALK;
-			    }
-		    }
-	    }
+        // terrorists don't have hands.
+        if (action.actor.getRankString() != "STR_LIVE_TERRORIST")
+        {
+            // pick the best available item
+            BattleItem targetItem = surveyItems(action);
+            // make sure it's worth taking
+            if (targetItem != null && worthTaking(targetItem, action))
+            {
+                // if we're already standing on it...
+                if (targetItem.getTile().getPosition() == action.actor.getPosition())
+                {
+                    // try to pick it up
+                    if (takeItemFromGround(targetItem, action) == 0)
+                    {
+                        // if it isn't loaded or it is ammo
+                        if (targetItem.getAmmoItem() == null)
+                        {
+                            // try to load our weapon
+                            action.actor.checkAmmo();
+                        }
+                    }
+                }
+                else if (targetItem.getTile().getUnit() == null || targetItem.getTile().getUnit().isOut())
+                {
+                    // if we're not standing on it, we should try to get to it.
+                    action.target = targetItem.getTile().getPosition();
+                    action.type = BattleActionType.BA_WALK;
+                }
+            }
+        }
     }
 
     /**
@@ -1630,43 +1630,43 @@ internal class BattlescapeGame
      */
     int takeItemFromGround(BattleItem item, BattleAction action)
     {
-	    const int success = 0;
-	    const int notEnoughTimeUnits = 1;
-	    const int notEnoughSpace = 2;
-	    const int couldNotFit = 3;
-	    int freeSlots = 25;
+        const int success = 0;
+        const int notEnoughTimeUnits = 1;
+        const int notEnoughSpace = 2;
+        const int couldNotFit = 3;
+        int freeSlots = 25;
 
-	    // make sure we have time units
-	    if (action.actor.getTimeUnits() < 6)
-	    {
-		    return notEnoughTimeUnits;
-	    }
-	    else
-	    {
-		    // check to make sure we have enough space by checking all the sizes of items in our inventory
-		    foreach (var i in action.actor.getInventory())
-		    {
-			    freeSlots -= i.getRules().getInventoryHeight() * i.getRules().getInventoryWidth();
-		    }
-		    if (freeSlots < item.getRules().getInventoryHeight() * item.getRules().getInventoryWidth())
-		    {
-			    return notEnoughSpace;
-		    }
-		    else
-		    {
-			    // check that the item will fit in our inventory, and if so, take it
-			    if (takeItem(item, action))
-			    {
-				    action.actor.spendTimeUnits(6);
-				    item.getTile().removeItem(item);
-				    return success;
-			    }
-			    else
-			    {
-				    return couldNotFit;
-			    }
-		    }
-	    }
+        // make sure we have time units
+        if (action.actor.getTimeUnits() < 6)
+        {
+            return notEnoughTimeUnits;
+        }
+        else
+        {
+            // check to make sure we have enough space by checking all the sizes of items in our inventory
+            foreach (var i in action.actor.getInventory())
+            {
+                freeSlots -= i.getRules().getInventoryHeight() * i.getRules().getInventoryWidth();
+            }
+            if (freeSlots < item.getRules().getInventoryHeight() * item.getRules().getInventoryWidth())
+            {
+                return notEnoughSpace;
+            }
+            else
+            {
+                // check that the item will fit in our inventory, and if so, take it
+                if (takeItem(item, action))
+                {
+                    action.actor.spendTimeUnits(6);
+                    item.getTile().removeItem(item);
+                    return success;
+                }
+                else
+                {
+                    return couldNotFit;
+                }
+            }
+        }
     }
 
     /**
@@ -1677,77 +1677,77 @@ internal class BattlescapeGame
      */
     bool takeItem(BattleItem item, BattleAction action)
     {
-	    bool placed = false;
-	    Mod.Mod mod = _parentState.getGame().getMod();
-	    switch (item.getRules().getBattleType())
-	    {
-	        case BattleType.BT_AMMO:
-		        // find equipped weapons that can be loaded with this ammo
-		        if (action.actor.getItem("STR_RIGHT_HAND") != null && action.actor.getItem("STR_RIGHT_HAND").getAmmoItem() == null)
-		        {
-			        if (action.actor.getItem("STR_RIGHT_HAND").setAmmoItem(item) == 0)
-			        {
-				        placed = true;
-			        }
-		        }
-		        else
-		        {
-			        for (int i = 0; i != 4; ++i)
-			        {
-				        if (action.actor.getItem("STR_BELT", i) == null)
-				        {
-					        item.moveToOwner(action.actor);
-					        item.setSlot(mod.getInventory("STR_BELT", true));
-					        item.setSlotX(i);
-					        placed = true;
-					        break;
-				        }
-			        }
-		        }
-		        break;
-	        case BattleType.BT_GRENADE:
-	        case BattleType.BT_PROXIMITYGRENADE:
-		        for (int i = 0; i != 4; ++i)
-		        {
-			        if (action.actor.getItem("STR_BELT", i) == null)
-			        {
-				        item.moveToOwner(action.actor);
-				        item.setSlot(mod.getInventory("STR_BELT", true));
-				        item.setSlotX(i);
-				        placed = true;
-				        break;
-			        }
-		        }
-		        break;
-	        case BattleType.BT_FIREARM:
-	        case BattleType.BT_MELEE:
-		        if (action.actor.getItem("STR_RIGHT_HAND") == null)
-		        {
-			        item.moveToOwner(action.actor);
-			        item.setSlot(mod.getInventory("STR_RIGHT_HAND", true));
-			        placed = true;
-		        }
-		        break;
-	        case BattleType.BT_MEDIKIT:
-	        case BattleType.BT_SCANNER:
-		        if (action.actor.getItem("STR_BACK_PACK") == null)
-		        {
-			        item.moveToOwner(action.actor);
-			        item.setSlot(mod.getInventory("STR_BACK_PACK", true));
-			        placed = true;
-		        }
-		        break;
-	        case BattleType.BT_MINDPROBE:
-		        if (action.actor.getItem("STR_LEFT_HAND") == null)
-		        {
-			        item.moveToOwner(action.actor);
-			        item.setSlot(mod.getInventory("STR_LEFT_HAND", true));
-			        placed = true;
-		        }
-		        break;
-	        default: break;
-	    }
-	    return placed;
+        bool placed = false;
+        Mod.Mod mod = _parentState.getGame().getMod();
+        switch (item.getRules().getBattleType())
+        {
+            case BattleType.BT_AMMO:
+                // find equipped weapons that can be loaded with this ammo
+                if (action.actor.getItem("STR_RIGHT_HAND") != null && action.actor.getItem("STR_RIGHT_HAND").getAmmoItem() == null)
+                {
+                    if (action.actor.getItem("STR_RIGHT_HAND").setAmmoItem(item) == 0)
+                    {
+                        placed = true;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i != 4; ++i)
+                    {
+                        if (action.actor.getItem("STR_BELT", i) == null)
+                        {
+                            item.moveToOwner(action.actor);
+                            item.setSlot(mod.getInventory("STR_BELT", true));
+                            item.setSlotX(i);
+                            placed = true;
+                            break;
+                        }
+                    }
+                }
+                break;
+            case BattleType.BT_GRENADE:
+            case BattleType.BT_PROXIMITYGRENADE:
+                for (int i = 0; i != 4; ++i)
+                {
+                    if (action.actor.getItem("STR_BELT", i) == null)
+                    {
+                        item.moveToOwner(action.actor);
+                        item.setSlot(mod.getInventory("STR_BELT", true));
+                        item.setSlotX(i);
+                        placed = true;
+                        break;
+                    }
+                }
+                break;
+            case BattleType.BT_FIREARM:
+            case BattleType.BT_MELEE:
+                if (action.actor.getItem("STR_RIGHT_HAND") == null)
+                {
+                    item.moveToOwner(action.actor);
+                    item.setSlot(mod.getInventory("STR_RIGHT_HAND", true));
+                    placed = true;
+                }
+                break;
+            case BattleType.BT_MEDIKIT:
+            case BattleType.BT_SCANNER:
+                if (action.actor.getItem("STR_BACK_PACK") == null)
+                {
+                    item.moveToOwner(action.actor);
+                    item.setSlot(mod.getInventory("STR_BACK_PACK", true));
+                    placed = true;
+                }
+                break;
+            case BattleType.BT_MINDPROBE:
+                if (action.actor.getItem("STR_LEFT_HAND") == null)
+                {
+                    item.moveToOwner(action.actor);
+                    item.setSlot(mod.getInventory("STR_LEFT_HAND", true));
+                    placed = true;
+                }
+                break;
+            default: break;
+        }
+        return placed;
     }
 
     /**
@@ -1762,89 +1762,89 @@ internal class BattlescapeGame
      */
     bool worthTaking(BattleItem item, BattleAction action)
     {
-	    int worthToTake = 0;
+        int worthToTake = 0;
         var inventory = action.actor.getInventory();
         var compatibleAmmo = item.getRules().getCompatibleAmmo();
 
-	    // don't even think about making a move for that gun if you can see a target, for some reason
-	    // (maybe this should check for enemies spotting the tile the item is on?)
-	    if (!action.actor.getVisibleUnits().Any())
-	    {
-		    // retrieve an insignificantly low value from the ruleset.
-		    worthToTake = item.getRules().getAttraction();
+        // don't even think about making a move for that gun if you can see a target, for some reason
+        // (maybe this should check for enemies spotting the tile the item is on?)
+        if (!action.actor.getVisibleUnits().Any())
+        {
+            // retrieve an insignificantly low value from the ruleset.
+            worthToTake = item.getRules().getAttraction();
 
-		    // it's always going to be worth while to try and take a blaster launcher, apparently
-		    if (item.getRules().getWaypoints() == 0 && item.getRules().getBattleType() != BattleType.BT_AMMO)
-		    {
-			    // we only want weapons that HAVE ammo, or weapons that we have ammo FOR
-			    bool ammoFound = true;
-			    if (item.getAmmoItem() == null)
-			    {
-				    ammoFound = false;
-				    for (var i = 0; i < inventory.Count && !ammoFound; ++i)
-				    {
-					    if (inventory[i].getRules().getBattleType() == BattleType.BT_AMMO)
-					    {
-						    for (var j = 0; j < compatibleAmmo.Count && !ammoFound; ++j)
-						    {
-							    if (inventory[i].getRules().getName() == compatibleAmmo[j])
-							    {
-								    ammoFound = true;
-								    break;
-							    }
-						    }
-					    }
-				    }
-			    }
-			    if (!ammoFound)
-			    {
-				    return false;
-			    }
-		    }
+            // it's always going to be worth while to try and take a blaster launcher, apparently
+            if (item.getRules().getWaypoints() == 0 && item.getRules().getBattleType() != BattleType.BT_AMMO)
+            {
+                // we only want weapons that HAVE ammo, or weapons that we have ammo FOR
+                bool ammoFound = true;
+                if (item.getAmmoItem() == null)
+                {
+                    ammoFound = false;
+                    for (var i = 0; i < inventory.Count && !ammoFound; ++i)
+                    {
+                        if (inventory[i].getRules().getBattleType() == BattleType.BT_AMMO)
+                        {
+                            for (var j = 0; j < compatibleAmmo.Count && !ammoFound; ++j)
+                            {
+                                if (inventory[i].getRules().getName() == compatibleAmmo[j])
+                                {
+                                    ammoFound = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!ammoFound)
+                {
+                    return false;
+                }
+            }
 
-		    if (item.getRules().getBattleType() == BattleType.BT_AMMO)
-		    {
-			    // similar to the above, but this time we're checking if the ammo is suitable for a weapon we have.
-			    bool weaponFound = false;
-			    for (var i = 0; i < inventory.Count && !weaponFound; ++i)
-			    {
-				    if (inventory[i].getRules().getBattleType() == BattleType.BT_FIREARM)
-				    {
+            if (item.getRules().getBattleType() == BattleType.BT_AMMO)
+            {
+                // similar to the above, but this time we're checking if the ammo is suitable for a weapon we have.
+                bool weaponFound = false;
+                for (var i = 0; i < inventory.Count && !weaponFound; ++i)
+                {
+                    if (inventory[i].getRules().getBattleType() == BattleType.BT_FIREARM)
+                    {
                         var ammo = inventory[i].getRules().getCompatibleAmmo();
-					    for (var j = 0; j < ammo.Count && !weaponFound; ++j)
-					    {
-						    if (inventory[i].getRules().getName() == ammo[j])
-						    {
-							    weaponFound = true;
-							    break;
-						    }
-					    }
-				    }
-			    }
-			    if (!weaponFound)
-			    {
-				    return false;
-			    }
-		    }
-	    }
+                        for (var j = 0; j < ammo.Count && !weaponFound; ++j)
+                        {
+                            if (inventory[i].getRules().getName() == ammo[j])
+                            {
+                                weaponFound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!weaponFound)
+                {
+                    return false;
+                }
+            }
+        }
 
-	    if (worthToTake != 0)
-	    {
-		    // use bad logic to determine if we'll have room for the item
-		    int freeSlots = 25;
-		    foreach (var i in inventory)
-		    {
-			    freeSlots -= i.getRules().getInventoryHeight() * i.getRules().getInventoryWidth();
-		    }
-		    int size = item.getRules().getInventoryHeight() * item.getRules().getInventoryWidth();
-		    if (freeSlots < size)
-		    {
-			    return false;
-		    }
-	    }
+        if (worthToTake != 0)
+        {
+            // use bad logic to determine if we'll have room for the item
+            int freeSlots = 25;
+            foreach (var i in inventory)
+            {
+                freeSlots -= i.getRules().getInventoryHeight() * i.getRules().getInventoryWidth();
+            }
+            int size = item.getRules().getInventoryHeight() * item.getRules().getInventoryWidth();
+            if (freeSlots < size)
+            {
+                return false;
+            }
+        }
 
-	    // return false for any item that we aren't standing directly on top of with an attraction value less than 6 (aka always)
-	    return (worthToTake - (_save.getTileEngine().distance(action.actor.getPosition(), item.getTile().getPosition())*2)) > 5;
+        // return false for any item that we aren't standing directly on top of with an attraction value less than 6 (aka always)
+        return (worthToTake - (_save.getTileEngine().distance(action.actor.getPosition(), item.getTile().getPosition()) * 2)) > 5;
     }
 
     /**
@@ -1854,33 +1854,33 @@ internal class BattlescapeGame
      */
     BattleItem surveyItems(BattleAction action)
     {
-	    var droppedItems = new List<BattleItem>();
+        var droppedItems = new List<BattleItem>();
 
-	    // first fill a vector with items on the ground that were dropped on the alien turn, and have an attraction value.
-	    foreach (var i in _save.getItems())
-	    {
-		    if (i.getSlot() != null && i.getSlot().getId() == "STR_GROUND" && i.getTile() != null && i.getTurnFlag() && i.getRules().getAttraction() != 0)
-		    {
-			    droppedItems.Add(i);
-		    }
-	    }
+        // first fill a vector with items on the ground that were dropped on the alien turn, and have an attraction value.
+        foreach (var i in _save.getItems())
+        {
+            if (i.getSlot() != null && i.getSlot().getId() == "STR_GROUND" && i.getTile() != null && i.getTurnFlag() && i.getRules().getAttraction() != 0)
+            {
+                droppedItems.Add(i);
+            }
+        }
 
-	    BattleItem targetItem = null;
-	    int maxWorth = 0;
+        BattleItem targetItem = null;
+        int maxWorth = 0;
 
-	    // now select the most suitable candidate depending on attractiveness and distance
-	    // (are we still talking about items?)
-	    foreach (var i in droppedItems)
-	    {
-		    int currentWorth = i.getRules().getAttraction() / ((_save.getTileEngine().distance(action.actor.getPosition(), i.getTile().getPosition()) * 2)+1);
-		    if (currentWorth > maxWorth)
-		    {
-			    maxWorth = currentWorth;
-			    targetItem = i;
-		    }
-	    }
+        // now select the most suitable candidate depending on attractiveness and distance
+        // (are we still talking about items?)
+        foreach (var i in droppedItems)
+        {
+            int currentWorth = i.getRules().getAttraction() / ((_save.getTileEngine().distance(action.actor.getPosition(), i.getTile().getPosition()) * 2) + 1);
+            if (currentWorth > maxWorth)
+            {
+                maxWorth = currentWorth;
+                targetItem = i;
+            }
+        }
 
-	    return targetItem;
+        return targetItem;
     }
 
     /**
@@ -1892,39 +1892,39 @@ internal class BattlescapeGame
      */
     internal bool checkForProximityGrenades(BattleUnit unit)
     {
-	    int size = unit.getArmor().getSize() - 1;
-	    for (int x = size; x >= 0; x--)
-	    {
-		    for (int y = size; y >= 0; y--)
-		    {
-			    for (int tx = -1; tx < 2; tx++)
-			    {
-				    for (int ty = -1; ty < 2; ty++)
-				    {
-					    Tile t = _save.getTile(unit.getPosition() + new Position(x,y,0) + new Position(tx,ty,0));
-					    if (t != null)
-					    {
-						    foreach (var i in t.getInventory())
-						    {
-							    if (i.getRules().getBattleType() == BattleType.BT_PROXIMITYGRENADE && i.getFuseTimer() == 0)
-							    {
-								    var p = new Position();
-								    p.x = t.getPosition().x*16 + 8;
-								    p.y = t.getPosition().y*16 + 8;
-								    p.z = t.getPosition().z*24 + t.getTerrainLevel();
-								    statePushNext(new ExplosionBState(this, p, i, i.getPreviousOwner()));
-								    getSave().removeItem(i);
-								    unit.setCache(null);
-								    getMap().cacheUnit(unit);
-								    return true;
-							    }
-						    }
-					    }
-				    }
-			    }
-		    }
-	    }
-	    return false;
+        int size = unit.getArmor().getSize() - 1;
+        for (int x = size; x >= 0; x--)
+        {
+            for (int y = size; y >= 0; y--)
+            {
+                for (int tx = -1; tx < 2; tx++)
+                {
+                    for (int ty = -1; ty < 2; ty++)
+                    {
+                        Tile t = _save.getTile(unit.getPosition() + new Position(x, y, 0) + new Position(tx, ty, 0));
+                        if (t != null)
+                        {
+                            foreach (var i in t.getInventory())
+                            {
+                                if (i.getRules().getBattleType() == BattleType.BT_PROXIMITYGRENADE && i.getFuseTimer() == 0)
+                                {
+                                    var p = new Position();
+                                    p.x = t.getPosition().x * 16 + 8;
+                                    p.y = t.getPosition().y * 16 + 8;
+                                    p.z = t.getPosition().z * 24 + t.getTerrainLevel();
+                                    statePushNext(new ExplosionBState(this, p, i, i.getPreviousOwner()));
+                                    getSave().removeItem(i);
+                                    unit.setCache(null);
+                                    getMap().cacheUnit(unit);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -1934,25 +1934,25 @@ internal class BattlescapeGame
      */
     internal bool kneel(BattleUnit bu)
     {
-	    int tu = bu.isKneeled()?8:4;
-	    if (bu.getType() == "SOLDIER" && !bu.isFloating() && ((!bu.isKneeled() && _save.getKneelReserved()) || checkReservedTU(bu, tu)))
-	    {
-		    if (bu.spendTimeUnits(tu))
-		    {
-			    bu.kneel(!bu.isKneeled());
-			    // kneeling or standing up can reveal new terrain or units. I guess.
-			    getTileEngine().calculateFOV(bu);
-			    getMap().cacheUnits();
-			    _parentState.updateSoldierInfo();
-			    getTileEngine().checkReactionFire(bu);
-			    return true;
-		    }
-		    else
-		    {
-			    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
-		    }
-	    }
-	    return false;
+        int tu = bu.isKneeled() ? 8 : 4;
+        if (bu.getType() == "SOLDIER" && !bu.isFloating() && ((!bu.isKneeled() && _save.getKneelReserved()) || checkReservedTU(bu, tu)))
+        {
+            if (bu.spendTimeUnits(tu))
+            {
+                bu.kneel(!bu.isKneeled());
+                // kneeling or standing up can reveal new terrain or units. I guess.
+                getTileEngine().calculateFOV(bu);
+                getMap().cacheUnits();
+                _parentState.updateSoldierInfo();
+                getTileEngine().checkReactionFire(bu);
+                return true;
+            }
+            else
+            {
+                _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
+            }
+        }
+        return false;
     }
 
     /**
@@ -1960,21 +1960,21 @@ internal class BattlescapeGame
      */
     internal void handleState()
     {
-	    if (_states.Any())
-	    {
-		    // end turn request?
-		    if (_states.First() == null)
-		    {
-			    _states.RemoveAt(0);
-			    endTurn();
-			    return;
-		    }
-		    else
-		    {
-			    _states.First().think();
-		    }
-		    getMap().invalidate(); // redraw map
-	    }
+        if (_states.Any())
+        {
+            // end turn request?
+            if (_states.First() == null)
+            {
+                _states.RemoveAt(0);
+                endTurn();
+                return;
+            }
+            else
+            {
+                _states.First().think();
+            }
+            getMap().invalidate(); // redraw map
+        }
     }
 
     /**
@@ -1983,143 +1983,143 @@ internal class BattlescapeGame
      */
     internal void primaryAction(Position pos)
     {
-	    bool bPreviewed = Options.battleNewPreviewPath != PathPreview.PATH_NONE;
+        bool bPreviewed = Options.battleNewPreviewPath != PathPreview.PATH_NONE;
 
-	    getMap().resetObstacles();
+        getMap().resetObstacles();
 
-	    if (_currentAction.targeting && _save.getSelectedUnit() != null)
-	    {
-		    if (_currentAction.type == BattleActionType.BA_LAUNCH)
-		    {
-			    int maxWaypoints = _currentAction.weapon.getRules().getWaypoints();
-			    if (maxWaypoints == 0)
-			    {
-				    maxWaypoints = _currentAction.weapon.getAmmoItem().getRules().getWaypoints();
-			    }
-			    if ((int)_currentAction.waypoints.Count < maxWaypoints || maxWaypoints == -1)
-			    {
-				    _parentState.showLaunchButton(true);
-				    _currentAction.waypoints.Add(pos);
-				    getMap().getWaypoints().Add(pos);
-			    }
-		    }
-		    else if (_currentAction.type == BattleActionType.BA_USE && _currentAction.weapon.getRules().getBattleType() == BattleType.BT_MINDPROBE)
-		    {
-			    if (_save.selectUnit(pos) != null && _save.selectUnit(pos).getFaction() != _save.getSelectedUnit().getFaction() && _save.selectUnit(pos).getVisible())
-			    {
-				    if (!_currentAction.weapon.getRules().isLOSRequired() ||
-					    _currentAction.actor.getVisibleUnits().Contains(_save.selectUnit(pos)))
-				    {
-					    if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
-					    {
-						    _parentState.getGame().getMod().getSoundByDepth((uint)_save.getDepth(), (uint)_currentAction.weapon.getRules().getHitSound()).play(-1, getMap().getSoundAngle(pos));
-						    _parentState.getGame().pushState(new UnitInfoState(_save.selectUnit(pos), _parentState, false, true));
-						    cancelCurrentAction();
-					    }
-					    else
-					    {
-						    _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
-					    }
-				    }
-				    else
-				    {
-					    _parentState.warning("STR_NO_LINE_OF_FIRE");
-				    }
-			    }
-		    }
-		    else if (_currentAction.type == BattleActionType.BA_PANIC || _currentAction.type == BattleActionType.BA_MINDCONTROL)
-		    {
-			    if (_save.selectUnit(pos) != null && _save.selectUnit(pos).getFaction() != _save.getSelectedUnit().getFaction() && _save.selectUnit(pos).getVisible())
-			    {
-				    _currentAction.TU = _currentAction.actor.getActionTUs(_currentAction.type, _currentAction.weapon);
-				    _currentAction.target = pos;
-				    if (!_currentAction.weapon.getRules().isLOSRequired() ||
-					    _currentAction.actor.getVisibleUnits().Contains(_save.selectUnit(pos)))
-				    {
-					    // get the sound/animation started
-					    getMap().setCursorType(CursorType.CT_NONE);
-					    _parentState.getGame().getCursor().setVisible(false);
-					    _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
-					    statePushBack(new PsiAttackBState(this, _currentAction));
-				    }
-				    else
-				    {
-					    _parentState.warning("STR_NO_LINE_OF_FIRE");
-				    }
-			    }
-		    }
-		    else if (Options.battleConfirmFireMode && (!_currentAction.waypoints.Any() || pos != _currentAction.waypoints.First()))
-		    {
-			    _currentAction.waypoints.Clear();
-			    _currentAction.waypoints.Add(pos);
-			    getMap().getWaypoints().Clear();
-			    getMap().getWaypoints().Add(pos);
-		    }
-		    else
-		    {
-			    _currentAction.target = pos;
-			    getMap().setCursorType(CursorType.CT_NONE);
+        if (_currentAction.targeting && _save.getSelectedUnit() != null)
+        {
+            if (_currentAction.type == BattleActionType.BA_LAUNCH)
+            {
+                int maxWaypoints = _currentAction.weapon.getRules().getWaypoints();
+                if (maxWaypoints == 0)
+                {
+                    maxWaypoints = _currentAction.weapon.getAmmoItem().getRules().getWaypoints();
+                }
+                if ((int)_currentAction.waypoints.Count < maxWaypoints || maxWaypoints == -1)
+                {
+                    _parentState.showLaunchButton(true);
+                    _currentAction.waypoints.Add(pos);
+                    getMap().getWaypoints().Add(pos);
+                }
+            }
+            else if (_currentAction.type == BattleActionType.BA_USE && _currentAction.weapon.getRules().getBattleType() == BattleType.BT_MINDPROBE)
+            {
+                if (_save.selectUnit(pos) != null && _save.selectUnit(pos).getFaction() != _save.getSelectedUnit().getFaction() && _save.selectUnit(pos).getVisible())
+                {
+                    if (!_currentAction.weapon.getRules().isLOSRequired() ||
+                        _currentAction.actor.getVisibleUnits().Contains(_save.selectUnit(pos)))
+                    {
+                        if (_currentAction.actor.spendTimeUnits(_currentAction.TU))
+                        {
+                            _parentState.getGame().getMod().getSoundByDepth((uint)_save.getDepth(), (uint)_currentAction.weapon.getRules().getHitSound()).play(-1, getMap().getSoundAngle(pos));
+                            _parentState.getGame().pushState(new UnitInfoState(_save.selectUnit(pos), _parentState, false, true));
+                            cancelCurrentAction();
+                        }
+                        else
+                        {
+                            _parentState.warning("STR_NOT_ENOUGH_TIME_UNITS");
+                        }
+                    }
+                    else
+                    {
+                        _parentState.warning("STR_NO_LINE_OF_FIRE");
+                    }
+                }
+            }
+            else if (_currentAction.type == BattleActionType.BA_PANIC || _currentAction.type == BattleActionType.BA_MINDCONTROL)
+            {
+                if (_save.selectUnit(pos) != null && _save.selectUnit(pos).getFaction() != _save.getSelectedUnit().getFaction() && _save.selectUnit(pos).getVisible())
+                {
+                    _currentAction.TU = _currentAction.actor.getActionTUs(_currentAction.type, _currentAction.weapon);
+                    _currentAction.target = pos;
+                    if (!_currentAction.weapon.getRules().isLOSRequired() ||
+                        _currentAction.actor.getVisibleUnits().Contains(_save.selectUnit(pos)))
+                    {
+                        // get the sound/animation started
+                        getMap().setCursorType(CursorType.CT_NONE);
+                        _parentState.getGame().getCursor().setVisible(false);
+                        _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
+                        statePushBack(new PsiAttackBState(this, _currentAction));
+                    }
+                    else
+                    {
+                        _parentState.warning("STR_NO_LINE_OF_FIRE");
+                    }
+                }
+            }
+            else if (Options.battleConfirmFireMode && (!_currentAction.waypoints.Any() || pos != _currentAction.waypoints.First()))
+            {
+                _currentAction.waypoints.Clear();
+                _currentAction.waypoints.Add(pos);
+                getMap().getWaypoints().Clear();
+                getMap().getWaypoints().Add(pos);
+            }
+            else
+            {
+                _currentAction.target = pos;
+                getMap().setCursorType(CursorType.CT_NONE);
 
-			    if (Options.battleConfirmFireMode)
-			    {
-				    _currentAction.waypoints.Clear();
-				    getMap().getWaypoints().Clear();
-			    }
+                if (Options.battleConfirmFireMode)
+                {
+                    _currentAction.waypoints.Clear();
+                    getMap().getWaypoints().Clear();
+                }
 
-			    _parentState.getGame().getCursor().setVisible(false);
-			    _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
-			    _states.Add(new ProjectileFlyBState(this, _currentAction));
-			    statePushFront(new UnitTurnBState(this, _currentAction)); // first of all turn towards the target
-		    }
-	    }
-	    else
-	    {
-		    _currentAction.actor = _save.getSelectedUnit();
-		    BattleUnit unit = _save.selectUnit(pos);
-		    if (unit != null && unit != _save.getSelectedUnit() && (unit.getVisible() || _debugPlay))
-		    {
-		    //  -= select unit =-
-			    if (unit.getFaction() == _save.getSide())
-			    {
-				    _save.setSelectedUnit(unit);
-				    _parentState.updateSoldierInfo();
-				    cancelCurrentAction();
-				    setupCursor();
-				    _currentAction.actor = unit;
-			    }
-		    }
-		    else if (playableUnitSelected())
-		    {
-			    bool modifierPressed = (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0;
-			    if (bPreviewed &&
-				    (_currentAction.target != pos || (_save.getPathfinding().isModifierUsed() != modifierPressed)))
-			    {
-				    _save.getPathfinding().removePreview();
-			    }
-			    _currentAction.target = pos;
-			    _save.getPathfinding().calculate(_currentAction.actor, _currentAction.target);
-			    _currentAction.run = false;
-			    _currentAction.strafe = Options.strafe && modifierPressed && _save.getSelectedUnit().getArmor().getSize() == 1;
-			    if (_currentAction.strafe && _save.getPathfinding().getPath().Count > 1)
-			    {
-				    _currentAction.run = true;
-				    _currentAction.strafe = false;
-			    }
-			    if (bPreviewed && !_save.getPathfinding().previewPath() && _save.getPathfinding().getStartDirection() != -1)
-			    {
-				    _save.getPathfinding().removePreview();
-				    bPreviewed = false;
-			    }
+                _parentState.getGame().getCursor().setVisible(false);
+                _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
+                _states.Add(new ProjectileFlyBState(this, _currentAction));
+                statePushFront(new UnitTurnBState(this, _currentAction)); // first of all turn towards the target
+            }
+        }
+        else
+        {
+            _currentAction.actor = _save.getSelectedUnit();
+            BattleUnit unit = _save.selectUnit(pos);
+            if (unit != null && unit != _save.getSelectedUnit() && (unit.getVisible() || _debugPlay))
+            {
+                //  -= select unit =-
+                if (unit.getFaction() == _save.getSide())
+                {
+                    _save.setSelectedUnit(unit);
+                    _parentState.updateSoldierInfo();
+                    cancelCurrentAction();
+                    setupCursor();
+                    _currentAction.actor = unit;
+                }
+            }
+            else if (playableUnitSelected())
+            {
+                bool modifierPressed = (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0;
+                if (bPreviewed &&
+                    (_currentAction.target != pos || (_save.getPathfinding().isModifierUsed() != modifierPressed)))
+                {
+                    _save.getPathfinding().removePreview();
+                }
+                _currentAction.target = pos;
+                _save.getPathfinding().calculate(_currentAction.actor, _currentAction.target);
+                _currentAction.run = false;
+                _currentAction.strafe = Options.strafe && modifierPressed && _save.getSelectedUnit().getArmor().getSize() == 1;
+                if (_currentAction.strafe && _save.getPathfinding().getPath().Count > 1)
+                {
+                    _currentAction.run = true;
+                    _currentAction.strafe = false;
+                }
+                if (bPreviewed && !_save.getPathfinding().previewPath() && _save.getPathfinding().getStartDirection() != -1)
+                {
+                    _save.getPathfinding().removePreview();
+                    bPreviewed = false;
+                }
 
-			    if (!bPreviewed && _save.getPathfinding().getStartDirection() != -1)
-			    {
-				    //  -= start walking =-
-				    getMap().setCursorType(CursorType.CT_NONE);
-				    _parentState.getGame().getCursor().setVisible(false);
-				    statePushBack(new UnitWalkBState(this, _currentAction));
-			    }
-		    }
-	    }
+                if (!bPreviewed && _save.getPathfinding().getStartDirection() != -1)
+                {
+                    //  -= start walking =-
+                    getMap().setCursorType(CursorType.CT_NONE);
+                    _parentState.getGame().getCursor().setVisible(false);
+                    statePushBack(new UnitWalkBState(this, _currentAction));
+                }
+            }
+        }
     }
 
     /**
@@ -2128,11 +2128,11 @@ internal class BattlescapeGame
      */
     internal void secondaryAction(Position pos)
     {
-	    //  -= turn to or open door =-
-	    _currentAction.target = pos;
-	    _currentAction.actor = _save.getSelectedUnit();
-	    _currentAction.strafe = Options.strafe && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0 && _save.getSelectedUnit().getTurretType() > -1;
-	    statePushBack(new UnitTurnBState(this, _currentAction));
+        //  -= turn to or open door =-
+        _currentAction.target = pos;
+        _currentAction.actor = _save.getSelectedUnit();
+        _currentAction.strafe = Options.strafe && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0 && _save.getSelectedUnit().getTurretType() > -1;
+        statePushBack(new UnitTurnBState(this, _currentAction));
     }
 
     /**
@@ -2142,23 +2142,23 @@ internal class BattlescapeGame
      */
     internal void moveUpDown(BattleUnit unit, int dir)
     {
-	    _currentAction.target = unit.getPosition();
-	    if (dir == Pathfinding.DIR_UP)
-	    {
-		    _currentAction.target.z++;
-	    }
-	    else
-	    {
-		    _currentAction.target.z--;
-	    }
-	    getMap().setCursorType(CursorType.CT_NONE);
-	    _parentState.getGame().getCursor().setVisible(false);
-	    if (_save.getSelectedUnit().isKneeled())
-	    {
-		    kneel(_save.getSelectedUnit());
-	    }
-	    _save.getPathfinding().calculate(_currentAction.actor, _currentAction.target);
-	    statePushBack(new UnitWalkBState(this, _currentAction));
+        _currentAction.target = unit.getPosition();
+        if (dir == Pathfinding.DIR_UP)
+        {
+            _currentAction.target.z++;
+        }
+        else
+        {
+            _currentAction.target.z--;
+        }
+        getMap().setCursorType(CursorType.CT_NONE);
+        _parentState.getGame().getCursor().setVisible(false);
+        if (_save.getSelectedUnit().isKneeled())
+        {
+            kneel(_save.getSelectedUnit());
+        }
+        _save.getPathfinding().calculate(_currentAction.actor, _currentAction.target);
+        statePushBack(new UnitWalkBState(this, _currentAction));
     }
 
     /**
@@ -2166,21 +2166,21 @@ internal class BattlescapeGame
      * @return Kneel reservation setting.
      */
     internal bool getKneelReserved() =>
-	    _save.getKneelReserved();
+        _save.getKneelReserved();
 
     /**
      * Handler for the blaster launcher button.
      */
     internal void launchAction()
     {
-	    _parentState.showLaunchButton(false);
-	    getMap().getWaypoints().Clear();
-	    _currentAction.target = _currentAction.waypoints.First();
-	    getMap().setCursorType(CursorType.CT_NONE);
-	    _parentState.getGame().getCursor().setVisible(false);
-	    _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
-	    _states.Add(new ProjectileFlyBState(this, _currentAction));
-	    statePushFront(new UnitTurnBState(this, _currentAction)); // first of all turn towards the target
+        _parentState.showLaunchButton(false);
+        getMap().getWaypoints().Clear();
+        _currentAction.target = _currentAction.waypoints.First();
+        getMap().setCursorType(CursorType.CT_NONE);
+        _parentState.getGame().getCursor().setVisible(false);
+        _currentAction.cameraPosition = getMap().getCamera().getMapOffset();
+        _states.Add(new ProjectileFlyBState(this, _currentAction));
+        statePushFront(new UnitTurnBState(this, _currentAction)); // first of all turn towards the target
     }
 
     /**
@@ -2188,16 +2188,16 @@ internal class BattlescapeGame
      */
     internal void psiButtonAction()
     {
-	    if (_currentAction.waypoints.Any()) // in case waypoints were set with a blaster launcher, avoid accidental misclick
-		    return;
-	    _currentAction.weapon = _save.getSelectedUnit().getSpecialWeapon(BattleType.BT_PSIAMP);
-	    _currentAction.targeting = true;
-	    _currentAction.type = BattleActionType.BA_PANIC;
-	    _currentAction.TU = _currentAction.weapon.getRules().getTUUse();
-	    if (!_currentAction.weapon.getRules().getFlatRate())
-	    {
-		    _currentAction.TU = (int)Math.Floor(_save.getSelectedUnit().getBaseStats().tu * _currentAction.TU / 100.0f);
-	    }
-	    setupCursor();
+        if (_currentAction.waypoints.Any()) // in case waypoints were set with a blaster launcher, avoid accidental misclick
+            return;
+        _currentAction.weapon = _save.getSelectedUnit().getSpecialWeapon(BattleType.BT_PSIAMP);
+        _currentAction.targeting = true;
+        _currentAction.type = BattleActionType.BA_PANIC;
+        _currentAction.TU = _currentAction.weapon.getRules().getTUUse();
+        if (!_currentAction.weapon.getRules().getFlatRate())
+        {
+            _currentAction.TU = (int)Math.Floor(_save.getSelectedUnit().getBaseStats().tu * _currentAction.TU / 100.0f);
+        }
+        setupCursor();
     }
 }

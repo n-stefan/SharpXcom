@@ -242,7 +242,7 @@ internal class fmopl
     /* static OPLSAMPLE  *bufL,*bufR; */
     static Memory<OPL_CH> S_CH;
     static Memory<OPL_CH> E_CH;
-    static OPL_SLOT SLOT7_1,SLOT7_2,SLOT8_1,SLOT8_2;
+    static OPL_SLOT SLOT7_1, SLOT7_2, SLOT8_1, SLOT8_2;
 
     static int ams;
     static int vib;
@@ -342,14 +342,14 @@ internal class fmopl
 
     /* --------------------- subroutines  --------------------- */
 
-    static int Limit( int val, int max, int min )
+    static int Limit(int val, int max, int min)
     {
-	    if ( val > max )
-		    val = max;
-	    else if ( val < min )
-		    val = min;
+        if (val > max)
+            val = max;
+        else if (val < min)
+            val = min;
 
-	    return val;
+        return val;
     }
 
     /* ---------- YM3812 I/O interface ---------- */
@@ -578,14 +578,14 @@ internal class fmopl
             OPL.AR_TABLE[i] = EG_AED - 1;
             OPL.DR_TABLE[i] = OPL.DR_TABLE[60];
         }
-//TODO
-//#if 0
-//	for (i = 0;i < 64 ;i++){	/* make for overflow area */
-//		LOG(LOG_WAR,("rate %2d , ar %f ms , dr %f ms \n",i,
-//			((double)(EG_ENT<<ENV_BITS) / OPL.AR_TABLE[i]) * (1000.0 / OPL.rate),
-//			((double)(EG_ENT<<ENV_BITS) / OPL.DR_TABLE[i]) * (1000.0 / OPL.rate) ));
-//	}
-//#endif
+        //TODO
+        //#if 0
+        //	for (i = 0;i < 64 ;i++){	/* make for overflow area */
+        //		LOG(LOG_WAR,("rate %2d , ar %f ms , dr %f ms \n",i,
+        //			((double)(EG_ENT<<ENV_BITS) / OPL.AR_TABLE[i]) * (1000.0 / OPL.rate),
+        //			((double)(EG_ENT<<ENV_BITS) / OPL.DR_TABLE[i]) * (1000.0 / OPL.rate) ));
+        //	}
+        //#endif
     }
 
     /* ---------- generic table initialize ---------- */
@@ -825,10 +825,10 @@ internal class fmopl
                             OPL.rythm = (byte)(v & 0x3f);
                             if ((OPL.rythm & 0x20) != 0)
                             {
-//TODO
-//#if 0
-//				usrintf_showmessage("OPL Rythm mode select");
-//#endif
+                                //TODO
+                                //#if 0
+                                //				usrintf_showmessage("OPL Rythm mode select");
+                                //#endif
                                 /* BD key on/off */
                                 if ((rkey & 0x10) != 0)
                                 {
@@ -1087,54 +1087,55 @@ internal class fmopl
     internal static void YM3812UpdateOne(FM_OPL OPL, Span<short> buffer, int length, int stripe, float volume)
     {
         int i;
-	    int data;
-	    var buf = buffer;
-	    uint amsCnt  = (uint)OPL.amsCnt;
-	    uint vibCnt  = (uint)OPL.vibCnt;
-	    byte rythm = (byte)(OPL.rythm&0x20);
-	    Memory<OPL_CH> CH,R_CH;
+        int data;
+        var buf = buffer;
+        uint amsCnt = (uint)OPL.amsCnt;
+        uint vibCnt = (uint)OPL.vibCnt;
+        byte rythm = (byte)(OPL.rythm & 0x20);
+        Memory<OPL_CH> CH, R_CH;
 
-	    if( MemoryMarshal.Read<FM_OPL>(cur_chip) != OPL ) {
-		    MemoryMarshal.Write(cur_chip, OPL);
-		    /* channel pointers */
-		    S_CH = OPL.P_CH;
-		    E_CH = S_CH.Slice(9);
-		    /* rythm slot */
-		    SLOT7_1 = S_CH.Span[7].SLOT[SLOT1];
-		    SLOT7_2 = S_CH.Span[7].SLOT[SLOT2];
-		    SLOT8_1 = S_CH.Span[8].SLOT[SLOT1];
-		    SLOT8_2 = S_CH.Span[8].SLOT[SLOT2];
-		    /* LFO state */
-		    amsIncr = OPL.amsIncr;
-		    vibIncr = OPL.vibIncr;
-		    ams_table = OPL.ams_table;
-		    vib_table = OPL.vib_table;
-	    }
-	    R_CH = rythm != 0 ? S_CH.Slice(6) : E_CH;
-        for( i=0; i < length ; i+=stripe )
-	    {
+        if (MemoryMarshal.Read<FM_OPL>(cur_chip) != OPL)
+        {
+            MemoryMarshal.Write(cur_chip, OPL);
+            /* channel pointers */
+            S_CH = OPL.P_CH;
+            E_CH = S_CH.Slice(9);
+            /* rythm slot */
+            SLOT7_1 = S_CH.Span[7].SLOT[SLOT1];
+            SLOT7_2 = S_CH.Span[7].SLOT[SLOT2];
+            SLOT8_1 = S_CH.Span[8].SLOT[SLOT1];
+            SLOT8_2 = S_CH.Span[8].SLOT[SLOT2];
+            /* LFO state */
+            amsIncr = OPL.amsIncr;
+            vibIncr = OPL.vibIncr;
+            ams_table = OPL.ams_table;
+            vib_table = OPL.vib_table;
+        }
+        R_CH = rythm != 0 ? S_CH.Slice(6) : E_CH;
+        for (i = 0; i < length; i += stripe)
+        {
             /*            channel A         channel B         channel C      */
             /* LFO */
             amsCnt = (uint)(amsCnt + amsIncr);
-		    ams = ams_table.Span[(int)(amsCnt>>AMS_SHIFT)];
+            ams = ams_table.Span[(int)(amsCnt >> AMS_SHIFT)];
             vibCnt = (uint)(vibCnt + vibIncr);
-		    vib = vib_table.Span[(int)(vibCnt>>VIB_SHIFT)];
-		    outd[0] = 0;
-		    /* FM part */
-		    for(var j = 0; j < R_CH.Length; j++)
-			    OPL_CALC_CH(S_CH.Span[j]);
-		    /* Rythm part */
-		    if(rythm != 0)
-			    OPL_CALC_RH(S_CH);
-		    outd[0] = (int)(outd[0] * volume);
-		    /* limit check */
-		    data = Limit( outd[0], OPL_MAXOUT, OPL_MINOUT );
-		    /* store to sound buffer */
-		    buf[i] = (short)(data >> OPL_OUTSB);
-	    }
+            vib = vib_table.Span[(int)(vibCnt >> VIB_SHIFT)];
+            outd[0] = 0;
+            /* FM part */
+            for (var j = 0; j < R_CH.Length; j++)
+                OPL_CALC_CH(S_CH.Span[j]);
+            /* Rythm part */
+            if (rythm != 0)
+                OPL_CALC_RH(S_CH);
+            outd[0] = (int)(outd[0] * volume);
+            /* limit check */
+            data = Limit(outd[0], OPL_MAXOUT, OPL_MINOUT);
+            /* store to sound buffer */
+            buf[i] = (short)(data >> OPL_OUTSB);
+        }
 
-	    OPL.amsCnt = (int)amsCnt;
-	    OPL.vibCnt = (int)vibCnt;
+        OPL.amsCnt = (int)amsCnt;
+        OPL.vibCnt = (int)vibCnt;
 #if OPL_OUTPUT_LOG
 	    if(opl_dbg_fp)
 	    {
@@ -1151,191 +1152,194 @@ internal class fmopl
         slot.wavetable.Span[(int)((slot.Cnt + con) / (0x1000000 / SIN_ENT)) & (SIN_ENT - 1)][env];
 
     /* ---------- calcrate one of channel ---------- */
-    static void OPL_CALC_CH( OPL_CH CH )
+    static void OPL_CALC_CH(OPL_CH CH)
     {
-	    uint env_out;
-	    OPL_SLOT SLOT;
+        uint env_out;
+        OPL_SLOT SLOT;
 
-	    feedback2 = 0;
-	    /* SLOT 1 */
-	    SLOT = CH.SLOT[SLOT1];
-	    env_out=OPL_CALC_SLOT(SLOT);
-	    if( env_out < EG_ENT-1 )
-	    {
-		    /* PG */
-		    if(SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr*vib/VIB_RATE));
-		    else          SLOT.Cnt += SLOT.Incr;
-		    /* connection */
-		    if(CH.FB != 0)
-		    {
-			    int feedback1 = (CH.op1_out[0]+CH.op1_out[1])>>CH.FB;
-			    CH.op1_out[1] = CH.op1_out[0];
-			    CH.connect1 = CH.connect1.Slice(CH.op1_out[0] = OP_OUT(SLOT,env_out,feedback1));
-		    }
-		    else
-		    {
-			    CH.connect1 = CH.connect1.Slice(OP_OUT(SLOT,env_out,0));
-		    }
-	    }else
-	    {
-		    CH.op1_out[1] = CH.op1_out[0];
-		    CH.op1_out[0] = 0;
-	    }
-	    /* SLOT 2 */
-	    SLOT = CH.SLOT[SLOT2];
-	    env_out=OPL_CALC_SLOT(SLOT);
-	    if( env_out < EG_ENT-1 )
-	    {
-		    /* PG */
-		    if(SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr*vib/VIB_RATE));
-		    else          SLOT.Cnt += SLOT.Incr;
-		    /* connection */
-		    outd[0] += OP_OUT(SLOT,env_out, feedback2);
-	    }
+        feedback2 = 0;
+        /* SLOT 1 */
+        SLOT = CH.SLOT[SLOT1];
+        env_out = OPL_CALC_SLOT(SLOT);
+        if (env_out < EG_ENT - 1)
+        {
+            /* PG */
+            if (SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr * vib / VIB_RATE));
+            else SLOT.Cnt += SLOT.Incr;
+            /* connection */
+            if (CH.FB != 0)
+            {
+                int feedback1 = (CH.op1_out[0] + CH.op1_out[1]) >> CH.FB;
+                CH.op1_out[1] = CH.op1_out[0];
+                CH.connect1 = CH.connect1.Slice(CH.op1_out[0] = OP_OUT(SLOT, env_out, feedback1));
+            }
+            else
+            {
+                CH.connect1 = CH.connect1.Slice(OP_OUT(SLOT, env_out, 0));
+            }
+        }
+        else
+        {
+            CH.op1_out[1] = CH.op1_out[0];
+            CH.op1_out[0] = 0;
+        }
+        /* SLOT 2 */
+        SLOT = CH.SLOT[SLOT2];
+        env_out = OPL_CALC_SLOT(SLOT);
+        if (env_out < EG_ENT - 1)
+        {
+            /* PG */
+            if (SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr * vib / VIB_RATE));
+            else SLOT.Cnt += SLOT.Incr;
+            /* connection */
+            outd[0] += OP_OUT(SLOT, env_out, feedback2);
+        }
     }
 
     /* ---------- calcrate Envelope Generator & Phase Generator ---------- */
     /* return : envelope output */
-    static uint OPL_CALC_SLOT( OPL_SLOT SLOT )
+    static uint OPL_CALC_SLOT(OPL_SLOT SLOT)
     {
-	    /* calcrate envelope generator */
-	    if( (SLOT.evc+=SLOT.evs) >= SLOT.eve )
-	    {
-		    switch( SLOT.evm ){
-		    case ENV_MOD_AR: /* ATTACK -> DECAY1 */
-			    /* next DR */
-			    SLOT.evm = ENV_MOD_DR;
-			    SLOT.evc = EG_DST;
-			    SLOT.eve = SLOT.SL;
-			    SLOT.evs = SLOT.evsd;
-			    break;
-		    case ENV_MOD_DR: /* DECAY -> SL or RR */
-			    SLOT.evc = SLOT.SL;
-			    SLOT.eve = EG_DED;
-			    if(SLOT.eg_typ != 0)
-			    {
-				    SLOT.evs = 0;
-			    }
-			    else
-			    {
-				    SLOT.evm = ENV_MOD_RR;
-				    SLOT.evs = SLOT.evsr;
-			    }
-			    break;
-		    case ENV_MOD_RR: /* RR -> OFF */
-			    SLOT.evc = EG_OFF;
-			    SLOT.eve = EG_OFF+1;
-			    SLOT.evs = 0;
-			    break;
-		    }
-	    }
-	    /* calcrate envelope */
-	    return (uint)(SLOT.TLL+ENV_CURVE[SLOT.evc>>ENV_BITS]+(SLOT.ams != 0 ? ams : 0));
+        /* calcrate envelope generator */
+        if ((SLOT.evc += SLOT.evs) >= SLOT.eve)
+        {
+            switch (SLOT.evm)
+            {
+                case ENV_MOD_AR: /* ATTACK -> DECAY1 */
+                    /* next DR */
+                    SLOT.evm = ENV_MOD_DR;
+                    SLOT.evc = EG_DST;
+                    SLOT.eve = SLOT.SL;
+                    SLOT.evs = SLOT.evsd;
+                    break;
+                case ENV_MOD_DR: /* DECAY -> SL or RR */
+                    SLOT.evc = SLOT.SL;
+                    SLOT.eve = EG_DED;
+                    if (SLOT.eg_typ != 0)
+                    {
+                        SLOT.evs = 0;
+                    }
+                    else
+                    {
+                        SLOT.evm = ENV_MOD_RR;
+                        SLOT.evs = SLOT.evsr;
+                    }
+                    break;
+                case ENV_MOD_RR: /* RR -> OFF */
+                    SLOT.evc = EG_OFF;
+                    SLOT.eve = EG_OFF + 1;
+                    SLOT.evs = 0;
+                    break;
+            }
+        }
+        /* calcrate envelope */
+        return (uint)(SLOT.TLL + ENV_CURVE[SLOT.evc >> ENV_BITS] + (SLOT.ams != 0 ? ams : 0));
     }
 
     /* ---------- calcrate rythm block ---------- */
     const double WHITE_NOISE_db = 6.0;
-    static void OPL_CALC_RH( Memory<OPL_CH> CH )
+    static void OPL_CALC_RH(Memory<OPL_CH> CH)
     {
-	    uint env_tam,env_sd,env_top,env_hh;
-	    int whitenoise = (int)((new Random().Next()&1)*(WHITE_NOISE_db/EG_STEP));
-	    int tone8;
+        uint env_tam, env_sd, env_top, env_hh;
+        int whitenoise = (int)((new Random().Next() & 1) * (WHITE_NOISE_db / EG_STEP));
+        int tone8;
 
-	    OPL_SLOT SLOT;
-	    int env_out;
+        OPL_SLOT SLOT;
+        int env_out;
 
-	    /* BD : same as FM serial mode and output level is large */
-	    feedback2 = 0;
-	    /* SLOT 1 */
-	    SLOT = CH.Span[6].SLOT[SLOT1];
-	    env_out = (int)OPL_CALC_SLOT(SLOT);
-	    if( env_out < EG_ENT-1 )
-	    {
-		    /* PG */
-		    if(SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr*vib/VIB_RATE));
-		    else          SLOT.Cnt += SLOT.Incr;
-		    /* connection */
-		    if(CH.Span[6].FB != 0)
-		    {
-			    int feedback1 = (CH.Span[6].op1_out[0]+CH.Span[6].op1_out[1])>>CH.Span[6].FB;
-			    CH.Span[6].op1_out[1] = CH.Span[6].op1_out[0];
-			    feedback2 = CH.Span[6].op1_out[0] = OP_OUT(SLOT, (uint)env_out,feedback1);
-		    }
-		    else
-		    {
-			    feedback2 = OP_OUT(SLOT, (uint)env_out,0);
-		    }
-	    }else
-	    {
-		    feedback2 = 0;
-		    CH.Span[6].op1_out[1] = CH.Span[6].op1_out[0];
-		    CH.Span[6].op1_out[0] = 0;
-	    }
-	    /* SLOT 2 */
-	    SLOT = CH.Span[6].SLOT[SLOT2];
-	    env_out = (int)OPL_CALC_SLOT(SLOT);
-	    if( env_out < EG_ENT-1 )
-	    {
-		    /* PG */
-		    if(SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr*vib/VIB_RATE));
-		    else          SLOT.Cnt += SLOT.Incr;
-		    /* connection */
-		    outd[0] += OP_OUT(SLOT, (uint)env_out, feedback2)*2;
-	    }
+        /* BD : same as FM serial mode and output level is large */
+        feedback2 = 0;
+        /* SLOT 1 */
+        SLOT = CH.Span[6].SLOT[SLOT1];
+        env_out = (int)OPL_CALC_SLOT(SLOT);
+        if (env_out < EG_ENT - 1)
+        {
+            /* PG */
+            if (SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr * vib / VIB_RATE));
+            else SLOT.Cnt += SLOT.Incr;
+            /* connection */
+            if (CH.Span[6].FB != 0)
+            {
+                int feedback1 = (CH.Span[6].op1_out[0] + CH.Span[6].op1_out[1]) >> CH.Span[6].FB;
+                CH.Span[6].op1_out[1] = CH.Span[6].op1_out[0];
+                feedback2 = CH.Span[6].op1_out[0] = OP_OUT(SLOT, (uint)env_out, feedback1);
+            }
+            else
+            {
+                feedback2 = OP_OUT(SLOT, (uint)env_out, 0);
+            }
+        }
+        else
+        {
+            feedback2 = 0;
+            CH.Span[6].op1_out[1] = CH.Span[6].op1_out[0];
+            CH.Span[6].op1_out[0] = 0;
+        }
+        /* SLOT 2 */
+        SLOT = CH.Span[6].SLOT[SLOT2];
+        env_out = (int)OPL_CALC_SLOT(SLOT);
+        if (env_out < EG_ENT - 1)
+        {
+            /* PG */
+            if (SLOT.vib != 0) SLOT.Cnt = (uint)(SLOT.Cnt + (SLOT.Incr * vib / VIB_RATE));
+            else SLOT.Cnt += SLOT.Incr;
+            /* connection */
+            outd[0] += OP_OUT(SLOT, (uint)env_out, feedback2) * 2;
+        }
 
-	    // SD  (17) = mul14[fnum7] + white noise
-	    // TAM (15) = mul15[fnum8]
-	    // TOP (18) = fnum6(mul18[fnum8]+whitenoise)
-	    // HH  (14) = fnum7(mul18[fnum8]+whitenoise) + white noise
-	    env_sd = (uint)(OPL_CALC_SLOT(SLOT7_2) + whitenoise);
-	    env_tam=OPL_CALC_SLOT(SLOT8_1);
-	    env_top=OPL_CALC_SLOT(SLOT8_2);
-	    env_hh = (uint)(OPL_CALC_SLOT(SLOT7_1) + whitenoise);
+        // SD  (17) = mul14[fnum7] + white noise
+        // TAM (15) = mul15[fnum8]
+        // TOP (18) = fnum6(mul18[fnum8]+whitenoise)
+        // HH  (14) = fnum7(mul18[fnum8]+whitenoise) + white noise
+        env_sd = (uint)(OPL_CALC_SLOT(SLOT7_2) + whitenoise);
+        env_tam = OPL_CALC_SLOT(SLOT8_1);
+        env_top = OPL_CALC_SLOT(SLOT8_2);
+        env_hh = (uint)(OPL_CALC_SLOT(SLOT7_1) + whitenoise);
 
-	    /* PG */
-	    if(SLOT7_1.vib != 0) SLOT7_1.Cnt = (uint)(SLOT7_1.Cnt + (2*SLOT7_1.Incr*vib/VIB_RATE));
-	    else             SLOT7_1.Cnt += 2*SLOT7_1.Incr;
-	    if(SLOT7_2.vib != 0) SLOT7_2.Cnt = (uint)(SLOT7_2.Cnt + ((CH.Span[7].fc*8)*vib/VIB_RATE));
-	    else             SLOT7_2.Cnt += (CH.Span[7].fc*8);
-	    if(SLOT8_1.vib != 0) SLOT8_1.Cnt = (uint)(SLOT8_1.Cnt + (SLOT8_1.Incr*vib/VIB_RATE));
-	    else             SLOT8_1.Cnt += SLOT8_1.Incr;
-	    if(SLOT8_2.vib != 0) SLOT8_2.Cnt = (uint)(SLOT8_2.Cnt + ((CH.Span[8].fc*48)*vib/VIB_RATE));
-	    else             SLOT8_2.Cnt += (CH.Span[8].fc*48);
+        /* PG */
+        if (SLOT7_1.vib != 0) SLOT7_1.Cnt = (uint)(SLOT7_1.Cnt + (2 * SLOT7_1.Incr * vib / VIB_RATE));
+        else SLOT7_1.Cnt += 2 * SLOT7_1.Incr;
+        if (SLOT7_2.vib != 0) SLOT7_2.Cnt = (uint)(SLOT7_2.Cnt + ((CH.Span[7].fc * 8) * vib / VIB_RATE));
+        else SLOT7_2.Cnt += (CH.Span[7].fc * 8);
+        if (SLOT8_1.vib != 0) SLOT8_1.Cnt = (uint)(SLOT8_1.Cnt + (SLOT8_1.Incr * vib / VIB_RATE));
+        else SLOT8_1.Cnt += SLOT8_1.Incr;
+        if (SLOT8_2.vib != 0) SLOT8_2.Cnt = (uint)(SLOT8_2.Cnt + ((CH.Span[8].fc * 48) * vib / VIB_RATE));
+        else SLOT8_2.Cnt += (CH.Span[8].fc * 48);
 
-	    tone8 = OP_OUT(SLOT8_2, (uint)whitenoise,0 );
+        tone8 = OP_OUT(SLOT8_2, (uint)whitenoise, 0);
 
-	    /* SD */
-	    if( env_sd < EG_ENT-1 )
-		    outd[0] += OP_OUT(SLOT7_1,env_sd, 0)*8;
-	    /* TAM */
-	    if( env_tam < EG_ENT-1 )
-		    outd[0] += OP_OUT(SLOT8_1,env_tam, 0)*2;
-	    /* TOP-CY */
-	    if( env_top < EG_ENT-1 )
-		    outd[0] += OP_OUT(SLOT7_2,env_top,tone8)*2;
-	    /* HH */
-	    if( env_hh  < EG_ENT-1 )
-		    outd[0] += OP_OUT(SLOT7_2,env_hh,tone8)*2;
+        /* SD */
+        if (env_sd < EG_ENT - 1)
+            outd[0] += OP_OUT(SLOT7_1, env_sd, 0) * 8;
+        /* TAM */
+        if (env_tam < EG_ENT - 1)
+            outd[0] += OP_OUT(SLOT8_1, env_tam, 0) * 2;
+        /* TOP-CY */
+        if (env_top < EG_ENT - 1)
+            outd[0] += OP_OUT(SLOT7_2, env_top, tone8) * 2;
+        /* HH */
+        if (env_hh < EG_ENT - 1)
+            outd[0] += OP_OUT(SLOT7_2, env_hh, tone8) * 2;
     }
 
     /* ----------  Option handlers ----------       */
 
-    void OPLSetTimerHandler(FM_OPL OPL,OPL_TIMERHANDLER TimerHandler,int channelOffset)
+    void OPLSetTimerHandler(FM_OPL OPL, OPL_TIMERHANDLER TimerHandler, int channelOffset)
     {
-	    OPL.TimerHandler = TimerHandler;
-	    OPL.TimerParam = channelOffset;
+        OPL.TimerHandler = TimerHandler;
+        OPL.TimerParam = channelOffset;
     }
 
-    void OPLSetIRQHandler(FM_OPL OPL,OPL_IRQHANDLER IRQHandler,int param)
+    void OPLSetIRQHandler(FM_OPL OPL, OPL_IRQHANDLER IRQHandler, int param)
     {
-	    OPL.IRQHandler = IRQHandler;
-	    OPL.IRQParam = param;
+        OPL.IRQHandler = IRQHandler;
+        OPL.IRQParam = param;
     }
 
-    void OPLSetUpdateHandler(FM_OPL OPL,OPL_UPDATEHANDLER UpdateHandler,int param)
+    void OPLSetUpdateHandler(FM_OPL OPL, OPL_UPDATEHANDLER UpdateHandler, int param)
     {
-	    OPL.UpdateHandler = UpdateHandler;
-	    OPL.UpdateParam = param;
+        OPL.UpdateHandler = UpdateHandler;
+        OPL.UpdateParam = param;
     }
 
 #if BUILD_Y8950
@@ -1354,89 +1358,89 @@ internal class fmopl
     }
 #endif
 
-    byte OPLRead(FM_OPL OPL,int a)
+    byte OPLRead(FM_OPL OPL, int a)
     {
-	    if( !((a&1) != 0) )
-	    {	/* status port */
-		    return (byte)(OPL.status & (OPL.statusmask|0x80));
-	    }
-	    /* data port */
-	    switch(OPL.address)
-	    {
-	    case 0x05: /* KeyBoard IN */
-		    if((OPL.type&OPL_TYPE_KEYBOARD) != 0)
-		    {
-			    if(OPL.keyboardhandler_r != null)
-			    {
-				    return OPL.keyboardhandler_r(OPL.keyboard_param);
-			    }
-			    else
-			    {
-				    Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} OPL:read unmapped KEYBOARD port");
-			    }
-		    }
-		    return 0;
-//TODO
-//#if 0
-//	    case 0x0f: /* ADPCM-DATA  */
-//		    return 0;
-//#endif
-	    case 0x19: /* I/O DATA    */
-		    if((OPL.type&OPL_TYPE_IO) != 0)
-		    {
-			    if(OPL.porthandler_r != null)
-			    {
-				    return OPL.porthandler_r(OPL.port_param);
-			    }
-			    else
-			    {
-				    Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} OPL:read unmapped I/O port");
-			    }
-		    }
-		    return 0;
-	    case 0x1a: /* PCM-DATA    */
-		    return 0;
-	    }
-	    return 0;
+        if (!((a & 1) != 0))
+        {   /* status port */
+            return (byte)(OPL.status & (OPL.statusmask | 0x80));
+        }
+        /* data port */
+        switch (OPL.address)
+        {
+            case 0x05: /* KeyBoard IN */
+                if ((OPL.type & OPL_TYPE_KEYBOARD) != 0)
+                {
+                    if (OPL.keyboardhandler_r != null)
+                    {
+                        return OPL.keyboardhandler_r(OPL.keyboard_param);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} OPL:read unmapped KEYBOARD port");
+                    }
+                }
+                return 0;
+            //TODO
+            //#if 0
+            //	    case 0x0f: /* ADPCM-DATA  */
+            //		    return 0;
+            //#endif
+            case 0x19: /* I/O DATA    */
+                if ((OPL.type & OPL_TYPE_IO) != 0)
+                {
+                    if (OPL.porthandler_r != null)
+                    {
+                        return OPL.porthandler_r(OPL.port_param);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} OPL:read unmapped I/O port");
+                    }
+                }
+                return 0;
+            case 0x1a: /* PCM-DATA    */
+                return 0;
+        }
+        return 0;
     }
 
-    int OPLTimerOver(FM_OPL OPL,int c)
+    int OPLTimerOver(FM_OPL OPL, int c)
     {
-	    if( c != 0 )
-	    {	/* Timer B */
-		    OPL_STATUS_SET(OPL,0x20);
-	    }
-	    else
-	    {	/* Timer A */
-		    OPL_STATUS_SET(OPL,0x40);
-		    /* CSM mode key,TL control */
-		    if( (OPL.mode & 0x80) != 0 )
-		    {	/* CSM mode total level latch and auto key on */
-			    int ch;
-			    if(OPL.UpdateHandler != null) OPL.UpdateHandler(OPL.UpdateParam,0);
-			    for(ch=0;ch<9;ch++)
-				    CSMKeyControl( OPL.P_CH.Span[ch] );
-		    }
-	    }
-	    /* reload timer */
-	    if (OPL.TimerHandler != null) OPL.TimerHandler(OPL.TimerParam+c,(double)OPL.T[c]*OPL.TimerBase);
-	    return OPL.status>>7;
+        if (c != 0)
+        {   /* Timer B */
+            OPL_STATUS_SET(OPL, 0x20);
+        }
+        else
+        {   /* Timer A */
+            OPL_STATUS_SET(OPL, 0x40);
+            /* CSM mode key,TL control */
+            if ((OPL.mode & 0x80) != 0)
+            {   /* CSM mode total level latch and auto key on */
+                int ch;
+                if (OPL.UpdateHandler != null) OPL.UpdateHandler(OPL.UpdateParam, 0);
+                for (ch = 0; ch < 9; ch++)
+                    CSMKeyControl(OPL.P_CH.Span[ch]);
+            }
+        }
+        /* reload timer */
+        if (OPL.TimerHandler != null) OPL.TimerHandler(OPL.TimerParam + c, (double)OPL.T[c] * OPL.TimerBase);
+        return OPL.status >> 7;
     }
 
     /* CSM Key Control */
     void CSMKeyControl(OPL_CH CH)
     {
-	    OPL_SLOT slot1 = CH.SLOT[SLOT1];
-	    OPL_SLOT slot2 = CH.SLOT[SLOT2];
-	    /* all key off */
-	    OPL_KEYOFF(slot1);
-	    OPL_KEYOFF(slot2);
-	    /* total level latch */
-	    slot1.TLL = (int)(slot1.TL + (CH.ksl_base>>slot1.ksl));
-	    slot1.TLL = (int)(slot1.TL + (CH.ksl_base>>slot1.ksl));
-	    /* key on */
-	    CH.op1_out[0] = CH.op1_out[1] = 0;
-	    OPL_KEYON(slot1);
-	    OPL_KEYON(slot2);
+        OPL_SLOT slot1 = CH.SLOT[SLOT1];
+        OPL_SLOT slot2 = CH.SLOT[SLOT2];
+        /* all key off */
+        OPL_KEYOFF(slot1);
+        OPL_KEYOFF(slot2);
+        /* total level latch */
+        slot1.TLL = (int)(slot1.TL + (CH.ksl_base >> slot1.ksl));
+        slot1.TLL = (int)(slot1.TL + (CH.ksl_base >> slot1.ksl));
+        /* key on */
+        CH.op1_out[0] = CH.op1_out[1] = 0;
+        OPL_KEYON(slot1);
+        OPL_KEYON(slot2);
     }
 }

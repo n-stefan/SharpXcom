@@ -24,188 +24,188 @@ namespace SharpXcom.Menu;
  */
 internal class LoadGameState : State
 {
-	int _firstRun;
-	OptionsOrigin _origin;
-	string _filename;
-	Text _txtStatus;
+    int _firstRun;
+    OptionsOrigin _origin;
+    string _filename;
+    Text _txtStatus;
 
-	/**
+    /**
 	 * Initializes all the elements in the Load Game screen.
 	 * @param game Pointer to the core game.
 	 * @param origin Game section that originated this state.
 	 * @param filename Name of the save file without extension.
 	 * @param palette Parent state palette.
 	 */
-	internal LoadGameState(OptionsOrigin origin, string filename, SDL_Color[] palette)
-	{
-		_firstRun = 0;
-		_origin = origin;
-		_filename = filename;
+    internal LoadGameState(OptionsOrigin origin, string filename, SDL_Color[] palette)
+    {
+        _firstRun = 0;
+        _origin = origin;
+        _filename = filename;
 
-		buildUi(palette);
-	}
+        buildUi(palette);
+    }
 
-	/**
+    /**
 	 * Initializes all the elements in the Load Game screen.
 	 * @param game Pointer to the core game.
 	 * @param origin Game section that originated this state.
 	 * @param type Type of auto-load being used.
 	 * @param palette Parent state palette.
 	 */
-	internal LoadGameState(OptionsOrigin origin, SaveType type, SDL_Color[] palette)
-	{
-		_firstRun = 0;
-		_origin = origin;
+    internal LoadGameState(OptionsOrigin origin, SaveType type, SDL_Color[] palette)
+    {
+        _firstRun = 0;
+        _origin = origin;
 
-		switch (type)
-		{
-			case SaveType.SAVE_QUICK:
-				_filename = SavedGame.QUICKSAVE;
-				break;
-			case SaveType.SAVE_AUTO_GEOSCAPE:
-				_filename = SavedGame.AUTOSAVE_GEOSCAPE;
-				break;
-			case SaveType.SAVE_AUTO_BATTLESCAPE:
-				_filename = SavedGame.AUTOSAVE_BATTLESCAPE;
-				break;
-			default:
-				// can't auto-load ironman games
-				break;
-		}
+        switch (type)
+        {
+            case SaveType.SAVE_QUICK:
+                _filename = SavedGame.QUICKSAVE;
+                break;
+            case SaveType.SAVE_AUTO_GEOSCAPE:
+                _filename = SavedGame.AUTOSAVE_GEOSCAPE;
+                break;
+            case SaveType.SAVE_AUTO_BATTLESCAPE:
+                _filename = SavedGame.AUTOSAVE_BATTLESCAPE;
+                break;
+            default:
+                // can't auto-load ironman games
+                break;
+        }
 
-		buildUi(palette);
-	}
+        buildUi(palette);
+    }
 
-	/**
+    /**
 	 *
 	 */
-	~LoadGameState() { }
+    ~LoadGameState() { }
 
-	/**
+    /**
 	 * Builds the interface.
 	 * @param palette Parent state palette.
 	 */
-	void buildUi(SDL_Color[] palette)
-	{
-		_screen = false;
+    void buildUi(SDL_Color[] palette)
+    {
+        _screen = false;
 
-		// Create objects
-		_txtStatus = new Text(320, 17, 0, 92);
+        // Create objects
+        _txtStatus = new Text(320, 17, 0, 92);
 
-		// Set palette
-		setPalette(palette);
+        // Set palette
+        setPalette(palette);
 
-		if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
-		{
-			add(_txtStatus, "textLoad", "battlescape");
-			_txtStatus.setHighContrast(true);
-			if (_game.getSavedGame().getSavedBattle().getAmbientSound() != -1)
-			{
-				_game.getMod().getSoundByDepth(0, (uint)_game.getSavedGame().getSavedBattle().getAmbientSound()).stopLoop();
-			}
-		}
-		else
-		{
-			add(_txtStatus, "textLoad", "geoscape");
-		}
+        if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
+        {
+            add(_txtStatus, "textLoad", "battlescape");
+            _txtStatus.setHighContrast(true);
+            if (_game.getSavedGame().getSavedBattle().getAmbientSound() != -1)
+            {
+                _game.getMod().getSoundByDepth(0, (uint)_game.getSavedGame().getSavedBattle().getAmbientSound()).stopLoop();
+            }
+        }
+        else
+        {
+            add(_txtStatus, "textLoad", "geoscape");
+        }
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		// Set up objects
-		_txtStatus.setBig();
-		_txtStatus.setAlign(TextHAlign.ALIGN_CENTER);
-		_txtStatus.setText(tr("STR_LOADING_GAME"));
-	}
+        // Set up objects
+        _txtStatus.setBig();
+        _txtStatus.setAlign(TextHAlign.ALIGN_CENTER);
+        _txtStatus.setText(tr("STR_LOADING_GAME"));
+    }
 
-	/**
+    /**
 	 * Ignore quick loads without a save available.
 	 */
-	internal override void init()
-	{
-		base.init();
-		if (_filename == SavedGame.QUICKSAVE && !CrossPlatform.fileExists(Options.getMasterUserFolder() + _filename))
-		{
-			_game.popState();
-			return;
-		}
-	}
+    internal override void init()
+    {
+        base.init();
+        if (_filename == SavedGame.QUICKSAVE && !CrossPlatform.fileExists(Options.getMasterUserFolder() + _filename))
+        {
+            _game.popState();
+            return;
+        }
+    }
 
-	/**
+    /**
 	 * Loads the specified save.
 	 */
-	internal override void think()
-	{
-		base.think();
-		// Make sure it gets drawn properly
-		if (_firstRun < 10)
-		{
-			_firstRun++;
-		}
-		else
-		{
-			_game.popState();
+    internal override void think()
+    {
+        base.think();
+        // Make sure it gets drawn properly
+        if (_firstRun < 10)
+        {
+            _firstRun++;
+        }
+        else
+        {
+            _game.popState();
 
-			// Load the game
-			SavedGame s = new SavedGame();
-			try
-			{
-				s.load(_filename, _game.getMod());
-				_game.setSavedGame(s);
-				if (_game.getSavedGame().getEnding() != GameEnding.END_NONE)
-				{
-					Options.baseXResolution = Screen.ORIGINAL_WIDTH;
-					Options.baseYResolution = Screen.ORIGINAL_HEIGHT;
-					_game.getScreen().resetDisplay(false);
-					_game.setState(new StatisticsState());
-				}
-				else
-				{
-					Options.baseXResolution = Options.baseXGeoscape;
-					Options.baseYResolution = Options.baseYGeoscape;
-					_game.getScreen().resetDisplay(false);
-					_game.setState(new GeoscapeState());
-					if (_game.getSavedGame().getSavedBattle() != null)
-					{
-						_game.getSavedGame().getSavedBattle().loadMapResources(_game.getMod());
-						Options.baseXResolution = Options.baseXBattlescape;
-						Options.baseYResolution = Options.baseYBattlescape;
-						_game.getScreen().resetDisplay(false);
-						BattlescapeState bs = new BattlescapeState();
-						_game.pushState(bs);
-						_game.getSavedGame().getSavedBattle().setBattleState(bs);
-					}
-				}
-			}
-			catch (YamlException e)
-			{
-				error(e.Message, s);
-			}
-			catch (Exception e)
-			{
-				error(e.Message, s);
-			}
-			CrossPlatform.flashWindow(_game.getScreen().getWindow());
-		}
-	}
+            // Load the game
+            SavedGame s = new SavedGame();
+            try
+            {
+                s.load(_filename, _game.getMod());
+                _game.setSavedGame(s);
+                if (_game.getSavedGame().getEnding() != GameEnding.END_NONE)
+                {
+                    Options.baseXResolution = Screen.ORIGINAL_WIDTH;
+                    Options.baseYResolution = Screen.ORIGINAL_HEIGHT;
+                    _game.getScreen().resetDisplay(false);
+                    _game.setState(new StatisticsState());
+                }
+                else
+                {
+                    Options.baseXResolution = Options.baseXGeoscape;
+                    Options.baseYResolution = Options.baseYGeoscape;
+                    _game.getScreen().resetDisplay(false);
+                    _game.setState(new GeoscapeState());
+                    if (_game.getSavedGame().getSavedBattle() != null)
+                    {
+                        _game.getSavedGame().getSavedBattle().loadMapResources(_game.getMod());
+                        Options.baseXResolution = Options.baseXBattlescape;
+                        Options.baseYResolution = Options.baseYBattlescape;
+                        _game.getScreen().resetDisplay(false);
+                        BattlescapeState bs = new BattlescapeState();
+                        _game.pushState(bs);
+                        _game.getSavedGame().getSavedBattle().setBattleState(bs);
+                    }
+                }
+            }
+            catch (YamlException e)
+            {
+                error(e.Message, s);
+            }
+            catch (Exception e)
+            {
+                error(e.Message, s);
+            }
+            CrossPlatform.flashWindow(_game.getScreen().getWindow());
+        }
+    }
 
-	/**
+    /**
 	 * Pops up a window with an error message
 	 * and cleans up afterwards.
 	 * @param msg Error message.
 	 * @param save Pending save.
 	 */
-	void error(string msg, SavedGame save)
-	{
+    void error(string msg, SavedGame save)
+    {
         Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {msg}");
-		string error = $"{tr("STR_LOAD_UNSUCCESSFUL")}{Unicode.TOK_NL_SMALL}{Unicode.convPathToUtf8(msg)}";
-		if (_origin != OptionsOrigin.OPT_BATTLESCAPE)
-			_game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("geoscapeColor").color, "BACK01.SCR", _game.getMod().getInterface("errorMessages").getElement("geoscapePalette").color));
-		else
-			_game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("battlescapeColor").color, "TAC00.SCR", _game.getMod().getInterface("errorMessages").getElement("battlescapePalette").color));
+        string error = $"{tr("STR_LOAD_UNSUCCESSFUL")}{Unicode.TOK_NL_SMALL}{Unicode.convPathToUtf8(msg)}";
+        if (_origin != OptionsOrigin.OPT_BATTLESCAPE)
+            _game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("geoscapeColor").color, "BACK01.SCR", _game.getMod().getInterface("errorMessages").getElement("geoscapePalette").color));
+        else
+            _game.pushState(new ErrorMessageState(error, _palette, (byte)_game.getMod().getInterface("errorMessages").getElement("battlescapeColor").color, "TAC00.SCR", _game.getMod().getInterface("errorMessages").getElement("battlescapePalette").color));
 
-		if (_game.getSavedGame() == save)
-			_game.setSavedGame(null);
-		else
-			save = null;
-	}
+        if (_game.getSavedGame() == save)
+            _game.setSavedGame(null);
+        else
+            save = null;
+    }
 }

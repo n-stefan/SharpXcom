@@ -149,7 +149,7 @@ internal class Slider : InteractiveSurface
      * @return Value.
      */
     internal int getValue() =>
-	    _value;
+        _value;
 
     /**
      * Automatically updates the slider
@@ -159,20 +159,20 @@ internal class Slider : InteractiveSurface
      */
     internal override void handle(Action action, State state)
     {
-	    base.handle(action, state);
-	    //_button.handle(action, state);
-	    if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
-	    {
-		    int cursorX = (int)action.getAbsoluteXMouse();
-		    double buttonX = Math.Clamp(cursorX + _offsetX, _minX, _maxX);
-		    double pos = (buttonX - _minX) / (_maxX - _minX);
-		    int value = _min + (int)Round((_max - _min) * pos);
-		    setValue(value);
-		    if (_change != null)
-		    {
-			    _change(action);
-		    }
-	    }
+        base.handle(action, state);
+        //_button.handle(action, state);
+        if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
+        {
+            int cursorX = (int)action.getAbsoluteXMouse();
+            double buttonX = Math.Clamp(cursorX + _offsetX, _minX, _maxX);
+            double pos = (buttonX - _minX) / (_maxX - _minX);
+            int value = _min + (int)Round((_max - _min) * pos);
+            setValue(value);
+            if (_change != null)
+            {
+                _change(action);
+            }
+        }
     }
 
     /**
@@ -181,14 +181,14 @@ internal class Slider : InteractiveSurface
      */
     internal override void blit(Surface surface)
     {
-	    base.blit(surface);
-	    if (_visible && !_hidden)
-	    {
-		    _txtMinus.blit(surface);
-		    _txtPlus.blit(surface);
-		    _frame.blit(surface);
-		    _button.blit(surface);
-	    }
+        base.blit(surface);
+        if (_visible && !_hidden)
+        {
+            _txtMinus.blit(surface);
+            _txtPlus.blit(surface);
+            _frame.blit(surface);
+            _button.blit(surface);
+        }
     }
 
     /**
@@ -198,20 +198,20 @@ internal class Slider : InteractiveSurface
      */
     internal override void mousePress(Action action, State state)
     {
-	    base.mousePress(action, state);
-	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-	    {
-		    _pressed = true;
-		    int cursorX = (int)action.getAbsoluteXMouse();
-		    if (cursorX >= _button.getX() && cursorX < _button.getX() + _button.getWidth())
-		    {
-			    _offsetX = _button.getX() - cursorX;
-		    }
-		    else
-		    {
-			    _offsetX = -_button.getWidth() / 2;
-		    }
-	    }
+        base.mousePress(action, state);
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+        {
+            _pressed = true;
+            int cursorX = (int)action.getAbsoluteXMouse();
+            if (cursorX >= _button.getX() && cursorX < _button.getX() + _button.getWidth())
+            {
+                _offsetX = _button.getX() - cursorX;
+            }
+            else
+            {
+                _offsetX = -_button.getWidth() / 2;
+            }
+        }
     }
 
     /**
@@ -221,12 +221,12 @@ internal class Slider : InteractiveSurface
      */
     protected override void mouseRelease(Action action, State state)
     {
-	    base.mouseRelease(action, state);
-	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-	    {
-		    _pressed = false;
-		    _offsetX = 0;
-	    }
+        base.mouseRelease(action, state);
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+        {
+            _pressed = false;
+            _offsetX = 0;
+        }
     }
 
     /**
@@ -240,9 +240,9 @@ internal class Slider : InteractiveSurface
      */
     internal override void initText(Font big, Font small, Language lang)
     {
-	    _txtMinus.initText(big, small, lang);
-	    _txtPlus.initText(big, small, lang);
-	    _button.initText(big, small, lang);
+        _txtMinus.initText(big, small, lang);
+        _txtPlus.initText(big, small, lang);
+        _button.initText(big, small, lang);
     }
 
     /**
@@ -253,11 +253,11 @@ internal class Slider : InteractiveSurface
      */
     internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-	    base.setPalette(colors, firstcolor, ncolors);
-	    _txtMinus.setPalette(colors, firstcolor, ncolors);
-	    _txtPlus.setPalette(colors, firstcolor, ncolors);
-	    _frame.setPalette(colors, firstcolor, ncolors);
-	    _button.setPalette(colors, firstcolor, ncolors);
+        base.setPalette(colors, firstcolor, ncolors);
+        _txtMinus.setPalette(colors, firstcolor, ncolors);
+        _txtPlus.setPalette(colors, firstcolor, ncolors);
+        _frame.setPalette(colors, firstcolor, ncolors);
+        _button.setPalette(colors, firstcolor, ncolors);
     }
 
     /**
@@ -266,14 +266,14 @@ internal class Slider : InteractiveSurface
      */
     internal override void setX(int x)
     {
-	    base.setX(x);
-	    _txtMinus.setX(x - 1);
-	    _txtPlus.setX(x + getWidth() - _textness);
-	    _frame.setX(getX() + _textness);
+        base.setX(x);
+        _txtMinus.setX(x - 1);
+        _txtPlus.setX(x + getWidth() - _textness);
+        _frame.setX(getX() + _textness);
 
-	    _minX = _frame.getX();
-	    _maxX = _frame.getX() + _frame.getWidth() - _button.getWidth();
-	    setValue((int)_pos);
+        _minX = _frame.getX();
+        _maxX = _frame.getX() + _frame.getWidth() - _button.getWidth();
+        setValue((int)_pos);
     }
 
     /**
@@ -282,11 +282,11 @@ internal class Slider : InteractiveSurface
      */
     internal override void setY(int y)
     {
-	    base.setY(y);
-	    _txtMinus.setY(y);
-	    _txtPlus.setY(y);
-	    _frame.setY(getY() + (getHeight() - _thickness) / 2);
-	    _button.setY(getY());
+        base.setY(y);
+        _txtMinus.setY(y);
+        _txtPlus.setY(y);
+        _frame.setY(getY() + (getHeight() - _thickness) / 2);
+        _button.setY(getY());
     }
 
     /**
@@ -296,10 +296,10 @@ internal class Slider : InteractiveSurface
      */
     internal override void setHighContrast(bool contrast)
     {
-	    _txtMinus.setHighContrast(contrast);
-	    _txtPlus.setHighContrast(contrast);
-	    _frame.setHighContrast(contrast);
-	    _button.setHighContrast(contrast);
+        _txtMinus.setHighContrast(contrast);
+        _txtPlus.setHighContrast(contrast);
+        _frame.setHighContrast(contrast);
+        _button.setHighContrast(contrast);
     }
 
     /**
@@ -307,5 +307,5 @@ internal class Slider : InteractiveSurface
      * @return Color value.
      */
     byte getColor() =>
-	    _button.getColor();
+        _button.getColor();
 }

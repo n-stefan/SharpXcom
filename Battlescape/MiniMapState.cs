@@ -24,133 +24,133 @@ namespace SharpXcom.Battlescape;
  */
 internal class MiniMapState : State
 {
-	Surface _bg;
-	MiniMapView _miniMapView;
-	BattlescapeButton _btnLvlUp, _btnLvlDwn, _btnOk;
-	Text _txtLevel;
-	Timer _timerAnimate;
+    Surface _bg;
+    MiniMapView _miniMapView;
+    BattlescapeButton _btnLvlUp, _btnLvlDwn, _btnOk;
+    Text _txtLevel;
+    Timer _timerAnimate;
 
-	/**
+    /**
 	 * Initializes all the elements in the MiniMapState screen.
 	 * @param game Pointer to the core game.
 	 * @param camera The Battlescape camera.
 	 * @param battleGame The Battlescape save.
 	 */
-	internal MiniMapState(Camera camera, SavedBattleGame battleGame)
-	{
-		if (Options.maximizeInfoScreens)
-		{
-			Options.baseXResolution = Screen.ORIGINAL_WIDTH;
-			Options.baseYResolution = Screen.ORIGINAL_HEIGHT;
-			_game.getScreen().resetDisplay(false);
-		}
+    internal MiniMapState(Camera camera, SavedBattleGame battleGame)
+    {
+        if (Options.maximizeInfoScreens)
+        {
+            Options.baseXResolution = Screen.ORIGINAL_WIDTH;
+            Options.baseYResolution = Screen.ORIGINAL_HEIGHT;
+            _game.getScreen().resetDisplay(false);
+        }
 
-		_bg = new Surface(320, 200);
-		_miniMapView = new MiniMapView(221, 148, 48, 16, _game, camera, battleGame);
-		_btnLvlUp = new BattlescapeButton(18, 20, 24, 62);
-		_btnLvlDwn = new BattlescapeButton(18, 20, 24, 88);
-		_btnOk = new BattlescapeButton(32, 32, 275, 145);
-		_txtLevel = new Text(28, 16, 281, 75);
+        _bg = new Surface(320, 200);
+        _miniMapView = new MiniMapView(221, 148, 48, 16, _game, camera, battleGame);
+        _btnLvlUp = new BattlescapeButton(18, 20, 24, 62);
+        _btnLvlDwn = new BattlescapeButton(18, 20, 24, 88);
+        _btnOk = new BattlescapeButton(32, 32, 275, 145);
+        _txtLevel = new Text(28, 16, 281, 75);
 
-		// Set palette
-		battleGame.setPaletteByDepth(this);
+        // Set palette
+        battleGame.setPaletteByDepth(this);
 
-		add(_bg);
-		_game.getMod().getSurface("SCANBORD.PCK").blit(_bg);
-		add(_miniMapView);
-		add(_btnLvlUp, "buttonUp", "minimap", _bg);
-		add(_btnLvlDwn, "buttonDown", "minimap", _bg);
-		add(_btnOk, "buttonOK", "minimap", _bg);
-		add(_txtLevel, "textLevel", "minimap", _bg);
+        add(_bg);
+        _game.getMod().getSurface("SCANBORD.PCK").blit(_bg);
+        add(_miniMapView);
+        add(_btnLvlUp, "buttonUp", "minimap", _bg);
+        add(_btnLvlDwn, "buttonDown", "minimap", _bg);
+        add(_btnOk, "buttonOK", "minimap", _bg);
+        add(_txtLevel, "textLevel", "minimap", _bg);
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		if (_game.getScreen().getDY() > 50)
-		{
-			_screen = false;
-			_bg.drawRect(46, 14, 223, 151, (byte)(Palette.blockOffset(15)+15));
-		}
+        if (_game.getScreen().getDY() > 50)
+        {
+            _screen = false;
+            _bg.drawRect(46, 14, 223, 151, (byte)(Palette.blockOffset(15) + 15));
+        }
 
-		_btnLvlUp.onMouseClick(btnLevelUpClick);
-		_btnLvlDwn.onMouseClick(btnLevelDownClick);
-		_btnOk.onMouseClick(btnOkClick);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyBattleMap);
-		_txtLevel.setBig();
-		_txtLevel.setHighContrast(true);
-		_txtLevel.setText(tr("STR_LEVEL_SHORT").arg(camera.getViewLevel()));
-		_timerAnimate = new Timer(125);
-		_timerAnimate.onTimer((StateHandler)animate);
-		_timerAnimate.start();
-		_miniMapView.draw();
-	}
+        _btnLvlUp.onMouseClick(btnLevelUpClick);
+        _btnLvlDwn.onMouseClick(btnLevelDownClick);
+        _btnOk.onMouseClick(btnOkClick);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyBattleMap);
+        _txtLevel.setBig();
+        _txtLevel.setHighContrast(true);
+        _txtLevel.setText(tr("STR_LEVEL_SHORT").arg(camera.getViewLevel()));
+        _timerAnimate = new Timer(125);
+        _timerAnimate.onTimer((StateHandler)animate);
+        _timerAnimate.start();
+        _miniMapView.draw();
+    }
 
-	/**
+    /**
 	 *
 	 */
-	~MiniMapState() =>
-		_timerAnimate = null;
+    ~MiniMapState() =>
+        _timerAnimate = null;
 
-	/**
+    /**
 	 * Changes the currently displayed minimap level.
 	 * @param action Pointer to an action.
 	 */
-	void btnLevelUpClick(Action _) =>
-		_txtLevel.setText(tr("STR_LEVEL_SHORT").arg(_miniMapView.up()));
+    void btnLevelUpClick(Action _) =>
+        _txtLevel.setText(tr("STR_LEVEL_SHORT").arg(_miniMapView.up()));
 
-	/**
+    /**
 	 * Changes the currently displayed minimap level.
 	 * @param action Pointer to an action.
 	 */
-	void btnLevelDownClick(Action _) =>
-		_txtLevel.setText(tr("STR_LEVEL_SHORT").arg(_miniMapView.down()));
+    void btnLevelDownClick(Action _) =>
+        _txtLevel.setText(tr("STR_LEVEL_SHORT").arg(_miniMapView.down()));
 
-	/**
+    /**
 	 * Returns to the previous screen.
 	 * @param action Pointer to an action.
 	 */
-	internal void btnOkClick(Action _)
-	{
-		if (Options.maximizeInfoScreens)
-		{
-			Screen.updateScale(Options.battlescapeScale, ref Options.baseXBattlescape, ref Options.baseYBattlescape, true);
-			_game.getScreen().resetDisplay(false);
-		}
-		_game.popState();
-	}
+    internal void btnOkClick(Action _)
+    {
+        if (Options.maximizeInfoScreens)
+        {
+            Screen.updateScale(Options.battlescapeScale, ref Options.baseXBattlescape, ref Options.baseYBattlescape, true);
+            _game.getScreen().resetDisplay(false);
+        }
+        _game.popState();
+    }
 
-	/**
+    /**
 	 * Animation handler. Updates the minimap view animation.
 	 */
-	void animate() =>
-		_miniMapView.animate();
+    void animate() =>
+        _miniMapView.animate();
 
-	/**
+    /**
 	 * Handles timers.
 	 */
-	internal override void think()
-	{
-		base.think();
-		_timerAnimate.think(this, null);
-	}
+    internal override void think()
+    {
+        base.think();
+        _timerAnimate.think(this, null);
+    }
 
-	/**
+    /**
 	 * Handles mouse-wheeling.
 	 * @param action Pointer to an action.
 	 */
-	internal override void handle(Action action)
-	{
-		base.handle(action);
-		if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
-		{
-			if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
-			{
-				btnLevelUpClick(action);
-			}
-			else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
-			{
-				btnLevelDownClick(action);
-			}
-		}
-	}
+    internal override void handle(Action action)
+    {
+        base.handle(action);
+        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        {
+            if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
+            {
+                btnLevelUpClick(action);
+            }
+            else if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+            {
+                btnLevelDownClick(action);
+            }
+        }
+    }
 }

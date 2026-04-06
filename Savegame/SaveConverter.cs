@@ -88,15 +88,15 @@ internal class SaveConverter
      */
     internal static void getList(Language lang, SaveOriginal[] info)
     {
-	    try
+        try
         {
             for (int i = 0; i < NUM_SAVES; ++i)
-	        {
-		        SaveOriginal save;
-		        save.id = 0;
+            {
+                SaveOriginal save;
+                save.id = 0;
 
-		        int id = i + 1;
-		        string ss = $"{Options.getMasterUserFolder()}GAME_{id}{Path.PathSeparator}SAVEINFO.DAT";
+                int id = i + 1;
+                string ss = $"{Options.getMasterUserFolder()}GAME_{id}{Path.PathSeparator}SAVEINFO.DAT";
                 using var datFile = new FileStream(ss, FileMode.Open);
                 var buffer = new byte[datFile.Length];
                 datFile.Read(buffer, 0, buffer.Length);
@@ -108,21 +108,21 @@ internal class SaveConverter
                 int hour = BitConverter.ToUInt16(buffer, 0x22);
                 int minute = BitConverter.ToUInt16(buffer, 0x24);
                 bool tactical = buffer[0x26] != 0;
-                
+
                 GameTime time = new GameTime(0, day, month + 1, year, hour, minute, 0);
-                
+
                 string ssDate = $"{time.getDayString(lang)}  {lang.getString(time.getMonthString())}  {time.getYear()}";
                 string ssTime = $"{time.getHour()}:{time.getMinute():D2}";
-                
+
                 save.id = id;
                 save.name = name;
                 save.date = ssDate;
                 save.time = ssTime;
                 save.tactical = tactical;
-                
+
                 datFile.Close();
-		        info[i] = save;
-	        }
+                info[i] = save;
+            }
         }
         catch (Exception)
         {
@@ -203,9 +203,9 @@ internal class SaveConverter
         }
         catch (Exception)
         {
-		    throw new Exception(filename + " not found");
+            throw new Exception(filename + " not found");
         }
-	    return buffer;
+        return buffer;
     }
 
     /**
@@ -471,22 +471,22 @@ internal class SaveConverter
      */
     void graphVector<T>(ref List<T> vector, int month, bool year)
     {
-	    if (year)
-	    {
-		    var newVector = new List<T>();
-		    int i = month;
-		    do
-		    {
-			    newVector.Add(vector[i]);
-			    i = (i + 1) % vector.Count;
-		    }
-		    while (i != month);
-		    vector = newVector;
-	    }
-	    else
-	    {
-		    vector = new List<T>(month);
-	    }
+        if (year)
+        {
+            var newVector = new List<T>();
+            int i = month;
+            do
+            {
+                newVector.Add(vector[i]);
+                i = (i + 1) % vector.Count;
+            }
+            while (i != month);
+            vector = newVector;
+        }
+        else
+        {
+            vector = new List<T>(month);
+        }
     }
 
     /**

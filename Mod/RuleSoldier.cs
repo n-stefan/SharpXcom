@@ -67,28 +67,28 @@ internal class RuleSoldier : IRule
      * @return The percentage ratio.
      */
     internal int getFemaleFrequency() =>
-	    _femaleFrequency;
+        _femaleFrequency;
 
     /**
      * Returns the list of soldier name pools.
      * @return Pointer to soldier name pool list.
      */
     internal List<SoldierNamePool> getNames() =>
-	    _names;
+        _names;
 
     /**
      * Gets the minimum stats for the random stats generator.
      * @return The minimum stats.
      */
     internal UnitStats getMinStats() =>
-	    _minStats;
+        _minStats;
 
     /**
      * Gets the maximum stats for the random stats generator.
      * @return The maximum stats.
      */
     internal UnitStats getMaxStats() =>
-	    _maxStats;
+        _maxStats;
 
     /**
      * Returns the language string that names
@@ -96,7 +96,7 @@ internal class RuleSoldier : IRule
      * @return Soldier name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Loads the soldier from a YAML file.
@@ -105,10 +105,10 @@ internal class RuleSoldier : IRule
      */
     internal void load(YamlNode node, Mod mod)
     {
-	    _type = node["type"].ToString();
-	    // Just in case
-	    if (_type == "XCOM")
-		    _type = "STR_SOLDIER";
+        _type = node["type"].ToString();
+        // Just in case
+        if (_type == "XCOM")
+            _type = "STR_SOLDIER";
         _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
         var stats = UnitStats.decode(node["minStats"]);
         _minStats.merge(stats);
@@ -116,51 +116,51 @@ internal class RuleSoldier : IRule
         _maxStats.merge(stats);
         stats = UnitStats.decode(node["statCaps"]);
         _statCaps.merge(stats);
-	    _armor = node["armor"].ToString();
-	    _costBuy = int.Parse(node["costBuy"].ToString());
-	    _costSalary = int.Parse(node["costSalary"].ToString());
-	    _standHeight = int.Parse(node["standHeight"].ToString());
-	    _kneelHeight = int.Parse(node["kneelHeight"].ToString());
-	    _floatHeight = int.Parse(node["floatHeight"].ToString());
-	    _femaleFrequency = int.Parse(node["femaleFrequency"].ToString());
-	    _value = int.Parse(node["value"].ToString());
-	    _transferTime = int.Parse(node["transferTime"].ToString());
+        _armor = node["armor"].ToString();
+        _costBuy = int.Parse(node["costBuy"].ToString());
+        _costSalary = int.Parse(node["costSalary"].ToString());
+        _standHeight = int.Parse(node["standHeight"].ToString());
+        _kneelHeight = int.Parse(node["kneelHeight"].ToString());
+        _floatHeight = int.Parse(node["floatHeight"].ToString());
+        _femaleFrequency = int.Parse(node["femaleFrequency"].ToString());
+        _value = int.Parse(node["value"].ToString());
+        _transferTime = int.Parse(node["transferTime"].ToString());
 
-	    mod.loadSoundOffset(_type, _deathSoundMale, node["deathMale"], "BATTLE.CAT");
+        mod.loadSoundOffset(_type, _deathSoundMale, node["deathMale"], "BATTLE.CAT");
         mod.loadSoundOffset(_type, _deathSoundFemale, node["deathFemale"], "BATTLE.CAT");
 
-	    foreach (var i in ((YamlSequenceNode)node["soldierNames"]).Children)
-	    {
-		    string fileName = i.ToString();
-		    if (fileName == "delete")
-		    {
+        foreach (var i in ((YamlSequenceNode)node["soldierNames"]).Children)
+        {
+            string fileName = i.ToString();
+            if (fileName == "delete")
+            {
                 _names.Clear();
-		    }
-		    else
-		    {
-			    if (fileName[fileName.Length - 1] == '/')
-			    {
-				    // load all *.nam files in given directory
-				    HashSet<string> names = FileMap.filterFiles(FileMap.getVFolderContents(fileName), "nam");
-				    foreach (var j in names)
-				    {
-					    addSoldierNamePool(fileName + j);
-				    }
-			    }
-			    else
-			    {
-				    // load given file
-				    addSoldierNamePool(fileName);
-			    }
-		    }
-	    }
+            }
+            else
+            {
+                if (fileName[fileName.Length - 1] == '/')
+                {
+                    // load all *.nam files in given directory
+                    HashSet<string> names = FileMap.filterFiles(FileMap.getVFolderContents(fileName), "nam");
+                    foreach (var j in names)
+                    {
+                        addSoldierNamePool(fileName + j);
+                    }
+                }
+                else
+                {
+                    // load given file
+                    addSoldierNamePool(fileName);
+                }
+            }
+        }
     }
 
     void addSoldierNamePool(string namFile)
     {
-	    SoldierNamePool pool = new SoldierNamePool();
-	    pool.load(FileMap.getFilePath(namFile));
-	    _names.Add(pool);
+        SoldierNamePool pool = new SoldierNamePool();
+        pool.load(FileMap.getFilePath(namFile));
+        _names.Add(pool);
     }
 
     /**
@@ -168,49 +168,49 @@ internal class RuleSoldier : IRule
      * @return The armor name.
      */
     internal string getArmor() =>
-	    _armor;
+        _armor;
 
     /**
      * Gets the cost of salary for a month.
      * @return The cost.
      */
     internal int getSalaryCost() =>
-	    _costSalary;
+        _costSalary;
 
     /**
      * Gets the stat caps.
      * @return The stat caps.
      */
     internal UnitStats getStatCaps() =>
-	    _statCaps;
+        _statCaps;
 
     /**
      * Gets the soldier's base value, without experience modifiers.
      * @return The soldier's value.
      */
     internal int getValue() =>
-	    _value;
+        _value;
 
     /**
      * Gets the height of the soldier when it's standing.
      * @return The standing height.
      */
     internal int getStandHeight() =>
-	    _standHeight;
+        _standHeight;
 
     /**
      * Gets the height of the soldier when it's kneeling.
      * @return The kneeling height.
      */
     internal int getKneelHeight() =>
-	    _kneelHeight;
+        _kneelHeight;
 
     /**
      * Gets the elevation of the soldier when it's flying.
      * @return The floating height.
      */
     internal int getFloatHeight() =>
-	    _floatHeight;
+        _floatHeight;
 
     /**
      * Gets the list of research required to
@@ -218,7 +218,7 @@ internal class RuleSoldier : IRule
      * @return The list of research IDs.
     */
     internal List<string> getRequirements() =>
-	    _requires;
+        _requires;
 
     /**
      * Gets the amount of time this item
@@ -226,26 +226,26 @@ internal class RuleSoldier : IRule
      * @return The time in hours.
      */
     internal int getTransferTime() =>
-	    _transferTime;
+        _transferTime;
 
     /**
      * Gets the cost of hiring this soldier.
      * @return The cost.
      */
     internal int getBuyCost() =>
-	    _costBuy;
+        _costBuy;
 
     /**
      * Gets the death sounds for male soldiers.
      * @return List of sound IDs.
      */
     internal List<int> getMaleDeathSounds() =>
-	    _deathSoundMale;
+        _deathSoundMale;
 
     /**
      * Gets the death sounds for female soldiers.
      * @return List of sound IDs.
      */
     internal List<int> getFemaleDeathSounds() =>
-	    _deathSoundFemale;
+        _deathSoundFemale;
 }

@@ -199,18 +199,18 @@ internal class OptionsControlsState : OptionsBaseState
     string ucWords(string text)
     {
         var str = text.ToCharArray();
-	    if (str.Length != 0)
-	    {
-		    str[0] = char.ToUpper(str[0]);
-	    }
+        if (str.Length != 0)
+        {
+            str[0] = char.ToUpper(str[0]);
+        }
         for (var i = Array.IndexOf(str, ' '); i != -1; i = Array.IndexOf(str, ' ', i + 1))
-	    {
-		    if (str.Length > i + 1)
-			    str[i + 1] = char.ToUpper(str[i + 1]);
-		    else
-			    break;
-	    }
-	    return new string(str);
+        {
+            if (str.Length > i + 1)
+                str[i + 1] = char.ToUpper(str[i + 1]);
+            else
+                break;
+        }
+        return new string(str);
     }
 
     /**
@@ -218,19 +218,19 @@ internal class OptionsControlsState : OptionsBaseState
      */
     internal override void init()
     {
-	    base.init();
-	    _lstControls.clearList();
-	    _lstControls.addRow(2, tr("STR_GENERAL"), string.Empty);
-	    _lstControls.setCellColor(0, 0, _colorGroup);
-	    addControls(_controlsGeneral);
-	    _lstControls.addRow(2, string.Empty, string.Empty);
-	    _lstControls.addRow(2, tr("STR_GEOSCAPE"), string.Empty);
-	    _lstControls.setCellColor((uint)(_controlsGeneral.Count + 2), 0, _colorGroup);
-	    addControls(_controlsGeo);
-	    _lstControls.addRow(2, string.Empty, string.Empty);
-	    _lstControls.addRow(2, tr("STR_BATTLESCAPE"), string.Empty);
-	    _lstControls.setCellColor((uint)(_controlsGeneral.Count + 2 + _controlsGeo.Count + 2), 0, _colorGroup);
-	    addControls(_controlsBattle);
+        base.init();
+        _lstControls.clearList();
+        _lstControls.addRow(2, tr("STR_GENERAL"), string.Empty);
+        _lstControls.setCellColor(0, 0, _colorGroup);
+        addControls(_controlsGeneral);
+        _lstControls.addRow(2, string.Empty, string.Empty);
+        _lstControls.addRow(2, tr("STR_GEOSCAPE"), string.Empty);
+        _lstControls.setCellColor((uint)(_controlsGeneral.Count + 2), 0, _colorGroup);
+        addControls(_controlsGeo);
+        _lstControls.addRow(2, string.Empty, string.Empty);
+        _lstControls.addRow(2, tr("STR_BATTLESCAPE"), string.Empty);
+        _lstControls.setCellColor((uint)(_controlsGeneral.Count + 2 + _controlsGeo.Count + 2), 0, _colorGroup);
+        addControls(_controlsBattle);
     }
 
     /**
@@ -239,14 +239,14 @@ internal class OptionsControlsState : OptionsBaseState
      */
     void addControls(List<OptionInfo> keys)
     {
-	    foreach (var i in keys)
-	    {
-		    string name = tr(i.description());
-		    SDL_Keycode key = i.asKey();
-		    string keyName = ucWords(SDL_GetKeyName(key));
-		    if (key == SDL_Keycode.SDLK_UNKNOWN)
-			    keyName = string.Empty;
-		    _lstControls.addRow(2, name, keyName);
-	    }
+        foreach (var i in keys)
+        {
+            string name = tr(i.description());
+            SDL_Keycode key = i.asKey();
+            string keyName = ucWords(SDL_GetKeyName(key));
+            if (key == SDL_Keycode.SDLK_UNKNOWN)
+                keyName = string.Empty;
+            _lstControls.addRow(2, name, keyName);
+        }
     }
 }

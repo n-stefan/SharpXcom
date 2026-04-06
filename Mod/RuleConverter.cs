@@ -39,12 +39,12 @@ internal class RuleConverter
      */
     ~RuleConverter() { }
 
-	/**
+    /**
 	 * Loads the converter data from a YAML file.
 	 * @param node YAML node.
 	 */
-	internal void load(YamlNode node)
-	{
+    internal void load(YamlNode node)
+    {
         _offsets = ((YamlMappingNode)node["offsets"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
         _markers = ((YamlSequenceNode)node["markers"]).Children.Select(x => x.ToString()).ToList();
         _countries = ((YamlSequenceNode)node["countries"]).Children.Select(x => x.ToString()).ToList();
@@ -62,7 +62,7 @@ internal class RuleConverter
         _research = ((YamlSequenceNode)node["research"]).Children.Select(x => x.ToString()).ToList();
         _manufacture = ((YamlSequenceNode)node["manufacture"]).Children.Select(x => x.ToString()).ToList();
         _ufopaedia = ((YamlSequenceNode)node["ufopaedia"]).Children.Select(x => x.ToString()).ToList();
-	}
+    }
 
     /// Gets the country ID list.
     internal List<string> getCountries() =>

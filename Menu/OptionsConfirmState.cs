@@ -140,8 +140,8 @@ internal class OptionsConfirmState : State
      */
     internal override void think()
     {
-	    base.think();
+        base.think();
 
-	    _timer.think(this, null);
+        _timer.think(this, null);
     }
 }

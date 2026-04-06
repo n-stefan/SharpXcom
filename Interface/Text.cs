@@ -25,14 +25,14 @@ enum TextVAlign { ALIGN_TOP, ALIGN_MIDDLE, ALIGN_BOTTOM };
 
 struct PaletteShift : IColorFunc<byte, byte, int, int, int>
 {
-	public void func(ref byte dest, byte src, int off, int mul, int mid)
-	{
-		if (src != 0)
-		{
-			int inverseOffset = mid != 0 ? 2 * (mid - src) : 0;
-			dest = (byte)(off + src * mul + inverseOffset);
-		}
-	}
+    public void func(ref byte dest, byte src, int off, int mul, int mid)
+    {
+        if (src != 0)
+        {
+            int inverseOffset = mid != 0 ? 2 * (mid - src) : 0;
+            dest = (byte)(off + src * mul + inverseOffset);
+        }
+    }
 }
 
 /**
@@ -158,18 +158,18 @@ internal class Text : InteractiveSurface
      */
     internal void setText(string text)
     {
-	    _text = text;
-	    _font = _fontOrig;
-	    processText();
-	    // If big text won't fit the space, try small text
-	    if (!string.IsNullOrEmpty(_text))
-	    {
-		    if (_font == _big && (getTextWidth() > getWidth() || getTextHeight() > getHeight()) && _text[_text.Length - 1] != '.')
-		    {
-			    _font = _small;
-			    processText();
-		    }
-	    }
+        _text = text;
+        _font = _fontOrig;
+        processText();
+        // If big text won't fit the space, try small text
+        if (!string.IsNullOrEmpty(_text))
+        {
+            if (_font == _big && (getTextWidth() > getWidth() || getTextHeight() > getHeight()) && _text[_text.Length - 1] != '.')
+            {
+                _font = _small;
+                processText();
+            }
+        }
     }
 
     /**
@@ -179,22 +179,22 @@ internal class Text : InteractiveSurface
      */
     internal int getTextWidth(int line = -1)
     {
-	    if (line == -1)
-	    {
-		    int width = 0;
-		    foreach (var lineWidth in _lineWidth)
-		    {
-			    if (lineWidth > width)
-			    {
-				    width = lineWidth;
-			    }
-		    }
-		    return width;
-	    }
-	    else
-	    {
-		    return _lineWidth[line];
-	    }
+        if (line == -1)
+        {
+            int width = 0;
+            foreach (var lineWidth in _lineWidth)
+            {
+                if (lineWidth > width)
+                {
+                    width = lineWidth;
+                }
+            }
+            return width;
+        }
+        else
+        {
+            return _lineWidth[line];
+        }
     }
 
     /**
@@ -204,19 +204,19 @@ internal class Text : InteractiveSurface
      */
     internal int getTextHeight(int line = -1)
     {
-	    if (line == -1)
-	    {
-		    int height = 0;
-		    foreach (var lineHeight in _lineHeight)
-		    {
-			    height += lineHeight;
-		    }
-		    return height;
-	    }
-	    else
-	    {
-		    return _lineHeight[line];
-	    }
+        if (line == -1)
+        {
+            int height = 0;
+            foreach (var lineHeight in _lineHeight)
+            {
+                height += lineHeight;
+            }
+            return height;
+        }
+        else
+        {
+            return _lineHeight[line];
+        }
     }
 
     /**
@@ -386,34 +386,34 @@ internal class Text : InteractiveSurface
     }
 
     internal int getNumLines() =>
-	    _wrap ? _lineHeight.Count : 1;
+        _wrap ? _lineHeight.Count : 1;
 
     /**
      * Returns the string displayed on screen.
      * @return Text string.
      */
     internal string getText() =>
-	    _text;
+        _text;
 
     /**
      * Returns the font currently used by the text.
      * @return Pointer to font.
      */
     internal Font getFont() =>
-	    _font;
+        _font;
 
     /**
      * Returns the color used to render the text.
      * @return Color value.
      */
     internal byte getColor() =>
-	    _color;
+        _color;
 
     /**
      * Allows the text to be scrollable via mouse wheel.
      */
     internal void setScrollable(bool scroll) =>
-	    _scroll = scroll;
+        _scroll = scroll;
 
     /**
      * Draws all the characters in the text with a really
@@ -421,107 +421,107 @@ internal class Text : InteractiveSurface
      */
     internal override void draw()
     {
-	    base.draw();
-	    if (string.IsNullOrEmpty(_text) || _font == null)
-	    {
-		    return;
-	    }
+        base.draw();
+        if (string.IsNullOrEmpty(_text) || _font == null)
+        {
+            return;
+        }
 
-	    // Show text borders for debugging
-	    if (Options.debugUi)
-	    {
-		    SDL_Rect r;
-		    r.w = getWidth();
-		    r.h = getHeight();
-		    r.x = 0;
-		    r.y = 0;
-		    this.drawRect(ref r, 5);
-		    r.w-=2;
-		    r.h-=2;
-		    r.x++;
-		    r.y++;
-		    this.drawRect(ref r, 0);
-	    }
+        // Show text borders for debugging
+        if (Options.debugUi)
+        {
+            SDL_Rect r;
+            r.w = getWidth();
+            r.h = getHeight();
+            r.x = 0;
+            r.y = 0;
+            this.drawRect(ref r, 5);
+            r.w -= 2;
+            r.h -= 2;
+            r.x++;
+            r.y++;
+            this.drawRect(ref r, 0);
+        }
 
-	    int x = 0, y = 0, line = 0, height = 0;
-	    Font font = _font;
-	    int color = _color;
-	    string s = _processedText;
+        int x = 0, y = 0, line = 0, height = 0;
+        Font font = _font;
+        int color = _color;
+        string s = _processedText;
 
-	    height = getTextHeight();
+        height = getTextHeight();
 
-	    if (_scroll)
-	    {
-		    y = _scrollY;
-	    }
-	    else
-	    {
-		    switch (_valign)
-		    {
-		        case TextVAlign.ALIGN_TOP:
-			        y = 0;
-			        break;
-		        case TextVAlign.ALIGN_MIDDLE:
-			        y = (int)Math.Ceiling((getHeight() - height) / 2.0);
-			        break;
-		        case TextVAlign.ALIGN_BOTTOM:
-			        y = getHeight() - height;
-			        break;
-		    }
-	    }
+        if (_scroll)
+        {
+            y = _scrollY;
+        }
+        else
+        {
+            switch (_valign)
+            {
+                case TextVAlign.ALIGN_TOP:
+                    y = 0;
+                    break;
+                case TextVAlign.ALIGN_MIDDLE:
+                    y = (int)Math.Ceiling((getHeight() - height) / 2.0);
+                    break;
+                case TextVAlign.ALIGN_BOTTOM:
+                    y = getHeight() - height;
+                    break;
+            }
+        }
 
-	    x = getLineX(line);
+        x = getLineX(line);
 
-	    // Set up text color
-	    int mul = 1;
-	    if (_contrast)
-	    {
-		    mul = 3;
-	    }
+        // Set up text color
+        int mul = 1;
+        if (_contrast)
+        {
+            mul = 3;
+        }
 
-	    // Set up text direction
-	    int dir = 1;
-	    if (_lang.getTextDirection() == TextDirection.DIRECTION_RTL)
-	    {
-		    dir = -1;
-	    }
+        // Set up text direction
+        int dir = 1;
+        if (_lang.getTextDirection() == TextDirection.DIRECTION_RTL)
+        {
+            dir = -1;
+        }
 
-	    // Invert text by inverting the font palette on index 3 (font palettes use indices 1-5)
-	    int mid = _invert ? 3 : 0;
+        // Invert text by inverting the font palette on index 3 (font palettes use indices 1-5)
+        int mid = _invert ? 3 : 0;
 
-	    // Draw each letter one by one
-	    foreach (var c in s)
-	    {
-		    if (Unicode.isSpace(c) || c == '\t')
-		    {
-			    x += dir * font.getCharSize(c).w;
-		    }
-		    else if (Unicode.isLinebreak(c))
-		    {
-			    line++;
-			    y += font.getCharSize(c).h;
-			    x = getLineX(line);
-			    if (c == Unicode.TOK_NL_SMALL)
-			    {
-				    font = _small;
-			    }
-		    }
-		    else if (c == Unicode.TOK_COLOR_FLIP)
-		    {
-			    color = (color == _color ? _color2 : _color);
-		    }
-		    else
-		    {
-			    if (dir < 0)
-				    x += dir * font.getCharSize(c).w;
-			    Surface chr = font.getChar(c);
-			    chr.setX(x);
-			    chr.setY(y);
-			    ShaderDraw(new PaletteShift(), ShaderSurface(this, 0, 0), ShaderCrop(chr), ShaderScalar(color), ShaderScalar(mul), ShaderScalar(mid));
-			    if (dir > 0)
-				    x += dir * font.getCharSize(c).w;
-		    }
-	    }
+        // Draw each letter one by one
+        foreach (var c in s)
+        {
+            if (Unicode.isSpace(c) || c == '\t')
+            {
+                x += dir * font.getCharSize(c).w;
+            }
+            else if (Unicode.isLinebreak(c))
+            {
+                line++;
+                y += font.getCharSize(c).h;
+                x = getLineX(line);
+                if (c == Unicode.TOK_NL_SMALL)
+                {
+                    font = _small;
+                }
+            }
+            else if (c == Unicode.TOK_COLOR_FLIP)
+            {
+                color = (color == _color ? _color2 : _color);
+            }
+            else
+            {
+                if (dir < 0)
+                    x += dir * font.getCharSize(c).w;
+                Surface chr = font.getChar(c);
+                chr.setX(x);
+                chr.setY(y);
+                ShaderDraw(new PaletteShift(), ShaderSurface(this, 0, 0), ShaderCrop(chr), ShaderScalar(color), ShaderScalar(mul), ShaderScalar(mid));
+                if (dir > 0)
+                    x += dir * font.getCharSize(c).w;
+            }
+        }
     }
 
     /**
@@ -531,38 +531,38 @@ internal class Text : InteractiveSurface
      */
     int getLineX(int line)
     {
-	    int x = 0;
-	    switch (_lang.getTextDirection())
-	    {
-	        case TextDirection.DIRECTION_LTR:
-		        switch (_align)
-		        {
-		            case TextHAlign.ALIGN_LEFT:
-			            break;
-		            case TextHAlign.ALIGN_CENTER:
-			            x = (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
-			            break;
-		            case TextHAlign.ALIGN_RIGHT:
-			            x = getWidth() - 1 - _lineWidth[line];
-			            break;
-		        }
-		        break;
-	        case TextDirection.DIRECTION_RTL:
-		        switch (_align)
-		        {
-		            case TextHAlign.ALIGN_LEFT:
-			            x = getWidth() - 1;
-			            break;
-		            case TextHAlign.ALIGN_CENTER:
-			            x = getWidth() - (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
-			            break;
-		            case TextHAlign.ALIGN_RIGHT:
-			            x = _lineWidth[line];
-			            break;
-		        }
-		        break;
-	    }
-	    return x;
+        int x = 0;
+        switch (_lang.getTextDirection())
+        {
+            case TextDirection.DIRECTION_LTR:
+                switch (_align)
+                {
+                    case TextHAlign.ALIGN_LEFT:
+                        break;
+                    case TextHAlign.ALIGN_CENTER:
+                        x = (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
+                        break;
+                    case TextHAlign.ALIGN_RIGHT:
+                        x = getWidth() - 1 - _lineWidth[line];
+                        break;
+                }
+                break;
+            case TextDirection.DIRECTION_RTL:
+                switch (_align)
+                {
+                    case TextHAlign.ALIGN_LEFT:
+                        x = getWidth() - 1;
+                        break;
+                    case TextHAlign.ALIGN_CENTER:
+                        x = getWidth() - (int)Math.Ceiling((getWidth() + _font.getSpacing() - _lineWidth[line]) / 2.0);
+                        break;
+                    case TextHAlign.ALIGN_RIGHT:
+                        x = _lineWidth[line];
+                        break;
+                }
+                break;
+        }
+        return x;
     }
 
     /**
@@ -572,8 +572,8 @@ internal class Text : InteractiveSurface
      */
     internal void setInvert(bool invert)
     {
-	    _invert = invert;
-	    _redraw = true;
+        _invert = invert;
+        _redraw = true;
     }
 
     /**
@@ -582,7 +582,7 @@ internal class Text : InteractiveSurface
      * @return Horizontal alignment.
      */
     internal TextHAlign getAlign() =>
-	    _align;
+        _align;
 
     /**
      * Returns the way the text is aligned vertically
@@ -590,7 +590,7 @@ internal class Text : InteractiveSurface
      * @return Horizontal alignment.
      */
     internal TextVAlign getVerticalAlign() =>
-	    _valign;
+        _valign;
 
     /**
      * Handles scrolling.
@@ -599,22 +599,22 @@ internal class Text : InteractiveSurface
      */
     internal override void mousePress(Action action, State state)
     {
-	    base.mousePress(action, state);
-	    if (_scroll &&
-		    (action.getDetails().wheel.y > 0 || //button.button == SDL_BUTTON_WHEELUP
-		    action.getDetails().wheel.y < 0)) //button.button == SDL_BUTTON_WHEELDOWN
-	    {
-		    int scrollArea = getHeight() - getTextHeight();
-		    if (scrollArea < 0)
-		    {
-			    int scrollAmount = _font.getHeight() + _font.getSpacing();
-			    if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
-				    scrollAmount = -scrollAmount;
+        base.mousePress(action, state);
+        if (_scroll &&
+            (action.getDetails().wheel.y > 0 || //button.button == SDL_BUTTON_WHEELUP
+            action.getDetails().wheel.y < 0)) //button.button == SDL_BUTTON_WHEELDOWN
+        {
+            int scrollArea = getHeight() - getTextHeight();
+            if (scrollArea < 0)
+            {
+                int scrollAmount = _font.getHeight() + _font.getSpacing();
+                if (action.getDetails().wheel.y < 0) //button.button == SDL_BUTTON_WHEELDOWN
+                    scrollAmount = -scrollAmount;
 
-			    _scrollY = Math.Clamp(_scrollY + scrollAmount, scrollArea, 0);
-			    _redraw = true;
-		    }
-	    }
+                _scrollY = Math.Clamp(_scrollY + scrollAmount, scrollArea, 0);
+                _redraw = true;
+            }
+        }
     }
 
     /**
@@ -622,5 +622,5 @@ internal class Text : InteractiveSurface
      * @return Color value.
      */
     internal byte getSecondaryColor() =>
-	    _color2;
+        _color2;
 }

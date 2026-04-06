@@ -103,9 +103,9 @@ internal class UfopaediaSelectState : State
         }
     }
 
-	/**
+    /**
 	 * Initializes the state.
 	 */
-	internal override void init() =>
-		base.init();
+    internal override void init() =>
+        base.init();
 }

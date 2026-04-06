@@ -39,7 +39,8 @@ internal class OptionsVideoState : OptionsBaseState
     Text _txtOptions;
     ToggleTextButton _btnLetterbox, _btnLockMouse, _btnRootWindowedMode;
     int _resAmount, _resCurrent;
-    /* SDL_Rect */ SDL_DisplayMode[] _res;
+    /* SDL_Rect */
+    SDL_DisplayMode[] _res;
     List<string> _langs, _filters;
 
     /**
@@ -595,7 +596,7 @@ internal class OptionsVideoState : OptionsBaseState
      * Unpresses Fixed Borderless Pos button
      */
     internal void unpressRootWindowedMode() =>
-	    _btnRootWindowedMode.setPressed(false);
+        _btnRootWindowedMode.setPressed(false);
 
     /**
      * Takes care of any events from the core game engine.
@@ -603,11 +604,11 @@ internal class OptionsVideoState : OptionsBaseState
      */
     internal override void handle(Action action)
     {
-	    base.handle(action);
-	    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_g && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
-	    {
+        base.handle(action);
+        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_g && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+        {
             _btnLockMouse.setPressed(Options.captureMouse == SDL_bool.SDL_TRUE /* SDL_GRAB_ON */);
-	    }
+        }
     }
 
     /**
@@ -617,11 +618,11 @@ internal class OptionsVideoState : OptionsBaseState
      */
     internal override void resize(ref int dX, ref int dY)
     {
-	    base.resize(ref dX, ref dY);
-	    string ss;
-	    ss = Options.displayWidth.ToString();
-	    _txtDisplayWidth.setText(ss);
-	    ss = Options.displayHeight.ToString();
-	    _txtDisplayHeight.setText(ss);
+        base.resize(ref dX, ref dY);
+        string ss;
+        ss = Options.displayWidth.ToString();
+        _txtDisplayWidth.setText(ss);
+        ss = Options.displayHeight.ToString();
+        _txtDisplayHeight.setText(ss);
     }
 }

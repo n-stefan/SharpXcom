@@ -43,7 +43,7 @@ struct UnitStats
         melee = 0;
     }
 
-	UnitStats(int tu_, int stamina_, int health_, int bravery_, int reactions_, int firing_, int throwing_, int strength_, int psiStrength_, int psiSkill_, int melee_)
+    UnitStats(int tu_, int stamina_, int health_, int bravery_, int reactions_, int firing_, int throwing_, int strength_, int psiStrength_, int psiSkill_, int melee_)
     {
         tu = tu_;
         stamina = stamina_;
@@ -196,21 +196,21 @@ internal class Unit : IRule
      * @return The alien's race.
      */
     internal string getRace() =>
-	    _race;
+        _race;
 
     /**
      * Gets the unit's rank.
      * @return The unit's rank.
      */
     internal string getRank() =>
-	    _rank;
+        _rank;
 
     /**
      * Gets the unit's special ability.
      * @return The unit's specab.
      */
     internal int getSpecialAbility() =>
-	    (int)_specab;
+        (int)_specab;
 
     /**
      * Loads the unit from a YAML file.
@@ -219,40 +219,40 @@ internal class Unit : IRule
      */
     internal void load(YamlNode node, Mod mod)
     {
-	    _type = node["type"].ToString();
-	    _race = node["race"].ToString();
-	    _rank = node["rank"].ToString();
+        _type = node["type"].ToString();
+        _race = node["race"].ToString();
+        _rank = node["rank"].ToString();
         var stats = UnitStats.decode(node["stats"]);
         _stats.merge(stats);
-	    _armor = node["armor"].ToString();
-	    _standHeight = int.Parse(node["standHeight"].ToString());
-	    _kneelHeight = int.Parse(node["kneelHeight"].ToString());
-	    _floatHeight = int.Parse(node["floatHeight"].ToString());
-	    if (_floatHeight + _standHeight > 25)
-	    {
-		    throw new Exception("Error with unit "+ _type +": Unit height may not exceed 25");
-	    }
-	    _value = int.Parse(node["value"].ToString());
-	    _intelligence = int.Parse(node["intelligence"].ToString());
-	    _aggression = int.Parse(node["aggression"].ToString());
-	    _energyRecovery = int.Parse(node["energyRecovery"].ToString());
-	    _specab = (SpecialAbility)int.Parse(node["specab"].ToString());
-	    _spawnUnit = node["spawnUnit"].ToString();
-	    _livingWeapon = bool.Parse(node["livingWeapon"].ToString());
-	    _meleeWeapon = node["meleeWeapon"].ToString();
-	    _psiWeapon = node["psiWeapon"].ToString();
-	    _capturable = bool.Parse(node["capturable"].ToString());
+        _armor = node["armor"].ToString();
+        _standHeight = int.Parse(node["standHeight"].ToString());
+        _kneelHeight = int.Parse(node["kneelHeight"].ToString());
+        _floatHeight = int.Parse(node["floatHeight"].ToString());
+        if (_floatHeight + _standHeight > 25)
+        {
+            throw new Exception("Error with unit " + _type + ": Unit height may not exceed 25");
+        }
+        _value = int.Parse(node["value"].ToString());
+        _intelligence = int.Parse(node["intelligence"].ToString());
+        _aggression = int.Parse(node["aggression"].ToString());
+        _energyRecovery = int.Parse(node["energyRecovery"].ToString());
+        _specab = (SpecialAbility)int.Parse(node["specab"].ToString());
+        _spawnUnit = node["spawnUnit"].ToString();
+        _livingWeapon = bool.Parse(node["livingWeapon"].ToString());
+        _meleeWeapon = node["meleeWeapon"].ToString();
+        _psiWeapon = node["psiWeapon"].ToString();
+        _capturable = bool.Parse(node["capturable"].ToString());
         foreach (var i in ((YamlSequenceNode)node["builtInWeaponSets"]).Children)
         {
             _builtInWeapons.Add(((YamlSequenceNode)i).Children.Select(x => x.ToString()).ToList());
         }
         if (node["builtInWeapons"] != null)
-	    {
+        {
             _builtInWeapons.Add(((YamlSequenceNode)node["builtInWeapons"]).Children.Select(x => x.ToString()).ToList());
-	    }
-	    mod.loadSoundOffset(_type, _deathSound, node["deathSound"], "BATTLE.CAT");
-	    mod.loadSoundOffset(_type, ref _aggroSound, node["aggroSound"], "BATTLE.CAT");
-	    mod.loadSoundOffset(_type, ref _moveSound, node["moveSound"], "BATTLE.CAT");
+        }
+        mod.loadSoundOffset(_type, _deathSound, node["deathSound"], "BATTLE.CAT");
+        mod.loadSoundOffset(_type, ref _aggroSound, node["aggroSound"], "BATTLE.CAT");
+        mod.loadSoundOffset(_type, ref _moveSound, node["moveSound"], "BATTLE.CAT");
     }
 
     /**
@@ -260,7 +260,7 @@ internal class Unit : IRule
      * @return The unit's armor type.
      */
     internal string getArmor() =>
-	    _armor;
+        _armor;
 
     /**
      * What weapons does this unit have built in?
@@ -271,7 +271,7 @@ internal class Unit : IRule
      * @return list of weapons that are integral to this unit.
      */
     internal List<List<string>> getBuiltInWeapons() =>
-	    _builtInWeapons;
+        _builtInWeapons;
 
     /**
      * Returns the language string that names
@@ -279,7 +279,7 @@ internal class Unit : IRule
      * @return The unit's name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Returns the unit's stats data object.
@@ -293,91 +293,91 @@ internal class Unit : IRule
      * @return The unit's height.
      */
     internal int getStandHeight() =>
-	    _standHeight;
+        _standHeight;
 
     /**
      * Returns the unit's height at kneeling.
      * @return The unit's kneeling height.
      */
     internal int getKneelHeight() =>
-	    _kneelHeight;
+        _kneelHeight;
 
     /**
      * Returns the unit's floating elevation.
      * @return The unit's floating height.
      */
     internal int getFloatHeight() =>
-	    _floatHeight;
+        _floatHeight;
 
     /**
     * Get the unit's death sounds.
     * @return List of sound IDs.
     */
     internal List<int> getDeathSounds() =>
-	    _deathSound;
+        _deathSound;
 
     /**
      * Gets the unit's war cry.
      * @return The id of the unit's aggro sound.
      */
     internal int getAggroSound() =>
-	    _aggroSound;
+        _aggroSound;
 
     /**
      * Gets the unit's move sound.
      * @return The id of the unit's move sound.
      */
     internal int getMoveSound() =>
-	    _moveSound;
+        _moveSound;
 
     /**
      * Gets the intelligence. This is the number of turns the AI remembers your troop positions.
      * @return The unit's intelligence.
      */
     internal int getIntelligence() =>
-	    _intelligence;
+        _intelligence;
 
     /**
      * Gets the aggression. Determines the chance of revenge and taking cover.
      * @return The unit's aggression.
      */
     internal int getAggression() =>
-	    _aggression;
+        _aggression;
 
     /**
      * Gets the unit that is spawned when this one dies.
      * @return The unit's spawn unit.
      */
     internal string getSpawnUnit() =>
-	    _spawnUnit;
+        _spawnUnit;
 
     /**
      * Gets the unit's value - for scoring.
      * @return The unit's value.
      */
     internal int getValue() =>
-	    _value;
+        _value;
 
     /**
     * Gets whether the alien can be captured alive.
     * @return a value determining whether the alien can be captured alive.
     */
     internal bool getCapturable() =>
-	    _capturable;
+        _capturable;
 
     /**
      * What is this unit's built in melee weapon (if any).
      * @return the name of the weapon.
      */
     internal string getMeleeWeapon() =>
-	    _meleeWeapon;
+        _meleeWeapon;
 
     /**
     * What is this unit's built in psi weapon (if any).
     * @return the name of the weapon.
     */
     internal string getPsiWeapon() =>
-	    _psiWeapon;
+        _psiWeapon;
 
     /**
      * Checks if this unit is a living weapon.
@@ -386,12 +386,12 @@ internal class Unit : IRule
      * @return True if this unit is a living weapon.
      */
     internal bool isLivingWeapon() =>
-	    _livingWeapon;
+        _livingWeapon;
 
     /**
      * How much energy does this unit recover per turn?
      * @return energy recovery amount.
      */
     internal int getEnergyRecovery() =>
-	    _energyRecovery;
+        _energyRecovery;
 }

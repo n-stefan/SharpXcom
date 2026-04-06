@@ -166,10 +166,10 @@ internal class NextTurnState : State
      */
     internal override void think()
     {
-	    if (_timer != null)
-	    {
-		    _timer.think(this, null);
-	    }
+        if (_timer != null)
+        {
+            _timer.think(this, null);
+        }
     }
 
     /**
@@ -178,18 +178,18 @@ internal class NextTurnState : State
      */
     internal override void handle(Action action)
     {
-	    base.handle(action);
+        base.handle(action);
 
-	    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
-	    {
-		    close();
-	    }
+        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        {
+            close();
+        }
     }
 
     internal override void resize(ref int dX, ref int dY)
     {
-	    base.resize(ref dX, ref dY);
-	    _bg.setX(0);
-	    _bg.setY(0);
+        base.resize(ref dX, ref dY);
+        _bg.setX(0);
+        _bg.setY(0);
     }
 }

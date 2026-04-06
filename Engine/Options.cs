@@ -64,46 +64,46 @@ internal class Options
 {
     // General options
     internal static int displayWidth, displayHeight, maxFrameSkip, baseXResolution, baseYResolution, baseXGeoscape, baseYGeoscape, baseXBattlescape, baseYBattlescape,
-		soundVolume, musicVolume, uiVolume, audioSampleRate, audioBitDepth, audioChunkSize, pauseMode, windowedModePositionX, windowedModePositionY, FPS, FPSInactive,
-		changeValueByMouseWheel, dragScrollTimeTolerance, dragScrollPixelTolerance, mousewheelSpeed, autosaveFrequency;
+        soundVolume, musicVolume, uiVolume, audioSampleRate, audioBitDepth, audioChunkSize, pauseMode, windowedModePositionX, windowedModePositionY, FPS, FPSInactive,
+        changeValueByMouseWheel, dragScrollTimeTolerance, dragScrollPixelTolerance, mousewheelSpeed, autosaveFrequency;
     internal static bool fullscreen, asyncBlit, playIntro, useScaleFilter, useHQXFilter, useXBRZFilter, useOpenGL, checkOpenGLErrors, vSyncForOpenGL, useOpenGLSmoothing,
-		autosave, allowResize, borderless, debug, debugUi, fpsCounter, newSeedOnLoad, keepAspectRatio, nonSquarePixelRatio,
-		cursorInBlackBandsInFullscreen, cursorInBlackBandsInWindow, cursorInBlackBandsInBorderlessWindow, maximizeInfoScreens, musicAlwaysLoop, StereoSound, verboseLogging, soldierDiaries, touchEnabled,
-		rootWindowedMode, lazyLoadResources, backgroundMute;
+        autosave, allowResize, borderless, debug, debugUi, fpsCounter, newSeedOnLoad, keepAspectRatio, nonSquarePixelRatio,
+        cursorInBlackBandsInFullscreen, cursorInBlackBandsInWindow, cursorInBlackBandsInBorderlessWindow, maximizeInfoScreens, musicAlwaysLoop, StereoSound, verboseLogging, soldierDiaries, touchEnabled,
+        rootWindowedMode, lazyLoadResources, backgroundMute;
     internal static string language, useOpenGLShader;
     internal static KeyboardType keyboardMode;
     internal static SaveSort saveOrder;
     internal static MusicFormat preferredMusic;
     internal static SoundFormat preferredSound;
     internal static VideoFormat preferredVideo;
-	internal static SDL_bool /* SDL_GrabMode */ captureMouse;
-	internal static TextWrapping wordwrap;
+    internal static SDL_bool /* SDL_GrabMode */ captureMouse;
+    internal static TextWrapping wordwrap;
     internal static SDL_Keycode keyOk, keyCancel, keyScreenshot, keyFps, keyQuickLoad, keyQuickSave;
 
     // Geoscape options
     internal static int geoClockSpeed, dogfightSpeed, geoScrollSpeed, geoDragScrollButton, geoscapeScale;
     internal static bool includePrimeStateInSavedLayout, anytimePsiTraining, weaponSelfDestruction, retainCorpses, craftLaunchAlways, globeSeasons, globeDetail, globeRadarLines, globeFlightPaths, globeAllRadarsOnBaseBuild,
-		storageLimitsEnforced, canSellLiveAliens, canTransferCraftsWhileAirborne, customInitialBase, aggressiveRetaliation, geoDragScrollInvert,
-		allowBuildingQueue, showFundsOnGeoscape, psiStrengthEval, allowPsiStrengthImprovement, fieldPromotions, meetingPoint;
+        storageLimitsEnforced, canSellLiveAliens, canTransferCraftsWhileAirborne, customInitialBase, aggressiveRetaliation, geoDragScrollInvert,
+        allowBuildingQueue, showFundsOnGeoscape, psiStrengthEval, allowPsiStrengthImprovement, fieldPromotions, meetingPoint;
     internal static SDL_Keycode keyGeoLeft, keyGeoRight, keyGeoUp, keyGeoDown, keyGeoZoomIn, keyGeoZoomOut, keyGeoSpeed1, keyGeoSpeed2, keyGeoSpeed3, keyGeoSpeed4, keyGeoSpeed5, keyGeoSpeed6,
-		keyGeoIntercept, keyGeoBases, keyGeoGraphs, keyGeoUfopedia, keyGeoOptions, keyGeoFunding, keyGeoToggleDetail, keyGeoToggleRadar,
-		keyBaseSelect1, keyBaseSelect2, keyBaseSelect3, keyBaseSelect4, keyBaseSelect5, keyBaseSelect6, keyBaseSelect7, keyBaseSelect8;
+        keyGeoIntercept, keyGeoBases, keyGeoGraphs, keyGeoUfopedia, keyGeoOptions, keyGeoFunding, keyGeoToggleDetail, keyGeoToggleRadar,
+        keyBaseSelect1, keyBaseSelect2, keyBaseSelect3, keyBaseSelect4, keyBaseSelect5, keyBaseSelect6, keyBaseSelect7, keyBaseSelect8;
 
     // Battlescape options
     internal static ScrollType battleEdgeScroll;
     internal static PathPreview battleNewPreviewPath;
     internal static int battleScrollSpeed, battleDragScrollButton, battleFireSpeed, battleXcomSpeed, battleAlienSpeed, battleExplosionHeight, battlescapeScale;
     internal static bool traceAI, sneakyAI, battleInstantGrenade, battleNotifyDeath, battleTooltips, battleHairBleach, battleAutoEnd,
-		strafe, forceFire, showMoreStatsInInventoryView, allowPsionicCapture, skipNextTurnScreen, disableAutoEquip, battleDragScrollInvert,
-		battleUFOExtenderAccuracy, battleConfirmFireMode, battleSmoothCamera, noAlienPanicMessages, alienBleeding;
+        strafe, forceFire, showMoreStatsInInventoryView, allowPsionicCapture, skipNextTurnScreen, disableAutoEquip, battleDragScrollInvert,
+        battleUFOExtenderAccuracy, battleConfirmFireMode, battleSmoothCamera, noAlienPanicMessages, alienBleeding;
     internal static SDL_Keycode keyBattleLeft, keyBattleRight, keyBattleUp, keyBattleDown, keyBattleLevelUp, keyBattleLevelDown, keyBattleCenterUnit, keyBattlePrevUnit, keyBattleNextUnit, keyBattleDeselectUnit,
-		keyBattleUseLeftHand, keyBattleUseRightHand, keyBattleInventory, keyBattleMap, keyBattleOptions, keyBattleEndTurn, keyBattleAbort, keyBattleStats, keyBattleKneel,
-		keyBattleReserveKneel, keyBattleReload, keyBattlePersonalLighting, keyBattleReserveNone, keyBattleReserveSnap, keyBattleReserveAimed, keyBattleReserveAuto,
-		keyBattleCenterEnemy1, keyBattleCenterEnemy2, keyBattleCenterEnemy3, keyBattleCenterEnemy4, keyBattleCenterEnemy5, keyBattleCenterEnemy6, keyBattleCenterEnemy7, keyBattleCenterEnemy8,
-		keyBattleCenterEnemy9, keyBattleCenterEnemy10, keyBattleVoxelView, keyBattleZeroTUs, keyInvCreateTemplate, keyInvApplyTemplate, keyInvClear, keyInvAutoEquip;
+        keyBattleUseLeftHand, keyBattleUseRightHand, keyBattleInventory, keyBattleMap, keyBattleOptions, keyBattleEndTurn, keyBattleAbort, keyBattleStats, keyBattleKneel,
+        keyBattleReserveKneel, keyBattleReload, keyBattlePersonalLighting, keyBattleReserveNone, keyBattleReserveSnap, keyBattleReserveAimed, keyBattleReserveAuto,
+        keyBattleCenterEnemy1, keyBattleCenterEnemy2, keyBattleCenterEnemy3, keyBattleCenterEnemy4, keyBattleCenterEnemy5, keyBattleCenterEnemy6, keyBattleCenterEnemy7, keyBattleCenterEnemy8,
+        keyBattleCenterEnemy9, keyBattleCenterEnemy10, keyBattleVoxelView, keyBattleZeroTUs, keyInvCreateTemplate, keyInvApplyTemplate, keyInvClear, keyInvAutoEquip;
 
-	// Flags and other stuff that don't need OptionInfo's.
-	internal static bool mute, reload, newOpenGL, newScaleFilter, newHQXFilter, newXBRZFilter, newRootWindowedMode, newFullscreen, newAllowResize, newBorderless;
+    // Flags and other stuff that don't need OptionInfo's.
+    internal static bool mute, reload, newOpenGL, newScaleFilter, newHQXFilter, newXBRZFilter, newRootWindowedMode, newFullscreen, newAllowResize, newBorderless;
     internal static int newDisplayWidth, newDisplayHeight, newBattlescapeScale, newGeoscapeScale, newWindowedModePositionX, newWindowedModePositionY;
     internal static string newOpenGLShader;
     internal static List<KeyValuePair<string, bool>> mods; // ordered list of available mods (lowest priority to highest) and whether they are active
@@ -140,7 +140,7 @@ internal class Options
      * @return Full path to Config folder.
      */
     string getConfigFolder() =>
-	    _configFolder;
+        _configFolder;
 
     /**
      * Handles the initialization of setting up default options
@@ -303,8 +303,8 @@ internal class Options
     // that the *correct* files are there complex.
     static bool _gameIsInstalled(string gameName)
     {
-	    // look for game data in either the data or user directories
-	    string dataGameFolder = CrossPlatform.searchDataFolder(gameName);
+        // look for game data in either the data or user directories
+        string dataGameFolder = CrossPlatform.searchDataFolder(gameName);
         string userGameFolder = _userFolder + gameName;
         return (CrossPlatform.folderExists(dataGameFolder) && CrossPlatform.getFolderContents(dataGameFolder).Count >= 8)
             || (CrossPlatform.folderExists(userGameFolder) && CrossPlatform.getFolderContents(userGameFolder).Count >= 8);
@@ -702,41 +702,41 @@ internal class Options
      */
     internal static bool load(string filename = "options")
     {
-	    string s = _configFolder + filename + ".cfg";
-	    try
-	    {
+        string s = _configFolder + filename + ".cfg";
+        try
+        {
             using var input = new StreamReader(s);
             var yaml = new YamlStream();
             yaml.Load(input);
             var doc = (YamlMappingNode)yaml.Documents[0].RootNode;
-		    // Ignore old options files
-		    if (doc.Children["options"]["NewBattleMission"] != null)
-		    {
-			    return false;
-		    }
-		    foreach (var i in _info)
-		    {
+            // Ignore old options files
+            if (doc.Children["options"]["NewBattleMission"] != null)
+            {
+                return false;
+            }
+            foreach (var i in _info)
+            {
                 i.load(doc.Children["options"]);
-		    }
+            }
 
             mods.Clear();
             foreach (var i in (YamlSequenceNode)doc.Children["mods"])
-		    {
-			    string id = i["id"].ToString();
-			    bool active = bool.Parse(i["active"].ToString());
-			    mods.Add(KeyValuePair.Create(id, active));
-		    }
-		    if (!mods.Any())
-		    {
-			    _setDefaultMods();
-		    }
-	    }
-	    catch (YamlException e)
-	    {
+            {
+                string id = i["id"].ToString();
+                bool active = bool.Parse(i["active"].ToString());
+                mods.Add(KeyValuePair.Create(id, active));
+            }
+            if (!mods.Any())
+            {
+                _setDefaultMods();
+            }
+        }
+        catch (YamlException e)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {e.Message}");
-		    return false;
-	    }
-	    return true;
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -746,33 +746,33 @@ internal class Options
      */
     internal static bool save(string filename = "options")
     {
-	    string s = _configFolder + filename + ".cfg";
+        string s = _configFolder + filename + ".cfg";
         try
         {
             using var sav = new StreamWriter(s);
             var @out = new Emitter(sav);
 
-		    YamlMappingNode doc = new(), node = new();
-		    foreach (var i in _info)
-		    {
-			    i.save(node);
-		    }
-		    doc.Add("options", node);
+            YamlMappingNode doc = new(), node = new();
+            foreach (var i in _info)
+            {
+                i.save(node);
+            }
+            doc.Add("options", node);
 
-		    foreach (var i in mods)
-		    {
-			    YamlMappingNode mod = new()
+            foreach (var i in mods)
+            {
+                YamlMappingNode mod = new()
                 {
                     { "id", i.Key },
                     { "active", i.Value.ToString() }
                 };
-			    ((YamlSequenceNode)doc["mods"]).Add(mod);
-		    }
+                ((YamlSequenceNode)doc["mods"]).Add(mod);
+            }
 
             @out.Emit(new StreamStart());
             @out.Emit(new DocumentStart());
 
-		    writeNode(doc, @out);
+            writeNode(doc, @out);
             //var serializer = new Serializer();
             //serializer.Serialize(@out, doc);
 
@@ -780,19 +780,19 @@ internal class Options
             @out.Emit(new StreamEnd());
 
             sav.WriteLine();
-	        sav.Close();
-	    }
-	    catch (YamlException e)
-	    {
+            sav.Close();
+        }
+        catch (YamlException e)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {e.Message}");
-		    return false;
-	    }
+            return false;
+        }
         catch (Exception)
         {
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} Failed to save {filename}.cfg");
-		    return false;
+            return false;
         }
-	    return true;
+        return true;
     }
 
     /**
@@ -820,19 +820,19 @@ internal class Options
 
     internal static void updateMods()
     {
-	    // pick up stuff in common before-hand
-	    FileMap.load("common", CrossPlatform.searchDataFolder("common"), true);
+        // pick up stuff in common before-hand
+        FileMap.load("common", CrossPlatform.searchDataFolder("common"), true);
 
         refreshMods();
-	    mapResources();
+        mapResources();
         userSplitMasters();
 
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Active mods:");
-	    var activeMods = getActiveMods();
-	    foreach (var activeMod in activeMods)
-	    {
+        var activeMods = getActiveMods();
+        foreach (var activeMod in activeMods)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} - {activeMod.getId()} v{activeMod.getVersion()}");
-	    }
+        }
     }
 
     internal static void mapResources()
@@ -865,42 +865,42 @@ internal class Options
 
     static void _loadMod(ModInfo modInfo, HashSet<string> circDepCheck)
     {
-	    if (circDepCheck.Contains(modInfo.getId()))
-	    {
+        if (circDepCheck.Contains(modInfo.getId()))
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} circular dependency found in master chain: {modInfo.getId()}");
-		    return;
-	    }
+            return;
+        }
 
         FileMap.load(modInfo.getId(), modInfo.getPath(), false);
-	    foreach (var externalResourceDir in modInfo.getExternalResourceDirs())
-	    {
-		    // use external resource folders from the user dir if they exist
-		    // and if not, fall back to searching the data dirs
-		    string extResourceFolder = _userFolder + externalResourceDir;
-		    if (!CrossPlatform.folderExists(extResourceFolder))
-		    {
-			    extResourceFolder = CrossPlatform.searchDataFolder(externalResourceDir);
-		    }
+        foreach (var externalResourceDir in modInfo.getExternalResourceDirs())
+        {
+            // use external resource folders from the user dir if they exist
+            // and if not, fall back to searching the data dirs
+            string extResourceFolder = _userFolder + externalResourceDir;
+            if (!CrossPlatform.folderExists(extResourceFolder))
+            {
+                extResourceFolder = CrossPlatform.searchDataFolder(externalResourceDir);
+            }
 
-		    // always ignore ruleset files in external resource dirs
-		    FileMap.load(modInfo.getId(), extResourceFolder, true);
-	    }
+            // always ignore ruleset files in external resource dirs
+            FileMap.load(modInfo.getId(), extResourceFolder, true);
+        }
 
-	    // if this is a master but it has a master of its own, allow it to
-	    // chainload the "super" master, including its rulesets
-	    if (modInfo.isMaster() && !string.IsNullOrEmpty(modInfo.getMaster()))
-	    {
-		    // add self to circDepCheck so we can avoid circular dependencies
-		    circDepCheck.Add(modInfo.getId());
-		    if (_modInfos.TryGetValue(modInfo.getMaster(), out var masterInfo))
-		    {
+        // if this is a master but it has a master of its own, allow it to
+        // chainload the "super" master, including its rulesets
+        if (modInfo.isMaster() && !string.IsNullOrEmpty(modInfo.getMaster()))
+        {
+            // add self to circDepCheck so we can avoid circular dependencies
+            circDepCheck.Add(modInfo.getId());
+            if (_modInfos.TryGetValue(modInfo.getMaster(), out var masterInfo))
+            {
                 _loadMod(masterInfo, circDepCheck);
-		    }
-		    else
-		    {
-			    throw new Exception(modInfo.getId() + " mod requires " + modInfo.getMaster() + " master");
-		    }
-	    }
+            }
+            else
+            {
+                throw new Exception(modInfo.getId() + " mod requires " + modInfo.getMaster() + " master");
+            }
+        }
     }
 
     /**
@@ -910,52 +910,52 @@ internal class Options
      */
     static void userSplitMasters()
     {
-	    // get list of master mods
-	    var masters = new List<string>();
-	    foreach (var i in _modInfos)
-	    {
-		    if (i.Value.isMaster())
-		    {
-			    masters.Add(i.Key);
-		    }
-	    }
+        // get list of master mods
+        var masters = new List<string>();
+        foreach (var i in _modInfos)
+        {
+            if (i.Value.isMaster())
+            {
+                masters.Add(i.Key);
+            }
+        }
 
-	    // create master subfolders if they don't already exist
-	    var saves = new List<string>();
-	    foreach (var i in masters)
-	    {
-		    string masterFolder = _userFolder + i;
-		    if (!CrossPlatform.folderExists(masterFolder))
-		    {
-			    CrossPlatform.createFolder(masterFolder);
-			    // move any old saves to the appropriate folders
-			    if (!saves.Any())
-			    {
-				    saves = CrossPlatform.getFolderContents(_userFolder, "sav");
-				    List<string> autosaves = CrossPlatform.getFolderContents(_userFolder, "asav");
+        // create master subfolders if they don't already exist
+        var saves = new List<string>();
+        foreach (var i in masters)
+        {
+            string masterFolder = _userFolder + i;
+            if (!CrossPlatform.folderExists(masterFolder))
+            {
+                CrossPlatform.createFolder(masterFolder);
+                // move any old saves to the appropriate folders
+                if (!saves.Any())
+                {
+                    saves = CrossPlatform.getFolderContents(_userFolder, "sav");
+                    List<string> autosaves = CrossPlatform.getFolderContents(_userFolder, "asav");
                     saves.AddRange(autosaves);
-			    }
+                }
                 for (var j = 0; j < saves.Count;)
-			    {
+                {
                     string srcFile = _userFolder + saves[j];
                     using var input = new StreamReader(srcFile);
                     var yaml = new YamlStream();
                     yaml.Load(input);
                     var doc = (YamlMappingNode)yaml.Documents[0].RootNode;
-				    var srcMods = doc["mods"] != null ? ((YamlSequenceNode)doc["mods"]).Children.Select(x => x.ToString()).ToList() : new List<string>();
-				    if (srcMods.Contains(i))
-				    {
-					    string dstFile = masterFolder + Path.PathSeparator + saves[j];
+                    var srcMods = doc["mods"] != null ? ((YamlSequenceNode)doc["mods"]).Children.Select(x => x.ToString()).ToList() : new List<string>();
+                    if (srcMods.Contains(i))
+                    {
+                        string dstFile = masterFolder + Path.PathSeparator + saves[j];
                         CrossPlatform.moveFile(srcFile, dstFile);
                         saves.RemoveAt(j);
-				    }
-				    else
-				    {
-					    ++j;
-				    }
-			    }
-		    }
-	    }
+                    }
+                    else
+                    {
+                        ++j;
+                    }
+                }
+            }
+        }
     }
 
     internal static void refreshMods()
@@ -1079,52 +1079,52 @@ internal class Options
 
     static void _scanMods(string modsDir, bool metadataOnly = false)
     {
-	    if (!CrossPlatform.folderExists(modsDir))
-	    {
+        if (!CrossPlatform.folderExists(modsDir))
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} skipping non-existent mod directory: '{modsDir}'");
-		    return;
-	    }
+            return;
+        }
 
-	    string metadataFile = "/metadata.yml";
-	    if (metadataOnly && CrossPlatform.fileExists(modsDir + metadataFile))
-	    {
-		    var modInfo = new ModInfo(modsDir);
-		    modInfo.load(modsDir + metadataFile);
-		    _modInfos.Add(modInfo.getId(), modInfo);
-	    }
-	    else
-	    {
-		    List<string> contents = CrossPlatform.getFolderContents(modsDir);
-		    foreach (var item in contents)
-		    {
-			    string modPath = modsDir + Path.PathSeparator + item;
-			    if (!CrossPlatform.folderExists(modPath))
-			    {
-				    // skip non-directories (e.g. README.txt)
-				    continue;
-			    }
+        string metadataFile = "/metadata.yml";
+        if (metadataOnly && CrossPlatform.fileExists(modsDir + metadataFile))
+        {
+            var modInfo = new ModInfo(modsDir);
+            modInfo.load(modsDir + metadataFile);
+            _modInfos.Add(modInfo.getId(), modInfo);
+        }
+        else
+        {
+            List<string> contents = CrossPlatform.getFolderContents(modsDir);
+            foreach (var item in contents)
+            {
+                string modPath = modsDir + Path.PathSeparator + item;
+                if (!CrossPlatform.folderExists(modPath))
+                {
+                    // skip non-directories (e.g. README.txt)
+                    continue;
+                }
 
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} - {modPath}");
-			    var modInfo = new ModInfo(modPath);
+                var modInfo = new ModInfo(modPath);
 
-			    string metadataPath = modPath + metadataFile;
-			    if (!CrossPlatform.fileExists(metadataPath))
-			    {
+                string metadataPath = modPath + metadataFile;
+                if (!CrossPlatform.fileExists(metadataPath))
+                {
                     Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} {metadataPath} not found;");
-				    if (metadataOnly)
-				    {
+                    if (metadataOnly)
+                    {
                         Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} skipping invalid mod: {item}");
-					    continue;
-				    }
-				    else
-				    {
+                        continue;
+                    }
+                    else
+                    {
                         Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} using default values for mod: {item}");
-				    }
-			    }
-			    else
-			    {
-				    modInfo.load(metadataPath);
-			    }
+                    }
+                }
+                else
+                {
+                    modInfo.load(metadataPath);
+                }
 
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   id: {modInfo.getId()}");
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   name: {modInfo.getName()}");
@@ -1134,22 +1134,22 @@ internal class Options
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   master: {modInfo.getMaster()}");
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   isMaster: {modInfo.isMaster()}");
                 Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}   loadResources:");
-			    List<string> externals = modInfo.getExternalResourceDirs();
-			    foreach (var external in externals)
-			    {
+                List<string> externals = modInfo.getExternalResourceDirs();
+                foreach (var external in externals)
+                {
                     Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)}     {external}");
-			    }
+                }
 
-			    if (("xcom1" == modInfo.getId() && !_ufoIsInstalled())
-				    || ("xcom2" == modInfo.getId() && !_tftdIsInstalled()))
-			    {
+                if (("xcom1" == modInfo.getId() && !_ufoIsInstalled())
+                    || ("xcom2" == modInfo.getId() && !_tftdIsInstalled()))
+                {
                     Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} skipping {modInfo.getId()} since related game data isn't installed");
-				    continue;
-			    }
+                    continue;
+                }
 
                 _modInfos.Add(modInfo.getId(), modInfo);
-		    }
-	    }
+            }
+        }
     }
 
     internal static ModInfo getModInfo(string id) =>
@@ -1190,47 +1190,47 @@ internal class Options
 
     static void writeNode(YamlNode node, Emitter emitter)
     {
-	    switch (node.NodeType)
-	    {
-		    case YamlNodeType.Sequence:
-		    {
-                emitter.Emit(new SequenceStart(null, null, false, SequenceStyle.Block));
-			    for (var i = 0; i < ((YamlSequenceNode)node).Count(); i++)
-			    {
-				    writeNode(node[i], emitter);
-			    }
-                emitter.Emit(new SequenceEnd());
-			    break;
-		    }
-		    case YamlNodeType.Mapping:
-		    {
-                emitter.Emit(new MappingStart());
+        switch (node.NodeType)
+        {
+            case YamlNodeType.Sequence:
+                {
+                    emitter.Emit(new SequenceStart(null, null, false, SequenceStyle.Block));
+                    for (var i = 0; i < ((YamlSequenceNode)node).Count(); i++)
+                    {
+                        writeNode(node[i], emitter);
+                    }
+                    emitter.Emit(new SequenceEnd());
+                    break;
+                }
+            case YamlNodeType.Mapping:
+                {
+                    emitter.Emit(new MappingStart());
 
-			    // First collect all the keys
-			    var keys = new List<string>(((YamlMappingNode)node).Count());
-			    int key_it = 0;
-			    foreach (var it in ((YamlMappingNode)node).Children)
-			    {
-				    keys[key_it++] = it.Key.ToString();
-			    }
+                    // First collect all the keys
+                    var keys = new List<string>(((YamlMappingNode)node).Count());
+                    int key_it = 0;
+                    foreach (var it in ((YamlMappingNode)node).Children)
+                    {
+                        keys[key_it++] = it.Key.ToString();
+                    }
 
-			    // Then sort them
-			    keys.Sort();
+                    // Then sort them
+                    keys.Sort();
 
-			    // Then emit all the entries in sorted order.
-			    for (var i = 0; i < keys.Count; i++)
-			    {
-				    //emitter << YAML::Key;
-				    emitter.Emit(new Scalar(keys[i]));
-				    //emitter << YAML::Value;
-				    writeNode(node[keys[i]], emitter);
-			    }
-			    emitter.Emit(new MappingEnd());
-			    break;
-		    }
-		    default:
-			    emitter.Emit(new Scalar(node.ToString()));
-			    break;
-	    }
+                    // Then emit all the entries in sorted order.
+                    for (var i = 0; i < keys.Count; i++)
+                    {
+                        //emitter << YAML::Key;
+                        emitter.Emit(new Scalar(keys[i]));
+                        //emitter << YAML::Value;
+                        writeNode(node[keys[i]], emitter);
+                    }
+                    emitter.Emit(new MappingEnd());
+                    break;
+                }
+            default:
+                emitter.Emit(new Scalar(node.ToString()));
+                break;
+        }
     }
 }

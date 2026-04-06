@@ -25,28 +25,28 @@ namespace SharpXcom.Mod;
  */
 struct MissionArea
 {
-	internal double lonMin, lonMax, latMin, latMax;
-	internal int texture;
-	internal string name;
+    internal double lonMin, lonMax, latMin, latMax;
+    internal int texture;
+    internal string name;
 
     public static bool operator ==(MissionArea a, MissionArea b) =>
-		AreSame(a.lonMax, b.lonMax) && AreSame(a.lonMin, b.lonMin) && AreSame(a.latMax, b.latMax) && AreSame(a.latMin, b.latMin);
+        AreSame(a.lonMax, b.lonMax) && AreSame(a.lonMin, b.lonMin) && AreSame(a.latMax, b.latMax) && AreSame(a.latMin, b.latMin);
 
     public static bool operator !=(MissionArea a, MissionArea b) =>
         !(a == b);
 
     internal bool isPoint() =>
-		AreSame(lonMin, lonMax) && AreSame(latMin, latMax);
+        AreSame(lonMin, lonMax) && AreSame(latMin, latMax);
 
     /**
      * Loads the MissionArea from a YAML file.
      * @param node YAML node.
      */
-	internal static MissionArea decode(YamlNode node)
-	{
+    internal static MissionArea decode(YamlNode node)
+    {
         if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() < 4)
-        	return default;
-        
+            return default;
+
         var ma = new MissionArea
         {
             lonMin = Deg2Rad(double.Parse(node[0].ToString())),
@@ -59,7 +59,7 @@ struct MissionArea
         if (((YamlSequenceNode)node).Count() >= 5) ma.texture = int.Parse(node[4].ToString());
         if (((YamlSequenceNode)node).Count() >= 6) ma.name = node[5].ToString();
         return ma;
-	}
+    }
 
     /**
      * Saves the MissionArea to a YAML file.
@@ -90,7 +90,7 @@ struct MissionZone
     {
         if (node.NodeType != YamlNodeType.Sequence)
             return default;
-    
+
         var mz = new MissionZone
         {
             areas = ((YamlSequenceNode)node).Children.Select(x => MissionArea.decode(x)).ToList()
@@ -104,8 +104,8 @@ struct MissionZone
      */
     static YamlNode encode(MissionZone mz)
     {
-    	var node = new YamlSequenceNode(mz.areas.Select(x => MissionArea.encode(x)));
-    	return node;
+        var node = new YamlSequenceNode(mz.areas.Select(x => MissionArea.encode(x)));
+        return node;
     }
 }
 
@@ -156,7 +156,7 @@ internal class RuleRegion : IRule
      * @return The region type.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /// Gets the weighted list of missions for this region.
     internal WeightedOptions getAvailableMissions() =>
@@ -168,8 +168,8 @@ internal class RuleRegion : IRule
      */
     internal void load(YamlNode node)
     {
-	    _type = node["type"].ToString();
-	    _cost = int.Parse(node["cost"].ToString());
+        _type = node["type"].ToString();
+        _cost = int.Parse(node["cost"].ToString());
         var areas = new List<List<double>>();
         foreach (var i in ((YamlSequenceNode)node["areas"]).Children)
         {
@@ -187,10 +187,10 @@ internal class RuleRegion : IRule
         }
         _missionZones = ((YamlSequenceNode)node["missionZones"]).Children.Select(x => MissionZone.decode(x)).ToList();
         if (node["missionWeights"] is YamlNode weights)
-	    {
-		    _missionWeights.load(weights);
-	    }
-	    _regionWeight = uint.Parse(node["regionWeight"].ToString());
+        {
+            _missionWeights.load(weights);
+        }
+        _regionWeight = uint.Parse(node["regionWeight"].ToString());
         _missionRegion = node["missionRegion"].ToString();
     }
 
@@ -199,7 +199,7 @@ internal class RuleRegion : IRule
      * @return A list of missionZones.
      */
     internal List<MissionZone> getMissionZones() =>
-	    _missionZones;
+        _missionZones;
 
     /**
      * Checks if a point is inside this region.
@@ -209,21 +209,21 @@ internal class RuleRegion : IRule
      */
     internal bool insideRegion(double lon, double lat)
     {
-	    for (int i = 0; i < _lonMin.Count; ++i)
-	    {
-		    bool inLon, inLat;
+        for (int i = 0; i < _lonMin.Count; ++i)
+        {
+            bool inLon, inLat;
 
-		    if (_lonMin[i] <= _lonMax[i])
-			    inLon = (lon >= _lonMin[i] && lon < _lonMax[i]);
-		    else
-			    inLon = ((lon >= _lonMin[i] && lon < M_PI*2.0) || (lon >= 0 && lon < _lonMax[i]));
+            if (_lonMin[i] <= _lonMax[i])
+                inLon = (lon >= _lonMin[i] && lon < _lonMax[i]);
+            else
+                inLon = ((lon >= _lonMin[i] && lon < M_PI * 2.0) || (lon >= 0 && lon < _lonMax[i]));
 
-		    inLat = (lat >= _latMin[i] && lat < _latMax[i]);
+            inLat = (lat >= _latMin[i] && lat < _latMax[i]);
 
-		    if (inLon && inLat)
-			    return true;
-	    }
-	    return false;
+            if (inLon && inLat)
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -235,28 +235,28 @@ internal class RuleRegion : IRule
     {
         var zone = (int)z;
         if (zone < _missionZones.Count)
-	    {
-		    int a = RNG.generate(0, _missionZones[zone].areas.Count - 1);
-		    double lonMin = _missionZones[zone].areas[a].lonMin;
-		    double lonMax = _missionZones[zone].areas[a].lonMax;
-		    double latMin = _missionZones[zone].areas[a].latMin;
-		    double latMax = _missionZones[zone].areas[a].latMax;
-		    if (lonMin > lonMax)
-		    {
-			    lonMin = _missionZones[zone].areas[a].lonMax;
-			    lonMax = _missionZones[zone].areas[a].lonMin;
-		    }
-		    if (latMin > latMax)
-		    {
-			    latMin = _missionZones[zone].areas[a].latMax;
-			    latMax = _missionZones[zone].areas[a].latMin;
-		    }
-		    double lon = RNG.generate(lonMin, lonMax);
-		    double lat = RNG.generate(latMin, latMax);
-		    return KeyValuePair.Create(lon, lat);
-	    }
-	    Debug.Assert(false, "Invalid zone number");
-	    return KeyValuePair.Create(0.0, 0.0);
+        {
+            int a = RNG.generate(0, _missionZones[zone].areas.Count - 1);
+            double lonMin = _missionZones[zone].areas[a].lonMin;
+            double lonMax = _missionZones[zone].areas[a].lonMax;
+            double latMin = _missionZones[zone].areas[a].latMin;
+            double latMax = _missionZones[zone].areas[a].latMax;
+            if (lonMin > lonMax)
+            {
+                lonMin = _missionZones[zone].areas[a].lonMax;
+                lonMax = _missionZones[zone].areas[a].lonMin;
+            }
+            if (latMin > latMax)
+            {
+                latMin = _missionZones[zone].areas[a].latMax;
+                latMax = _missionZones[zone].areas[a].latMin;
+            }
+            double lon = RNG.generate(lonMin, lonMax);
+            double lat = RNG.generate(latMin, latMax);
+            return KeyValuePair.Create(lon, lat);
+        }
+        Debug.Assert(false, "Invalid zone number");
+        return KeyValuePair.Create(0.0, 0.0);
     }
 
     /// Gets the substitute mission region.
@@ -269,29 +269,29 @@ internal class RuleRegion : IRule
      * @return The initial weight of this region.
      */
     internal uint getWeight() =>
-	    _regionWeight;
+        _regionWeight;
 
     /**
      * Gets the cost of building a base inside this region.
      * @return The construction cost.
      */
     internal int getBaseCost() =>
-	    _cost;
+        _cost;
 
-	/// Gets the maximum longitude.
-	internal List<double> getLonMax() =>
+    /// Gets the maximum longitude.
+    internal List<double> getLonMax() =>
         _lonMax;
 
-	/// Gets the minimum longitude.
-	internal List<double> getLonMin() =>
+    /// Gets the minimum longitude.
+    internal List<double> getLonMin() =>
         _lonMin;
 
-	/// Gets the maximum latitude.
-	internal List<double> getLatMax() =>
+    /// Gets the maximum latitude.
+    internal List<double> getLatMax() =>
         _latMax;
 
-	/// Gets the minimum latitude.
-	internal List<double> getLatMin() =>
+    /// Gets the minimum latitude.
+    internal List<double> getLatMin() =>
         _latMin;
 
     /**
@@ -300,21 +300,21 @@ internal class RuleRegion : IRule
      */
     internal List<City> getCities()
     {
-	    // Build a cached list of all mission zones that are cities
-	    // Saves us from constantly searching for them
-	    if (!_cities.Any())
-	    {
-		    foreach (var i in _missionZones)
-		    {
-			    foreach (var j in i.areas)
-			    {
-				    if (j.isPoint() && !string.IsNullOrEmpty(j.name))
-				    {
-					    _cities.Add(new City(j.name, j.lonMin, j.latMin));
-				    }
-			    }
-		    }
-	    }
-	    return _cities;
+        // Build a cached list of all mission zones that are cities
+        // Saves us from constantly searching for them
+        if (!_cities.Any())
+        {
+            foreach (var i in _missionZones)
+            {
+                foreach (var j in i.areas)
+                {
+                    if (j.isPoint() && !string.IsNullOrEmpty(j.name))
+                    {
+                        _cities.Add(new City(j.name, j.lonMin, j.latMin));
+                    }
+                }
+            }
+        }
+        return _cities;
     }
 }

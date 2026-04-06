@@ -24,41 +24,41 @@ namespace SharpXcom.Ufopaedia;
  */
 internal class ArticleStateText : ArticleState
 {
-	Text _txtTitle;
-	Text _txtInfo;
+    Text _txtTitle;
+    Text _txtInfo;
 
-	internal ArticleStateText(ArticleDefinitionText defs) : base(defs.id)
-	{
-		// add screen elements
-		_txtTitle = new Text(296, 17, 5, 23);
-		_txtInfo = new Text(296, 150, 10, 48);
+    internal ArticleStateText(ArticleDefinitionText defs) : base(defs.id)
+    {
+        // add screen elements
+        _txtTitle = new Text(296, 17, 5, 23);
+        _txtInfo = new Text(296, 150, 10, 48);
 
-		// Set palette
-		setPalette("PAL_UFOPAEDIA");
+        // Set palette
+        setPalette("PAL_UFOPAEDIA");
 
-		base.initLayout();
+        base.initLayout();
 
-		// add other elements
-		add(_txtTitle);
-		add(_txtInfo);
+        // add other elements
+        add(_txtTitle);
+        add(_txtInfo);
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		// Set up objects
-		_game.getMod().getSurface("BACK10.SCR").blit(_bg);
-		_btnOk.setColor(Palette.blockOffset(5));
-		_btnPrev.setColor(Palette.blockOffset(5));
-		_btnNext.setColor(Palette.blockOffset(5));
+        // Set up objects
+        _game.getMod().getSurface("BACK10.SCR").blit(_bg);
+        _btnOk.setColor(Palette.blockOffset(5));
+        _btnPrev.setColor(Palette.blockOffset(5));
+        _btnNext.setColor(Palette.blockOffset(5));
 
-		_txtTitle.setColor((byte)(Palette.blockOffset(15)+4));
-		_txtTitle.setBig();
-		_txtTitle.setText(tr(defs.title));
+        _txtTitle.setColor((byte)(Palette.blockOffset(15) + 4));
+        _txtTitle.setBig();
+        _txtTitle.setText(tr(defs.title));
 
-		_txtInfo.setColor((byte)(Palette.blockOffset(15)-1));
-		_txtInfo.setWordWrap(true);
-		_txtInfo.setScrollable(true);
-		_txtInfo.setText(tr(defs.text));
-	}
+        _txtInfo.setColor((byte)(Palette.blockOffset(15) - 1));
+        _txtInfo.setWordWrap(true);
+        _txtInfo.setScrollable(true);
+        _txtInfo.setText(tr(defs.text));
+    }
 
-	~ArticleStateText() { }
+    ~ArticleStateText() { }
 }

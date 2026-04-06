@@ -95,14 +95,14 @@ internal class RuleCraft : IListOrder, IRule
      * @return The speed in knots.
      */
     internal int getMaxSpeed() =>
-	    _speedMax;
+        _speedMax;
 
     /**
      * Returns the globe marker for the craft type.
      * @return Marker sprite, -1 if none.
      */
     internal int getMarker() =>
-	    _marker;
+        _marker;
 
     /**
      * Gets the list weight for this research item.
@@ -122,8 +122,8 @@ internal class RuleCraft : IListOrder, IRule
     {
         _type = node["type"].ToString();
         _requires = ((YamlSequenceNode)node["requires"]).Children.Select(x => x.ToString()).ToList();
-	    if (node["sprite"] != null)
-	    {
+        if (node["sprite"] != null)
+        {
             // used in
             // Surface set (baseOffset):
             //   BASEBITS.PCK (33)
@@ -132,47 +132,47 @@ internal class RuleCraft : IListOrder, IRule
             //
             // Final index in surfaceset is `baseOffset + sprite + (sprite > 4 ? modOffset : 0)`
             _sprite = mod.getOffset(int.Parse(node["sprite"].ToString()), 4);
-	    }
-	    if (node["marker"] != null)
-	    {
-		    _marker = mod.getOffset(int.Parse(node["marker"].ToString()), 8);
-	    }
-	    _fuelMax = int.Parse(node["fuelMax"].ToString());
-	    _damageMax = int.Parse(node["damageMax"].ToString());
-	    _speedMax = int.Parse(node["speedMax"].ToString());
-	    _accel = int.Parse(node["accel"].ToString());
-	    _weapons = int.Parse(node["weapons"].ToString());
-	    _soldiers = int.Parse(node["soldiers"].ToString());
-	    _vehicles = int.Parse(node["vehicles"].ToString());
-	    _costBuy = int.Parse(node["costBuy"].ToString());
-	    _costRent = int.Parse(node["costRent"].ToString());
-	    _costSell = int.Parse(node["costSell"].ToString());
-	    _refuelItem = node["refuelItem"].ToString();
-	    _repairRate = int.Parse(node["repairRate"].ToString());
-	    _refuelRate = int.Parse(node["refuelRate"].ToString());
-	    _radarRange = int.Parse(node["radarRange"].ToString());
-	    _radarChance = int.Parse(node["radarChance"].ToString());
-	    _sightRange = int.Parse(node["sightRange"].ToString());
-	    _transferTime = int.Parse(node["transferTime"].ToString());
-	    _score = int.Parse(node["score"].ToString());
-	    if (node["battlescapeTerrainData"] is YamlNode terrain)
-	    {
-		    RuleTerrain rule = new RuleTerrain(terrain["name"].ToString());
-		    rule.load(terrain, mod);
-		    _battlescapeTerrainData = rule;
-	    }
+        }
+        if (node["marker"] != null)
+        {
+            _marker = mod.getOffset(int.Parse(node["marker"].ToString()), 8);
+        }
+        _fuelMax = int.Parse(node["fuelMax"].ToString());
+        _damageMax = int.Parse(node["damageMax"].ToString());
+        _speedMax = int.Parse(node["speedMax"].ToString());
+        _accel = int.Parse(node["accel"].ToString());
+        _weapons = int.Parse(node["weapons"].ToString());
+        _soldiers = int.Parse(node["soldiers"].ToString());
+        _vehicles = int.Parse(node["vehicles"].ToString());
+        _costBuy = int.Parse(node["costBuy"].ToString());
+        _costRent = int.Parse(node["costRent"].ToString());
+        _costSell = int.Parse(node["costSell"].ToString());
+        _refuelItem = node["refuelItem"].ToString();
+        _repairRate = int.Parse(node["repairRate"].ToString());
+        _refuelRate = int.Parse(node["refuelRate"].ToString());
+        _radarRange = int.Parse(node["radarRange"].ToString());
+        _radarChance = int.Parse(node["radarChance"].ToString());
+        _sightRange = int.Parse(node["sightRange"].ToString());
+        _transferTime = int.Parse(node["transferTime"].ToString());
+        _score = int.Parse(node["score"].ToString());
+        if (node["battlescapeTerrainData"] is YamlNode terrain)
+        {
+            RuleTerrain rule = new RuleTerrain(terrain["name"].ToString());
+            rule.load(terrain, mod);
+            _battlescapeTerrainData = rule;
+        }
         foreach (var i in ((YamlSequenceNode)node["deployment"]).Children)
         {
             _deployment.Add(((YamlSequenceNode)i).Children.Select(x => int.Parse(x.ToString())).ToList());
         }
-	    _spacecraft = bool.Parse(node["spacecraft"].ToString());
-	    _listOrder = int.Parse(node["listOrder"].ToString());
-	    if (_listOrder == 0)
-	    {
-		    _listOrder = listOrder;
-	    }
-	    _maxAltitude = int.Parse(node["maxAltitude"].ToString());
-	    _maxItems = int.Parse(node["maxItems"].ToString());
+        _spacecraft = bool.Parse(node["spacecraft"].ToString());
+        _listOrder = int.Parse(node["listOrder"].ToString());
+        if (_listOrder == 0)
+        {
+            _listOrder = listOrder;
+        }
+        _maxAltitude = int.Parse(node["maxAltitude"].ToString());
+        _maxItems = int.Parse(node["maxItems"].ToString());
     }
 
     /**
@@ -180,7 +180,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The cost.
      */
     internal int getRentCost() =>
-	    _costRent;
+        _costRent;
 
     /**
      * Gets how much damage is removed from the
@@ -188,7 +188,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The amount of damage.
      */
     internal int getRepairRate() =>
-	    _repairRate;
+        _repairRate;
 
     /**
      * Gets what item is required while
@@ -196,14 +196,14 @@ internal class RuleCraft : IListOrder, IRule
      * @return The item ID or "" if none.
      */
     internal string getRefuelItem() =>
-	    _refuelItem;
+        _refuelItem;
 
     /**
      * Gets the maximum fuel the craft can contain.
      * @return The fuel amount.
      */
     internal int getMaxFuel() =>
-	    _fuelMax;
+        _fuelMax;
 
     /**
      * Gets the language string that names
@@ -211,7 +211,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The craft's name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Gets the craft's radar range
@@ -219,7 +219,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The range in nautical miles.
      */
     internal int getRadarRange() =>
-	    _radarRange;
+        _radarRange;
 
     /// Gets the craft's radar chance.
     internal int getRadarChance() =>
@@ -231,7 +231,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The amount of fuel.
      */
     internal int getRefuelRate() =>
-	    _refuelRate;
+        _refuelRate;
 
     /**
      * Gets the craft's sight range
@@ -239,7 +239,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The range in nautical miles.
      */
     internal int getSightRange() =>
-	    _sightRange;
+        _sightRange;
 
     /**
      * Gets the maximum number of soldiers that
@@ -247,7 +247,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The soldier capacity.
      */
     internal int getSoldiers() =>
-	    _soldiers;
+        _soldiers;
 
     /**
      * Gets the number of points you lose
@@ -255,7 +255,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The score in points.
      */
     internal int getScore() =>
-	    _score;
+        _score;
 
     /**
      * If the craft is underwater, it can only dogfight over polygons.
@@ -263,7 +263,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return underwater or not
      */
     internal bool isWaterOnly() =>
-	    _maxAltitude > -1;
+        _maxAltitude > -1;
 
     /**
      * Gets the maximum damage (damage the craft can take)
@@ -271,21 +271,21 @@ internal class RuleCraft : IListOrder, IRule
      * @return The maximum damage.
      */
     internal int getMaxDamage() =>
-	    _damageMax;
+        _damageMax;
 
     /**
      * Gets the maximum altitude this craft can dogfight to.
      * @return max altitude (0-4).
      */
     internal int getMaxAltitude() =>
-	    _maxAltitude;
+        _maxAltitude;
 
     /**
      * Gets the deployment layout for this craft.
      * @return The deployment layout.
      */
     internal List<List<int>> getDeployment() =>
-	    _deployment;
+        _deployment;
 
     /**
      * Gets the terrain data needed to draw the Craft in the battlescape.
@@ -300,7 +300,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The sell value.
      */
     internal int getSellCost() =>
-	    _costSell;
+        _costSell;
 
     /**
      * Gets the ID of the sprite used to draw the craft
@@ -308,7 +308,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The Sprite ID.
      */
     internal int getSprite() =>
-	    _sprite;
+        _sprite;
 
     /**
      * Gets the maximum number of vehicles that
@@ -316,21 +316,21 @@ internal class RuleCraft : IListOrder, IRule
      * @return The vehicle capacity.
      */
     internal int getVehicles() =>
-	    _vehicles;
+        _vehicles;
 
     /**
      * Checks if this ship is capable of going to mars.
      * @return True if this ship is capable of going to mars.
      */
     internal bool getSpacecraft() =>
-	    _spacecraft;
+        _spacecraft;
 
     /**
      * Gets the maximum amount of items this craft can store.
      * @return number of items.
      */
     internal int getMaxItems() =>
-	    _maxItems;
+        _maxItems;
 
     /**
      * Gets the list of research required to
@@ -338,7 +338,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The list of research IDs.
      */
     internal List<string> getRequirements() =>
-	    _requires;
+        _requires;
 
     /**
      * Gets the amount of time this item
@@ -346,7 +346,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The time in hours.
      */
     internal int getTransferTime() =>
-	    _transferTime;
+        _transferTime;
 
     /**
      * Gets the cost of this craft for
@@ -354,7 +354,7 @@ internal class RuleCraft : IListOrder, IRule
      * @return The cost.
      */
     internal int getBuyCost() =>
-	    _costBuy;
+        _costBuy;
 
     /**
      * Gets the acceleration of the craft for
@@ -362,5 +362,5 @@ internal class RuleCraft : IListOrder, IRule
      * @return The acceleration.
      */
     internal int getAcceleration() =>
-	    _accel;
+        _accel;
 }

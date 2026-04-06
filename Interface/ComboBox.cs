@@ -153,14 +153,14 @@ internal class ComboBox : InteractiveSurface
     internal void setOptions(List<string> options, bool translate = false)
     {
         setDropdown(options.Count);
-	    _list.clearList();
-	    foreach (var option in options)
-	    {
-		    if (translate)
-			    _list.addRow(1, _lang.getString(option));
-		    else
-			    _list.addRow(1, option);
-	    }
+        _list.clearList();
+        foreach (var option in options)
+        {
+            if (translate)
+                _list.addRow(1, _lang.getString(option));
+            else
+                _list.addRow(1, option);
+        }
         setSelected(_sel);
     }
 
@@ -260,28 +260,28 @@ internal class ComboBox : InteractiveSurface
      * @return Selected row.
      */
     internal uint getSelected() =>
-	    _sel;
+        _sel;
 
     /**
      * Sets a function to be called every time the mouse moves in to the listbox surface.
      * @param handler Action handler.
      */
     internal void onListMouseIn(ActionHandler handler) =>
-	    _list.onMouseIn(handler);
+        _list.onMouseIn(handler);
 
     /**
      * Sets a function to be called every time the mouse moves out of the listbox surface.
      * @param handler Action handler.
      */
     internal void onListMouseOut(ActionHandler handler) =>
-	    _list.onMouseOut(handler);
+        _list.onMouseOut(handler);
 
     /**
      * Sets a function to be called every time the mouse moves over the listbox surface.
      * @param handler Action handler.
      */
     internal void onListMouseOver(ActionHandler handler) =>
-	    _list.onMouseOver(handler);
+        _list.onMouseOver(handler);
 
     internal uint getHoveredListIdx()
     {
@@ -305,18 +305,18 @@ internal class ComboBox : InteractiveSurface
      * @param text the text to display
      */
     internal void setText(string text) =>
-	    _button.setText(text);
+        _button.setText(text);
 
     /**
      * Passes ticks to arrow buttons.
      */
     internal override void think()
     {
-	    _button.think();
-	    _arrow.think();
-	    _window.think();
-	    _list.think();
-	    base.think();
+        _button.think();
+        _arrow.think();
+        _window.think();
+        _list.think();
+        base.think();
     }
 
     /**
@@ -326,24 +326,24 @@ internal class ComboBox : InteractiveSurface
      */
     internal override void handle(Action action, State state)
     {
-	    _button.handle(action, state);
-	    _list.handle(action, state);
-	    base.handle(action, state);
-	    int topY = Math.Min(getY(), _window.getY());
-	    if (_window.getVisible() && action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN &&
-		    (action.getAbsoluteXMouse() < getX() || action.getAbsoluteXMouse() >= getX() + getWidth() ||
-		     action.getAbsoluteYMouse() < topY || action.getAbsoluteYMouse() >= topY + getHeight() + _window.getHeight()))
-	    {
-		    toggle();
-	    }
-	    if (_toggled)
-	    {
-		    if (_change != null)
-		    {
-			    _change(action);
-		    }
-		    _toggled = false;
-	    }
+        _button.handle(action, state);
+        _list.handle(action, state);
+        base.handle(action, state);
+        int topY = Math.Min(getY(), _window.getY());
+        if (_window.getVisible() && action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN &&
+            (action.getAbsoluteXMouse() < getX() || action.getAbsoluteXMouse() >= getX() + getWidth() ||
+             action.getAbsoluteYMouse() < topY || action.getAbsoluteYMouse() >= topY + getHeight() + _window.getHeight()))
+        {
+            toggle();
+        }
+        if (_toggled)
+        {
+            if (_change != null)
+            {
+                _change(action);
+            }
+            _toggled = false;
+        }
     }
 
     /**
@@ -352,15 +352,15 @@ internal class ComboBox : InteractiveSurface
      */
     internal override void blit(Surface surface)
     {
-	    base.blit(surface);
-	    _list.invalidate();
-	    if (_visible && !_hidden)
-	    {
-		    _button.blit(surface);
-		    _arrow.blit(surface);
-		    _window.blit(surface);
-		    _list.blit(surface);
-	    }
+        base.blit(surface);
+        _list.invalidate();
+        if (_visible && !_hidden)
+        {
+            _button.blit(surface);
+            _arrow.blit(surface);
+            _window.blit(surface);
+            _list.blit(surface);
+        }
     }
 
     /**
@@ -371,9 +371,9 @@ internal class ComboBox : InteractiveSurface
      */
     internal override void initText(Font big, Font small, Language lang)
     {
-	    _lang = lang;
-	    _button.initText(big, small, lang);
-	    _list.initText(big, small, lang);
+        _lang = lang;
+        _button.initText(big, small, lang);
+        _list.initText(big, small, lang);
     }
 
     /**
@@ -385,11 +385,11 @@ internal class ComboBox : InteractiveSurface
      */
     internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-	    base.setPalette(colors, firstcolor, ncolors);
-	    _button.setPalette(colors, firstcolor, ncolors);
-	    _arrow.setPalette(colors, firstcolor, ncolors);
-	    _window.setPalette(colors, firstcolor, ncolors);
-	    _list.setPalette(colors, firstcolor, ncolors);
+        base.setPalette(colors, firstcolor, ncolors);
+        _button.setPalette(colors, firstcolor, ncolors);
+        _arrow.setPalette(colors, firstcolor, ncolors);
+        _window.setPalette(colors, firstcolor, ncolors);
+        _list.setPalette(colors, firstcolor, ncolors);
     }
 
     /**
@@ -398,11 +398,11 @@ internal class ComboBox : InteractiveSurface
      */
     internal override void setX(int x)
     {
-	    base.setX(x);
-	    _button.setX(x);
-	    _arrow.setX(x + getWidth() - BUTTON_WIDTH);
-	    _window.setX(x);
-	    _list.setX(x + HORIZONTAL_MARGIN);
+        base.setX(x);
+        _button.setX(x);
+        _arrow.setX(x + getWidth() - BUTTON_WIDTH);
+        _window.setX(x);
+        _list.setX(x + HORIZONTAL_MARGIN);
     }
 
     /**
@@ -411,14 +411,14 @@ internal class ComboBox : InteractiveSurface
      */
     internal override void setY(int y)
     {
-	    base.setY(y);
-	    _button.setY(y);
-	    _arrow.setY(y + 4);
+        base.setY(y);
+        _button.setY(y);
+        _arrow.setY(y + 4);
 
-	    int popupHeight = _window.getHeight();
-	    int popupY = getPopupWindowY(getHeight(), y, popupHeight, _popupAboveButton);
-	    _window.setY(popupY);
-	    _list.setY(popupY + VERTICAL_MARGIN);
+        int popupHeight = _window.getHeight();
+        int popupY = getPopupWindowY(getHeight(), y, popupHeight, _popupAboveButton);
+        _window.setY(popupY);
+        _list.setY(popupY + VERTICAL_MARGIN);
     }
 
     /**
@@ -428,9 +428,9 @@ internal class ComboBox : InteractiveSurface
      */
     internal override void setHighContrast(bool contrast)
     {
-	    _button.setHighContrast(contrast);
-	    _window.setHighContrast(contrast);
-	    _list.setHighContrast(contrast);
+        _button.setHighContrast(contrast);
+        _window.setHighContrast(contrast);
+        _list.setHighContrast(contrast);
     }
 
     /**
@@ -438,12 +438,12 @@ internal class ComboBox : InteractiveSurface
      * @param bg New background.
      */
     void setBackground(Surface bg) =>
-	    _window.setBackground(bg);
+        _window.setBackground(bg);
 
     /**
      * Returns the color used to draw the combo box.
      * @return Color value.
      */
     byte getColor() =>
-	    _color;
+        _color;
 }

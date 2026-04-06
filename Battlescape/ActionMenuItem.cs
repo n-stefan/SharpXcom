@@ -26,70 +26,70 @@ namespace SharpXcom.Battlescape;
  */
 internal class ActionMenuItem : InteractiveSurface
 {
-	bool _highlighted;
-	BattleActionType _action;
-	int _tu, _highlightModifier;
-	Frame _frame;
-	Text _txtDescription, _txtAcc, _txtTU;
+    bool _highlighted;
+    BattleActionType _action;
+    int _tu, _highlightModifier;
+    Frame _frame;
+    Text _txtDescription, _txtAcc, _txtTU;
 
-	/**
+    /**
 	 * Sets up an Action menu item.
 	 * @param id The unique identifier of the menu item.
 	 * @param game Pointer to the game.
 	 * @param x Position on the x-axis.
 	 * @param y Position on the y-axis.
 	 */
-	internal ActionMenuItem(int id, Game game, int x, int y) : base(272, 40, x + 24, y - (id*40))
-	{
-		_highlighted = false;
-		_action = BattleActionType.BA_NONE;
-		_tu = 0;
+    internal ActionMenuItem(int id, Game game, int x, int y) : base(272, 40, x + 24, y - (id * 40))
+    {
+        _highlighted = false;
+        _action = BattleActionType.BA_NONE;
+        _tu = 0;
 
-		Font big = game.getMod().getFont("FONT_BIG"), small = game.getMod().getFont("FONT_SMALL");
-		Language lang = game.getLanguage();
+        Font big = game.getMod().getFont("FONT_BIG"), small = game.getMod().getFont("FONT_SMALL");
+        Language lang = game.getLanguage();
 
-		Element actionMenu = game.getMod().getInterface("battlescape").getElement("actionMenu");
+        Element actionMenu = game.getMod().getInterface("battlescape").getElement("actionMenu");
 
-		_highlightModifier = actionMenu.TFTDMode ? 12 : 3;
+        _highlightModifier = actionMenu.TFTDMode ? 12 : 3;
 
-		_frame = new Frame(getWidth(), getHeight(), 0, 0);
-		_frame.setHighContrast(true);
-		_frame.setColor((byte)actionMenu.border);
-		_frame.setSecondaryColor((byte)actionMenu.color2);
-		_frame.setThickness(8);
+        _frame = new Frame(getWidth(), getHeight(), 0, 0);
+        _frame.setHighContrast(true);
+        _frame.setColor((byte)actionMenu.border);
+        _frame.setSecondaryColor((byte)actionMenu.color2);
+        _frame.setThickness(8);
 
-		_txtDescription = new Text(200, 20, 10, 13);
-		_txtDescription.initText(big, small, lang);
-		_txtDescription.setBig();
-		_txtDescription.setHighContrast(true);
-		_txtDescription.setColor((byte)actionMenu.color);
-		_txtDescription.setVisible(true);
+        _txtDescription = new Text(200, 20, 10, 13);
+        _txtDescription.initText(big, small, lang);
+        _txtDescription.setBig();
+        _txtDescription.setHighContrast(true);
+        _txtDescription.setColor((byte)actionMenu.color);
+        _txtDescription.setVisible(true);
 
-		_txtAcc = new Text(100, 20, 140, 13);
-		_txtAcc.initText(big, small, lang);
-		_txtAcc.setBig();
-		_txtAcc.setHighContrast(true);
-		_txtAcc.setColor((byte)actionMenu.color);
+        _txtAcc = new Text(100, 20, 140, 13);
+        _txtAcc.initText(big, small, lang);
+        _txtAcc.setBig();
+        _txtAcc.setHighContrast(true);
+        _txtAcc.setColor((byte)actionMenu.color);
 
-		_txtTU = new Text(80, 20, 210, 13);
-		_txtTU.initText(big, small, lang);
-		_txtTU.setBig();
-		_txtTU.setHighContrast(true);
-		_txtTU.setColor((byte)actionMenu.color);
-	}
+        _txtTU = new Text(80, 20, 210, 13);
+        _txtTU.initText(big, small, lang);
+        _txtTU.setBig();
+        _txtTU.setHighContrast(true);
+        _txtTU.setColor((byte)actionMenu.color);
+    }
 
-	/**
+    /**
 	 * Deletes the ActionMenuItem.
 	 */
-	~ActionMenuItem()
-	{
-		_frame = null;
-		_txtDescription = null;
-		_txtAcc = null;
-		_txtTU = null;
-	}
+    ~ActionMenuItem()
+    {
+        _frame = null;
+        _txtDescription = null;
+        _txtAcc = null;
+        _txtTU = null;
+    }
 
-	/**
+    /**
 	 * Links with an action and fills in the text fields.
 	 * @param action The battlescape action.
 	 * @param description The actions description.
@@ -97,79 +97,79 @@ internal class ActionMenuItem : InteractiveSurface
 	 * @param timeunits The timeunits string, including the TUs> prefix.
 	 * @param tu The timeunits value.
 	 */
-	internal void setAction(BattleActionType action, string description, string accuracy, string timeunits, int tu)
-	{
-		_action = action;
-		_txtDescription.setText(description);
-		_txtAcc.setText(accuracy);
-		_txtTU.setText(timeunits);
-		_tu = tu;
-		_redraw = true;
-	}
+    internal void setAction(BattleActionType action, string description, string accuracy, string timeunits, int tu)
+    {
+        _action = action;
+        _txtDescription.setText(description);
+        _txtAcc.setText(accuracy);
+        _txtTU.setText(timeunits);
+        _tu = tu;
+        _redraw = true;
+    }
 
-	/**
+    /**
 	 * Gets the action that was linked to this menu item.
 	 * @return Action that was linked to this menu item.
 	 */
-	internal BattleActionType getAction() =>
-		_action;
+    internal BattleActionType getAction() =>
+        _action;
 
-	/**
+    /**
 	 * Gets the action tus that were linked to this menu item.
 	 * @return The timeunits that were linked to this menu item.
 	 */
-	internal int getTUs() =>
-		_tu;
+    internal int getTUs() =>
+        _tu;
 
-	/**
+    /**
 	 * Draws the bordered box.
 	 */
-	internal override void draw()
-	{
-		_frame.blit(this);
-		_txtDescription.blit(this);
-		_txtAcc.blit(this);
-		_txtTU.blit(this);
-	}
+    internal override void draw()
+    {
+        _frame.blit(this);
+        _txtDescription.blit(this);
+        _txtAcc.blit(this);
+        _txtTU.blit(this);
+    }
 
-	/**
+    /**
 	 * Processes a mouse hover in event.
 	 * @param action Pointer to an action.
 	 * @param state Pointer to a state.
 	 */
-	protected override void mouseIn(Action action, State state)
-	{
-		_highlighted = true;
-		_frame.setSecondaryColor((byte)(_frame.getSecondaryColor() - _highlightModifier));
-		draw();
-		base.mouseIn(action, state);
-	}
+    protected override void mouseIn(Action action, State state)
+    {
+        _highlighted = true;
+        _frame.setSecondaryColor((byte)(_frame.getSecondaryColor() - _highlightModifier));
+        draw();
+        base.mouseIn(action, state);
+    }
 
-	/**
+    /**
 	 * Processes a mouse hover out event.
 	 * @param action Pointer to an action.
 	 * @param state Pointer to a state.
 	 */
-	protected override void mouseOut(Action action, State state)
-	{
-		_highlighted = false;
-		_frame.setSecondaryColor((byte)(_frame.getSecondaryColor() + _highlightModifier));
-		draw();
-		base.mouseOut(action, state);
-	}
+    protected override void mouseOut(Action action, State state)
+    {
+        _highlighted = false;
+        _frame.setSecondaryColor((byte)(_frame.getSecondaryColor() + _highlightModifier));
+        draw();
+        base.mouseOut(action, state);
+    }
 
-	/**
+    /**
 	 * Replaces a certain amount of colors in the surface's palette.
 	 * @param colors Pointer to the set of colors.
 	 * @param firstcolor Offset of the first color to replace.
 	 * @param ncolors Amount of colors to replace.
 	 */
-	internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
-	{
-		base.setPalette(colors, firstcolor, ncolors);
-		_frame.setPalette(colors, firstcolor, ncolors);
-		_txtDescription.setPalette(colors, firstcolor, ncolors);
-		_txtAcc.setPalette(colors, firstcolor, ncolors);
-		_txtTU.setPalette(colors, firstcolor, ncolors);
-	}
+    internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    {
+        base.setPalette(colors, firstcolor, ncolors);
+        _frame.setPalette(colors, firstcolor, ncolors);
+        _txtDescription.setPalette(colors, firstcolor, ncolors);
+        _txtAcc.setPalette(colors, firstcolor, ncolors);
+        _txtTU.setPalette(colors, firstcolor, ncolors);
+    }
 }

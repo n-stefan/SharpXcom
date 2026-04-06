@@ -50,7 +50,7 @@ enum MovementType { MT_WALK, MT_FLY, MT_SLIDE, MT_FLOAT, MT_SINK };
  */
 internal class MapData
 {
-	internal const int O_DUMMY = 999;
+    internal const int O_DUMMY = 999;
 
     MapDataSet _dataset;
     SpecialTileType _specialType;
@@ -109,7 +109,7 @@ internal class MapData
      * @return The Y offset.
      */
     internal int getTerrainLevel() =>
-	    _terrainLevel;
+        _terrainLevel;
 
     /**
      * Gets whether this is a big wall, which blocks all surrounding paths.
@@ -128,28 +128,28 @@ internal class MapData
      * @return An integer representing what kind of bigwall this is.
      */
     internal int getBigWall() =>
-	    _bigWall;
+        _bigWall;
 
     /**
      * Gets whether this is a floor.
      * @return True if this is a floor.
      */
     internal bool isNoFloor() =>
-	    _isNoFloor;
+        _isNoFloor;
 
     /**
      * Gets whether this is a normal door.
      * @return True if this is a normal door.
      */
     internal bool isDoor() =>
-	    _isDoor;
+        _isDoor;
 
     /**
      * Gets whether this is an animated ufo door.
      * @return True if this is an animated ufo door.
      */
     internal bool isUFODoor() =>
-	    _isUfoDoor;
+        _isUfoDoor;
 
     /**
      * Gets the loft index for a certain layer.
@@ -157,14 +157,14 @@ internal class MapData
      * @return The loft index.
      */
     internal int getLoftID(int layer) =>
-	    _loftID[layer];
+        _loftID[layer];
 
     /**
      * Gets whether this is a grav lift.
      * @return True if this is a grav lift.
      */
     internal bool isGravLift() =>
-	    _isGravLift;
+        _isGravLift;
 
     /**
      * Gets the TU cost to walk over the object.
@@ -173,18 +173,18 @@ internal class MapData
      */
     internal int getTUCost(MovementType movementType)
     {
-	    switch (movementType)
-	    {
-	        case MovementType.MT_WALK:
-		        return _TUWalk;
-	        case MovementType.MT_FLY:
-		        return _TUFly;
-	        case MovementType.MT_SLIDE:
-		        return _TUSlide;
-	        default:
-		        break;
-	    }
-	    return 0;
+        switch (movementType)
+        {
+            case MovementType.MT_WALK:
+                return _TUWalk;
+            case MovementType.MT_FLY:
+                return _TUFly;
+            case MovementType.MT_SLIDE:
+                return _TUSlide;
+            default:
+                break;
+        }
+        return 0;
     }
 
     /**
@@ -193,11 +193,11 @@ internal class MapData
      */
     internal int getLightSource()
     {
-	    // lamp posts have 1, but they should emit more light
-	    if (_lightSource == 1)
-		    return 15;
-	    else
-		    return _lightSource - 1;
+        // lamp posts have 1, but they should emit more light
+        if (_lightSource == 1)
+            return 15;
+        else
+            return _lightSource - 1;
     }
 
     /**
@@ -207,21 +207,21 @@ internal class MapData
      */
     internal int getBlock(ItemDamageType type)
     {
-	    switch (type)
-	    {
-	        case ItemDamageType.DT_NONE:
-		        return _block[1];
-	        case ItemDamageType.DT_SMOKE:
-		        return _block[3];
-	        case ItemDamageType.DT_HE:
-	        case ItemDamageType.DT_IN:
-	        case ItemDamageType.DT_STUN:
-		        return _block[2];
-	        default:
-		        break;
-	    }
+        switch (type)
+        {
+            case ItemDamageType.DT_NONE:
+                return _block[1];
+            case ItemDamageType.DT_SMOKE:
+                return _block[3];
+            case ItemDamageType.DT_HE:
+            case ItemDamageType.DT_IN:
+            case ItemDamageType.DT_STUN:
+                return _block[2];
+            default:
+                break;
+        }
 
-	    return 0;
+        return 0;
     }
 
     /**
@@ -229,21 +229,21 @@ internal class MapData
      * @return The amount of armor.
      */
     internal int getArmor() =>
-	    _armor;
+        _armor;
 
     /**
      * Gets the dead object ID.
      * @return The dead object ID.
      */
     internal int getDieMCD() =>
-	    _dieMCD;
+        _dieMCD;
 
     /**
      * Gets the alternative object ID.
      * @return The alternative object ID.
      */
     internal int getAltMCD() =>
-	    _altMCD;
+        _altMCD;
 
     /**
      * Sets the sprite index for a certain frame.
@@ -418,35 +418,35 @@ internal class MapData
      * @param bigWall The new bigWall value.
      */
     internal void setBigWall(int bigWall) =>
-	    _bigWall = bigWall;
+        _bigWall = bigWall;
 
     /**
      * Sets the TUWalk value.
      * @param TUWalk The new TUWalk value.
      */
     internal void setTUWalk(int TUWalk) =>
-	    _TUWalk = TUWalk;
+        _TUWalk = TUWalk;
 
     /**
      * Sets the TUFly value.
      * @param TUFly The new TUFly value.
      */
     internal void setTUFly(int TUFly) =>
-	    _TUFly = TUFly;
+        _TUFly = TUFly;
 
     /**
      * Sets the TUSlide value.
      * @param TUSlide The new TUSlide value.
      */
     internal void setTUSlide(int TUSlide) =>
-	    _TUSlide = TUSlide;
+        _TUSlide = TUSlide;
 
     /**
      * Gets the type of object.
      * @return Type of the part of the tile.
      */
     internal TilePart getObjectType() =>
-	    _objectType;
+        _objectType;
 
     /**
      * Sets the amount of HE blockage.
@@ -484,56 +484,56 @@ internal class MapData
      * @return The special tile type.
      */
     internal SpecialTileType getSpecialType() =>
-	    _specialType;
+        _specialType;
 
     /**
      * Gets the amount of fuel.
      * @return The amount of fuel.
      */
     internal int getFuel() =>
-	    _fuel;
+        _fuel;
 
     /**
      * Gets the amount of flammable (how flammable this object is).
      * @return The amount of flammable.
      */
     internal int getFlammable() =>
-	    _flammable;
+        _flammable;
 
     /**
      * check if this is an xcom base object.
      * @return if it is a base object.
      */
     internal bool isBaseModule() =>
-	    _baseModule;
+        _baseModule;
 
     /**
      * Gets the dataset this object belongs to.
      * @return Pointer to MapDataSet.
      */
     internal MapDataSet getDataset() =>
-	    _dataset;
+        _dataset;
 
     /**
      * Gets the amount of explosive.
      * @return The amount of explosive.
      */
     internal int getExplosive() =>
-	    _explosive;
+        _explosive;
 
     /**
      * Gets the type of explosive.
      * @return The amount of explosive.
      */
     internal int getExplosiveType() =>
-	    _explosiveType;
+        _explosiveType;
 
     /**
      * Gets the index to the footstep sound.
      * @return The sound ID.
      */
     internal int getFootstepSound() =>
-	    _footstepSound;
+        _footstepSound;
 
     /**
      * Gets the sprite index.
@@ -541,19 +541,19 @@ internal class MapData
      * @return The original sprite index.
      */
     internal int getSprite(int frameID) =>
-	    _sprite[frameID];
+        _sprite[frameID];
 
     /**
      * Gets the Y offset for drawing.
      * @return The height in pixels.
      */
     internal int getYOffset() =>
-	    _yOffset;
+        _yOffset;
 
     /**
      * Gets the SCANG.DAT index for minimap.
      * @return The minimap index.
      */
     internal ushort getMiniMapIndex() =>
-	    _miniMapIndex;
+        _miniMapIndex;
 }

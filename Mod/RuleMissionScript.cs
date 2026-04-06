@@ -68,251 +68,251 @@ internal class RuleMissionScript : IRule
      */
     internal HashSet<string> getAllMissionTypes()
     {
-	    var types = new HashSet<string>();
-	    foreach (var missionWeight in _missionWeights)
-	    {
-		    List<string> names = missionWeight.Value.getNames();
-		    foreach (var name in names)
-		    {
-			    types.Add(name);
-		    }
-	    }
-	    return types;
+        var types = new HashSet<string>();
+        foreach (var missionWeight in _missionWeights)
+        {
+            List<string> names = missionWeight.Value.getNames();
+            foreach (var name in names)
+            {
+                types.Add(name);
+            }
+        }
+        return types;
     }
 
     /**
      * @param siteType set this command to be a missionSite type or not.
      */
     internal void setSiteType(bool siteType) =>
-	    _siteType = siteType;
+        _siteType = siteType;
 
-	/**
+    /**
 	 * Loads a missionScript from a YML file.
 	 * @param node the node within the file we're reading.
 	 */
-	internal void load(YamlNode node)
-	{
-		_varName = node["varName"].ToString();
-		_firstMonth = int.Parse(node["firstMonth"].ToString());
-		_lastMonth = int.Parse(node["lastMonth"].ToString());
-		_label = (int)uint.Parse(node["label"].ToString());
-		_executionOdds = int.Parse(node["executionOdds"].ToString());
-		_targetBaseOdds = int.Parse(node["targetBaseOdds"].ToString());
-		_minDifficulty = int.Parse(node["minDifficulty"].ToString());
-		_maxRuns = int.Parse(node["maxRuns"].ToString());
-		_avoidRepeats = int.Parse(node["avoidRepeats"].ToString());
-		_delay = int.Parse(node["startDelay"].ToString());
+    internal void load(YamlNode node)
+    {
+        _varName = node["varName"].ToString();
+        _firstMonth = int.Parse(node["firstMonth"].ToString());
+        _lastMonth = int.Parse(node["lastMonth"].ToString());
+        _label = (int)uint.Parse(node["label"].ToString());
+        _executionOdds = int.Parse(node["executionOdds"].ToString());
+        _targetBaseOdds = int.Parse(node["targetBaseOdds"].ToString());
+        _minDifficulty = int.Parse(node["minDifficulty"].ToString());
+        _maxRuns = int.Parse(node["maxRuns"].ToString());
+        _avoidRepeats = int.Parse(node["avoidRepeats"].ToString());
+        _delay = int.Parse(node["startDelay"].ToString());
         _conditionals = ((YamlSequenceNode)node["conditionals"]).Children.Select(x => int.Parse(x.ToString())).ToList();
-		if (node["missionWeights"] is YamlNode weights1)
-		{
-			foreach (var nn in ((YamlMappingNode)weights1).Children)
-			{
-				WeightedOptions nw = new WeightedOptions();
-				nw.load(nn.Value);
-				_missionWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
-			}
-		}
-		if (node["raceWeights"] is YamlNode weights2)
-		{
-			foreach (var nn in ((YamlMappingNode)weights2).Children)
-			{
-				WeightedOptions nw = new WeightedOptions();
-				nw.load(nn.Value);
-				_raceWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
-			}
-		}
-		if (node["regionWeights"] is YamlNode weights3)
-		{
-			foreach (var nn in ((YamlMappingNode)weights3).Children)
-			{
-				WeightedOptions nw = new WeightedOptions();
-				nw.load(nn.Value);
-				_regionWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
-			}
-		}
-		_researchTriggers = ((YamlMappingNode)node["researchTriggers"]).Children.ToDictionary(x => x.Key.ToString(), x => bool.Parse(x.Value.ToString()));
-		_useTable = bool.Parse(node["useTable"].ToString());
-		if (string.IsNullOrEmpty(_varName) && (_maxRuns > 0 || _avoidRepeats > 0))
-		{
-			throw new Exception("Error in mission script: " + _type + ": no varName provided for a script with maxRuns or repeatAvoidance.");
-		}
-	}
+        if (node["missionWeights"] is YamlNode weights1)
+        {
+            foreach (var nn in ((YamlMappingNode)weights1).Children)
+            {
+                WeightedOptions nw = new WeightedOptions();
+                nw.load(nn.Value);
+                _missionWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
+            }
+        }
+        if (node["raceWeights"] is YamlNode weights2)
+        {
+            foreach (var nn in ((YamlMappingNode)weights2).Children)
+            {
+                WeightedOptions nw = new WeightedOptions();
+                nw.load(nn.Value);
+                _raceWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
+            }
+        }
+        if (node["regionWeights"] is YamlNode weights3)
+        {
+            foreach (var nn in ((YamlMappingNode)weights3).Children)
+            {
+                WeightedOptions nw = new WeightedOptions();
+                nw.load(nn.Value);
+                _regionWeights.Add(KeyValuePair.Create(uint.Parse(nn.Key.ToString()), nw));
+            }
+        }
+        _researchTriggers = ((YamlMappingNode)node["researchTriggers"]).Children.ToDictionary(x => x.Key.ToString(), x => bool.Parse(x.Value.ToString()));
+        _useTable = bool.Parse(node["useTable"].ToString());
+        if (string.IsNullOrEmpty(_varName) && (_maxRuns > 0 || _avoidRepeats > 0))
+        {
+            throw new Exception("Error in mission script: " + _type + ": no varName provided for a script with maxRuns or repeatAvoidance.");
+        }
+    }
 
-	/**
+    /**
 	 * @return the first month this script should run.
 	 */
-	internal int getFirstMonth() =>
-		_firstMonth;
+    internal int getFirstMonth() =>
+        _firstMonth;
 
-	/**
+    /**
 	 * @return the last month this script should run.
 	 */
-	internal int getLastMonth() =>
-		_lastMonth;
+    internal int getLastMonth() =>
+        _lastMonth;
 
-	/**
+    /**
 	 * @return the maximum runs for scripts tracking our varName.
 	 */
-	internal int getMaxRuns() =>
-		_maxRuns;
+    internal int getMaxRuns() =>
+        _maxRuns;
 
-	/**
+    /**
 	 * @return the label this command uses for conditional tracking.
 	 */
-	internal int getLabel() =>
-		_label;
+    internal int getLabel() =>
+        _label;
 
-	/**
+    /**
 	 * @return the list of conditions that govern execution of this command.
 	 */
-	internal List<int> getConditionals() =>
-		_conditionals;
+    internal List<int> getConditionals() =>
+        _conditionals;
 
-	/**
+    /**
 	 * @return a list of research topics that govern execution of this script.
 	 */
-	internal Dictionary<string, bool> getResearchTriggers() =>
-		_researchTriggers;
+    internal Dictionary<string, bool> getResearchTriggers() =>
+        _researchTriggers;
 
-	/**
+    /**
 	 * @return the minimum difficulty for this script to run.
 	 */
-	internal int getMinDifficulty() =>
-		_minDifficulty;
+    internal int getMinDifficulty() =>
+        _minDifficulty;
 
-	/**
+    /**
 	 * @return the name of the variable we want to use to track in the saved game.
 	 */
-	internal string getVarName() =>
-		_varName;
+    internal string getVarName() =>
+        _varName;
 
-	/**
+    /**
 	 * Gets the name of this command.
 	 * @return the name of the command.
 	 */
-	internal string getType() =>
-		_type;
+    internal string getType() =>
+        _type;
 
-	/**
+    /**
 	 * @return the odds of this command's execution.
 	 */
-	internal int getExecutionOdds() =>
-		_executionOdds;
+    internal int getExecutionOdds() =>
+        _executionOdds;
 
-	/**
+    /**
 	 * @return if this is a mission site type command or not.
 	 */
-	internal bool getSiteType() =>
-		_siteType;
+    internal bool getSiteType() =>
+        _siteType;
 
-	/**
+    /**
 	 * Chooses one of the available races, regions, or missions for this command.
 	 * @param monthsPassed The number of months that have passed in the game world.
 	 * @param type the type of thing we want to generate, region, mission or race.
 	 * @return The string id of the thing.
 	 */
-	internal string generate(uint monthsPassed, GenerationType type)
-	{
-		List<KeyValuePair<uint, WeightedOptions>> rw;
-		if (type == GenerationType.GEN_RACE)
-			rw = _raceWeights;
-		else if (type == GenerationType.GEN_REGION)
-			rw = _regionWeights;
-		else
-			rw = _missionWeights;
-		int i = rw.Count - 1;
-		while (monthsPassed < rw[i].Key)
-			--i;
-		return rw[i].Value.choose();
+    internal string generate(uint monthsPassed, GenerationType type)
+    {
+        List<KeyValuePair<uint, WeightedOptions>> rw;
+        if (type == GenerationType.GEN_RACE)
+            rw = _raceWeights;
+        else if (type == GenerationType.GEN_REGION)
+            rw = _regionWeights;
+        else
+            rw = _missionWeights;
+        int i = rw.Count - 1;
+        while (monthsPassed < rw[i].Key)
+            --i;
+        return rw[i].Value.choose();
     }
 
-	/**
+    /**
 	 * @param month the month for which we want info.
 	 * @return a list of the possible missions for the given month.
 	 */
-	internal List<string> getMissionTypes(int month)
-	{
-		var missions = new List<string>();
-		int rw = _missionWeights.Count - 1;
-		while (month < (int)(_missionWeights[rw].Key))
-		{
-			--rw;
-			if (rw < 0)
-			{
-				++rw;
-				break;
-			}
-		}
-		foreach (var i in _missionWeights[rw].Value.getNames())
-		{
-			missions.Add(i);
-		}
-		return missions;
-	}
+    internal List<string> getMissionTypes(int month)
+    {
+        var missions = new List<string>();
+        int rw = _missionWeights.Count - 1;
+        while (month < (int)(_missionWeights[rw].Key))
+        {
+            --rw;
+            if (rw < 0)
+            {
+                ++rw;
+                break;
+            }
+        }
+        foreach (var i in _missionWeights[rw].Value.getNames())
+        {
+            missions.Add(i);
+        }
+        return missions;
+    }
 
-	/**
+    /**
 	 * @param month the month for which we want info.
 	 * @return the list of regions we have to pick from this month.
 	 */
-	internal List<string> getRegions(int month)
-	{
-		var regions = new List<string>();
-		int rw = _regionWeights.Count - 1;
-		while (month < (int)(_regionWeights[rw].Key))
-		{
-			--rw;
-			if (rw < 0)
-			{
-				++rw;
-				break;
-			}
-		}
-		foreach (var i in _regionWeights[rw].Value.getNames())
-		{
-			regions.Add(i);
-		}
-		return regions;
-	}
+    internal List<string> getRegions(int month)
+    {
+        var regions = new List<string>();
+        int rw = _regionWeights.Count - 1;
+        while (month < (int)(_regionWeights[rw].Key))
+        {
+            --rw;
+            if (rw < 0)
+            {
+                ++rw;
+                break;
+            }
+        }
+        foreach (var i in _regionWeights[rw].Value.getNames())
+        {
+            regions.Add(i);
+        }
+        return regions;
+    }
 
-	/**
+    /**
 	 * @return the odds of this command targetting a base.
 	 */
-	internal int getTargetBaseOdds() =>
-		_targetBaseOdds;
+    internal int getTargetBaseOdds() =>
+        _targetBaseOdds;
 
-	/**
+    /**
 	 * @return if this command uses a weighted distribution to pick a region.
 	 */
-	internal bool hasRegionWeights() =>
-		_regionWeights.Any();
+    internal bool hasRegionWeights() =>
+        _regionWeights.Any();
 
-	/**
+    /**
 	 * @return the number of sites to avoid repeating missions against.
 	 */
-	internal int getRepeatAvoidance() =>
-		_avoidRepeats;
+    internal int getRepeatAvoidance() =>
+        _avoidRepeats;
 
-	/**
+    /**
 	 * @return if this command uses a weighted distribution to pick a mission.
 	 */
-	internal bool hasMissionWeights() =>
-		_missionWeights.Any();
+    internal bool hasMissionWeights() =>
+        _missionWeights.Any();
 
-	/**
+    /**
 	 * @return if this command uses a weighted distribution to pick a race.
 	 */
-	internal bool hasRaceWeights() =>
-		_raceWeights.Any();
+    internal bool hasRaceWeights() =>
+        _raceWeights.Any();
 
-	/**
+    /**
 	 * @return the fixed delay on spawning the first wave (if any) to override whatever's written in the mission definition.
 	 */
-	internal int getDelay() =>
-		_delay;
+    internal int getDelay() =>
+        _delay;
 
-	/**
+    /**
 	 * @return if this command should remove the mission it generates from the strategy table.
 	 */
-	internal bool getUseTable() =>
-		_useTable;
+    internal bool getUseTable() =>
+        _useTable;
 }

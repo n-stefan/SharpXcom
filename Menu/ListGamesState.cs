@@ -21,9 +21,9 @@ namespace SharpXcom.Menu;
 
 struct compareSaveName : IComparer<SaveInfo>
 {
-	bool _reverse;
+    bool _reverse;
 
-	internal compareSaveName(bool reverse) =>
+    internal compareSaveName(bool reverse) =>
         _reverse = reverse;
 
     public int Compare(SaveInfo a, SaveInfo b)
@@ -41,19 +41,19 @@ struct compareSaveName : IComparer<SaveInfo>
 
 struct compareSaveTimestamp : IComparer<SaveInfo>
 {
-	bool _reverse;
+    bool _reverse;
 
     internal compareSaveTimestamp(bool reverse) =>
         _reverse = reverse;
 
     public int Compare(SaveInfo a, SaveInfo b)
-	{
-		if (a.reserved == b.reserved)
-		{
+    {
+        if (a.reserved == b.reserved)
+        {
             return (int)(a.timestamp - b.timestamp);
-		}
-		else
-		{
+        }
+        else
+        {
             return _reverse ? (b.reserved ? 1 : -1) : (a.reserved ? 1 : -1);
         }
     }
@@ -250,23 +250,23 @@ internal class ListGamesState : State
      */
     void updateArrows()
     {
-	    _sortName.setShape(ArrowShape.ARROW_NONE);
-	    _sortDate.setShape(ArrowShape.ARROW_NONE);
-	    switch (Options.saveOrder)
-	    {
-	        case SaveSort.SORT_NAME_ASC:
-		        _sortName.setShape(ArrowShape.ARROW_SMALL_UP);
-		        break;
-	        case SaveSort.SORT_NAME_DESC:
-		        _sortName.setShape(ArrowShape.ARROW_SMALL_DOWN);
-		        break;
-	        case SaveSort.SORT_DATE_ASC:
-		        _sortDate.setShape(ArrowShape.ARROW_SMALL_UP);
-		        break;
-	        case SaveSort.SORT_DATE_DESC:
-		        _sortDate.setShape(ArrowShape.ARROW_SMALL_DOWN);
-		        break;
-	    }
+        _sortName.setShape(ArrowShape.ARROW_NONE);
+        _sortDate.setShape(ArrowShape.ARROW_NONE);
+        switch (Options.saveOrder)
+        {
+            case SaveSort.SORT_NAME_ASC:
+                _sortName.setShape(ArrowShape.ARROW_SMALL_UP);
+                break;
+            case SaveSort.SORT_NAME_DESC:
+                _sortName.setShape(ArrowShape.ARROW_SMALL_DOWN);
+                break;
+            case SaveSort.SORT_DATE_ASC:
+                _sortDate.setShape(ArrowShape.ARROW_SMALL_UP);
+                break;
+            case SaveSort.SORT_DATE_DESC:
+                _sortDate.setShape(ArrowShape.ARROW_SMALL_DOWN);
+                break;
+        }
     }
 
     /**
@@ -317,25 +317,25 @@ internal class ListGamesState : State
      */
     internal override void init()
     {
-	    base.init();
+        base.init();
 
-	    if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
-	    {
-		    applyBattlescapeTheme();
-	    }
+        if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
+        {
+            applyBattlescapeTheme();
+        }
 
-	    try
-	    {
-		    _saves = SavedGame.getList(_game.getLanguage(), _autoquick);
-		    _lstSaves.clearList();
-		    sortList(Options.saveOrder);
-	    }
-	    catch (Exception e)
-	    {
+        try
+        {
+            _saves = SavedGame.getList(_game.getLanguage(), _autoquick);
+            _lstSaves.clearList();
+            sortList(Options.saveOrder);
+        }
+        catch (Exception e)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {e.Message}");
-	    }
+        }
     }
 
     protected void disableSort() =>
-	    _sortable = false;
+        _sortable = false;
 }

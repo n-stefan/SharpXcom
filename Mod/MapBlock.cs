@@ -54,67 +54,67 @@ internal class MapBlock
      */
     ~MapBlock() { }
 
-	/**
+    /**
 	 * Loads the map block from a YAML file.
 	 * @param node YAML node.
 	 */
-	internal void load(YamlNode node)
-	{
-		_name = node["name"].ToString();
-		_size_x = int.Parse(node["width"].ToString());
-		_size_y = int.Parse(node["length"].ToString());
-		_size_z = int.Parse(node["height"].ToString());
-		if ((_size_x % 10) != 0 || (_size_y % 10) != 0)
-		{
-			string ss = $"Error: MapBlock {_name}: Size must be divisible by ten";
-			throw new Exception(ss);
-		}
-		if (node["groups"] is YamlSequenceNode map1)
-		{
-			_groups.Clear();
-			if (map1.NodeType == YamlNodeType.Sequence)
-			{
+    internal void load(YamlNode node)
+    {
+        _name = node["name"].ToString();
+        _size_x = int.Parse(node["width"].ToString());
+        _size_y = int.Parse(node["length"].ToString());
+        _size_z = int.Parse(node["height"].ToString());
+        if ((_size_x % 10) != 0 || (_size_y % 10) != 0)
+        {
+            string ss = $"Error: MapBlock {_name}: Size must be divisible by ten";
+            throw new Exception(ss);
+        }
+        if (node["groups"] is YamlSequenceNode map1)
+        {
+            _groups.Clear();
+            if (map1.NodeType == YamlNodeType.Sequence)
+            {
                 _groups = map1.Children.Select(x => int.Parse(x.ToString())).ToList();
-			}
-			else
-			{
-				_groups.Add(int.Parse(map1.ToString()));
-			}
-		}
-		if (node["revealedFloors"] is YamlSequenceNode map2)
-		{
-			_revealedFloors.Clear();
-			if (map2.NodeType == YamlNodeType.Sequence)
-			{
+            }
+            else
+            {
+                _groups.Add(int.Parse(map1.ToString()));
+            }
+        }
+        if (node["revealedFloors"] is YamlSequenceNode map2)
+        {
+            _revealedFloors.Clear();
+            if (map2.NodeType == YamlNodeType.Sequence)
+            {
                 _revealedFloors = map2.Children.Select(x => int.Parse(x.ToString())).ToList();
-			}
-			else
-			{
-				_revealedFloors.Add(int.Parse(map2.ToString()));
-			}
-		}
+            }
+            else
+            {
+                _revealedFloors.Add(int.Parse(map2.ToString()));
+            }
+        }
         _items = new Dictionary<string, List<Position>>();
         foreach (var i in ((YamlMappingNode)node["items"]).Children)
         {
             var key = i.Key.ToString();
             var value = ((YamlSequenceNode)i.Value).Children.Select(x => Position.decode(x)).ToList();
-			_items.Add(key, value);
+            _items.Add(key, value);
         }
-	}
+    }
 
-	/**
+    /**
 	 * Gets the MapBlock size x.
 	 * @return The size x in tiles.
 	 */
-	internal int getSizeX() =>
-		_size_x;
+    internal int getSizeX() =>
+        _size_x;
 
-	/**
+    /**
 	 * Gets the MapBlock size y.
 	 * @return The size y in tiles.
 	 */
-	internal int getSizeY() =>
-		_size_y;
+    internal int getSizeY() =>
+        _size_y;
 
     /**
      * Gets the type of mapblock.
@@ -130,12 +130,12 @@ internal class MapBlock
     internal void setSizeZ(int size_z) =>
         _size_z = size_z;
 
-	/**
+    /**
 	 * Gets the MapBlock name (string).
 	 * @return The name.
 	 */
-	internal string getName() =>
-		_name;
+    internal string getName() =>
+        _name;
 
     /**
      * Gets if this floor should be revealed or not.
@@ -150,10 +150,10 @@ internal class MapBlock
     internal Dictionary<string, List<Position>> getItems() =>
         _items;
 
-	/**
+    /**
 	 * Gets the MapBlock size z.
 	 * @return The size z.
 	 */
-	internal int getSizeZ() =>
-		_size_z;
+    internal int getSizeZ() =>
+        _size_z;
 }

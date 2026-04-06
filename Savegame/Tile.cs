@@ -117,7 +117,7 @@ internal class Tile
      * @return preview
      */
     internal int getPreview() =>
-	    _preview;
+        _preview;
 
     /**
      * set the direction used for path previewing.
@@ -153,13 +153,13 @@ internal class Tile
      */
     internal int getTerrainLevel()
     {
-	    int level = 0;
+        int level = 0;
 
-	    if (_objects[(int)TilePart.O_FLOOR] != null)
-		    level = _objects[(int)TilePart.O_FLOOR].getTerrainLevel();
-	    // whichever's higher, but not the sum.
-	    if (_objects[(int)TilePart.O_OBJECT] != null)
-		    level = Math.Min(_objects[(int)TilePart.O_OBJECT].getTerrainLevel(), level);
+        if (_objects[(int)TilePart.O_FLOOR] != null)
+            level = _objects[(int)TilePart.O_FLOOR].getTerrainLevel();
+        // whichever's higher, but not the sum.
+        if (_objects[(int)TilePart.O_OBJECT] != null)
+            level = Math.Min(_objects[(int)TilePart.O_OBJECT].getTerrainLevel(), level);
 
         return level;
     }
@@ -170,7 +170,7 @@ internal class Tile
 	 * @return pointer to mapdata
 	 */
     internal MapData getMapData(TilePart part) =>
-		_objects[(int)part];
+        _objects[(int)part];
 
     /**
      * get the MapData references of part 0 to 3.
@@ -181,8 +181,8 @@ internal class Tile
      */
     internal void getMapData(out int mapDataID, out int mapDataSetID, TilePart part)
     {
-	    mapDataID = _mapDataID[(int)part];
-	    mapDataSetID = _mapDataSetID[(int)part];
+        mapDataID = _mapDataID[(int)part];
+        mapDataSetID = _mapDataSetID[(int)part];
     }
 
     /**
@@ -204,28 +204,28 @@ internal class Tile
 	 * @return position
 	 */
     internal Position getPosition() =>
-		_pos;
+        _pos;
 
     /**
 	 * Get the (alive) unit on this tile.
 	 * @return BattleUnit.
 	 */
     internal BattleUnit getUnit() =>
-		_unit;
+        _unit;
 
     /**
      * Get the amount of turns this tile is on fire. 0 = no fire.
      * @return fire : amount of turns this tile is on fire.
      */
     internal int getFire() =>
-	    _fire;
+        _fire;
 
     /**
      * Get the amount of turns this tile is smoking. 0 = no smoke.
      * @return smoke : amount of turns this tile is smoking.
      */
     internal int getSmoke() =>
-	    _smoke;
+        _smoke;
 
     /**
      * Whether this tile has a floor or not. If no object defined as floor, it has no floor.
@@ -234,8 +234,8 @@ internal class Tile
      */
     internal bool hasNoFloor(Tile tileBelow)
     {
-	    if (tileBelow != null && tileBelow.getTerrainLevel() == -24)
-		    return false;
+        if (tileBelow != null && tileBelow.getTerrainLevel() == -24)
+            return false;
         if (_objects[(int)TilePart.O_FLOOR] != null)
             return _objects[(int)TilePart.O_FLOOR].isNoFloor();
         else
@@ -249,10 +249,10 @@ internal class Tile
 	 * @return bool
 	 */
     internal bool isUfoDoorOpen(TilePart tp)
-	{
+    {
         int part = (int)tp;
-		return (_objects[part] != null && _objects[part].isUFODoor() && _currentFrame[part] != 0);
-	}
+        return (_objects[part] != null && _objects[part].isUFODoor() && _currentFrame[part] != 0);
+    }
 
     /**
      * Gets the TU cost to walk over a certain part of the tile.
@@ -262,16 +262,16 @@ internal class Tile
      */
     internal int getTUCost(int part, MovementType movementType)
     {
-	    if (_objects[part] != null)
-	    {
-		    if (_objects[part].isUFODoor() && _currentFrame[part] > 1)
-			    return 0;
-		    if (part == (int)TilePart.O_OBJECT && _objects[part].getBigWall() >= 4)
-			    return 0;
-		    return _objects[part].getTUCost(movementType);
-	    }
-	    else
-		    return 0;
+        if (_objects[part] != null)
+        {
+            if (_objects[part].isUFODoor() && _currentFrame[part] > 1)
+                return 0;
+            if (part == (int)TilePart.O_OBJECT && _objects[part].getBigWall() >= 4)
+                return 0;
+            return _objects[part].getTUCost(movementType);
+        }
+        else
+            return 0;
     }
 
     /**
@@ -358,13 +358,13 @@ internal class Tile
      */
     internal int getShade()
     {
-	    int light = 0;
+        int light = 0;
 
-	    for (int layer = 0; layer < LIGHTLAYERS; layer++)
-	    {
-		    if (_light[layer] > light)
-			    light = _light[layer];
-	    }
+        for (int layer = 0; layer < LIGHTLAYERS; layer++)
+        {
+            if (_light[layer] > light)
+                light = _light[layer];
+        }
 
         return Math.Max(0, 15 - light);
     }
@@ -381,10 +381,10 @@ internal class Tile
      */
     internal bool isBigWall()
     {
-	    if (_objects[(int)TilePart.O_OBJECT] != null)
-		    return (_objects[(int)TilePart.O_OBJECT].getBigWall() != 0);
-	    else
-		    return false;
+        if (_objects[(int)TilePart.O_OBJECT] != null)
+            return (_objects[(int)TilePart.O_OBJECT].getBigWall() != 0);
+        else
+            return false;
     }
 
     /**
@@ -392,7 +392,7 @@ internal class Tile
      * @return bool True if there is nothing but air on this tile.
      */
     internal bool isVoid() =>
-	    _objects[0] == null && _objects[1] == null && _objects[2] == null && _objects[3] == null && _smoke == 0 && !_inventory.Any();
+        _objects[0] == null && _objects[1] == null && _objects[2] == null && _objects[3] == null && _smoke == 0 && !_inventory.Any();
 
     /**
      * Saves the tile to binary.
@@ -400,21 +400,21 @@ internal class Tile
      */
     internal void saveBinary(ref Span<byte> buffer)
     {
-	    serializeInt(ref buffer, serializationKey._mapDataID, _mapDataID[0]);
-	    serializeInt(ref buffer, serializationKey._mapDataID, _mapDataID[1]);
-	    serializeInt(ref buffer, serializationKey._mapDataID, _mapDataID[2]);
-	    serializeInt(ref buffer, serializationKey._mapDataID, _mapDataID[3]);
-	    serializeInt(ref buffer, serializationKey._mapDataSetID, _mapDataSetID[0]);
-	    serializeInt(ref buffer, serializationKey._mapDataSetID, _mapDataSetID[1]);
-	    serializeInt(ref buffer, serializationKey._mapDataSetID, _mapDataSetID[2]);
-	    serializeInt(ref buffer, serializationKey._mapDataSetID, _mapDataSetID[3]);
+        serializeInt(ref buffer, serializationKey._mapDataID, _mapDataID[0]);
+        serializeInt(ref buffer, serializationKey._mapDataID, _mapDataID[1]);
+        serializeInt(ref buffer, serializationKey._mapDataID, _mapDataID[2]);
+        serializeInt(ref buffer, serializationKey._mapDataID, _mapDataID[3]);
+        serializeInt(ref buffer, serializationKey._mapDataSetID, _mapDataSetID[0]);
+        serializeInt(ref buffer, serializationKey._mapDataSetID, _mapDataSetID[1]);
+        serializeInt(ref buffer, serializationKey._mapDataSetID, _mapDataSetID[2]);
+        serializeInt(ref buffer, serializationKey._mapDataSetID, _mapDataSetID[3]);
 
-	    serializeInt(ref buffer, serializationKey._smoke, _smoke);
-	    serializeInt(ref buffer, serializationKey._fire, _fire);
+        serializeInt(ref buffer, serializationKey._smoke, _smoke);
+        serializeInt(ref buffer, serializationKey._fire, _fire);
 
         byte boolFields = (byte)((_discovered[0] ? 1 : 0) + (_discovered[1] ? 2 : 0) + (_discovered[2] ? 4 : 0));
-	    boolFields = (byte)(boolFields | (isUfoDoorOpen(TilePart.O_WESTWALL) ? 8 : 0)); // west
-	    boolFields = (byte)(boolFields | (isUfoDoorOpen(TilePart.O_NORTHWALL) ? 0x10 : 0)); // north?
+        boolFields = (byte)(boolFields | (isUfoDoorOpen(TilePart.O_WESTWALL) ? 8 : 0)); // west
+        boolFields = (byte)(boolFields | (isUfoDoorOpen(TilePart.O_NORTHWALL) ? 0x10 : 0)); // north?
         serializeInt(ref buffer, serializationKey.boolFields, boolFields);
     }
 
@@ -423,7 +423,7 @@ internal class Tile
      * @return explosive
      */
     internal int getExplosive() =>
-	    _explosive;
+        _explosive;
 
     /**
      * Set a "virtual" explosive on this tile. We mark a tile this way to detonate it later.
@@ -468,13 +468,13 @@ internal class Tile
      */
     internal int getFuel()
     {
-	    int fuel = 0;
+        int fuel = 0;
 
-	    for (int i=0; i<4; ++i)
-		    if (_objects[i] != null && (_objects[i].getFuel() > fuel))
-			    fuel = _objects[i].getFuel();
+        for (int i = 0; i < 4; ++i)
+            if (_objects[i] != null && (_objects[i].getFuel() > fuel))
+                fuel = _objects[i].getFuel();
 
-	    return fuel;
+        return fuel;
     }
 
     /*
@@ -483,13 +483,13 @@ internal class Tile
      */
     internal int getFlammability()
     {
-	    int flam = 255;
+        int flam = 255;
 
-	    for (int i=0; i<4; ++i)
-		    if (_objects[i] != null && (_objects[i].getFlammable() < flam))
-			    flam = _objects[i].getFlammable();
+        for (int i = 0; i < 4; ++i)
+            if (_objects[i] != null && (_objects[i].getFlammable() < flam))
+                flam = _objects[i].getFlammable();
 
-	    return flam;
+        return flam;
     }
 
     /*
@@ -497,14 +497,14 @@ internal class Tile
      * @return Flammability : the lower the value, the higher the chance the tile/object catches fire.
      */
     internal int getFlammability(TilePart part) =>
-	    _objects[(int)part].getFlammable();
+        _objects[(int)part].getFlammable();
 
     /*
      * Fuel of particular part of the tile
      * @return how long to burn.
      */
     internal int getFuel(TilePart part) =>
-	    _objects[(int)part].getFuel();
+        _objects[(int)part].getFuel();
 
     /**
      * Destroy a part on this tile. We first remove the old object, then replace it with the destroyed one.
@@ -583,7 +583,7 @@ internal class Tile
      * @return overlap
      */
     internal int getOverlaps() =>
-	    _overlaps;
+        _overlaps;
 
     /**
      * Set the amount of turns this tile is smoking. 0 = no smoke.
@@ -591,26 +591,26 @@ internal class Tile
      */
     internal void addSmoke(int smoke)
     {
-	    if (_fire == 0)
-	    {
-		    if (_overlaps == 0)
-		    {
-			    _smoke = Math.Clamp(_smoke + smoke, 1, 15);
-		    }
-		    else
-		    {
-			    _smoke += smoke;
-		    }
-		    _animationOffset = RNG.generate(0,3);
-		    addOverlap();
-	    }
+        if (_fire == 0)
+        {
+            if (_overlaps == 0)
+            {
+                _smoke = Math.Clamp(_smoke + smoke, 1, 15);
+            }
+            else
+            {
+                _smoke += smoke;
+            }
+            _animationOffset = RNG.generate(0, 3);
+            addOverlap();
+        }
     }
 
     /**
      * set the danger flag on this tile.
      */
     internal void setDangerous(bool danger) =>
-	    _danger = danger;
+        _danger = danger;
 
     /*
      * Ignite starts fire on a tile, it will burn <fuel> rounds. Fuel of a tile is the highest fuel of its objects.
@@ -618,24 +618,24 @@ internal class Tile
      */
     internal void ignite(int power)
     {
-	    if (getFlammability() != 255)
-	    {
-		    power = power - (getFlammability() / 10) + 15;
-		    if (power < 0)
-		    {
-			    power = 0;
-		    }
-		    if (RNG.percent(power) && getFuel() != 0)
-		    {
-			    if (_fire == 0)
-			    {
-				    _smoke = 15 - Math.Clamp(getFlammability() / 10, 1, 12);
-				    _overlaps = 1;
-				    _fire = getFuel() + 1;
-				    _animationOffset = RNG.generate(0,3);
-			    }
-		    }
-	    }
+        if (getFlammability() != 255)
+        {
+            power = power - (getFlammability() / 10) + 15;
+            if (power < 0)
+            {
+                power = 0;
+            }
+            if (RNG.percent(power) && getFuel() != 0)
+            {
+                if (_fire == 0)
+                {
+                    _smoke = 15 - Math.Clamp(getFlammability() / 10, 1, 12);
+                    _overlaps = 1;
+                    _fire = getFuel() + 1;
+                    _animationOffset = RNG.generate(0, 3);
+                }
+            }
+        }
     }
 
     /**
@@ -645,65 +645,65 @@ internal class Tile
      */
     internal void prepareNewTurn(bool smokeDamage)
     {
-	    // we've received new smoke in this turn, but we're not on fire, average out the smoke.
-	    if ( _overlaps != 0 && _smoke != 0 && _fire == 0)
-	    {
-		    _smoke = Math.Clamp((_smoke / _overlaps) - 1, 0, 15);
-	    }
-	    // if we still have smoke/fire
-	    if (_smoke != 0)
-	    {
-		    if (_unit != null && !_unit.isOut())
-		    {
-			    if (_fire != 0)
-			    {
-				    // this is how we avoid hitting the same unit multiple times.
-				    if ((_unit.getArmor().getSize() == 1 || !_unit.tookFireDamage())
-					    //and avoid setting fire elementals on fire
-					    && _unit.getSpecialAbility() != (int)SpecialAbility.SPECAB_BURNFLOOR && _unit.getSpecialAbility() != (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE)
-				    {
-					    _unit.toggleFireDamage();
-					    // _smoke becomes our damage value
-					    _unit.damage(new Position(0, 0, 0), _smoke, ItemDamageType.DT_IN, true);
-					    // try to set the unit on fire.
-					    if (RNG.percent((int)(40 * _unit.getArmor().getDamageModifier(ItemDamageType.DT_IN))))
-					    {
-						    int burnTime = RNG.generate(0, (int)(5.0f * _unit.getArmor().getDamageModifier(ItemDamageType.DT_IN)));
-						    if (_unit.getFire() < burnTime)
-						    {
-							    _unit.setFire(burnTime);
-						    }
-					    }
-				    }
-			    }
-			    // no fire: must be smoke
-			    else
-			    {
-				    if (smokeDamage)
-				    {
-					    // try to knock this guy out.
-					    if (_unit.getArmor().getDamageModifier(ItemDamageType.DT_SMOKE) > 0.0 && _unit.getArmor().getSize() == 1)
-					    {
-						    _unit.damage(new Position(0,0,0), (_smoke / 4) + 1, ItemDamageType.DT_SMOKE, true);
-					    }
-				    }
-			    }
-		    }
-	    }
-	    _overlaps = 0;
+        // we've received new smoke in this turn, but we're not on fire, average out the smoke.
+        if (_overlaps != 0 && _smoke != 0 && _fire == 0)
+        {
+            _smoke = Math.Clamp((_smoke / _overlaps) - 1, 0, 15);
+        }
+        // if we still have smoke/fire
+        if (_smoke != 0)
+        {
+            if (_unit != null && !_unit.isOut())
+            {
+                if (_fire != 0)
+                {
+                    // this is how we avoid hitting the same unit multiple times.
+                    if ((_unit.getArmor().getSize() == 1 || !_unit.tookFireDamage())
+                        //and avoid setting fire elementals on fire
+                        && _unit.getSpecialAbility() != (int)SpecialAbility.SPECAB_BURNFLOOR && _unit.getSpecialAbility() != (int)SpecialAbility.SPECAB_BURN_AND_EXPLODE)
+                    {
+                        _unit.toggleFireDamage();
+                        // _smoke becomes our damage value
+                        _unit.damage(new Position(0, 0, 0), _smoke, ItemDamageType.DT_IN, true);
+                        // try to set the unit on fire.
+                        if (RNG.percent((int)(40 * _unit.getArmor().getDamageModifier(ItemDamageType.DT_IN))))
+                        {
+                            int burnTime = RNG.generate(0, (int)(5.0f * _unit.getArmor().getDamageModifier(ItemDamageType.DT_IN)));
+                            if (_unit.getFire() < burnTime)
+                            {
+                                _unit.setFire(burnTime);
+                            }
+                        }
+                    }
+                }
+                // no fire: must be smoke
+                else
+                {
+                    if (smokeDamage)
+                    {
+                        // try to knock this guy out.
+                        if (_unit.getArmor().getDamageModifier(ItemDamageType.DT_SMOKE) > 0.0 && _unit.getArmor().getSize() == 1)
+                        {
+                            _unit.damage(new Position(0, 0, 0), (_smoke / 4) + 1, ItemDamageType.DT_SMOKE, true);
+                        }
+                    }
+                }
+            }
+        }
+        _overlaps = 0;
     }
 
     /**
      * increment the overlap value on this tile.
      */
     internal void addOverlap() =>
-	    ++_overlaps;
+        ++_overlaps;
 
     /**
      * resets obstacle flag for all parts of the tile.
      */
     internal void resetObstacle() =>
-	    _obstacle = 0;
+        _obstacle = 0;
 
     /**
      * Open a door on this tile.
@@ -714,33 +714,33 @@ internal class Tile
      */
     internal int openDoor(TilePart part, BattleUnit unit = null, BattleActionType reserve = BattleActionType.BA_NONE)
     {
-	    if (_objects[(int)part] == null) return -1;
+        if (_objects[(int)part] == null) return -1;
 
-	    if (_objects[(int)part].isDoor())
-	    {
-		    if (unit != null && unit.getArmor().getSize() > 1) // don't allow double-wide units to open swinging doors due to engine limitations
-			    return -1;
-		    if (unit != null && unit.getTimeUnits() < _objects[(int)part].getTUCost(unit.getMovementType()) + unit.getActionTUs(reserve, unit.getMainHandWeapon(false)))
-			    return 4;
-		    if (_unit != null && _unit != unit && _unit.getPosition() != getPosition())
-			    return -1;
-		    setMapData(_objects[(int)part].getDataset().getObject((uint)_objects[(int)part].getAltMCD()), _objects[(int)part].getAltMCD(), _mapDataSetID[(int)part],
-				       _objects[(int)part].getDataset().getObject((uint)_objects[(int)part].getAltMCD()).getObjectType());
-		    setMapData(null, -1, -1, part);
-		    return 0;
-	    }
-	    if (_objects[(int)part].isUFODoor() && _currentFrame[(int)part] == 0) // ufo door part 0 - door is closed
-	    {
-		    if (unit != null && unit.getTimeUnits() < _objects[(int)part].getTUCost(unit.getMovementType()) + unit.getActionTUs(reserve, unit.getMainHandWeapon(false)))
-			    return 4;
-		    _currentFrame[(int)part] = 1; // start opening door
-		    return 1;
-	    }
-	    if (_objects[(int)part].isUFODoor() && _currentFrame[(int)part] != 7) // ufo door != part 7 - door is still opening
-	    {
-		    return 3;
-	    }
-	    return -1;
+        if (_objects[(int)part].isDoor())
+        {
+            if (unit != null && unit.getArmor().getSize() > 1) // don't allow double-wide units to open swinging doors due to engine limitations
+                return -1;
+            if (unit != null && unit.getTimeUnits() < _objects[(int)part].getTUCost(unit.getMovementType()) + unit.getActionTUs(reserve, unit.getMainHandWeapon(false)))
+                return 4;
+            if (_unit != null && _unit != unit && _unit.getPosition() != getPosition())
+                return -1;
+            setMapData(_objects[(int)part].getDataset().getObject((uint)_objects[(int)part].getAltMCD()), _objects[(int)part].getAltMCD(), _mapDataSetID[(int)part],
+                       _objects[(int)part].getDataset().getObject((uint)_objects[(int)part].getAltMCD()).getObjectType());
+            setMapData(null, -1, -1, part);
+            return 0;
+        }
+        if (_objects[(int)part].isUFODoor() && _currentFrame[(int)part] == 0) // ufo door part 0 - door is closed
+        {
+            if (unit != null && unit.getTimeUnits() < _objects[(int)part].getTUCost(unit.getMovementType()) + unit.getActionTUs(reserve, unit.getMainHandWeapon(false)))
+                return 4;
+            _currentFrame[(int)part] = 1; // start opening door
+            return 1;
+        }
+        if (_objects[(int)part].isUFODoor() && _currentFrame[(int)part] != 7) // ufo door != part 7 - door is still opening
+        {
+            return 3;
+        }
+        return -1;
     }
 
     /**
@@ -748,7 +748,7 @@ internal class Tile
      * @return the danger flag for this tile.
      */
     internal bool getDangerous() =>
-	    _danger;
+        _danger;
 
     /**
      * damage terrain - check against armor
@@ -759,10 +759,10 @@ internal class Tile
      */
     internal bool damage(TilePart part, int power, SpecialTileType type)
     {
-	    bool objective = false;
-	    if (power >= _objects[(int)part].getArmor())
-		    objective = destroy(part, type);
-	    return objective;
+        bool objective = false;
+        if (power >= _objects[(int)part].getArmor())
+            objective = destroy(part, type);
+        return objective;
     }
 
     /**
@@ -770,21 +770,21 @@ internal class Tile
      * @return explosive
      */
     internal int getExplosiveType() =>
-	    _explosiveType;
+        _explosiveType;
 
     /**
      * Get the tile visible flag.
      * @return visibility
      */
     internal int getVisible() =>
-	    _visible;
+        _visible;
 
     /**
      * adds a particle to this tile's internal storage buffer.
      * @param particle the particle to add.
      */
     internal void addParticle(Particle particle) =>
-	    _particles.Add(particle);
+        _particles.Add(particle);
 
     /**
      * Gets the tile's footstep sound.
@@ -793,16 +793,16 @@ internal class Tile
      */
     internal int getFootstepSound(Tile tileBelow)
     {
-	    int sound = -1;
+        int sound = -1;
 
-	    if (_objects[(int)TilePart.O_FLOOR] != null)
-		    sound = _objects[(int)TilePart.O_FLOOR].getFootstepSound();
-	    if (_objects[(int)TilePart.O_OBJECT] != null && _objects[(int)TilePart.O_OBJECT].getBigWall() <= 1 && _objects[(int)TilePart.O_OBJECT].getFootstepSound() > -1)
-		    sound = _objects[(int)TilePart.O_OBJECT].getFootstepSound();
-	    if (_objects[(int)TilePart.O_FLOOR] == null && _objects[(int)TilePart.O_OBJECT] == null && tileBelow != null && tileBelow.getTerrainLevel() == -24)
-		    sound = tileBelow.getMapData(TilePart.O_OBJECT).getFootstepSound();
+        if (_objects[(int)TilePart.O_FLOOR] != null)
+            sound = _objects[(int)TilePart.O_FLOOR].getFootstepSound();
+        if (_objects[(int)TilePart.O_OBJECT] != null && _objects[(int)TilePart.O_OBJECT].getBigWall() <= 1 && _objects[(int)TilePart.O_OBJECT].getFootstepSound() > -1)
+            sound = _objects[(int)TilePart.O_OBJECT].getFootstepSound();
+        if (_objects[(int)TilePart.O_FLOOR] == null && _objects[(int)TilePart.O_OBJECT] == null && tileBelow != null && tileBelow.getTerrainLevel() == -24)
+            sound = tileBelow.getMapData(TilePart.O_OBJECT).getFootstepSound();
 
-	    return sound;
+        return sound;
     }
 
     /**
@@ -811,7 +811,7 @@ internal class Tile
      * @return bool True = discovered the tile.
      */
     internal bool isDiscovered(int part) =>
-	    _discovered[part];
+        _discovered[part];
 
     /**
      * Animate the tile. This means to advance the current frame for every object.
@@ -820,38 +820,38 @@ internal class Tile
      */
     internal void animate()
     {
-	    int newframe;
-	    for (int i=0; i < 4; ++i)
-	    {
-		    if (_objects[i] != null)
-		    {
-			    if (_objects[i].isUFODoor() && (_currentFrame[i] == 0 || _currentFrame[i] == 7)) // ufo door is static
-			    {
-				    continue;
-			    }
-			    newframe = _currentFrame[i] + 1;
-			    if (_objects[i].isUFODoor() && _objects[i].getSpecialType() == SpecialTileType.START_POINT && newframe == 3)
-			    {
-				    newframe = 7;
-			    }
-			    if (newframe == 8)
-			    {
-				    newframe = 0;
-			    }
-			    _currentFrame[i] = newframe;
-		    }
-	    }
-	    for (var i = 0; i < _particles.Count;)
-	    {
-		    if (!_particles[i].animate())
-		    {
-			    _particles.RemoveAt(i);
-		    }
-		    else
-		    {
-			    ++i;
-		    }
-	    }
+        int newframe;
+        for (int i = 0; i < 4; ++i)
+        {
+            if (_objects[i] != null)
+            {
+                if (_objects[i].isUFODoor() && (_currentFrame[i] == 0 || _currentFrame[i] == 7)) // ufo door is static
+                {
+                    continue;
+                }
+                newframe = _currentFrame[i] + 1;
+                if (_objects[i].isUFODoor() && _objects[i].getSpecialType() == SpecialTileType.START_POINT && newframe == 3)
+                {
+                    newframe = 7;
+                }
+                if (newframe == 8)
+                {
+                    newframe = 0;
+                }
+                _currentFrame[i] = newframe;
+            }
+        }
+        for (var i = 0; i < _particles.Count;)
+        {
+            if (!_particles[i].animate())
+            {
+                _particles.RemoveAt(i);
+            }
+            else
+            {
+                ++i;
+            }
+        }
     }
 
     /**
@@ -859,7 +859,7 @@ internal class Tile
      * @return color
      */
     internal int getMarkerColor() =>
-	    _markerColor;
+        _markerColor;
 
     /**
      * Get the sprite of a certain part of the tile.
@@ -868,15 +868,15 @@ internal class Tile
      */
     internal Surface getSprite(int part)
     {
-	    if (_objects[part] == null)
-		    return null;
+        if (_objects[part] == null)
+            return null;
 
-	    return _objects[part].getDataset().getSurfaceset().getFrame(_objects[part].getSprite(_currentFrame[part]));
+        return _objects[part].getDataset().getSurfaceset().getFrame(_objects[part].getSprite(_currentFrame[part]));
     }
 
-	/// gets single obstacle flag.
-	internal bool getObstacle(int part) =>
-		(_obstacle & (1 << part)) != 0;
+    /// gets single obstacle flag.
+    internal bool getObstacle(int part) =>
+        (_obstacle & (1 << part)) != 0;
 
     /**
      * Get the number of frames the fire or smoke animation is off-sync.
@@ -884,21 +884,21 @@ internal class Tile
      * @return offset
      */
     internal int getAnimationOffset() =>
-	    _animationOffset;
+        _animationOffset;
 
     /**
      * get the number to be displayed for pathfinding preview.
      * @return marker
      */
     internal int getTUMarker() =>
-	    _TUMarker;
+        _TUMarker;
 
     /**
      * gets a pointer to this tile's particle array.
      * @return a pointer to the internal array of particles.
      */
     internal List<Particle> getParticleCloud() =>
-	    _particles;
+        _particles;
 
     /**
      * Get the topmost item sprite to draw on the battlescape.
@@ -906,22 +906,22 @@ internal class Tile
      */
     internal int getTopItemSprite()
     {
-	    int biggestWeight = -1;
-	    int biggestItem = -1;
-	    foreach (var i in _inventory)
-	    {
-		    if (i.getRules().getWeight() > biggestWeight)
-		    {
-			    biggestWeight = i.getRules().getWeight();
-			    biggestItem = i.getRules().getFloorSprite();
-		    }
-	    }
-	    return biggestItem;
+        int biggestWeight = -1;
+        int biggestItem = -1;
+        foreach (var i in _inventory)
+        {
+            if (i.getRules().getWeight() > biggestWeight)
+            {
+                biggestWeight = i.getRules().getWeight();
+                biggestItem = i.getRules().getFloorSprite();
+            }
+        }
+        return biggestItem;
     }
 
-	/// does the tile have obstacle flag set for at least one part?
-	internal bool isObstacle() =>
-		_obstacle != 0;
+    /// does the tile have obstacle flag set for at least one part?
+    internal bool isObstacle() =>
+        _obstacle != 0;
 
     /**
      * Load the tile from a YAML node.
@@ -929,33 +929,33 @@ internal class Tile
      */
     internal void load(YamlNode node)
     {
-	    //_position = node["position"].as<Position>(_position);
-	    for (int i = 0; i < 4; i++)
-	    {
-		    _mapDataID[i] = int.Parse(node["mapDataID"][i].ToString());
-		    _mapDataSetID[i] = int.Parse(node["mapDataSetID"][i].ToString());
-	    }
-	    _fire = int.Parse(node["fire"].ToString());
-	    _smoke = int.Parse(node["smoke"].ToString());
-	    if (node["discovered"] != null)
-	    {
-		    for (int i = 0; i < 3; i++)
-		    {
-			    _discovered[i] = bool.Parse(node["discovered"][i].ToString());
-		    }
-	    }
-	    if (node["openDoorWest"] != null)
-	    {
-		    _currentFrame[1] = 7;
-	    }
-	    if (node["openDoorNorth"] != null)
-	    {
-		    _currentFrame[2] = 7;
-	    }
-	    if (_fire != 0 || _smoke != 0)
-	    {
-		    _animationOffset = new Random().Next() % 4;
-	    }
+        //_position = node["position"].as<Position>(_position);
+        for (int i = 0; i < 4; i++)
+        {
+            _mapDataID[i] = int.Parse(node["mapDataID"][i].ToString());
+            _mapDataSetID[i] = int.Parse(node["mapDataSetID"][i].ToString());
+        }
+        _fire = int.Parse(node["fire"].ToString());
+        _smoke = int.Parse(node["smoke"].ToString());
+        if (node["discovered"] != null)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                _discovered[i] = bool.Parse(node["discovered"][i].ToString());
+            }
+        }
+        if (node["openDoorWest"] != null)
+        {
+            _currentFrame[1] = 7;
+        }
+        if (node["openDoorNorth"] != null)
+        {
+            _currentFrame[2] = 7;
+        }
+        if (_fire != 0 || _smoke != 0)
+        {
+            _animationOffset = new Random().Next() % 4;
+        }
     }
 
     /**
@@ -965,28 +965,28 @@ internal class Tile
      */
     internal void loadBinary(Span<byte> buffer, SerializationKey serKey)
     {
-	    _mapDataID[0] = unserializeInt(ref buffer, serKey._mapDataID);
-	    _mapDataID[1] = unserializeInt(ref buffer, serKey._mapDataID);
-	    _mapDataID[2] = unserializeInt(ref buffer, serKey._mapDataID);
-	    _mapDataID[3] = unserializeInt(ref buffer, serKey._mapDataID);
-	    _mapDataSetID[0] = unserializeInt(ref buffer, serKey._mapDataSetID);
-	    _mapDataSetID[1] = unserializeInt(ref buffer, serKey._mapDataSetID);
-	    _mapDataSetID[2] = unserializeInt(ref buffer, serKey._mapDataSetID);
-	    _mapDataSetID[3] = unserializeInt(ref buffer, serKey._mapDataSetID);
+        _mapDataID[0] = unserializeInt(ref buffer, serKey._mapDataID);
+        _mapDataID[1] = unserializeInt(ref buffer, serKey._mapDataID);
+        _mapDataID[2] = unserializeInt(ref buffer, serKey._mapDataID);
+        _mapDataID[3] = unserializeInt(ref buffer, serKey._mapDataID);
+        _mapDataSetID[0] = unserializeInt(ref buffer, serKey._mapDataSetID);
+        _mapDataSetID[1] = unserializeInt(ref buffer, serKey._mapDataSetID);
+        _mapDataSetID[2] = unserializeInt(ref buffer, serKey._mapDataSetID);
+        _mapDataSetID[3] = unserializeInt(ref buffer, serKey._mapDataSetID);
 
-	    _smoke = unserializeInt(ref buffer, serKey._smoke);
-	    _fire = unserializeInt(ref buffer, serKey._fire);
+        _smoke = unserializeInt(ref buffer, serKey._smoke);
+        _fire = unserializeInt(ref buffer, serKey._fire);
 
-	    byte boolFields = (byte)unserializeInt(ref buffer, serKey.boolFields);
-	    _discovered[0] = (boolFields & 1) != 0;
-	    _discovered[1] = (boolFields & 2) != 0;
-	    _discovered[2] = (boolFields & 4) != 0;
-	    _currentFrame[1] = (boolFields & 8) != 0 ? 7 : 0;
-	    _currentFrame[2] = (boolFields & 0x10) != 0 ? 7 : 0;
-	    if (_fire != 0 || _smoke != 0)
-	    {
-		    _animationOffset = new Random().Next() % 4;
-	    }
+        byte boolFields = (byte)unserializeInt(ref buffer, serKey.boolFields);
+        _discovered[0] = (boolFields & 1) != 0;
+        _discovered[1] = (boolFields & 2) != 0;
+        _discovered[2] = (boolFields & 4) != 0;
+        _currentFrame[1] = (boolFields & 8) != 0 ? 7 : 0;
+        _currentFrame[2] = (boolFields & 0x10) != 0 ? 7 : 0;
+        if (_fire != 0 || _smoke != 0)
+        {
+            _animationOffset = new Random().Next() % 4;
+        }
     }
 
     /**
@@ -995,35 +995,35 @@ internal class Tile
      */
     internal YamlNode save()
     {
-	    var node = new YamlMappingNode();
-	    node.Add("position", Position.encode(_pos));
+        var node = new YamlMappingNode();
+        node.Add("position", Position.encode(_pos));
         node.Add("mapDataID", new YamlSequenceNode());
         node.Add("mapDataSetID", new YamlSequenceNode());
         for (int i = 0; i < 4; i++)
-	    {
-		    ((YamlSequenceNode)node["mapDataID"]).Add(_mapDataID[i].ToString());
-		    ((YamlSequenceNode)node["mapDataSetID"]).Add(_mapDataSetID[i].ToString());
-	    }
-	    if (_smoke != 0)
-		    node.Add("smoke", _smoke.ToString());
-	    if (_fire != 0)
-		    node.Add("fire", _fire.ToString());
-	    if (_discovered[(int)TilePart.O_FLOOR] || _discovered[(int)TilePart.O_WESTWALL] || _discovered[(int)TilePart.O_NORTHWALL])
-	    {
+        {
+            ((YamlSequenceNode)node["mapDataID"]).Add(_mapDataID[i].ToString());
+            ((YamlSequenceNode)node["mapDataSetID"]).Add(_mapDataSetID[i].ToString());
+        }
+        if (_smoke != 0)
+            node.Add("smoke", _smoke.ToString());
+        if (_fire != 0)
+            node.Add("fire", _fire.ToString());
+        if (_discovered[(int)TilePart.O_FLOOR] || _discovered[(int)TilePart.O_WESTWALL] || _discovered[(int)TilePart.O_NORTHWALL])
+        {
             node.Add("discovered", new YamlSequenceNode());
-		    for (var i = TilePart.O_FLOOR; i <= TilePart.O_NORTHWALL; i++)
-		    {
-			    ((YamlSequenceNode)node["discovered"]).Add(_discovered[(int)i].ToString());
-		    }
-	    }
-	    if (isUfoDoorOpen(TilePart.O_WESTWALL))
-	    {
-		    node.Add("openDoorWest", "true");
-	    }
-	    if (isUfoDoorOpen(TilePart.O_NORTHWALL))
-	    {
-		    node.Add("openDoorNorth", "true");
-	    }
-	    return node;
+            for (var i = TilePart.O_FLOOR; i <= TilePart.O_NORTHWALL; i++)
+            {
+                ((YamlSequenceNode)node["discovered"]).Add(_discovered[(int)i].ToString());
+            }
+        }
+        if (isUfoDoorOpen(TilePart.O_WESTWALL))
+        {
+            node.Add("openDoorWest", "true");
+        }
+        if (isUfoDoorOpen(TilePart.O_NORTHWALL))
+        {
+            node.Add("openDoorNorth", "true");
+        }
+        return node;
     }
 }

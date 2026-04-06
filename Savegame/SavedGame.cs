@@ -50,10 +50,10 @@ struct SaveInfo
 
 struct PromotionInfo
 {
-	internal int totalCommanders;
-	internal int totalColonels;
-	internal int totalCaptains;
-	internal int totalSergeants;
+    internal int totalCommanders;
+    internal int totalColonels;
+    internal int totalCaptains;
+    internal int totalSergeants;
 }
 
 /**
@@ -98,7 +98,7 @@ internal class SavedGame
     Dictionary<string, int> _ids;
     List<RuleResearch> _discovered;
     List<RuleResearch> _poppedResearch;
-	List<Soldier> _soldiers;
+    List<Soldier> _soldiers;
 
     /**
      * Initializes a brand new saved game according to the specified difficulty.
@@ -191,152 +191,152 @@ internal class SavedGame
      * @return Tony Stark
      */
     internal bool isIronman() =>
-	    _ironman;
+        _ironman;
 
     /**
      * Returns the game's name shown in Save screens.
      * @return Save name.
      */
     internal string getName() =>
-	    _name;
+        _name;
 
     /**
 	 * Saves a saved game's contents to a YAML file.
 	 * @param filename YAML filename.
 	 */
     internal void save(string filename)
-	{
-		string savPath = Options.getMasterUserFolder() + filename;
-		string tmpPath = savPath + ".tmp";
-		try
-		{
-			using var tmp = new StreamWriter(tmpPath);
+    {
+        string savPath = Options.getMasterUserFolder() + filename;
+        string tmpPath = savPath + ".tmp";
+        try
+        {
+            using var tmp = new StreamWriter(tmpPath);
 
             var @out = new Emitter(tmp);
             var serializer = new Serializer();
 
-			// Saves the brief game info used in the saves list
-			var brief = new YamlMappingNode
-			{
-				{ "name", _name },
-				{ "version", SHARPXCOM_VERSION_SHORT },
-				{ "engine", SHARPXCOM_VERSION_ENGINE }
-			};
-			string git_sha = SHARPXCOM_VERSION_GIT;
-			if (!string.IsNullOrEmpty(git_sha) && git_sha[0] == '.')
-			{
-				git_sha = git_sha.Remove(0, 1);
-			}
-			brief.Add("build", git_sha);
-			brief.Add("time", _time.save());
-			if (_battleGame != null)
-			{
-				brief.Add("mission", _battleGame.getMissionType());
-				brief.Add("turn", _battleGame.getTurn().ToString());
-			}
+            // Saves the brief game info used in the saves list
+            var brief = new YamlMappingNode
+            {
+                { "name", _name },
+                { "version", SHARPXCOM_VERSION_SHORT },
+                { "engine", SHARPXCOM_VERSION_ENGINE }
+            };
+            string git_sha = SHARPXCOM_VERSION_GIT;
+            if (!string.IsNullOrEmpty(git_sha) && git_sha[0] == '.')
+            {
+                git_sha = git_sha.Remove(0, 1);
+            }
+            brief.Add("build", git_sha);
+            brief.Add("time", _time.save());
+            if (_battleGame != null)
+            {
+                brief.Add("mission", _battleGame.getMissionType());
+                brief.Add("turn", _battleGame.getTurn().ToString());
+            }
 
-			// only save mods that work with the current master
-			List<ModInfo> activeMods = Options.getActiveMods();
-			var modsList = new List<string>();
-			foreach (var i in activeMods)
-			{
-				modsList.Add(i.getId() + " ver: " + i.getVersion());
-			}
-			brief.Add("mods", new YamlSequenceNode(modsList.Select(x => new YamlScalarNode(x))));
-			if (_ironman)
-				brief.Add("ironman", _ironman.ToString());
+            // only save mods that work with the current master
+            List<ModInfo> activeMods = Options.getActiveMods();
+            var modsList = new List<string>();
+            foreach (var i in activeMods)
+            {
+                modsList.Add(i.getId() + " ver: " + i.getVersion());
+            }
+            brief.Add("mods", new YamlSequenceNode(modsList.Select(x => new YamlScalarNode(x))));
+            if (_ironman)
+                brief.Add("ironman", _ironman.ToString());
             serializer.Serialize(@out, brief);
-			// Saves the full game data to the save
+            // Saves the full game data to the save
             @out.Emit(new DocumentStart());
-			var node = new YamlMappingNode
-			{
-				{ "difficulty", ((int)_difficulty).ToString() },
-				{ "end", ((int)_end).ToString() },
-				{ "monthsPassed", _monthsPassed.ToString() },
-				{ "graphRegionToggles", _graphRegionToggles },
-				{ "graphCountryToggles", _graphCountryToggles },
-				{ "graphFinanceToggles", _graphFinanceToggles },
-				{ "rng", RNG.getSeed().ToString() },
-				{ "funds", new YamlSequenceNode(_funds.Select(x => new YamlScalarNode(x.ToString()))) },
-				{ "maintenance", new YamlSequenceNode(_maintenance.Select(x => new YamlScalarNode(x.ToString()))) },
-				{ "researchScores", new YamlSequenceNode(_researchScores.Select(x => new YamlScalarNode(x.ToString()))) },
-				{ "incomes", new YamlSequenceNode(_incomes.Select(x => new YamlScalarNode(x.ToString()))) },
-				{ "expenditures", new YamlSequenceNode(_expenditures.Select(x => new YamlScalarNode(x.ToString()))) },
-				{ "warned", _warned.ToString() },
-				{ "globeLon", serializeDouble(_globeLon) },
-				{ "globeLat", serializeDouble(_globeLat) },
-				{ "globeZoom", _globeZoom.ToString() },
-				{ "ids", new YamlSequenceNode(_ids.Select(x => new YamlMappingNode(x.Key, x.Value.ToString()))) },
-				{ "countries", new YamlSequenceNode(_countries.Select(x => x.save())) },
-				{ "regions", new YamlSequenceNode(_regions.Select(x => x.save())) },
-				{ "bases", new YamlSequenceNode(_bases.Select(x => x.save())) },
-				{ "waypoints", new YamlSequenceNode(_waypoints.Select(x => x.save())) },
-				{ "missionSites", new YamlSequenceNode(_missionSites.Select(x => x.save())) },
+            var node = new YamlMappingNode
+            {
+                { "difficulty", ((int)_difficulty).ToString() },
+                { "end", ((int)_end).ToString() },
+                { "monthsPassed", _monthsPassed.ToString() },
+                { "graphRegionToggles", _graphRegionToggles },
+                { "graphCountryToggles", _graphCountryToggles },
+                { "graphFinanceToggles", _graphFinanceToggles },
+                { "rng", RNG.getSeed().ToString() },
+                { "funds", new YamlSequenceNode(_funds.Select(x => new YamlScalarNode(x.ToString()))) },
+                { "maintenance", new YamlSequenceNode(_maintenance.Select(x => new YamlScalarNode(x.ToString()))) },
+                { "researchScores", new YamlSequenceNode(_researchScores.Select(x => new YamlScalarNode(x.ToString()))) },
+                { "incomes", new YamlSequenceNode(_incomes.Select(x => new YamlScalarNode(x.ToString()))) },
+                { "expenditures", new YamlSequenceNode(_expenditures.Select(x => new YamlScalarNode(x.ToString()))) },
+                { "warned", _warned.ToString() },
+                { "globeLon", serializeDouble(_globeLon) },
+                { "globeLat", serializeDouble(_globeLat) },
+                { "globeZoom", _globeZoom.ToString() },
+                { "ids", new YamlSequenceNode(_ids.Select(x => new YamlMappingNode(x.Key, x.Value.ToString()))) },
+                { "countries", new YamlSequenceNode(_countries.Select(x => x.save())) },
+                { "regions", new YamlSequenceNode(_regions.Select(x => x.save())) },
+                { "bases", new YamlSequenceNode(_bases.Select(x => x.save())) },
+                { "waypoints", new YamlSequenceNode(_waypoints.Select(x => x.save())) },
+                { "missionSites", new YamlSequenceNode(_missionSites.Select(x => x.save())) },
 				// Alien bases must be saved before alien missions.
 				{ "alienBases", new YamlSequenceNode(_alienBases.Select(x => x.save())) },
 				// Missions must be saved before UFOs, but after alien bases.
 				{ "alienMissions", new YamlSequenceNode(_activeMissions.Select(x => x.save())) },
 				// UFOs must be after missions
 				{ "ufos", new YamlSequenceNode(_ufos.Select(x => x.save(getMonthsPassed() == -1))) },
-				{ "discovered", new YamlSequenceNode(_discovered.Select(x => new YamlScalarNode(x.getName()))) },
-				{ "poppedResearch", new YamlSequenceNode(_poppedResearch.Select(x => new YamlScalarNode(x.getName()))) },
-				{ "alienStrategy", _alienStrategy.save() },
-				{ "deadSoldiers", new YamlSequenceNode(_deadSoldiers.Select(x => x.save())) }
-			};
-			if (Options.soldierDiaries)
-			{
-				node.Add("missionStatistics", new YamlSequenceNode(_missionStatistics.Select(x => x.save())));
-			}
-			if (_battleGame != null)
-			{
-				node.Add("battleGame", _battleGame.save());
-			}
+                { "discovered", new YamlSequenceNode(_discovered.Select(x => new YamlScalarNode(x.getName()))) },
+                { "poppedResearch", new YamlSequenceNode(_poppedResearch.Select(x => new YamlScalarNode(x.getName()))) },
+                { "alienStrategy", _alienStrategy.save() },
+                { "deadSoldiers", new YamlSequenceNode(_deadSoldiers.Select(x => x.save())) }
+            };
+            if (Options.soldierDiaries)
+            {
+                node.Add("missionStatistics", new YamlSequenceNode(_missionStatistics.Select(x => x.save())));
+            }
+            if (_battleGame != null)
+            {
+                node.Add("battleGame", _battleGame.save());
+            }
             serializer.Serialize(@out, node);
 
-			// Save to temp
-			// If this goes wrong, the original save will be safe
-			tmp.Close();
+            // Save to temp
+            // If this goes wrong, the original save will be safe
+            tmp.Close();
 
-			// If temp went fine, save for real
-			// If this goes wrong, they will have the temp
-			File.Copy(tmpPath, savPath);
-		}
-		catch (Exception)
-		{
-			throw new Exception("Failed to save " + filename);
-		}
+            // If temp went fine, save for real
+            // If this goes wrong, they will have the temp
+            File.Copy(tmpPath, savPath);
+        }
+        catch (Exception)
+        {
+            throw new Exception("Failed to save " + filename);
+        }
 
         // Everything went fine, delete the temp
         // We don't care if this fails
         CrossPlatform.deleteFile(tmpPath);
-	}
+    }
 
     /*
      * @return the month counter.
      */
     internal int getMonthsPassed() =>
-	    _monthsPassed;
+        _monthsPassed;
 
     /**
      * Returns the current longitude of the Geoscape globe.
      * @return Longitude.
      */
     internal double getGlobeLongitude() =>
-	    _globeLon;
+        _globeLon;
 
     /**
      * Returns the current latitude of the Geoscape globe.
      * @return Latitude.
      */
     internal double getGlobeLatitude() =>
-	    _globeLat;
+        _globeLat;
 
     /**
      * Returns the current zoom level of the Geoscape globe.
      * @return Zoom level.
      */
     internal int getGlobeZoom() =>
-	    _globeZoom;
+        _globeZoom;
 
     /**
      * Changes the current zoom level of the Geoscape globe.
@@ -399,7 +399,7 @@ internal class SavedGame
      * @return list of income scores.
      */
     internal ref List<long> getIncomes() =>
-	    ref _incomes;
+        ref _incomes;
 
     /**
      * Returns the list of countries in the game world.
@@ -420,28 +420,28 @@ internal class SavedGame
      * @return list of expenditures scores.
      */
     internal ref List<long> getExpenditures() =>
-	    ref _expenditures;
+        ref _expenditures;
 
     /**
      * return the list of monthly maintenance costs
      * @return list of maintenances.
      */
     internal ref List<long> getMaintenances() =>
-	    ref _maintenance;
+        ref _maintenance;
 
     /**
      * Returns the player's funds for the last 12 months.
      * @return funds.
      */
     internal ref List<long> getFundsList() =>
-	    ref _funds;
+        ref _funds;
 
     /**
      * return the list of research scores
      * @return list of research scores.
      */
     internal ref List<int> getResearchScores() =>
-	    ref _researchScores;
+        ref _researchScores;
 
     /// Full access to the alien strategy data.
     internal AlienStrategy getAlienStrategy() =>
@@ -452,14 +452,14 @@ internal class SavedGame
      * @param ids New ID list.
      */
     internal void setAllIds(Dictionary<string, int> ids) =>
-	    _ids = ids;
+        _ids = ids;
 
     /**
      * Changes the current time of the game.
      * @param time Game time.
      */
     internal void setTime(GameTime time) =>
-	    _time = time;
+        _time = time;
 
     /**
      * Changes the game's difficulty to a new level.
@@ -482,15 +482,15 @@ internal class SavedGame
      */
     internal int getId(string name)
     {
-	    if (_ids.TryGetValue(name, out var id))
-	    {
+        if (_ids.TryGetValue(name, out var id))
+        {
             return id++;
         }
         else
-	    {
-		    _ids[name] = 1;
-		    return _ids[name]++;
-	    }
+        {
+            _ids[name] = 1;
+            return _ids[name]++;
+        }
     }
 
     /// Full access to the current alien missions.
@@ -510,104 +510,104 @@ internal class SavedGame
         var queue = new List<RuleResearch> { research };
 
         int currentQueueIndex = 0;
-	    while (queue.Count > currentQueueIndex)
-	    {
-		    RuleResearch currentQueueItem = queue[currentQueueIndex];
+        while (queue.Count > currentQueueIndex)
+        {
+            RuleResearch currentQueueItem = queue[currentQueueIndex];
 
-		    // 1. Find out and remember if the currentQueueItem has any undiscovered "protected unlocks"
-		    bool hasUndiscoveredProtectedUnlocks = hasUndiscoveredProtectedUnlock(currentQueueItem, mod);
+            // 1. Find out and remember if the currentQueueItem has any undiscovered "protected unlocks"
+            bool hasUndiscoveredProtectedUnlocks = hasUndiscoveredProtectedUnlock(currentQueueItem, mod);
 
-		    // 2. If the currentQueueItem was *not* already discovered before, add it to discovered research
-		    bool checkRelatedZeroCostTopics = true;
-		    if (!isResearched(currentQueueItem.getName(), false))
-		    {
-			    _discovered.Add(currentQueueItem);
-			    if (!hasUndiscoveredProtectedUnlocks && isResearched(currentQueueItem.getGetOneFree(), false))
-			    {
-				    // If the currentQueueItem can't tell you anything anymore, remove it from popped research
-				    // Note: this is for optimisation purposes only, functionally it is *not* required...
-				    // ... removing it prematurely leads to bugs, maybe we should not do it at all?
-				    removePoppedResearch(currentQueueItem);
-			    }
-			    if (score)
-			    {
-				    addResearchScore(currentQueueItem.getPoints());
-			    }
-		    }
-		    else
-		    {
-			    // If the currentQueueItem *was* already discovered before, check if it has any undiscovered "protected unlocks".
-			    // If not, all zero-cost topics have already been processed before (during the first discovery)
-			    // and we can basically terminate here (i.e. skip step 3.).
-			    if (!hasUndiscoveredProtectedUnlocks)
-			    {
-				    checkRelatedZeroCostTopics = false;
-			    }
-		    }
+            // 2. If the currentQueueItem was *not* already discovered before, add it to discovered research
+            bool checkRelatedZeroCostTopics = true;
+            if (!isResearched(currentQueueItem.getName(), false))
+            {
+                _discovered.Add(currentQueueItem);
+                if (!hasUndiscoveredProtectedUnlocks && isResearched(currentQueueItem.getGetOneFree(), false))
+                {
+                    // If the currentQueueItem can't tell you anything anymore, remove it from popped research
+                    // Note: this is for optimisation purposes only, functionally it is *not* required...
+                    // ... removing it prematurely leads to bugs, maybe we should not do it at all?
+                    removePoppedResearch(currentQueueItem);
+                }
+                if (score)
+                {
+                    addResearchScore(currentQueueItem.getPoints());
+                }
+            }
+            else
+            {
+                // If the currentQueueItem *was* already discovered before, check if it has any undiscovered "protected unlocks".
+                // If not, all zero-cost topics have already been processed before (during the first discovery)
+                // and we can basically terminate here (i.e. skip step 3.).
+                if (!hasUndiscoveredProtectedUnlocks)
+                {
+                    checkRelatedZeroCostTopics = false;
+                }
+            }
 
-		    // 3. If currentQueueItem is completed for the *first* time, or if it has any undiscovered "protected unlocks",
-		    // process all related zero-cost topics
-		    if (checkRelatedZeroCostTopics)
-		    {
-			    // 3a. Gather all available research projects
-			    var availableResearch = new List<RuleResearch>();
-			    if (@base != null)
-			    {
-				    // Note: even if two different but related projects are finished in two different bases at the same time,
-				    // the algorithm is robust enough to treat them *sequentially* (i.e. as if one was researched first and the other second),
-				    // thus calling this method for *one* base only is enough
-				    getAvailableResearchProjects(availableResearch, mod, @base);
-			    }
-			    else
-			    {
-				    // Used in vanilla save converter only
-				    getAvailableResearchProjects(availableResearch, mod, null);
-			    }
+            // 3. If currentQueueItem is completed for the *first* time, or if it has any undiscovered "protected unlocks",
+            // process all related zero-cost topics
+            if (checkRelatedZeroCostTopics)
+            {
+                // 3a. Gather all available research projects
+                var availableResearch = new List<RuleResearch>();
+                if (@base != null)
+                {
+                    // Note: even if two different but related projects are finished in two different bases at the same time,
+                    // the algorithm is robust enough to treat them *sequentially* (i.e. as if one was researched first and the other second),
+                    // thus calling this method for *one* base only is enough
+                    getAvailableResearchProjects(availableResearch, mod, @base);
+                }
+                else
+                {
+                    // Used in vanilla save converter only
+                    getAvailableResearchProjects(availableResearch, mod, null);
+                }
 
-			    // 3b. Iterate through all available projects and add zero-cost projects to the processing queue
-			    foreach (var itProjectToTest in availableResearch)
-			    {
-				    // We are only interested in zero-cost projects!
-				    if (itProjectToTest.getCost() == 0)
-				    {
-					    // We are only interested in *new* projects (i.e. not processed or scheduled for processing yet)
-					    bool isAlreadyInTheQueue = false;
-					    foreach (var itQueue in queue)
-					    {
-						    if (itQueue.getName() == itProjectToTest.getName())
-						    {
-							    isAlreadyInTheQueue = true;
-							    break;
-						    }
-					    }
+                // 3b. Iterate through all available projects and add zero-cost projects to the processing queue
+                foreach (var itProjectToTest in availableResearch)
+                {
+                    // We are only interested in zero-cost projects!
+                    if (itProjectToTest.getCost() == 0)
+                    {
+                        // We are only interested in *new* projects (i.e. not processed or scheduled for processing yet)
+                        bool isAlreadyInTheQueue = false;
+                        foreach (var itQueue in queue)
+                        {
+                            if (itQueue.getName() == itProjectToTest.getName())
+                            {
+                                isAlreadyInTheQueue = true;
+                                break;
+                            }
+                        }
 
-					    if (!isAlreadyInTheQueue)
-					    {
-						    if (!itProjectToTest.getRequirements().Any())
-						    {
-							    // no additional checks for "unprotected" topics
-							    queue.Add(itProjectToTest);
-						    }
-						    else
-						    {
-							    // for "protected" topics, we need to check if the currentQueueItem can unlock it or not
-							    foreach (var itUnlocks in currentQueueItem.getUnlocked())
-							    {
-								    if (itProjectToTest.getName() == itUnlocks)
-								    {
-									    queue.Add(itProjectToTest);
-									    break;
-								    }
-							    }
-						    }
-					    }
-				    }
-			    }
-		    }
+                        if (!isAlreadyInTheQueue)
+                        {
+                            if (!itProjectToTest.getRequirements().Any())
+                            {
+                                // no additional checks for "unprotected" topics
+                                queue.Add(itProjectToTest);
+                            }
+                            else
+                            {
+                                // for "protected" topics, we need to check if the currentQueueItem can unlock it or not
+                                foreach (var itUnlocks in currentQueueItem.getUnlocked())
+                                {
+                                    if (itProjectToTest.getName() == itUnlocks)
+                                    {
+                                        queue.Add(itProjectToTest);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-		    // 4. process remaining items in the queue
-		    ++currentQueueIndex;
-	    }
+            // 4. process remaining items in the queue
+            ++currentQueueIndex;
+        }
     }
 
     /**
@@ -619,91 +619,91 @@ internal class SavedGame
      */
     internal void getAvailableResearchProjects(List<RuleResearch> projects, Mod.Mod mod, Base @base, bool considerDebugMode = false)
     {
-	    // This list is used for topics that can be researched even if *not all* dependencies have been discovered yet (e.g. STR_ALIEN_ORIGINS)
-	    // Note: all requirements of such topics *have to* be discovered though! This will be handled elsewhere.
-	    var unlocked = new List<RuleResearch>();
-	    foreach (var it in _discovered)
-	    {
-		    foreach (var itUnlocked in it.getUnlocked())
-		    {
-			    unlocked.Add(mod.getResearch(itUnlocked, true));
-		    }
-	    }
+        // This list is used for topics that can be researched even if *not all* dependencies have been discovered yet (e.g. STR_ALIEN_ORIGINS)
+        // Note: all requirements of such topics *have to* be discovered though! This will be handled elsewhere.
+        var unlocked = new List<RuleResearch>();
+        foreach (var it in _discovered)
+        {
+            foreach (var itUnlocked in it.getUnlocked())
+            {
+                unlocked.Add(mod.getResearch(itUnlocked, true));
+            }
+        }
 
-	    // Create a list of research topics available for research in the given base
-	    foreach (var iter in mod.getResearchList())
-	    {
-		    RuleResearch research = mod.getResearch(iter);
+        // Create a list of research topics available for research in the given base
+        foreach (var iter in mod.getResearchList())
+        {
+            RuleResearch research = mod.getResearch(iter);
 
-		    if ((considerDebugMode && _debug) || unlocked.Contains(research))
-		    {
-			    // Empty, these research topics are on the "unlocked list", *don't* check the dependencies!
-		    }
-		    else
-		    {
-			    // These items are not on the "unlocked list", we must check if "dependencies" are satisfied!
-			    if (!isResearched(research.getDependencies(), considerDebugMode))
-			    {
-				    continue;
-			    }
-		    }
+            if ((considerDebugMode && _debug) || unlocked.Contains(research))
+            {
+                // Empty, these research topics are on the "unlocked list", *don't* check the dependencies!
+            }
+            else
+            {
+                // These items are not on the "unlocked list", we must check if "dependencies" are satisfied!
+                if (!isResearched(research.getDependencies(), considerDebugMode))
+                {
+                    continue;
+                }
+            }
 
-		    // Check if "requires" are satisfied
-		    // IMPORTANT: research topics with "requires" will NEVER be directly visible to the player anyway
-		    //   - there is an additional filter in NewResearchListState::fillProjectList(), see comments there for more info
-		    //   - there is an additional filter in NewPossibleResearchState::NewPossibleResearchState()
-		    //   - we do this check for other functionality using this method, namely SavedGame::addFinishedResearch()
-		    //     - Note: when called from there, parameter considerDebugMode = false
-		    if (!isResearched(research.getRequirements(), considerDebugMode))
-		    {
-			    continue;
-		    }
+            // Check if "requires" are satisfied
+            // IMPORTANT: research topics with "requires" will NEVER be directly visible to the player anyway
+            //   - there is an additional filter in NewResearchListState::fillProjectList(), see comments there for more info
+            //   - there is an additional filter in NewPossibleResearchState::NewPossibleResearchState()
+            //   - we do this check for other functionality using this method, namely SavedGame::addFinishedResearch()
+            //     - Note: when called from there, parameter considerDebugMode = false
+            if (!isResearched(research.getRequirements(), considerDebugMode))
+            {
+                continue;
+            }
 
-		    // Remove the already researched topics from the list *UNLESS* they can still give you something more
-		    if (isResearched(research.getName(), false))
-		    {
-			    if (!isResearched(research.getGetOneFree(), false))
-			    {
-				    // This research topic still has some more undiscovered "getOneFree" topics, keep it!
-			    }
-			    else if (hasUndiscoveredProtectedUnlock(research, mod))
-			    {
-				    // This research topic still has one or more undiscovered "protected unlocks", keep it!
-			    }
-			    else
-			    {
-				    // This topic can't give you anything else anymore, ignore it!
-				    continue;
-			    }
-		    }
+            // Remove the already researched topics from the list *UNLESS* they can still give you something more
+            if (isResearched(research.getName(), false))
+            {
+                if (!isResearched(research.getGetOneFree(), false))
+                {
+                    // This research topic still has some more undiscovered "getOneFree" topics, keep it!
+                }
+                else if (hasUndiscoveredProtectedUnlock(research, mod))
+                {
+                    // This research topic still has one or more undiscovered "protected unlocks", keep it!
+                }
+                else
+                {
+                    // This topic can't give you anything else anymore, ignore it!
+                    continue;
+                }
+            }
 
-		    if (@base != null)
-		    {
-			    // Check if this topic is already being researched in the given base
-			    List<ResearchProject> baseResearchProjects = @base.getResearch();
-			    if (baseResearchProjects.Any(x => x.getRules() == research))
-			    {
-				    continue;
-			    }
+            if (@base != null)
+            {
+                // Check if this topic is already being researched in the given base
+                List<ResearchProject> baseResearchProjects = @base.getResearch();
+                if (baseResearchProjects.Any(x => x.getRules() == research))
+                {
+                    continue;
+                }
 
-			    // Check for needed item in the given base
-			    if (research.needItem() && @base.getStorageItems().getItem(research.getName()) == 0)
-			    {
-				    continue;
-			    }
-		    }
-		    else
-		    {
-			    // Used in vanilla save converter only
-			    if (research.needItem() && research.getCost() == 0)
-			    {
-				    continue;
-			    }
-		    }
+                // Check for needed item in the given base
+                if (research.needItem() && @base.getStorageItems().getItem(research.getName()) == 0)
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                // Used in vanilla save converter only
+                if (research.needItem() && research.getCost() == 0)
+                {
+                    continue;
+                }
+            }
 
-		    // Haleluja, all checks passed, add the research topic to the list
-		    projects.Add(research);
-	    }
+            // Haleluja, all checks passed, add the research topic to the list
+            projects.Add(research);
+        }
     }
 
     /**
@@ -714,17 +714,17 @@ internal class SavedGame
      */
     internal bool isResearched(string research, bool considerDebugMode = true)
     {
-	    //if (research.empty())
-	    //	return true;
-	    if (considerDebugMode && _debug)
-		    return true;
-	    foreach (var i in _discovered)
-	    {
-		    if (i.getName() == research)
-			    return true;
-	    }
+        //if (research.empty())
+        //	return true;
+        if (considerDebugMode && _debug)
+            return true;
+        foreach (var i in _discovered)
+        {
+            if (i.getName() == research)
+                return true;
+        }
 
-	    return false;
+        return false;
     }
 
     /**
@@ -735,26 +735,27 @@ internal class SavedGame
      */
     internal bool isResearched(List<string> research, bool considerDebugMode = true)
     {
-	    if (!research.Any())
-		    return true;
-	    if (considerDebugMode && _debug)
-		    return true;
-	    var matches = research;
+        if (!research.Any())
+            return true;
+        if (considerDebugMode && _debug)
+            return true;
+        var matches = research;
         for (var i = 0; i < _discovered.Count; ++i)
-	    {
-		    for (var j = 0; j < matches.Count; ++j)
-		    {
-			    if (_discovered[i].getName() == matches[j])
-			    {
-				    /* j = */ matches.RemoveAt(j);
-				    break;
-			    }
-		    }
-		    if (!matches.Any())
-			    return true;
-	    }
+        {
+            for (var j = 0; j < matches.Count; ++j)
+            {
+                if (_discovered[i].getName() == matches[j])
+                {
+                    /* j = */
+                    matches.RemoveAt(j);
+                    break;
+                }
+            }
+            if (!matches.Any())
+                return true;
+        }
 
-	    return false;
+        return false;
     }
 
     /**
@@ -772,9 +773,9 @@ internal class SavedGame
     {
         var index = _poppedResearch.IndexOf(research);
         if (index != -1)
-	    {
-		    _poppedResearch.RemoveAt(index);
-	    }
+        {
+            _poppedResearch.RemoveAt(index);
+        }
     }
 
     /**
@@ -785,19 +786,19 @@ internal class SavedGame
      */
     internal bool hasUndiscoveredProtectedUnlock(RuleResearch r, Mod.Mod mod)
     {
-	    // Note: checking for not yet discovered unlocks protected by "requires" (which also implies cost = 0)
-	    foreach (var itUnlocked in r.getUnlocked())
-	    {
-		    RuleResearch unlock = mod.getResearch(itUnlocked, true);
-		    if (unlock.getRequirements().Any())
-		    {
-			    if (!isResearched(unlock.getName(), false))
-			    {
-				    return true;
-			    }
-		    }
-	    }
-	    return false;
+        // Note: checking for not yet discovered unlocks protected by "requires" (which also implies cost = 0)
+        foreach (var itUnlocked in r.getUnlocked())
+        {
+            RuleResearch unlock = mod.getResearch(itUnlocked, true);
+            if (unlock.getRequirements().Any())
+            {
+                if (!isResearched(unlock.getName(), false))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /*
@@ -806,8 +807,8 @@ internal class SavedGame
      */
     internal void addPoppedResearch(RuleResearch research)
     {
-	    if (!wasResearchPopped(research))
-		    _poppedResearch.Add(research);
+        if (!wasResearchPopped(research))
+            _poppedResearch.Add(research);
     }
 
     /*
@@ -823,14 +824,14 @@ internal class SavedGame
      * @return Pointer to the game time.
      */
     internal GameTime getTime() =>
-	    _time;
+        _time;
 
     /**
      * Returns the player's current funds.
      * @return Current funds.
      */
     internal long getFunds() =>
-	    _funds.Last();
+        _funds.Last();
 
     /**
      * Returns the last selected player base.
@@ -881,12 +882,12 @@ internal class SavedGame
      */
     internal int getCountryFunding()
     {
-	    int total = 0;
-	    foreach (var i in _countries)
-	    {
-		    total += i.getFunding().Last();
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _countries)
+        {
+            total += i.getFunding().Last();
+        }
+        return total;
     }
 
     /**
@@ -895,12 +896,12 @@ internal class SavedGame
      */
     internal int getBaseMaintenance()
     {
-	    int total = 0;
-	    foreach (var i in _bases)
-	    {
-		    total += i.getMonthlyMaintenace();
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _bases)
+        {
+            total += i.getMonthlyMaintenace();
+        }
+        return total;
     }
 
     /**
@@ -908,7 +909,7 @@ internal class SavedGame
      * @return Difficulty level.
      */
     internal GameDifficulty getDifficulty() =>
-	    _difficulty;
+        _difficulty;
 
     /**
      * Get the list of newly available manufacture projects once a ResearchProject has been completed. This function check for fake ResearchProject.
@@ -919,16 +920,16 @@ internal class SavedGame
      */
     internal void getDependableManufacture(List<RuleManufacture> dependables, RuleResearch research, Mod.Mod mod, Base @base)
     {
-	    List<string> mans = mod.getManufactureList();
-	    foreach (var iter in mans)
-	    {
-		    RuleManufacture m = mod.getManufacture(iter);
-		    List<string> reqs = m.getRequirements();
-		    if (isResearched(m.getRequirements()) && reqs.Contains(research.getName()))
-		    {
-			    dependables.Add(m);
-		    }
-	    }
+        List<string> mans = mod.getManufactureList();
+        foreach (var iter in mans)
+        {
+            RuleManufacture m = mod.getManufacture(iter);
+            List<string> reqs = m.getRequirements();
+            if (isResearched(m.getRequirements()) && reqs.Contains(research.getName()))
+            {
+                dependables.Add(m);
+            }
+        }
     }
 
     /**
@@ -954,7 +955,7 @@ internal class SavedGame
      * @return Pointer to the region, or 0.
      */
     internal Region locateRegion(Target target) =>
-	    locateRegion(target.getLongitude(), target.getLatitude());
+        locateRegion(target.getLongitude(), target.getLatitude());
 
     /**
      * Find the region containing this location.
@@ -963,21 +964,21 @@ internal class SavedGame
      * @return Pointer to the region, or 0.
      */
     internal Region locateRegion(double lon, double lat) =>
-	    _regions.Find(x => x.getRules().insideRegion(lon, lat));
+        _regions.Find(x => x.getRules().insideRegion(lon, lat));
 
     /**
      * Returns the game's current ending.
      * @return Ending state.
      */
     internal GameEnding getEnding() =>
-	    _end;
+        _end;
 
     /**
      * Changes the game's current ending.
      * @param end New ending.
      */
     internal void setEnding(GameEnding end) =>
-	    _end = end;
+        _end = end;
 
     /**
      * Set battleGame object.
@@ -992,7 +993,7 @@ internal class SavedGame
      * @return Difficulty coefficient.
      */
     internal int getDifficultyCoefficient() =>
-	    Mod.Mod.DIFFICULTY_COEFFICIENT[Math.Min((int)_difficulty, 4)];
+        Mod.Mod.DIFFICULTY_COEFFICIENT[Math.Min((int)_difficulty, 4)];
 
     /**
      * Sets the last selected player base.
@@ -1013,14 +1014,14 @@ internal class SavedGame
      * @param name New name.
      */
     internal void setName(string name) =>
-	    _name = name;
+        _name = name;
 
     /**
      * Sets the last selected armour.
      * @param value The new value for last selected armor - Armor type string.
      */
     internal void setLastSelectedArmor(string value) =>
-	    _lastselectedArmor = value;
+        _lastselectedArmor = value;
 
     /**
      * Find a mission type in the active alien missions.
@@ -1037,7 +1038,7 @@ internal class SavedGame
      * @return true or false.
      */
     internal bool getWarned() =>
-	    _warned;
+        _warned;
 
     /**
      * sets the player's "warned" status.
@@ -1053,71 +1054,71 @@ internal class SavedGame
      */
     internal Soldier getSoldier(int id)
     {
-	    foreach (var i in _bases)
-	    {
-		    foreach (var j in i.getSoldiers())
-		    {
-			    if (j.getId() == id)
-			    {
-				    return j;
-			    }
-		    }
-	    }
-	    foreach (var j in _deadSoldiers)
-	    {
-		    if (j.getId() == id)
-		    {
-			    return j;
-		    }
-	    }
-	    return null;
+        foreach (var i in _bases)
+        {
+            foreach (var j in i.getSoldiers())
+            {
+                if (j.getId() == id)
+                {
+                    return j;
+                }
+            }
+        }
+        foreach (var j in _deadSoldiers)
+        {
+            if (j.getId() == id)
+            {
+                return j;
+            }
+        }
+        return null;
     }
 
     /*
      * @return the GraphRegionToggles.
      */
     internal string getGraphRegionToggles() =>
-	    _graphRegionToggles;
+        _graphRegionToggles;
 
     /*
      * @return the GraphCountryToggles.
      */
     internal string getGraphCountryToggles() =>
-	    _graphCountryToggles;
+        _graphCountryToggles;
 
     /*
      * @return the GraphFinanceToggles.
      */
     internal string getGraphFinanceToggles() =>
-	    _graphFinanceToggles;
+        _graphFinanceToggles;
 
     /**
      * Sets the GraphRegionToggles.
      * @param value The new value for GraphRegionToggles.
      */
     internal void setGraphRegionToggles(string value) =>
-	    _graphRegionToggles = value;
+        _graphRegionToggles = value;
 
     /**
      * Sets the GraphCountryToggles.
      * @param value The new value for GraphCountryToggles.
      */
     internal void setGraphCountryToggles(string value) =>
-	    _graphCountryToggles = value;
+        _graphCountryToggles = value;
 
     /**
      * Sets the GraphFinanceToggles.
      * @param value The new value for GraphFinanceToggles.
      */
     internal void setGraphFinanceToggles(string value) =>
-	    _graphFinanceToggles = value;
+        _graphFinanceToggles = value;
 
     /**
      * Gets the last selected armour
      * @return last used armor type string
      */
     internal string getLastSelectedArmor() =>
-	    _lastselectedArmor;
+        _lastselectedArmor;
 
     /**
      * Changes if the game is set to ironman mode.
@@ -1132,7 +1133,7 @@ internal class SavedGame
      * @param research The newly found ResearchProject
      */
     internal void addFinishedResearchSimple(RuleResearch research) =>
-	    _discovered.Add(research);
+        _discovered.Add(research);
 
     /**
      * Get the list of RuleManufacture which can be manufacture in a Base.
@@ -1142,22 +1143,22 @@ internal class SavedGame
      */
     internal void getAvailableProductions(List<RuleManufacture> productions, Mod.Mod mod, Base @base)
     {
-	    List<string> items = mod.getManufactureList();
-	    List<Production> baseProductions = @base.getProductions();
+        List<string> items = mod.getManufactureList();
+        List<Production> baseProductions = @base.getProductions();
 
-	    foreach (var iter in items)
-	    {
-		    RuleManufacture m = mod.getManufacture(iter);
-		    if (!isResearched(m.getRequirements()))
-		    {
-			    continue;
-		    }
+        foreach (var iter in items)
+        {
+            RuleManufacture m = mod.getManufacture(iter);
+            if (!isResearched(m.getRequirements()))
+            {
+                continue;
+            }
             if (baseProductions.Any(x => x.getRules() == m))
-		    {
-			    continue;
-		    }
-		    productions.Add(m);
-	    }
+            {
+                continue;
+            }
+            productions.Add(m);
+        }
     }
 
     /**
@@ -1165,21 +1166,21 @@ internal class SavedGame
      * @return Pointer to the soldier list.
      */
     internal List<Soldier> getSoldiers() =>
-	    _soldiers;
+        _soldiers;
 
     /**
     * Resets the list of unique object IDs.
     * @param ids New ID list.
     */
     internal Dictionary<string, int> getAllIds() =>
-	    _ids;
+        _ids;
 
     /**
      *  Returns the list of already discovered ResearchProject
      * @return the list of already discovered ResearchProject
      */
     internal List<RuleResearch> getDiscoveredResearch() =>
-	    _discovered;
+        _discovered;
 
     /**
      * Handles the higher promotions (not the rookie-squaddie ones).
@@ -1188,102 +1189,102 @@ internal class SavedGame
      */
     internal bool handlePromotions(List<Soldier> participants)
     {
-	    int soldiersPromoted = 0;
-	    Soldier highestRanked = null;
-	    var soldierData = new PromotionInfo();
-	    var soldiers = new List<Soldier>();
-	    foreach (var i in _bases)
-	    {
-		    foreach (var j in i.getSoldiers())
-		    {
-			    soldiers.Add(j);
-			    processSoldier(j, ref soldierData);
-		    }
-		    foreach (var j in i.getTransfers())
-		    {
-			    if (j.getType() == TransferType.TRANSFER_SOLDIER)
-			    {
-				    soldiers.Add(j.getSoldier());
-				    processSoldier(j.getSoldier(), ref soldierData);
-			    }
-		    }
-	    }
+        int soldiersPromoted = 0;
+        Soldier highestRanked = null;
+        var soldierData = new PromotionInfo();
+        var soldiers = new List<Soldier>();
+        foreach (var i in _bases)
+        {
+            foreach (var j in i.getSoldiers())
+            {
+                soldiers.Add(j);
+                processSoldier(j, ref soldierData);
+            }
+            foreach (var j in i.getTransfers())
+            {
+                if (j.getType() == TransferType.TRANSFER_SOLDIER)
+                {
+                    soldiers.Add(j.getSoldier());
+                    processSoldier(j.getSoldier(), ref soldierData);
+                }
+            }
+        }
 
-	    int totalSoldiers = soldiers.Count;
+        int totalSoldiers = soldiers.Count;
 
-	    if (soldierData.totalCommanders == 0)
-	    {
-		    if (totalSoldiers >= 30)
-		    {
-			    highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_COLONEL);
-			    if (highestRanked != null)
-			    {
-				    // only promote one colonel to commander
-				    highestRanked.promoteRank();
-				    soldiersPromoted++;
-				    soldierData.totalCommanders++;
-				    soldierData.totalColonels--;
-			    }
-		    }
-	    }
+        if (soldierData.totalCommanders == 0)
+        {
+            if (totalSoldiers >= 30)
+            {
+                highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_COLONEL);
+                if (highestRanked != null)
+                {
+                    // only promote one colonel to commander
+                    highestRanked.promoteRank();
+                    soldiersPromoted++;
+                    soldierData.totalCommanders++;
+                    soldierData.totalColonels--;
+                }
+            }
+        }
 
-	    if ((totalSoldiers / 23) > soldierData.totalColonels)
-	    {
-		    while ((totalSoldiers / 23) > soldierData.totalColonels)
-		    {
-			    highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_CAPTAIN);
-			    if (highestRanked != null)
-			    {
-				    highestRanked.promoteRank();
-				    soldiersPromoted++;
-				    soldierData.totalColonels++;
-				    soldierData.totalCaptains--;
-			    }
-			    else
-			    {
-				    break;
-			    }
-		    }
-	    }
+        if ((totalSoldiers / 23) > soldierData.totalColonels)
+        {
+            while ((totalSoldiers / 23) > soldierData.totalColonels)
+            {
+                highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_CAPTAIN);
+                if (highestRanked != null)
+                {
+                    highestRanked.promoteRank();
+                    soldiersPromoted++;
+                    soldierData.totalColonels++;
+                    soldierData.totalCaptains--;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
 
-	    if ((totalSoldiers / 11) > soldierData.totalCaptains)
-	    {
-		    while ((totalSoldiers / 11) > soldierData.totalCaptains)
-		    {
-			    highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_SERGEANT);
-			    if (highestRanked != null)
-			    {
-				    highestRanked.promoteRank();
-				    soldiersPromoted++;
-				    soldierData.totalCaptains++;
-				    soldierData.totalSergeants--;
-			    }
-			    else
-			    {
-				    break;
-			    }
-		    }
-	    }
+        if ((totalSoldiers / 11) > soldierData.totalCaptains)
+        {
+            while ((totalSoldiers / 11) > soldierData.totalCaptains)
+            {
+                highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_SERGEANT);
+                if (highestRanked != null)
+                {
+                    highestRanked.promoteRank();
+                    soldiersPromoted++;
+                    soldierData.totalCaptains++;
+                    soldierData.totalSergeants--;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
 
-	    if ((totalSoldiers / 5) > soldierData.totalSergeants)
-	    {
-		    while ((totalSoldiers / 5) > soldierData.totalSergeants)
-		    {
-			    highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_SQUADDIE);
-			    if (highestRanked != null)
-			    {
-				    highestRanked.promoteRank();
-				    soldiersPromoted++;
-				    soldierData.totalSergeants++;
-			    }
-			    else
-			    {
-				    break;
-			    }
-		    }
-	    }
+        if ((totalSoldiers / 5) > soldierData.totalSergeants)
+        {
+            while ((totalSoldiers / 5) > soldierData.totalSergeants)
+            {
+                highestRanked = inspectSoldiers(soldiers, participants, SoldierRank.RANK_SQUADDIE);
+                if (highestRanked != null)
+                {
+                    highestRanked.promoteRank();
+                    soldiersPromoted++;
+                    soldierData.totalSergeants++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
 
-	    return (soldiersPromoted > 0);
+        return (soldiersPromoted > 0);
     }
 
     /**
@@ -1295,21 +1296,21 @@ internal class SavedGame
      */
     Soldier inspectSoldiers(List<Soldier> soldiers, List<Soldier> participants, SoldierRank rank)
     {
-	    int highestScore = 0;
-	    Soldier highestRanked = null;
-	    foreach (var i in soldiers)
-	    {
-		    if (i.getRank() == rank)
-		    {
-			    int score = getSoldierScore(i);
-			    if (score > highestScore && (!Options.fieldPromotions || participants.Contains(i)))
-			    {
-				    highestScore = score;
-				    highestRanked = i;
-			    }
-		    }
-	    }
-	    return highestRanked;
+        int highestScore = 0;
+        Soldier highestRanked = null;
+        foreach (var i in soldiers)
+        {
+            if (i.getRank() == rank)
+            {
+                int score = getSoldierScore(i);
+                if (score > highestScore && (!Options.fieldPromotions || participants.Contains(i)))
+                {
+                    highestScore = score;
+                    highestRanked = i;
+                }
+            }
+        }
+        return highestRanked;
     }
 
     /**
@@ -1319,12 +1320,12 @@ internal class SavedGame
      */
     int getSoldierScore(Soldier soldier)
     {
-	    UnitStats s = soldier.getCurrentStats();
-	    int v1 = 2 * s.health + 2 * s.stamina + 4 * s.reactions + 4 * s.bravery;
-	    int v2 = v1 + 3*( s.tu + 2*( s.firing ) );
-	    int v3 = v2 + s.melee + s.throwing + s.strength;
-	    if (s.psiSkill > 0) v3 += s.psiStrength + 2 * s.psiSkill;
-	    return v3 + 10 * ( soldier.getMissions() + soldier.getKills() );
+        UnitStats s = soldier.getCurrentStats();
+        int v1 = 2 * s.health + 2 * s.stamina + 4 * s.reactions + 4 * s.bravery;
+        int v2 = v1 + 3 * (s.tu + 2 * (s.firing));
+        int v3 = v2 + s.melee + s.throwing + s.strength;
+        if (s.psiSkill > 0) v3 += s.psiStrength + 2 * s.psiSkill;
+        return v3 + 10 * (soldier.getMissions() + soldier.getKills());
     }
 
     /**
@@ -1334,23 +1335,23 @@ internal class SavedGame
      */
     void processSoldier(Soldier soldier, ref PromotionInfo soldierData)
     {
-	    switch (soldier.getRank())
-	    {
-	        case SoldierRank.RANK_COMMANDER:
-		        soldierData.totalCommanders++;
-		        break;
-	        case SoldierRank.RANK_COLONEL:
-		        soldierData.totalColonels++;
-		        break;
-	        case SoldierRank.RANK_CAPTAIN:
-		        soldierData.totalCaptains++;
-		        break;
-	        case SoldierRank.RANK_SERGEANT:
-		        soldierData.totalSergeants++;
-		        break;
-	        default:
-		        break;
-	    }
+        switch (soldier.getRank())
+        {
+            case SoldierRank.RANK_COMMANDER:
+                soldierData.totalCommanders++;
+                break;
+            case SoldierRank.RANK_COLONEL:
+                soldierData.totalColonels++;
+                break;
+            case SoldierRank.RANK_CAPTAIN:
+                soldierData.totalCaptains++;
+                break;
+            case SoldierRank.RANK_SERGEANT:
+                soldierData.totalSergeants++;
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -1358,7 +1359,7 @@ internal class SavedGame
      * @return Debug mode.
      */
     internal bool getDebugMode() =>
-	    _debug;
+        _debug;
 
     /**
      * Gets all the info of the saves found in the user folder.
@@ -1368,69 +1369,69 @@ internal class SavedGame
      */
     internal static List<SaveInfo> getList(Language lang, bool autoquick)
     {
-	    var info = new List<SaveInfo>();
-	    string curMaster = Options.getActiveMaster();
-	    List<string> saves = CrossPlatform.getFolderContents(Options.getMasterUserFolder(), "sav");
+        var info = new List<SaveInfo>();
+        string curMaster = Options.getActiveMaster();
+        List<string> saves = CrossPlatform.getFolderContents(Options.getMasterUserFolder(), "sav");
 
-	    if (autoquick)
-	    {
-		    List<string> asaves = CrossPlatform.getFolderContents(Options.getMasterUserFolder(), "asav");
-		    saves.InsertRange(0, asaves);
-	    }
-	    foreach (var i in saves)
-	    {
-		    try
-		    {
-			    SaveInfo saveInfo = getSaveInfo(i, lang);
-			    if (!_isCurrentGameType(saveInfo, curMaster))
-			    {
-				    continue;
-			    }
-			    info.Add(saveInfo);
-		    }
-		    catch (YamlException e)
-		    {
+        if (autoquick)
+        {
+            List<string> asaves = CrossPlatform.getFolderContents(Options.getMasterUserFolder(), "asav");
+            saves.InsertRange(0, asaves);
+        }
+        foreach (var i in saves)
+        {
+            try
+            {
+                SaveInfo saveInfo = getSaveInfo(i, lang);
+                if (!_isCurrentGameType(saveInfo, curMaster))
+                {
+                    continue;
+                }
+                info.Add(saveInfo);
+            }
+            catch (YamlException e)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {i}: {e.Message}");
-			    continue;
-		    }
-		    catch (Exception e)
-		    {
+                continue;
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {i}: {e.Message}");
-			    continue;
-		    }
-	    }
+                continue;
+            }
+        }
 
-	    return info;
+        return info;
     }
 
     static bool _isCurrentGameType(SaveInfo saveInfo, string curMaster)
     {
-	    bool matchMasterMod = false;
-	    if (!saveInfo.mods.Any())
-	    {
-		    // if no mods listed in the savegame, this is an old-style
-		    // savegame.  assume "xcom1" as the game type.
-		    matchMasterMod = (curMaster == "xcom1");
-	    }
-	    else
-	    {
-		    foreach (var i in saveInfo.mods)
-		    {
-			    string name = sanitizeModName(i);
-			    if (name == curMaster)
-			    {
-				    matchMasterMod = true;
-				    break;
-			    }
-		    }
-	    }
+        bool matchMasterMod = false;
+        if (!saveInfo.mods.Any())
+        {
+            // if no mods listed in the savegame, this is an old-style
+            // savegame.  assume "xcom1" as the game type.
+            matchMasterMod = (curMaster == "xcom1");
+        }
+        else
+        {
+            foreach (var i in saveInfo.mods)
+            {
+                string name = sanitizeModName(i);
+                if (name == curMaster)
+                {
+                    matchMasterMod = true;
+                    break;
+                }
+            }
+        }
 
-	    if (!matchMasterMod)
-	    {
+        if (!matchMasterMod)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_DEBUG)} skipping save from inactive master: {saveInfo.fileName}");
-	    }
+        }
 
-	    return matchMasterMod;
+        return matchMasterMod;
     }
 
     /**
@@ -1440,15 +1441,15 @@ internal class SavedGame
      */
     internal static string sanitizeModName(string name)
     {
-	    int versionInfoBreakPoint = name.IndexOf(" ver: ");
-	    if (versionInfoBreakPoint == -1)
-	    {
-		    return name;
-	    }
-	    else
-	    {
-		    return name.Substring(0, versionInfoBreakPoint);
-	    }
+        int versionInfoBreakPoint = name.IndexOf(" ver: ");
+        if (versionInfoBreakPoint == -1)
+        {
+            return name;
+        }
+        else
+        {
+            return name.Substring(0, versionInfoBreakPoint);
+        }
     }
 
     /**
@@ -1458,332 +1459,332 @@ internal class SavedGame
      */
     static SaveInfo getSaveInfo(string file, Language lang)
     {
-	    var fullname = Options.getMasterUserFolder() + file;
+        var fullname = Options.getMasterUserFolder() + file;
         using var input = new StreamReader(fullname);
         var yaml = new YamlStream();
         yaml.Load(input);
         var doc = yaml.Documents[0].RootNode;
-	    SaveInfo save;
+        SaveInfo save;
 
-	    save.fileName = file;
+        save.fileName = file;
 
-	    if (save.fileName == QUICKSAVE)
-	    {
-		    save.displayName = lang.getString("STR_QUICK_SAVE_SLOT");
-		    save.reserved = true;
-	    }
-	    else if (save.fileName == AUTOSAVE_GEOSCAPE)
-	    {
-		    save.displayName = lang.getString("STR_AUTO_SAVE_GEOSCAPE_SLOT");
-		    save.reserved = true;
-	    }
-	    else if (save.fileName == AUTOSAVE_BATTLESCAPE)
-	    {
-		    save.displayName = lang.getString("STR_AUTO_SAVE_BATTLESCAPE_SLOT");
-		    save.reserved = true;
-	    }
-	    else
-	    {
-		    if (doc["name"] != null)
-		    {
-			    save.displayName = doc["name"].ToString();
-		    }
-		    else
-		    {
-			    save.displayName = Unicode.convPathToUtf8(CrossPlatform.noExt(file));
-		    }
-		    save.reserved = false;
-	    }
+        if (save.fileName == QUICKSAVE)
+        {
+            save.displayName = lang.getString("STR_QUICK_SAVE_SLOT");
+            save.reserved = true;
+        }
+        else if (save.fileName == AUTOSAVE_GEOSCAPE)
+        {
+            save.displayName = lang.getString("STR_AUTO_SAVE_GEOSCAPE_SLOT");
+            save.reserved = true;
+        }
+        else if (save.fileName == AUTOSAVE_BATTLESCAPE)
+        {
+            save.displayName = lang.getString("STR_AUTO_SAVE_BATTLESCAPE_SLOT");
+            save.reserved = true;
+        }
+        else
+        {
+            if (doc["name"] != null)
+            {
+                save.displayName = doc["name"].ToString();
+            }
+            else
+            {
+                save.displayName = Unicode.convPathToUtf8(CrossPlatform.noExt(file));
+            }
+            save.reserved = false;
+        }
 
-	    save.timestamp = CrossPlatform.getDateModified(fullname);
-	    KeyValuePair<string, string> str = CrossPlatform.timeToString(save.timestamp);
-	    save.isoDate = str.Key;
-	    save.isoTime = str.Value;
+        save.timestamp = CrossPlatform.getDateModified(fullname);
+        KeyValuePair<string, string> str = CrossPlatform.timeToString(save.timestamp);
+        save.isoDate = str.Key;
+        save.isoTime = str.Value;
         save.mods = doc["mods"] != null ? ((YamlSequenceNode)doc["mods"]).Children.Select(x => x.ToString()).ToList() : new List<string>();
 
-	    var details = new StringBuilder();
-	    if (doc["turn"] != null)
-	    {
-		    details.Append($"{lang.getString("STR_BATTLESCAPE")}: {lang.getString(doc["mission"].ToString())}, ");
-		    details.Append(lang.getString("STR_TURN").arg(int.Parse(doc["turn"].ToString())));
-	    }
-	    else
-	    {
-		    GameTime time = new GameTime(6, 1, 1, 1999, 12, 0, 0);
-		    time.load(doc["time"]);
-		    details.Append($"{lang.getString("STR_GEOSCAPE")}: ");
-		    details.Append($"{time.getDayString(lang)} {lang.getString(time.getMonthString())} {time.getYear()}, ");
-		    details.Append($"{time.getHour()}:{time.getMinute():D2}");
-	    }
-	    if (bool.Parse(doc["ironman"].ToString()))
-	    {
-		    details.Append($" ({lang.getString("STR_IRONMAN")})");
-	    }
-	    save.details = details.ToString();
+        var details = new StringBuilder();
+        if (doc["turn"] != null)
+        {
+            details.Append($"{lang.getString("STR_BATTLESCAPE")}: {lang.getString(doc["mission"].ToString())}, ");
+            details.Append(lang.getString("STR_TURN").arg(int.Parse(doc["turn"].ToString())));
+        }
+        else
+        {
+            GameTime time = new GameTime(6, 1, 1, 1999, 12, 0, 0);
+            time.load(doc["time"]);
+            details.Append($"{lang.getString("STR_GEOSCAPE")}: ");
+            details.Append($"{time.getDayString(lang)} {lang.getString(time.getMonthString())} {time.getYear()}, ");
+            details.Append($"{time.getHour()}:{time.getMinute():D2}");
+        }
+        if (bool.Parse(doc["ironman"].ToString()))
+        {
+            details.Append($" ({lang.getString("STR_IRONMAN")})");
+        }
+        save.details = details.ToString();
 
-	    return save;
+        return save;
     }
 
     /**
      * Toggles debug mode.
      */
     internal void setDebugMode() =>
-	    _debug = !_debug;
+        _debug = !_debug;
 
-	/**
+    /**
 	 * Loads a saved game's contents from a YAML file.
 	 * @note Assumes the saved game is blank.
 	 * @param filename YAML filename.
 	 * @param mod Mod for the saved game.
 	 */
-	internal void load(string filename, Mod.Mod mod)
-	{
-		string s = Options.getMasterUserFolder() + filename;
+    internal void load(string filename, Mod.Mod mod)
+    {
+        string s = Options.getMasterUserFolder() + filename;
         using var input = new StreamReader(s);
         var yaml = new YamlStream();
         yaml.Load(input);
-		if (!yaml.Documents.Any())
-		{
-			throw new Exception(filename + " is not a valid save file");
-		}
+        if (!yaml.Documents.Any())
+        {
+            throw new Exception(filename + " is not a valid save file");
+        }
 
-		// Get brief save info
+        // Get brief save info
         var brief = (YamlMappingNode)yaml.Documents[0].RootNode;
-		_time.load(brief["time"]);
-		if (brief["name"] != null)
-		{
-			_name = brief["name"].ToString();
-		}
-		else
-		{
-			_name = Unicode.convPathToUtf8(filename);
-		}
-		_ironman = bool.Parse(brief["ironman"].ToString());
+        _time.load(brief["time"]);
+        if (brief["name"] != null)
+        {
+            _name = brief["name"].ToString();
+        }
+        else
+        {
+            _name = Unicode.convPathToUtf8(filename);
+        }
+        _ironman = bool.Parse(brief["ironman"].ToString());
 
-		// Get full save data
+        // Get full save data
         var doc = (YamlMappingNode)yaml.Documents[1].RootNode;
-		_difficulty = (GameDifficulty)int.Parse(doc["difficulty"].ToString());
-		_end = (GameEnding)int.Parse(doc["end"].ToString());
-		if (doc["rng"] != null && (_ironman || !Options.newSeedOnLoad))
-			RNG.setSeed(ulong.Parse(doc["rng"].ToString()));
-		_monthsPassed = int.Parse(doc["monthsPassed"].ToString());
-		_graphRegionToggles = doc["graphRegionToggles"].ToString();
-		_graphCountryToggles = doc["graphCountryToggles"].ToString();
-		_graphFinanceToggles = doc["graphFinanceToggles"].ToString();
-		_funds = ((YamlSequenceNode)doc["funds"]).Children.Select(x => long.Parse(x.ToString())).ToList();
-		_maintenance = ((YamlSequenceNode)doc["maintenance"]).Children.Select(x => long.Parse(x.ToString())).ToList();
-		_researchScores = ((YamlSequenceNode)doc["researchScores"]).Children.Select(x => int.Parse(x.ToString())).ToList();
-		_incomes = ((YamlSequenceNode)doc["incomes"]).Children.Select(x => long.Parse(x.ToString())).ToList();
-		_expenditures = ((YamlSequenceNode)doc["expenditures"]).Children.Select(x => long.Parse(x.ToString())).ToList();
-		_warned = bool.Parse(doc["warned"].ToString());
-		_globeLon = double.Parse(doc["globeLon"].ToString());
-		_globeLat = double.Parse(doc["globeLat"].ToString());
-		_globeZoom = int.Parse(doc["globeZoom"].ToString());
-		_ids = ((YamlMappingNode)doc["ids"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
+        _difficulty = (GameDifficulty)int.Parse(doc["difficulty"].ToString());
+        _end = (GameEnding)int.Parse(doc["end"].ToString());
+        if (doc["rng"] != null && (_ironman || !Options.newSeedOnLoad))
+            RNG.setSeed(ulong.Parse(doc["rng"].ToString()));
+        _monthsPassed = int.Parse(doc["monthsPassed"].ToString());
+        _graphRegionToggles = doc["graphRegionToggles"].ToString();
+        _graphCountryToggles = doc["graphCountryToggles"].ToString();
+        _graphFinanceToggles = doc["graphFinanceToggles"].ToString();
+        _funds = ((YamlSequenceNode)doc["funds"]).Children.Select(x => long.Parse(x.ToString())).ToList();
+        _maintenance = ((YamlSequenceNode)doc["maintenance"]).Children.Select(x => long.Parse(x.ToString())).ToList();
+        _researchScores = ((YamlSequenceNode)doc["researchScores"]).Children.Select(x => int.Parse(x.ToString())).ToList();
+        _incomes = ((YamlSequenceNode)doc["incomes"]).Children.Select(x => long.Parse(x.ToString())).ToList();
+        _expenditures = ((YamlSequenceNode)doc["expenditures"]).Children.Select(x => long.Parse(x.ToString())).ToList();
+        _warned = bool.Parse(doc["warned"].ToString());
+        _globeLon = double.Parse(doc["globeLon"].ToString());
+        _globeLat = double.Parse(doc["globeLat"].ToString());
+        _globeZoom = int.Parse(doc["globeZoom"].ToString());
+        _ids = ((YamlMappingNode)doc["ids"]).Children.ToDictionary(x => x.Key.ToString(), x => int.Parse(x.Value.ToString()));
 
-		foreach (var i in ((YamlSequenceNode)doc["countries"]).Children)
-		{
-			string type = i["type"].ToString();
-			if (mod.getCountry(type) != null)
-			{
-				Country c = new Country(mod.getCountry(type), false);
-				c.load(i);
-				_countries.Add(c);
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load country {type}");
-			}
-		}
+        foreach (var i in ((YamlSequenceNode)doc["countries"]).Children)
+        {
+            string type = i["type"].ToString();
+            if (mod.getCountry(type) != null)
+            {
+                Country c = new Country(mod.getCountry(type), false);
+                c.load(i);
+                _countries.Add(c);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load country {type}");
+            }
+        }
 
-		foreach (var i in ((YamlSequenceNode)doc["regions"]).Children)
-		{
-			string type = i["type"].ToString();
-			if (mod.getRegion(type) != null)
-			{
-				Region r = new Region(mod.getRegion(type));
-				r.load(i);
-				_regions.Add(r);
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load region {type}");
-			}
-		}
+        foreach (var i in ((YamlSequenceNode)doc["regions"]).Children)
+        {
+            string type = i["type"].ToString();
+            if (mod.getRegion(type) != null)
+            {
+                Region r = new Region(mod.getRegion(type));
+                r.load(i);
+                _regions.Add(r);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load region {type}");
+            }
+        }
 
-		// Alien bases must be loaded before alien missions
-		foreach (var i in ((YamlSequenceNode)doc["alienBases"]).Children)
-		{
-			string deployment = i["deployment"] != null ? i["deployment"].ToString() : "STR_ALIEN_BASE_ASSAULT";
-			if (mod.getDeployment(deployment) != null)
-			{
-				AlienBase b = new AlienBase(mod.getDeployment(deployment));
-				b.load(i);
-				_alienBases.Add(b);
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load deployment for alien base {deployment}");
-			}
-		}
+        // Alien bases must be loaded before alien missions
+        foreach (var i in ((YamlSequenceNode)doc["alienBases"]).Children)
+        {
+            string deployment = i["deployment"] != null ? i["deployment"].ToString() : "STR_ALIEN_BASE_ASSAULT";
+            if (mod.getDeployment(deployment) != null)
+            {
+                AlienBase b = new AlienBase(mod.getDeployment(deployment));
+                b.load(i);
+                _alienBases.Add(b);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load deployment for alien base {deployment}");
+            }
+        }
 
-		// Missions must be loaded before UFOs.
-		foreach (var it in ((YamlSequenceNode)doc["alienMissions"]).Children)
-		{
-			string missionType = it["type"].ToString();
-			if (mod.getAlienMission(missionType) != null)
-			{
-				RuleAlienMission mRule = mod.getAlienMission(missionType);
-				AlienMission mission = new AlienMission(mRule);
-				mission.load(it, this);
-				_activeMissions.Add(mission);
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {missionType}");
-			}
-		}
+        // Missions must be loaded before UFOs.
+        foreach (var it in ((YamlSequenceNode)doc["alienMissions"]).Children)
+        {
+            string missionType = it["type"].ToString();
+            if (mod.getAlienMission(missionType) != null)
+            {
+                RuleAlienMission mRule = mod.getAlienMission(missionType);
+                AlienMission mission = new AlienMission(mRule);
+                mission.load(it, this);
+                _activeMissions.Add(mission);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {missionType}");
+            }
+        }
 
-		foreach (var i in ((YamlSequenceNode)doc["ufos"]).Children)
-		{
-			string type = i["type"].ToString();
-			if (mod.getUfo(type) != null)
-			{
-				Ufo u = new Ufo(mod.getUfo(type));
-				u.load(i, mod, this);
-				_ufos.Add(u);
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load UFO {type}");
-			}
-		}
+        foreach (var i in ((YamlSequenceNode)doc["ufos"]).Children)
+        {
+            string type = i["type"].ToString();
+            if (mod.getUfo(type) != null)
+            {
+                Ufo u = new Ufo(mod.getUfo(type));
+                u.load(i, mod, this);
+                _ufos.Add(u);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load UFO {type}");
+            }
+        }
 
-		foreach (var i in ((YamlSequenceNode)doc["waypoints"]).Children)
-		{
-			Waypoint w = new Waypoint();
-			w.load(i);
-			_waypoints.Add(w);
-		}
+        foreach (var i in ((YamlSequenceNode)doc["waypoints"]).Children)
+        {
+            Waypoint w = new Waypoint();
+            w.load(i);
+            _waypoints.Add(w);
+        }
 
-		// Backwards compatibility
-		foreach (var i in ((YamlSequenceNode)doc["terrorSites"]).Children)
-		{
-			string type = "STR_ALIEN_TERROR";
-			string deployment = "STR_TERROR_MISSION";
-			if (mod.getAlienMission(type) != null && mod.getDeployment(deployment) != null)
-			{
-				MissionSite m = new MissionSite(mod.getAlienMission(type), mod.getDeployment(deployment));
-				m.load(i);
-				_missionSites.Add(m);
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {type} deployment {deployment}");
-			}
-		}
+        // Backwards compatibility
+        foreach (var i in ((YamlSequenceNode)doc["terrorSites"]).Children)
+        {
+            string type = "STR_ALIEN_TERROR";
+            string deployment = "STR_TERROR_MISSION";
+            if (mod.getAlienMission(type) != null && mod.getDeployment(deployment) != null)
+            {
+                MissionSite m = new MissionSite(mod.getAlienMission(type), mod.getDeployment(deployment));
+                m.load(i);
+                _missionSites.Add(m);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {type} deployment {deployment}");
+            }
+        }
 
-		foreach (var i in ((YamlSequenceNode)doc["missionSites"]).Children)
-		{
-			string type = i["type"].ToString();
-			string deployment = i["deployment"] != null ? i["deployment"].ToString() : "STR_TERROR_MISSION";
-			if (mod.getAlienMission(type) != null && mod.getDeployment(deployment) != null)
-			{
-				MissionSite m = new MissionSite(mod.getAlienMission(type), mod.getDeployment(deployment));
-				m.load(i);
-				_missionSites.Add(m);
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {type} deployment {deployment}");
-			}
-		}
+        foreach (var i in ((YamlSequenceNode)doc["missionSites"]).Children)
+        {
+            string type = i["type"].ToString();
+            string deployment = i["deployment"] != null ? i["deployment"].ToString() : "STR_TERROR_MISSION";
+            if (mod.getAlienMission(type) != null && mod.getDeployment(deployment) != null)
+            {
+                MissionSite m = new MissionSite(mod.getAlienMission(type), mod.getDeployment(deployment));
+                m.load(i);
+                _missionSites.Add(m);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load mission {type} deployment {deployment}");
+            }
+        }
 
-		// Discovered Techs Should be loaded before Bases (e.g. for PSI evaluation)
-		foreach (var it in ((YamlSequenceNode)doc["discovered"]).Children)
-		{
-			string research = it.ToString();
-			if (mod.getResearch(research) != null)
-			{
-				_discovered.Add(mod.getResearch(research));
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {research}");
-			}
-		}
+        // Discovered Techs Should be loaded before Bases (e.g. for PSI evaluation)
+        foreach (var it in ((YamlSequenceNode)doc["discovered"]).Children)
+        {
+            string research = it.ToString();
+            if (mod.getResearch(research) != null)
+            {
+                _discovered.Add(mod.getResearch(research));
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {research}");
+            }
+        }
 
-		foreach (var i in ((YamlSequenceNode)doc["bases"]).Children)
-		{
-			Base b = new Base(mod);
-			b.load(i, this, false);
-			_bases.Add(b);
-		}
+        foreach (var i in ((YamlSequenceNode)doc["bases"]).Children)
+        {
+            Base b = new Base(mod);
+            b.load(i, this, false);
+            _bases.Add(b);
+        }
 
-		foreach (var it in ((YamlSequenceNode)doc["poppedResearch"]).Children)
-		{
-			string id = it.ToString();
-			if (mod.getResearch(id) != null)
-			{
-				_poppedResearch.Add(mod.getResearch(id));
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {id}");
-			}
-		}
-		_alienStrategy.load(doc["alienStrategy"]);
+        foreach (var it in ((YamlSequenceNode)doc["poppedResearch"]).Children)
+        {
+            string id = it.ToString();
+            if (mod.getResearch(id) != null)
+            {
+                _poppedResearch.Add(mod.getResearch(id));
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load research {id}");
+            }
+        }
+        _alienStrategy.load(doc["alienStrategy"]);
 
-		foreach (var i in ((YamlSequenceNode)doc["deadSoldiers"]).Children)
-		{
-			string type = i["type"] != null ? i["type"].ToString() : mod.getSoldiersList().First();
-			if (mod.getSoldier(type) != null)
-			{
-				Soldier soldier = new Soldier(mod.getSoldier(type), null);
-				soldier.load(i, mod, this);
-				_deadSoldiers.Add(soldier);
-			}
-			else
-			{
-				Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
-			}
-		}
+        foreach (var i in ((YamlSequenceNode)doc["deadSoldiers"]).Children)
+        {
+            string type = i["type"] != null ? i["type"].ToString() : mod.getSoldiersList().First();
+            if (mod.getSoldier(type) != null)
+            {
+                Soldier soldier = new Soldier(mod.getSoldier(type), null);
+                soldier.load(i, mod, this);
+                _deadSoldiers.Add(soldier);
+            }
+            else
+            {
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load soldier {type}");
+            }
+        }
 
-		foreach (var i in ((YamlSequenceNode)doc["missionStatistics"]).Children)
-		{
-			MissionStatistics ms = new MissionStatistics();
-			ms.load(i);
-			_missionStatistics.Add(ms);
-		}
+        foreach (var i in ((YamlSequenceNode)doc["missionStatistics"]).Children)
+        {
+            MissionStatistics ms = new MissionStatistics();
+            ms.load(i);
+            _missionStatistics.Add(ms);
+        }
 
-		if (doc["battleGame"] is YamlNode battle)
-		{
-			_battleGame = new SavedBattleGame();
-			_battleGame.load(battle, mod, this);
-		}
-	}
+        if (doc["battleGame"] is YamlNode battle)
+        {
+            _battleGame = new SavedBattleGame();
+            _battleGame.load(battle, mod, this);
+        }
+    }
 
-	/**
+    /**
 	 * Get the list of newly available research projects once a ResearchProject has been completed.
 	 * @param before the list of available RuleResearch before completing new research.
 	 * @param after the list of available RuleResearch after completing new research.
 	 * @param diff the list of newly available RuleResearch after completing new research (after - before).
 	 */
-	internal void getNewlyAvailableResearchProjects(ref List<RuleResearch> before, ref List<RuleResearch> after, ref List<RuleResearch> diff)
-	{
-		// History lesson:
-		// Completely rewritten the original recursive algorithm, because it was inefficient, unreadable and wrong
-		// a/ inefficient: it could call SavedGame::getAvailableResearchProjects() way too many times
-		// b/ unreadable: because of recursion
-		// c/ wrong: could end in an endless loop! in two different ways! (not in vanilla, but in mods)
+    internal void getNewlyAvailableResearchProjects(ref List<RuleResearch> before, ref List<RuleResearch> after, ref List<RuleResearch> diff)
+    {
+        // History lesson:
+        // Completely rewritten the original recursive algorithm, because it was inefficient, unreadable and wrong
+        // a/ inefficient: it could call SavedGame::getAvailableResearchProjects() way too many times
+        // b/ unreadable: because of recursion
+        // c/ wrong: could end in an endless loop! in two different ways! (not in vanilla, but in mods)
 
-		// Note:
-		// We could move the sorting of "before" vector right after its creation to optimize a little bit more.
-		// But sorting a short list is negligible compared to other operations we had to do to get to this point.
-		// So I decided to leave it here, so that it's 100% clear what's going on.
-		var comparer = new CompareRuleResearch();
-		before.Sort(comparer);
-		after.Sort(comparer);
-		diff = (List<RuleResearch>)after.Except(before, new EqualRuleResearch());
-	}
+        // Note:
+        // We could move the sorting of "before" vector right after its creation to optimize a little bit more.
+        // But sorting a short list is negligible compared to other operations we had to do to get to this point.
+        // So I decided to leave it here, so that it's 100% clear what's going on.
+        var comparer = new CompareRuleResearch();
+        before.Sort(comparer);
+        after.Sort(comparer);
+        diff = (List<RuleResearch>)after.Except(before, new EqualRuleResearch());
+    }
 }

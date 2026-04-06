@@ -82,11 +82,11 @@ internal class WarningMessage : Surface
      */
     internal void showMessage(string msg)
     {
-	    _text.setText(msg);
-	    _fade = 0;
-	    _redraw = true;
-	    setVisible(true);
-	    _timer.start();
+        _text.setText(msg);
+        _fade = 0;
+        _redraw = true;
+        setVisible(true);
+        _timer.start();
     }
 
     /**
@@ -119,16 +119,16 @@ internal class WarningMessage : Surface
      * Keeps the animation timers running.
      */
     internal override void think() =>
-	    _timer.think(null, this);
+        _timer.think(null, this);
 
     /**
      * Draws the warning message.
      */
     internal override void draw()
     {
-	    base.draw();
-	    drawRect(0, 0, (short)getWidth(), (short)getHeight(), (byte)(_color + (_fade > 12 ? 12 : _fade)));
-	    _text.blit(this);
+        base.draw();
+        drawRect(0, 0, (short)getWidth(), (short)getHeight(), (byte)(_color + (_fade > 12 ? 12 : _fade)));
+        _text.blit(this);
     }
 
     /**
@@ -139,7 +139,7 @@ internal class WarningMessage : Surface
      */
     internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-	    base.setPalette(colors, firstcolor, ncolors);
-	    _text.setPalette(colors, firstcolor, ncolors);
+        base.setPalette(colors, firstcolor, ncolors);
+        _text.setPalette(colors, firstcolor, ncolors);
     }
 }

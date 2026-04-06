@@ -37,42 +37,42 @@ internal class Unicode
 	 * Windows doesn't have a UTF-8 locale so we just use its APIs directly.
 	 */
     internal static void getUtf8Locale()
-	{
-		// Try a UTF-8 locale (or default if none was found)
-		utf8 = Encoding.UTF8;
+    {
+        // Try a UTF-8 locale (or default if none was found)
+        utf8 = Encoding.UTF8;
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Detected locale: {utf8.EncodingName}");
     }
 
-	/**
+    /**
 	 * Takes a filesystem path and converts it to a UTF-8 string.
 	 * On Windows the C paths use the local ANSI codepage.
 	 * Used for SDL APIs.
 	 * @param src Filesystem path.
 	 * @return UTF-8 string.
 	 */
-	internal static string convPathToUtf8(string src)
-	{
+    internal static string convPathToUtf8(string src)
+    {
         var bytes = Encoding.UTF8.GetBytes(src);
         return Encoding.UTF8.GetString(bytes);
-	}
+    }
 
     /// Checks if a character is a linebreak.
     internal static bool isLinebreak(uint c) =>
-		(c == '\n' || c == TOK_NL_SMALL);
+        (c == '\n' || c == TOK_NL_SMALL);
 
     /// Checks if a character is a blank space (includes non-breaking spaces).
     internal static bool isSpace(uint c) =>
-		(c == ' ' || c == TOK_NBSP);
+        (c == ' ' || c == TOK_NBSP);
 
     /// Checks if a character is a word separator.
     internal static bool isSeparator(uint c) =>
-		(c == '-' || c == '/');
+        (c == '-' || c == '/');
 
     /// Checks if a character is visible to the user.
     internal static bool isPrintable(uint c) =>
-		(c > 32 && c != TOK_NBSP);
+        (c > 32 && c != TOK_NBSP);
 
-	/**
+    /**
 	 * Takes a Unicode 32-bit string and converts it
 	 * to a 8-bit string encoded in UTF-8.
 	 * Used for rendering text.
@@ -80,8 +80,8 @@ internal class Unicode
 	 * @param src UTF-8 string.
 	 * @return Unicode string.
 	 */
-	internal static string convUtf8ToUtf32(string src)
-	{
+    internal static string convUtf8ToUtf32(string src)
+    {
         var bytes = Encoding.UTF8.GetBytes(src);
         return Encoding.UTF32.GetString(bytes);
 
@@ -111,7 +111,7 @@ internal class Unicode
         //return @out;
     }
 
-	/**
+    /**
 	 * Takes a Unicode 32-bit string and converts it
 	 * to a 8-bit string encoded in UTF-8.
 	 * Used for rendering text.
@@ -119,11 +119,11 @@ internal class Unicode
 	 * @param src Unicode string.
 	 * @return UTF-8 string.
 	 */
-	internal static string convUtf32ToUtf8(string src)
-	{
+    internal static string convUtf32ToUtf8(string src)
+    {
         var bytes = Encoding.UTF32.GetBytes(src);
         return Encoding.UTF8.GetString(bytes);
-	}
+    }
 
     /**
      * Takes a UTF-8 string and converts it to a filesystem path.
@@ -173,25 +173,25 @@ internal class Unicode
      */
     internal static string formatNumber(long value, string currency = "")
     {
-	    const string thousands_sep = "\xC2\xA0"; // TOK_NBSP
+        const string thousands_sep = "\xC2\xA0"; // TOK_NBSP
 
-	    bool negative = (value < 0);
-	    string s = (negative ? -value : value).ToString();
-	    int spacer = s.Length - 3;
-	    while (spacer > 0 && spacer < s.Length)
-	    {
-		    s = s.Insert(spacer, thousands_sep);
-		    spacer -= 3;
-	    }
-	    if (!string.IsNullOrEmpty(currency))
-	    {
-		    s = s.Insert(0, currency);
-	    }
-	    if (negative)
-	    {
-		    s = s.Insert(0, "-");
-	    }
-	    return s;
+        bool negative = (value < 0);
+        string s = (negative ? -value : value).ToString();
+        int spacer = s.Length - 3;
+        while (spacer > 0 && spacer < s.Length)
+        {
+            s = s.Insert(spacer, thousands_sep);
+            spacer -= 3;
+        }
+        if (!string.IsNullOrEmpty(currency))
+        {
+            s = s.Insert(0, currency);
+        }
+        if (negative)
+        {
+            s = s.Insert(0, "-");
+        }
+        return s;
     }
 
     /**

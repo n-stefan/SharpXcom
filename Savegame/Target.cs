@@ -59,15 +59,15 @@ internal class Target
      */
     internal List<Craft> getCraftFollowers()
     {
-	    var crafts = new List<Craft>();
-	    foreach (var follower in _followers)
-	    {
-		    if (follower is Craft craft)
-		    {
-			    crafts.Add(craft);
-		    }
-	    }
-	    return crafts;
+        var crafts = new List<Craft>();
+        foreach (var follower in _followers)
+        {
+            if (follower is Craft craft)
+            {
+                crafts.Add(craft);
+            }
+        }
+        return crafts;
     }
 
     /**
@@ -75,14 +75,14 @@ internal class Target
      * @return Longitude in radian.
      */
     internal double getLongitude() =>
-	    _lon;
+        _lon;
 
     /**
      * Returns the latitude coordinate of the target.
      * @return Latitude in radian.
      */
     internal double getLatitude() =>
-	    _lat;
+        _lat;
 
     /**
      * Returns the list of targets currently
@@ -104,9 +104,9 @@ internal class Target
             { "lat", serializeDouble(_lat) }
         };
         if (_id != 0)
-		    node.Add("id", _id.ToString());
-	    if (!string.IsNullOrEmpty(_name))
-		    node.Add("name", _name);
+            node.Add("id", _id.ToString());
+        if (!string.IsNullOrEmpty(_name))
+            node.Add("name", _name);
         return node;
     }
 
@@ -181,14 +181,14 @@ internal class Target
      * @param newName New custom name. If set to blank, the language default is used.
      */
     internal void setName(string newName) =>
-	    _name = newName;
+        _name = newName;
 
     /**
      * Returns the target's unique ID.
      * @return Unique ID, 0 if none.
      */
     internal int getId() =>
-	    _id;
+        _id;
 
     /**
      * Loads the target from a YAML file.
@@ -196,13 +196,13 @@ internal class Target
      */
     internal virtual void load(YamlNode node)
     {
-	    _lon = double.Parse(node["lon"].ToString());
-	    _lat = double.Parse(node["lat"].ToString());
-	    _id = int.Parse(node["id"].ToString());
+        _lon = double.Parse(node["lon"].ToString());
+        _lat = double.Parse(node["lat"].ToString());
+        _id = int.Parse(node["id"].ToString());
         if (node["name"] is YamlNode name)
-	    {
-		    _name = name.ToString();
-	    }
+        {
+            _name = name.ToString();
+        }
     }
 
     /**
@@ -213,9 +213,9 @@ internal class Target
      */
     internal virtual string getName(Language lang)
     {
-	    if (string.IsNullOrEmpty(_name))
-		    return getDefaultName(lang);
-	    return _name;
+        if (string.IsNullOrEmpty(_name))
+            return getDefaultName(lang);
+        return _name;
     }
 
     /**
@@ -224,17 +224,17 @@ internal class Target
      * @return Full name.
      */
     internal virtual string getDefaultName(Language lang) =>
-	    lang.getString(getMarkerName()).arg(_id);
+        lang.getString(getMarkerName()).arg(_id);
 
     /**
      * Returns the name on the globe for the target.
      * @return String ID.
      */
     internal virtual string getMarkerName() =>
-	    getType() + "_";
+        getType() + "_";
 
-	/// Gets the distance to another target.
-	internal double getDistance(Target target) =>
+    /// Gets the distance to another target.
+    internal double getDistance(Target target) =>
         getDistance(target.getLongitude(), target.getLatitude());
 
     /**
@@ -246,9 +246,9 @@ internal class Target
      */
     protected double getDistance(double lon, double lat)
     {
-	    if (AreSame(lon, _lon) && AreSame(lat, _lat))
-		    return 0.0;
-	    return Math.Acos(Math.Cos(_lat) * Math.Cos(lat) * Math.Cos(lon - _lon) + Math.Sin(_lat) * Math.Sin(lat));
+        if (AreSame(lon, _lon) && AreSame(lat, _lat))
+            return 0.0;
+        return Math.Acos(Math.Cos(_lat) * Math.Cos(lat) * Math.Cos(lon - _lon) + Math.Sin(_lat) * Math.Sin(lat));
     }
 
     /**
@@ -256,5 +256,5 @@ internal class Target
      * @return Marker ID.
      */
     internal virtual int getMarkerId() =>
-	    _id;
+        _id;
 }

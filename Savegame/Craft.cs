@@ -130,10 +130,10 @@ internal class Craft : MovingTarget
      */
     internal override int getMarker()
     {
-	    if (_status != "STR_OUT")
-		    return -1;
-	    else if (_rules.getMarker() == -1)
-		    return 1;
+        if (_status != "STR_OUT")
+            return -1;
+        else if (_rules.getMarker() == -1)
+            return 1;
         return _rules.getMarker();
     }
 
@@ -183,128 +183,128 @@ internal class Craft : MovingTarget
      */
     internal void load(YamlNode node, Mod.Mod mod, SavedGame save)
     {
-	    base.load(node);
-	    _fuel = int.Parse(node["fuel"].ToString());
-	    _damage = int.Parse(node["damage"].ToString());
+        base.load(node);
+        _fuel = int.Parse(node["fuel"].ToString());
+        _damage = int.Parse(node["damage"].ToString());
 
         int j = 0;
-	    foreach (var i in (YamlSequenceNode)node["weapons"])
-	    {
-		    if (_rules.getWeapons() > j)
-		    {
-			    string type = i["type"].ToString();
-			    if (type != "0" && mod.getCraftWeapon(type) != null)
-			    {
-				    CraftWeapon w = new CraftWeapon(mod.getCraftWeapon(type), 0);
-				    w.load(i);
-				    _weapons[j] = w;
-			    }
-			    else
-			    {
-				    _weapons[j] = null;
-				    if (type != "0")
-				    {
+        foreach (var i in (YamlSequenceNode)node["weapons"])
+        {
+            if (_rules.getWeapons() > j)
+            {
+                string type = i["type"].ToString();
+                if (type != "0" && mod.getCraftWeapon(type) != null)
+                {
+                    CraftWeapon w = new CraftWeapon(mod.getCraftWeapon(type), 0);
+                    w.load(i);
+                    _weapons[j] = w;
+                }
+                else
+                {
+                    _weapons[j] = null;
+                    if (type != "0")
+                    {
                         Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load craft weapon {type}");
-				    }
-			    }
-			    j++;
-		    }
-	    }
+                    }
+                }
+                j++;
+            }
+        }
 
-	    _items.load(node["items"]);
+        _items.load(node["items"]);
         // Some old saves have bad items, better get rid of them to avoid further bugs
         var k = _items.getContents().GetEnumerator();
         k.MoveNext();
         while (k.Current.Key != null)
         {
             if (mod.getItem(k.Current.Key) == null)
-		    {
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {k.Current.Key}");
                 _items.getContents().Remove(k.Current.Key); k.MoveNext();
-		    }
+            }
             else
-		    {
+            {
                 k.MoveNext();
-		    }
-	    }
-	    foreach (var i in (YamlSequenceNode)node["vehicles"])
-	    {
-		    string type = i["type"].ToString();
-		    if (mod.getItem(type) != null)
-		    {
-			    Vehicle v = new Vehicle(mod.getItem(type), 0, 4);
-			    v.load(i);
-			    _vehicles.Add(v);
-		    }
-		    else
-		    {
+            }
+        }
+        foreach (var i in (YamlSequenceNode)node["vehicles"])
+        {
+            string type = i["type"].ToString();
+            if (mod.getItem(type) != null)
+            {
+                Vehicle v = new Vehicle(mod.getItem(type), 0, 4);
+                v.load(i);
+                _vehicles.Add(v);
+            }
+            else
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Failed to load item {type}");
-		    }
-	    }
-	    _status = node["status"].ToString();
-	    _lowFuel = bool.Parse(node["lowFuel"].ToString());
-	    _mission = bool.Parse(node["mission"].ToString());
-	    _interceptionOrder = int.Parse(node["interceptionOrder"].ToString());
+            }
+        }
+        _status = node["status"].ToString();
+        _lowFuel = bool.Parse(node["lowFuel"].ToString());
+        _mission = bool.Parse(node["mission"].ToString());
+        _interceptionOrder = int.Parse(node["interceptionOrder"].ToString());
         if (node["dest"] is YamlNode dest)
-	    {
-		    string type = dest["type"].ToString();
-		    int id = int.Parse(dest["id"].ToString());
-		    if (type == "STR_BASE")
-		    {
-			    returnToBase();
-		    }
-		    else if (type == "STR_UFO")
-		    {
-			    foreach (var i in save.getUfos())
-			    {
-				    if (i.getId() == id)
-				    {
-					    setDestination(i);
-					    break;
-				    }
-			    }
-		    }
-		    else if (type == "STR_WAY_POINT")
-		    {
-			    foreach (var i in save.getWaypoints())
-			    {
-				    if (i.getId() == id)
-				    {
-					    setDestination(i);
-					    break;
-				    }
-			    }
-		    }
-		    else
-		    {
-			    // Backwards compatibility
-			    if (type == "STR_ALIEN_TERROR")
-				    type = "STR_TERROR_SITE";
-			    bool found = false;
+        {
+            string type = dest["type"].ToString();
+            int id = int.Parse(dest["id"].ToString());
+            if (type == "STR_BASE")
+            {
+                returnToBase();
+            }
+            else if (type == "STR_UFO")
+            {
+                foreach (var i in save.getUfos())
+                {
+                    if (i.getId() == id)
+                    {
+                        setDestination(i);
+                        break;
+                    }
+                }
+            }
+            else if (type == "STR_WAY_POINT")
+            {
+                foreach (var i in save.getWaypoints())
+                {
+                    if (i.getId() == id)
+                    {
+                        setDestination(i);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                // Backwards compatibility
+                if (type == "STR_ALIEN_TERROR")
+                    type = "STR_TERROR_SITE";
+                bool found = false;
                 var missionSites = save.getMissionSites();
                 for (var i = 0; i < missionSites.Count && !found; ++i)
-			    {
-				    if (missionSites[i].getId() == id && missionSites[i].getDeployment().getMarkerName() == type)
-				    {
-					    setDestination(missionSites[i]);
-					    found = true;
-				    }
-			    }
+                {
+                    if (missionSites[i].getId() == id && missionSites[i].getDeployment().getMarkerName() == type)
+                    {
+                        setDestination(missionSites[i]);
+                        found = true;
+                    }
+                }
                 var alienBases = save.getAlienBases();
                 for (var i = 0; i < alienBases.Count && !found; ++i)
-			    {
-				    if (alienBases[i].getId() == id && alienBases[i].getDeployment().getMarkerName() == type)
-				    {
-					    setDestination(alienBases[i]);
-					    found = true;
-				    }
-			    }
-		    }
-	    }
-	    _takeoff = int.Parse(node["takeoff"].ToString());
-	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
-	    if (_inBattlescape)
-		    setSpeed(0);
+                {
+                    if (alienBases[i].getId() == id && alienBases[i].getDeployment().getMarkerName() == type)
+                    {
+                        setDestination(alienBases[i]);
+                        found = true;
+                    }
+                }
+            }
+        }
+        _takeoff = int.Parse(node["takeoff"].ToString());
+        _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+        if (_inBattlescape)
+            setSpeed(0);
     }
 
     /**
@@ -312,14 +312,14 @@ internal class Craft : MovingTarget
      * @return Pointer to ruleset.
      */
     internal RuleCraft getRules() =>
-	    _rules;
+        _rules;
 
     /**
      * Returns the current status of the craft.
      * @return Status string.
      */
     internal string getStatus() =>
-	    _status;
+        _status;
 
     /**
      * Repairs the craft's damage every hour
@@ -355,43 +355,43 @@ internal class Craft : MovingTarget
      */
     internal string rearm(Mod.Mod mod)
     {
-	    string ammo = null;
-	    for (int i = 0; ; ++i)
-	    {
-		    if (i == _weapons.Count)
-		    {
-			    _status = "STR_REFUELLING";
-			    break;
-		    }
-		    if (_weapons[i] != null && _weapons[i].isRearming())
-		    {
-			    string clip = _weapons[i].getRules().getClipItem();
-			    int available = _base.getStorageItems().getItem(clip);
-			    if (string.IsNullOrEmpty(clip))
-			    {
+        string ammo = null;
+        for (int i = 0; ; ++i)
+        {
+            if (i == _weapons.Count)
+            {
+                _status = "STR_REFUELLING";
+                break;
+            }
+            if (_weapons[i] != null && _weapons[i].isRearming())
+            {
+                string clip = _weapons[i].getRules().getClipItem();
+                int available = _base.getStorageItems().getItem(clip);
+                if (string.IsNullOrEmpty(clip))
+                {
                     _weapons[i].rearm(0, 0);
-			    }
-			    else if (available > 0)
-			    {
-				    int used = _weapons[i].rearm(available, mod.getItem(clip).getClipSize());
+                }
+                else if (available > 0)
+                {
+                    int used = _weapons[i].rearm(available, mod.getItem(clip).getClipSize());
 
-				    if (used == available && _weapons[i].isRearming())
-				    {
-					    ammo = clip;
+                    if (used == available && _weapons[i].isRearming())
+                    {
+                        ammo = clip;
                         _weapons[i].setRearming(false);
-				    }
+                    }
 
-				    _base.getStorageItems().removeItem(clip, used);
-			    }
-			    else
-			    {
-				    ammo = clip;
+                    _base.getStorageItems().removeItem(clip, used);
+                }
+                else
+                {
+                    ammo = clip;
                     _weapons[i].setRearming(false);
-			    }
-			    break;
-		    }
-	    }
-	    return ammo;
+                }
+                break;
+            }
+        }
+        return ammo;
     }
 
     /**
@@ -435,7 +435,7 @@ internal class Craft : MovingTarget
      * @param status Status string.
      */
     internal void setStatus(string status) =>
-	    _status = status;
+        _status = status;
 
     /**
      * Checks if an item can be reused by the craft and
@@ -444,20 +444,20 @@ internal class Craft : MovingTarget
      */
     internal void reuseItem(string item)
     {
-	    if (_status != "STR_READY")
-		    return;
-	    // Check if it's ammo to reload the craft
-	    foreach (var w in _weapons)
-	    {
-		    if (w != null && item == w.getRules().getClipItem() && w.getAmmo() < w.getRules().getAmmoMax())
-		    {
-			    w.setRearming(true);
-			    _status = "STR_REARMING";
-		    }
-	    }
-	    // Check if it's fuel to refuel the craft
-	    if (item == _rules.getRefuelItem() && _fuel < _rules.getMaxFuel())
-		    _status = "STR_REFUELLING";
+        if (_status != "STR_READY")
+            return;
+        // Check if it's ammo to reload the craft
+        foreach (var w in _weapons)
+        {
+            if (w != null && item == w.getRules().getClipItem() && w.getAmmo() < w.getRules().getAmmoMax())
+            {
+                w.setRearming(true);
+                _status = "STR_REARMING";
+            }
+        }
+        // Check if it's fuel to refuel the craft
+        if (item == _rules.getRefuelItem() && _fuel < _rules.getMaxFuel())
+            _status = "STR_REFUELLING";
     }
 
     /**
@@ -466,41 +466,41 @@ internal class Craft : MovingTarget
      */
     internal void unload(Mod.Mod mod)
     {
-	    // Remove weapons
-	    foreach (var w in _weapons)
-	    {
-		    if (w != null)
-		    {
-			    _base.getStorageItems().addItem(w.getRules().getLauncherItem());
-			    _base.getStorageItems().addItem(w.getRules().getClipItem(), w.getClipsLoaded(mod));
-		    }
-	    }
+        // Remove weapons
+        foreach (var w in _weapons)
+        {
+            if (w != null)
+            {
+                _base.getStorageItems().addItem(w.getRules().getLauncherItem());
+                _base.getStorageItems().addItem(w.getRules().getClipItem(), w.getClipsLoaded(mod));
+            }
+        }
 
-	    // Remove items
-	    foreach (var it in _items.getContents())
-	    {
-		    _base.getStorageItems().addItem(it.Key, it.Value);
-	    }
+        // Remove items
+        foreach (var it in _items.getContents())
+        {
+            _base.getStorageItems().addItem(it.Key, it.Value);
+        }
 
-	    // Remove vehicles
-	    foreach (var v in _vehicles)
-	    {
-		    _base.getStorageItems().addItem(v.getRules().getType());
-		    if (v.getRules().getCompatibleAmmo().Any())
-		    {
-			    _base.getStorageItems().addItem(v.getRules().getCompatibleAmmo().First(), v.getAmmo());
-		    }
-	    }
-	    _vehicles.Clear();
+        // Remove vehicles
+        foreach (var v in _vehicles)
+        {
+            _base.getStorageItems().addItem(v.getRules().getType());
+            if (v.getRules().getCompatibleAmmo().Any())
+            {
+                _base.getStorageItems().addItem(v.getRules().getCompatibleAmmo().First(), v.getAmmo());
+            }
+        }
+        _vehicles.Clear();
 
-	    // Remove soldiers
-	    foreach (var s in _base.getSoldiers())
-	    {
-		    if (s.getCraft() == this)
-		    {
-			    s.setCraft(null);
-		    }
-	    }
+        // Remove soldiers
+        foreach (var s in _base.getSoldiers())
+        {
+            if (s.getCraft() == this)
+            {
+                s.setCraft(null);
+            }
+        }
     }
 
     /**
@@ -511,8 +511,8 @@ internal class Craft : MovingTarget
      */
     internal bool insideRadarRange(Target target)
     {
-	    double range = Nautical(_rules.getRadarRange());
-	    return (getDistance(target) <= range);
+        double range = Nautical(_rules.getRadarRange());
+        return (getDistance(target) <= range);
     }
 
     /**
@@ -523,16 +523,16 @@ internal class Craft : MovingTarget
      */
     internal bool detect(Target target)
     {
-	    if (_rules.getRadarRange() == 0 || !insideRadarRange(target))
-		    return false;
+        if (_rules.getRadarRange() == 0 || !insideRadarRange(target))
+            return false;
 
-	    // backward compatibility with vanilla
-	    if (_rules.getRadarChance() == 100)
-		    return true;
+        // backward compatibility with vanilla
+        if (_rules.getRadarChance() == 100)
+            return true;
 
-	    Ufo u = (Ufo)target;
-	    int chance = _rules.getRadarChance() * (100 + u.getVisibility()) / 100;
-	    return RNG.percent(chance);
+        Ufo u = (Ufo)target;
+        int chance = _rules.getRadarChance() * (100 + u.getVisibility()) / 100;
+        return RNG.percent(chance);
     }
 
     /**
@@ -611,7 +611,7 @@ internal class Craft : MovingTarget
      * @return Amount of fuel.
      */
     internal int getFuel() =>
-	    _fuel;
+        _fuel;
 
     /**
      * Returns whether the craft is currently low on fuel
@@ -619,7 +619,7 @@ internal class Craft : MovingTarget
      * @return True if it's low, false otherwise.
      */
     internal bool getLowFuel() =>
-	    _lowFuel;
+        _lowFuel;
 
     /**
      * Changes whether the craft is currently low on fuel
@@ -635,7 +635,7 @@ internal class Craft : MovingTarget
      * @return Fuel amount.
      */
     internal int getFuelLimit() =>
-	    getFuelLimit(_base);
+        getFuelLimit(_base);
 
     /**
      * Returns the minimum required fuel for the
@@ -659,7 +659,7 @@ internal class Craft : MovingTarget
      * @return Fuel amount.
      */
     int getFuelConsumption() =>
-	    getFuelConsumption(_speed);
+        getFuelConsumption(_speed);
 
     /**
      * Returns the amount of fuel the craft uses up
@@ -669,9 +669,9 @@ internal class Craft : MovingTarget
      */
     int getFuelConsumption(int speed)
     {
-	    if (!string.IsNullOrEmpty(_rules.getRefuelItem()))
-		    return 1;
-	    return (int)Math.Floor(speed / 100.0);
+        if (!string.IsNullOrEmpty(_rules.getRefuelItem()))
+            return 1;
+        return (int)Math.Floor(speed / 100.0);
     }
 
     /**
@@ -681,18 +681,18 @@ internal class Craft : MovingTarget
      */
     internal int getNumSoldiers()
     {
-	    if (_rules.getSoldiers() == 0)
-		    return 0;
+        if (_rules.getSoldiers() == 0)
+            return 0;
 
-	    int total = 0;
+        int total = 0;
 
-	    foreach (var i in _base.getSoldiers())
-	    {
-		    if (i.getCraft() == this)
-			    total++;
-	    }
+        foreach (var i in _base.getSoldiers())
+        {
+            if (i.getCraft() == this)
+                total++;
+        }
 
-	    return total;
+        return total;
     }
 
     /**
@@ -701,14 +701,14 @@ internal class Craft : MovingTarget
      * @return Number of vehicles.
      */
     internal int getNumVehicles() =>
-	    _vehicles.Count;
+        _vehicles.Count;
 
     /**
      * Returns the craft's dogfight status.
      * @return Is the craft ion a dogfight?
      */
     internal bool isInDogfight() =>
-	    _inDogfight;
+        _inDogfight;
 
     /**
      * Changes the craft's dogfight status.
@@ -725,7 +725,7 @@ internal class Craft : MovingTarget
      * @return Is the craft destroyed?
      */
     internal bool isDestroyed() =>
-	    (_damage >= _rules.getMaxDamage());
+        (_damage >= _rules.getMaxDamage());
 
     /**
      * Moves the craft to its destination.
@@ -758,14 +758,14 @@ internal class Craft : MovingTarget
      * @param order Interception order.
      */
     internal void setInterceptionOrder(int order) =>
-	    _interceptionOrder = order;
+        _interceptionOrder = order;
 
     /**
      * Returns the base the craft belongs to.
      * @return Pointer to base.
      */
     internal Base getBase() =>
-	    _base;
+        _base;
 
     /**
      * Changes the craft's battlescape status.
@@ -783,7 +783,7 @@ internal class Craft : MovingTarget
      * @return Interception order.
      */
     internal int getInterceptionOrder() =>
-	    _interceptionOrder;
+        _interceptionOrder;
 
     /**
      * Returns the ratio between the amount of damage this
@@ -792,7 +792,7 @@ internal class Craft : MovingTarget
      * @return Percentage of damage.
      */
     internal int getDamagePercentage() =>
-	    (int)Math.Floor((double)_damage / _rules.getMaxDamage() * 100);
+        (int)Math.Floor((double)_damage / _rules.getMaxDamage() * 100);
 
     /**
      * Returns whether the craft has just done a ground mission,
@@ -800,7 +800,7 @@ internal class Craft : MovingTarget
      * @return True if it's returning, false otherwise.
      */
     internal bool getMissionComplete() =>
-	    _mission;
+        _mission;
 
     /**
      * Returns the amount of weapons currently
@@ -809,22 +809,22 @@ internal class Craft : MovingTarget
      */
     internal int getNumWeapons()
     {
-	    if (_rules.getWeapons() == 0)
-	    {
-		    return 0;
-	    }
+        if (_rules.getWeapons() == 0)
+        {
+            return 0;
+        }
 
-	    int total = 0;
+        int total = 0;
 
-	    foreach (var i in _weapons)
-	    {
-		    if (i != null)
-		    {
-			    total++;
-		    }
-	    }
+        foreach (var i in _weapons)
+        {
+            if (i != null)
+            {
+                total++;
+            }
+        }
 
-	    return total;
+        return total;
     }
 
     /**
@@ -833,15 +833,15 @@ internal class Craft : MovingTarget
      */
     internal string getAltitude()
     {
-	    Ufo u = (Ufo)_dest;
-	    if (u != null && u.getAltitude() != "STR_GROUND")
-	    {
-		    return u.getAltitude();
-	    }
-	    else
-	    {
-		    return "STR_VERY_LOW";
-	    }
+        Ufo u = (Ufo)_dest;
+        if (u != null && u.getAltitude() != "STR_GROUND")
+        {
+            return u.getAltitude();
+        }
+        else
+        {
+            return "STR_VERY_LOW";
+        }
     }
 
     /**
@@ -850,7 +850,7 @@ internal class Craft : MovingTarget
      * @return Percentage of fuel.
      */
     internal int getFuelPercentage() =>
-	    (int)Math.Floor((double)_fuel / _rules.getMaxFuel() * 100.0);
+        (int)Math.Floor((double)_fuel / _rules.getMaxFuel() * 100.0);
 
     /**
      * Returns the maximum range the craft can travel
@@ -858,7 +858,7 @@ internal class Craft : MovingTarget
      * @return Range in radians.
      */
     internal double getBaseRange() =>
-	    _fuel / 2.0 / getFuelConsumption(_rules.getMaxSpeed()) * _speedMaxRadian;
+        _fuel / 2.0 / getFuelConsumption(_rules.getMaxSpeed()) * _speedMaxRadian;
 
     /**
      * Returns the amount of space available for
@@ -866,7 +866,7 @@ internal class Craft : MovingTarget
      * @return Space available.
      */
     internal int getSpaceAvailable() =>
-	    _rules.getSoldiers() - getSpaceUsed();
+        _rules.getSoldiers() - getSpaceUsed();
 
     /**
      * Returns the amount of space in use by
@@ -875,12 +875,12 @@ internal class Craft : MovingTarget
      */
     internal int getSpaceUsed()
     {
-	    int vehicleSpaceUsed = 0;
-	    foreach (var i in _vehicles)
-	    {
-		    vehicleSpaceUsed += i.getSize();
-	    }
-	    return getNumSoldiers() + vehicleSpaceUsed;
+        int vehicleSpaceUsed = 0;
+        foreach (var i in _vehicles)
+        {
+            vehicleSpaceUsed += i.getSize();
+        }
+        return getNumSoldiers() + vehicleSpaceUsed;
     }
 
     /**
@@ -891,15 +891,15 @@ internal class Craft : MovingTarget
      */
     internal int getVehicleCount(string vehicle)
     {
-	    int total = 0;
-	    foreach (var i in _vehicles)
-	    {
-		    if (i.getRules().getType() == vehicle)
-		    {
-			    total++;
-		    }
-	    }
-	    return total;
+        int total = 0;
+        foreach (var i in _vehicles)
+        {
+            if (i.getRules().getType() == vehicle)
+            {
+                total++;
+            }
+        }
+        return total;
     }
 
     /**
@@ -914,7 +914,7 @@ internal class Craft : MovingTarget
      * @return Amount of damage.
      */
     internal int getDamage() =>
-	    _damage;
+        _damage;
 
     /**
      * Returns the amount of equipment currently
@@ -922,14 +922,14 @@ internal class Craft : MovingTarget
      * @return Number of items.
      */
     internal int getNumEquipment() =>
-	    _items.getTotalQuantity();
+        _items.getTotalQuantity();
 
     /**
      * Returns the craft's battlescape status.
      * @return Is the craft currently in battle?
      */
     internal bool isInBattlescape() =>
-	    _inBattlescape;
+        _inBattlescape;
 
     /**
      * Changes whether the craft has just done a ground mission,
@@ -937,7 +937,7 @@ internal class Craft : MovingTarget
      * @param mission True if it's returning, false otherwise.
      */
     internal void setMissionComplete(bool mission) =>
-	    _mission = mission;
+        _mission = mission;
 
     /**
      * Returns the craft's unique type used for
@@ -945,7 +945,7 @@ internal class Craft : MovingTarget
      * @return ID.
      */
     internal override string getType() =>
-	    _rules.getType();
+        _rules.getType();
 
     /**
      * Returns the craft's unique default name.
@@ -953,21 +953,21 @@ internal class Craft : MovingTarget
      * @return Full name.
      */
     internal override string getDefaultName(Language lang) =>
-	    lang.getString("STR_CRAFTNAME").arg(lang.getString(getType())).arg(_id);
+        lang.getString("STR_CRAFTNAME").arg(lang.getString(getType())).arg(_id);
 
     /**
      * Returns the longitude of the meeting point.
      * @return Angle in rad.
      */
     internal double getMeetLongitude() =>
-	    _meetPointLon;
+        _meetPointLon;
 
     /**
      * Returns the latitude of the meeting point.
      * @return Angle in rad.
      */
     internal double getMeetLatitude() =>
-	    _meetPointLat;
+        _meetPointLat;
 
     /**
      * Loads a craft unique identifier from a YAML file.
@@ -975,7 +975,7 @@ internal class Craft : MovingTarget
      * @return Unique craft id.
      */
     internal static KeyValuePair<string, int> loadId(YamlNode node) =>
-	    KeyValuePair.Create(node["type"].ToString(), int.Parse(node["id"].ToString()));
+        KeyValuePair.Create(node["type"].ToString(), int.Parse(node["id"].ToString()));
 
     /**
      * Saves the craft to a YAML file.
@@ -984,39 +984,39 @@ internal class Craft : MovingTarget
     internal override YamlNode save()
     {
         var node = (YamlMappingNode)base.save();
-	    node.Add("type", _rules.getType());
-	    node.Add("fuel", _fuel.ToString());
-	    node.Add("damage", _damage.ToString());
-	    foreach (var i in _weapons)
-	    {
-		    var subnode = new YamlMappingNode();
-		    if (i != null)
-		    {
-			    subnode = (YamlMappingNode)i.save();
-		    }
-		    else
-		    {
-			    subnode.Add("type", "0");
-		    }
-		    ((YamlSequenceNode)node["weapons"]).Add(subnode);
-	    }
-	    node.Add("items", _items.save());
-	    foreach (var i in _vehicles)
-	    {
-		    ((YamlSequenceNode)node["vehicles"]).Add(i.save());
-	    }
-	    node.Add("status", _status);
-	    if (_lowFuel)
-		    node.Add("lowFuel", _lowFuel.ToString());
-	    if (_mission)
-		    node.Add("mission", _mission.ToString());
-	    if (_inBattlescape)
-		    node.Add("inBattlescape", _inBattlescape.ToString());
-	    if (_interceptionOrder != 0)
-		    node.Add("interceptionOrder", _interceptionOrder.ToString());
-	    if (_takeoff != 0)
-		    node.Add("takeoff", _takeoff.ToString());
-	    return node;
+        node.Add("type", _rules.getType());
+        node.Add("fuel", _fuel.ToString());
+        node.Add("damage", _damage.ToString());
+        foreach (var i in _weapons)
+        {
+            var subnode = new YamlMappingNode();
+            if (i != null)
+            {
+                subnode = (YamlMappingNode)i.save();
+            }
+            else
+            {
+                subnode.Add("type", "0");
+            }
+            ((YamlSequenceNode)node["weapons"]).Add(subnode);
+        }
+        node.Add("items", _items.save());
+        foreach (var i in _vehicles)
+        {
+            ((YamlSequenceNode)node["vehicles"]).Add(i.save());
+        }
+        node.Add("status", _status);
+        if (_lowFuel)
+            node.Add("lowFuel", _lowFuel.ToString());
+        if (_mission)
+            node.Add("mission", _mission.ToString());
+        if (_inBattlescape)
+            node.Add("inBattlescape", _inBattlescape.ToString());
+        if (_interceptionOrder != 0)
+            node.Add("interceptionOrder", _interceptionOrder.ToString());
+        if (_takeoff != 0)
+            node.Add("takeoff", _takeoff.ToString());
+        return node;
     }
 
     /**
@@ -1025,5 +1025,5 @@ internal class Craft : MovingTarget
      * @return Distance in radian.
      */
     double getDistanceFromBase() =>
-	    getDistance(_base);
+        getDistance(_base);
 }

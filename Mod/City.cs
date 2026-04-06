@@ -48,7 +48,7 @@ internal class City : Target
      * @return Marker sprite, -1 if none.
      */
     internal override int getMarker() =>
-	    8;
+        8;
 
     /**
      * Returns the city's unique identifying name.
@@ -56,9 +56,9 @@ internal class City : Target
      * @return Full name.
      */
     internal override string getName(Language lang) =>
-	    lang.getString(_name);
+        lang.getString(_name);
 
-	/// Gets the city's type (unused).
-	internal override string getType() =>
+    /// Gets the city's type (unused).
+    internal override string getType() =>
         string.Empty;
 }

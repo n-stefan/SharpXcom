@@ -164,8 +164,8 @@ internal class BuildNewBaseState : State
         _globe.cartToPolar((short)_mousex, (short)_mousey, out lon, out lat);
         //if (lon == lon && lat == lat)
         //{
-            _globe.setNewBaseHoverPos(lon, lat);
-            _globe.setNewBaseHover(true);
+        _globe.setNewBaseHoverPos(lon, lat);
+        _globe.setNewBaseHover(true);
         //}
         if (Options.globeRadarLines && !(AreSame(_oldlat, lat) && AreSame(_oldlon, lon)))
         {
@@ -319,10 +319,10 @@ internal class BuildNewBaseState : State
      */
     internal override void init()
     {
-	    base.init();
-	    _globe.onMouseOver(globeHover);
-	    _globe.rotateStop();
-	    _globe.setNewBaseHover(true);
+        base.init();
+        _globe.onMouseOver(globeHover);
+        _globe.rotateStop();
+        _globe.setNewBaseHover(true);
     }
 
     /**
@@ -331,9 +331,9 @@ internal class BuildNewBaseState : State
      */
     void globeHover(Action action)
     {
-	    _mousex = (int)Math.Floor(action.getAbsoluteXMouse());
-	    _mousey = (int)Math.Floor(action.getAbsoluteYMouse());
-	    if (!_hoverTimer.isRunning()) _hoverTimer.start();
+        _mousex = (int)Math.Floor(action.getAbsoluteXMouse());
+        _mousey = (int)Math.Floor(action.getAbsoluteYMouse());
+        if (!_hoverTimer.isRunning()) _hoverTimer.start();
     }
 
     /**
@@ -341,9 +341,9 @@ internal class BuildNewBaseState : State
      */
     internal override void think()
     {
-	    base.think();
-	    _globe.think();
-	    _hoverTimer.think(this, null);
+        base.think();
+        _globe.think();
+        _hoverTimer.think(this, null);
     }
 
     /**
@@ -352,8 +352,8 @@ internal class BuildNewBaseState : State
      */
     internal override void handle(Action action)
     {
-	    base.handle(action);
-	    _globe.handle(action, this);
+        base.handle(action);
+        _globe.handle(action, this);
     }
 
     /**
@@ -363,13 +363,13 @@ internal class BuildNewBaseState : State
      */
     internal override void resize(ref int dX, ref int dY)
     {
-	    foreach (var i in _surfaces)
-	    {
-		    i.setX(i.getX() + dX / 2);
-		    if (i != _window && i != _btnCancel && i != _txtTitle)
-		    {
-			    i.setY(i.getY() + dY / 2);
-		    }
-	    }
+        foreach (var i in _surfaces)
+        {
+            i.setX(i.getX() + dX / 2);
+            if (i != _window && i != _btnCancel && i != _txtTitle)
+            {
+                i.setY(i.getY() + dY / 2);
+            }
+        }
     }
 }

@@ -143,7 +143,7 @@ internal class Language
      * @return Text wrapping.
      */
     internal TextWrapping getTextWrapping() =>
-	    _wrap;
+        _wrap;
 
     /**
      * Returns the localized text with the specified ID.
@@ -153,22 +153,22 @@ internal class Language
      */
     internal LocalizedText getString(string id)
     {
-	    if (string.IsNullOrEmpty(id))
-	    {
-		    return id;
-	    }
-	    // Check if translation strings recently learned pluralization.
-	    if (_strings.ContainsKey(id))
-	    {
-		    return getString(id, uint.MaxValue);
-	    }
-	    else
-	    {
-		    return _strings[id];
-	    }
+        if (string.IsNullOrEmpty(id))
+        {
+            return id;
+        }
+        // Check if translation strings recently learned pluralization.
+        if (_strings.ContainsKey(id))
+        {
+            return getString(id, uint.MaxValue);
+        }
+        else
+        {
+            return _strings[id];
+        }
     }
 
-	static HashSet<string> notFoundIds;
+    static HashSet<string> notFoundIds;
     /**
      * Returns the localized text with the specified ID, in the proper form for @a n.
      * The substitution of @a n has already happened in the returned LocalizedText.
@@ -179,11 +179,11 @@ internal class Language
      */
     internal LocalizedText getString(string id, uint n)
     {
-	    Debug.Assert(!string.IsNullOrEmpty(id));
+        Debug.Assert(!string.IsNullOrEmpty(id));
         string id1 = $"{id}_zero", id2 = $"{id}{_handler.getSuffix(n)}", id3 = $"{id}_other";
         if (n == 0)
-	    {
-		    if (!_strings.ContainsKey(id1) && // Try specialized form
+        {
+            if (!_strings.ContainsKey(id1) && // Try specialized form
                 !_strings.ContainsKey(id2) && // Try proper form by language
                 !_strings.ContainsKey(id3)) // Try default form
             {
@@ -196,22 +196,22 @@ internal class Language
                 return id;
             }
         }
-	    
-	    if (n == uint.MaxValue) // Special case
-	    {
-		    if (!notFoundIds.Contains(id))
-		    {
-			    notFoundIds.Add(id);
+
+        if (n == uint.MaxValue) // Special case
+        {
+            if (!notFoundIds.Contains(id))
+            {
+                notFoundIds.Add(id);
                 Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {id} has plural format in ``{Options.language}``. Code assumes singular format.");
                 //Hint: Change ``getstring(ID).arg(value)`` to ``getString(ID, value)`` in appropriate files.
-		    }
+            }
             return _strings[id1] ?? _strings[id2] ?? _strings[id3];
-	    }
-	    else
-	    {
+        }
+        else
+        {
             string marker = "{N}", val = n.ToString(), txt = _strings[id1] ?? _strings[id2] ?? _strings[id3];
             return Unicode.replace(txt, marker, val);
-	    }
+        }
     }
 
     /**
@@ -223,16 +223,16 @@ internal class Language
      */
     LocalizedText getString(string id, SoldierGender gender)
     {
-	    string genderId;
-	    if (gender == SoldierGender.GENDER_MALE)
-	    {
-		    genderId = id + "_MALE";
-	    }
-	    else
-	    {
-		    genderId = id + "_FEMALE";
-	    }
-	    return getString(genderId);
+        string genderId;
+        if (gender == SoldierGender.GENDER_MALE)
+        {
+            genderId = id + "_MALE";
+        }
+        else
+        {
+            genderId = id + "_FEMALE";
+        }
+        return getString(genderId);
     }
 
     /// Checks if a language is in the supported name list.
@@ -245,17 +245,17 @@ internal class Language
      */
     internal void loadFile(string path)
     {
-	    try
-	    {
-		    if (CrossPlatform.fileExists(path))
-		    {
+        try
+        {
+            if (CrossPlatform.fileExists(path))
+            {
                 load(path);
-		    }
-	    }
-	    catch (YamlException e)
-	    {
-		    throw new Exception(path + ": " + e.Message);
-	    }
+            }
+        }
+        catch (YamlException e)
+        {
+            throw new Exception(path + ": " + e.Message);
+        }
     }
 
     /**
@@ -265,13 +265,13 @@ internal class Language
      */
     internal void loadRule(Dictionary<string, ExtraStrings> extraStrings, string id)
     {
-	    if (extraStrings.TryGetValue(id, out ExtraStrings extras))
-	    {
-		    foreach (var strings in extras.getStrings())
-		    {
-			    _strings[strings.Key] = loadString(strings.Value);
-		    }
-	    }
+        if (extraStrings.TryGetValue(id, out ExtraStrings extras))
+        {
+            foreach (var strings in extras.getStrings())
+            {
+                _strings[strings.Key] = loadString(strings.Value);
+            }
+        }
     }
 
     /**
@@ -281,10 +281,10 @@ internal class Language
      */
     string loadString(string s)
     {
-	    s = Unicode.replace(s, "{NEWLINE}", "\n");
+        s = Unicode.replace(s, "{NEWLINE}", "\n");
         s = Unicode.replace(s, "{SMALLLINE}", "\x02"); // Unicode::TOK_NL_SMALL
         s = Unicode.replace(s, "{ALT}", "\x01"); // Unicode::TOK_COLOR_FLIP
-	    return s;
+        return s;
     }
 
     /**
@@ -298,42 +298,42 @@ internal class Language
         using var input = new StreamReader(filename);
         var yaml = new YamlStream();
         yaml.Load(input);
-	    YamlMappingNode lang;
-	    if (((YamlMappingNode)yaml.Documents[0].RootNode).Children[0].Value is YamlMappingNode m)
-	    {
-		    lang = m;
-	    }
-	    // Fallback when file is missing language specifier
-	    else
-	    {
-		    lang = (YamlMappingNode)yaml.Documents[0].RootNode;
-	    }
-	    foreach (var i in lang.Children)
-	    {
-		    // Regular strings
-		    if (i.Value is YamlScalarNode)
-		    {
+        YamlMappingNode lang;
+        if (((YamlMappingNode)yaml.Documents[0].RootNode).Children[0].Value is YamlMappingNode m)
+        {
+            lang = m;
+        }
+        // Fallback when file is missing language specifier
+        else
+        {
+            lang = (YamlMappingNode)yaml.Documents[0].RootNode;
+        }
+        foreach (var i in lang.Children)
+        {
+            // Regular strings
+            if (i.Value is YamlScalarNode)
+            {
                 string value = i.Value.ToString();
-			    if (!string.IsNullOrEmpty(value))
-			    {
-				    string key = i.Key.ToString();
-				    _strings[key] = loadString(value);
-			    }
-		    }
-		    // Strings with plurality
-		    else if (i.Value is YamlMappingNode n)
-		    {
-			    foreach (var j in n.Children)
-			    {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    string key = i.Key.ToString();
+                    _strings[key] = loadString(value);
+                }
+            }
+            // Strings with plurality
+            else if (i.Value is YamlMappingNode n)
+            {
+                foreach (var j in n.Children)
+                {
                     string value = j.Value.ToString();
-				    if (!string.IsNullOrEmpty(value))
-				    {
-					    string key = i.Key.ToString() + "_" + j.Key.ToString();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        string key = i.Key.ToString() + "_" + j.Key.ToString();
                         _strings[key] = loadString(value);
-				    }
-			    }
-		    }
-	    }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -369,7 +369,7 @@ internal class Language
      * @return Text direction.
      */
     internal TextDirection getTextDirection() =>
-	    _direction;
+        _direction;
 
     /**
      * Outputs all the language IDs and strings
@@ -381,31 +381,31 @@ internal class Language
         try
         {
             using var htmlFile = new StreamWriter(filename);
-	        htmlFile.WriteLine("<table border=\"1\" width=\"100%\">");
-	        htmlFile.WriteLine("<tr><th>ID String</th><th>English String</th></tr>");
-	        foreach (var i in _strings)
-	        {
-		        htmlFile.WriteLine($"<tr><td>{i.Key}</td><td>");
-		        string s = i.Value;
-		        foreach (var j in s)
-		        {
-			        if (j == Unicode.TOK_NL_SMALL || j == '\n')
-			        {
-				        htmlFile.Write("<br />");
-			        }
-			        else
-			        {
-				        htmlFile.Write(j);
-			        }
-		        }
-		        htmlFile.WriteLine("</td></tr>");
-	        }
-	        htmlFile.WriteLine("</table>");
-	        htmlFile.Close();
-	    }
-	    catch (Exception e)
-	    {
+            htmlFile.WriteLine("<table border=\"1\" width=\"100%\">");
+            htmlFile.WriteLine("<tr><th>ID String</th><th>English String</th></tr>");
+            foreach (var i in _strings)
+            {
+                htmlFile.WriteLine($"<tr><td>{i.Key}</td><td>");
+                string s = i.Value;
+                foreach (var j in s)
+                {
+                    if (j == Unicode.TOK_NL_SMALL || j == '\n')
+                    {
+                        htmlFile.Write("<br />");
+                    }
+                    else
+                    {
+                        htmlFile.Write(j);
+                    }
+                }
+                htmlFile.WriteLine("</td></tr>");
+            }
+            htmlFile.WriteLine("</table>");
+            htmlFile.Close();
+        }
+        catch (Exception e)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {e.Message}");
-	    }
+        }
     }
 }

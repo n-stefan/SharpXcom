@@ -135,8 +135,8 @@ internal class ResearchState : State
      */
     internal override void init()
     {
-	    base.init();
-	    fillProjectList();
+        base.init();
+        fillProjectList();
     }
 
     /**
@@ -144,18 +144,18 @@ internal class ResearchState : State
      */
     void fillProjectList()
     {
-	    List<ResearchProject> baseProjects = _base.getResearch();
-	    _lstResearch.clearList();
-	    foreach (var iter in baseProjects)
-	    {
-		    string sstr = iter.getAssigned().ToString();
-		    RuleResearch r = iter.getRules();
+        List<ResearchProject> baseProjects = _base.getResearch();
+        _lstResearch.clearList();
+        foreach (var iter in baseProjects)
+        {
+            string sstr = iter.getAssigned().ToString();
+            RuleResearch r = iter.getRules();
 
-		    string wstr = tr(r.getName());
-		    _lstResearch.addRow(3, wstr, sstr, tr(iter.getResearchProgress()));
-	    }
-	    _txtAvailable.setText(tr("STR_SCIENTISTS_AVAILABLE").arg(_base.getAvailableScientists()));
-	    _txtAllocated.setText(tr("STR_SCIENTISTS_ALLOCATED").arg(_base.getAllocatedScientists()));
-	    _txtSpace.setText(tr("STR_LABORATORY_SPACE_AVAILABLE").arg(_base.getFreeLaboratories()));
+            string wstr = tr(r.getName());
+            _lstResearch.addRow(3, wstr, sstr, tr(iter.getResearchProgress()));
+        }
+        _txtAvailable.setText(tr("STR_SCIENTISTS_AVAILABLE").arg(_base.getAvailableScientists()));
+        _txtAllocated.setText(tr("STR_SCIENTISTS_ALLOCATED").arg(_base.getAllocatedScientists()));
+        _txtSpace.setText(tr("STR_LABORATORY_SPACE_AVAILABLE").arg(_base.getFreeLaboratories()));
     }
 }

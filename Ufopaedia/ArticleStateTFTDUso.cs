@@ -21,35 +21,35 @@ namespace SharpXcom.Ufopaedia;
 
 internal class ArticleStateTFTDUso : ArticleStateTFTD
 {
-	TextList _lstInfo;
+    TextList _lstInfo;
 
-	internal ArticleStateTFTDUso(ArticleDefinitionTFTD defs) : base(defs)
-	{
-		_txtInfo.setHeight(112);
+    internal ArticleStateTFTDUso(ArticleDefinitionTFTD defs) : base(defs)
+    {
+        _txtInfo.setHeight(112);
 
-		RuleUfo ufo = _game.getMod().getUfo(defs.id, true);
+        RuleUfo ufo = _game.getMod().getUfo(defs.id, true);
 
-		_lstInfo = new TextList(150, 50, 168, 142);
-		add(_lstInfo);
+        _lstInfo = new TextList(150, 50, 168, 142);
+        add(_lstInfo);
 
-		_lstInfo.setColor((byte)(Palette.blockOffset(0)+2));
-		_lstInfo.setColumns(2, 95, 55);
-		_lstInfo.setDot(true);
+        _lstInfo.setColor((byte)(Palette.blockOffset(0) + 2));
+        _lstInfo.setColumns(2, 95, 55);
+        _lstInfo.setDot(true);
 
-		_lstInfo.addRow(2, tr("STR_DAMAGE_CAPACITY"), Unicode.formatNumber(ufo.getMaxDamage()));
+        _lstInfo.addRow(2, tr("STR_DAMAGE_CAPACITY"), Unicode.formatNumber(ufo.getMaxDamage()));
 
-		_lstInfo.addRow(2, tr("STR_WEAPON_POWER"), Unicode.formatNumber(ufo.getWeaponPower()));
+        _lstInfo.addRow(2, tr("STR_WEAPON_POWER"), Unicode.formatNumber(ufo.getWeaponPower()));
 
-		_lstInfo.addRow(2, tr("STR_WEAPON_RANGE"), tr("STR_KILOMETERS").arg(ufo.getWeaponRange()));
+        _lstInfo.addRow(2, tr("STR_WEAPON_RANGE"), tr("STR_KILOMETERS").arg(ufo.getWeaponRange()));
 
-		_lstInfo.addRow(2, tr("STR_MAXIMUM_SPEED"), tr("STR_KNOTS").arg(Unicode.formatNumber(ufo.getMaxSpeed())));
-		for (uint i = 0; i != 4; ++i)
-		{
-			_lstInfo.setCellColor(i, 1, (byte)(Palette.blockOffset(15)+4));
-		}
+        _lstInfo.addRow(2, tr("STR_MAXIMUM_SPEED"), tr("STR_KNOTS").arg(Unicode.formatNumber(ufo.getMaxSpeed())));
+        for (uint i = 0; i != 4; ++i)
+        {
+            _lstInfo.setCellColor(i, 1, (byte)(Palette.blockOffset(15) + 4));
+        }
 
-		centerAllSurfaces();
-	}
+        centerAllSurfaces();
+    }
 
-	~ArticleStateTFTDUso() { }
+    ~ArticleStateTFTDUso() { }
 }

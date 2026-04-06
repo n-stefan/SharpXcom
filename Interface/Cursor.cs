@@ -51,7 +51,7 @@ internal class Cursor : Surface
      * @return Color value.
      */
     internal byte getColor() =>
-	    _color;
+        _color;
 
     /**
      * Draws a pointer-shaped cursor graphic.

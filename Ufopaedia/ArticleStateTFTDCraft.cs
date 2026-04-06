@@ -21,31 +21,31 @@ namespace SharpXcom.Ufopaedia;
 
 internal class ArticleStateTFTDCraft : ArticleStateTFTD
 {
-	protected Text _txtStats;
+    protected Text _txtStats;
 
-	internal ArticleStateTFTDCraft(ArticleDefinitionTFTD defs) : base(defs)
-	{
-		_txtInfo.setHeight(80);
+    internal ArticleStateTFTDCraft(ArticleDefinitionTFTD defs) : base(defs)
+    {
+        _txtInfo.setHeight(80);
 
-		RuleCraft craft = _game.getMod().getCraft(defs.id, true);
-		_txtStats = new Text(131, 56, 187, 116);
-		add(_txtStats);
+        RuleCraft craft = _game.getMod().getCraft(defs.id, true);
+        _txtStats = new Text(131, 56, 187, 116);
+        add(_txtStats);
 
-		_txtStats.setColor((byte)(Palette.blockOffset(0)+2));
-		_txtStats.setSecondaryColor((byte)(Palette.blockOffset(15)+4));
+        _txtStats.setColor((byte)(Palette.blockOffset(0) + 2));
+        _txtStats.setSecondaryColor((byte)(Palette.blockOffset(15) + 4));
 
-		var ss = new StringBuilder();
-		ss.Append($"{tr("STR_MAXIMUM_SPEED_UC").arg(Unicode.formatNumber(craft.getMaxSpeed()))}\n");
-		ss.Append($"{tr("STR_ACCELERATION").arg(craft.getAcceleration())}\n");
-		ss.Append($"{tr("STR_FUEL_CAPACITY").arg(Unicode.formatNumber(craft.getMaxFuel()))}\n");
-		ss.Append($"{tr("STR_WEAPON_PODS").arg(craft.getWeapons())}\n");
-		ss.Append($"{tr("STR_DAMAGE_CAPACITY_UC").arg(Unicode.formatNumber(craft.getMaxDamage()))}\n");
-		ss.Append($"{tr("STR_CARGO_SPACE").arg(craft.getSoldiers())}\n");
-		ss.Append(tr("STR_HWP_CAPACITY").arg(craft.getVehicles()));
-		_txtStats.setText(ss.ToString());
+        var ss = new StringBuilder();
+        ss.Append($"{tr("STR_MAXIMUM_SPEED_UC").arg(Unicode.formatNumber(craft.getMaxSpeed()))}\n");
+        ss.Append($"{tr("STR_ACCELERATION").arg(craft.getAcceleration())}\n");
+        ss.Append($"{tr("STR_FUEL_CAPACITY").arg(Unicode.formatNumber(craft.getMaxFuel()))}\n");
+        ss.Append($"{tr("STR_WEAPON_PODS").arg(craft.getWeapons())}\n");
+        ss.Append($"{tr("STR_DAMAGE_CAPACITY_UC").arg(Unicode.formatNumber(craft.getMaxDamage()))}\n");
+        ss.Append($"{tr("STR_CARGO_SPACE").arg(craft.getSoldiers())}\n");
+        ss.Append(tr("STR_HWP_CAPACITY").arg(craft.getVehicles()));
+        _txtStats.setText(ss.ToString());
 
-		centerAllSurfaces();
-	}
+        centerAllSurfaces();
+    }
 
-	~ArticleStateTFTDCraft() { }
+    ~ArticleStateTFTDCraft() { }
 }

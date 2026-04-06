@@ -76,47 +76,47 @@ internal class Frame : Surface
      */
     internal override void draw()
     {
-	    base.draw();
-	    SDL_Rect square;
+        base.draw();
+        SDL_Rect square;
 
-	    square.x = 0;
-	    square.w = getWidth();
-	    square.y = 0;
-	    square.h = getHeight();
+        square.x = 0;
+        square.w = getWidth();
+        square.y = 0;
+        square.h = getHeight();
 
-	    int mul = 1;
-	    if (_contrast)
-	    {
-		    mul = 2;
-	    }
+        int mul = 1;
+        if (_contrast)
+        {
+            mul = 2;
+        }
 
-	    // _color denotes our middle line color, so we start (half the thickness times the multiplier) steps darker and build up
-	    byte color = (byte)(_color + ((1 + _thickness) * mul) / 2);
-	    // we want the darkest version of this colour to outline any thick borders
-	    byte darkest = (byte)(Palette.blockOffset((byte)(_color / 16)) + 15);
-	    for (int i = 0; i < _thickness; ++i)
-	    {
-		    if (_thickness > 5 && (i == 0 || i == _thickness -1))
-			    drawRect(ref square, darkest);
-		    else
-			    drawRect(ref square, color);
-		    if (i < _thickness / 2)
-			    color = (byte)(color - 1 * mul);
-		    else
-			    color = (byte)(color + 1 * mul);
-		    square.x++;
-		    square.y++;
-		    if (square.w >= 2)
-			    square.w -= 2;
-		    else
-			    square.w = 1;
+        // _color denotes our middle line color, so we start (half the thickness times the multiplier) steps darker and build up
+        byte color = (byte)(_color + ((1 + _thickness) * mul) / 2);
+        // we want the darkest version of this colour to outline any thick borders
+        byte darkest = (byte)(Palette.blockOffset((byte)(_color / 16)) + 15);
+        for (int i = 0; i < _thickness; ++i)
+        {
+            if (_thickness > 5 && (i == 0 || i == _thickness - 1))
+                drawRect(ref square, darkest);
+            else
+                drawRect(ref square, color);
+            if (i < _thickness / 2)
+                color = (byte)(color - 1 * mul);
+            else
+                color = (byte)(color + 1 * mul);
+            square.x++;
+            square.y++;
+            if (square.w >= 2)
+                square.w -= 2;
+            else
+                square.w = 1;
 
-		    if (square.h >= 2)
-			    square.h -= 2;
-		    else
-			    square.h = 1;
-	    }
-	    drawRect(ref square, _bg);
+            if (square.h >= 2)
+                square.h -= 2;
+            else
+                square.h = 1;
+        }
+        drawRect(ref square, _bg);
     }
 
     /**
@@ -124,7 +124,7 @@ internal class Frame : Surface
      * @return Color value.
      */
     internal byte getSecondaryColor() =>
-	    _bg;
+        _bg;
 
     /**
      * Changes the color used to draw the background.
@@ -132,8 +132,8 @@ internal class Frame : Surface
      */
     internal override void setSecondaryColor(byte bg)
     {
-	    _bg = bg;
-	    _redraw = true;
+        _bg = bg;
+        _redraw = true;
     }
 
     /**
@@ -144,7 +144,7 @@ internal class Frame : Surface
      * @param color Color value.
      */
     internal override void setBorderColor(byte color) =>
-	    setColor(color);
+        setColor(color);
 
     /**
      * Enables/disables high contrast color. Mostly used for
@@ -153,8 +153,8 @@ internal class Frame : Surface
      */
     internal override void setHighContrast(bool contrast)
     {
-	    _contrast = contrast;
-	    _redraw = true;
+        _contrast = contrast;
+        _redraw = true;
     }
 
     /**
@@ -162,5 +162,5 @@ internal class Frame : Surface
      * @return Color value.
      */
     byte getColor() =>
-	    _color;
+        _color;
 }

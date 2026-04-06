@@ -47,7 +47,8 @@ internal class Screen
     SDL_Rect _clear;
     int _bpp;
     OpenGL glOutput;
-    /* SDL_Window */ nint _window;
+    /* SDL_Window */
+    nint _window;
     Surface _surface;
 
     /**
@@ -144,7 +145,7 @@ internal class Screen
      * @return the vertical offset.
      */
     internal int getDY() =>
-	    (_baseHeight - ORIGINAL_HEIGHT) / 2;
+        (_baseHeight - ORIGINAL_HEIGHT) / 2;
 
     /**
      * Returns the screen's 8bpp palette.
@@ -541,28 +542,28 @@ internal class Screen
      * @return Scale factor.
      */
     internal double getXScale() =>
-	    _scaleX;
+        _scaleX;
 
     /**
      * Returns the screen's Y scale.
      * @return Scale factor.
      */
     internal double getYScale() =>
-	    _scaleY;
+        _scaleY;
 
     /**
      * Returns the screen's top black forbidden to cursor band's height.
      * @return Height in pixel.
      */
     internal int getCursorTopBlackBand() =>
-	    _cursorTopBlackBand;
+        _cursorTopBlackBand;
 
     /**
      * Returns the screen's left black forbidden to cursor band's width.
      * @return Width in pixel.
      */
     internal int getCursorLeftBlackBand() =>
-	    _cursorLeftBlackBand;
+        _cursorLeftBlackBand;
 
     /**
      * Handles screen key shortcuts.
@@ -646,28 +647,28 @@ internal class Screen
         SDL_Surface surface = Marshal.PtrToStructure<SDL_Surface>(screenshot);
 
         if (useOpenGL())
-	    {
+        {
 #if !__NO_OPENGL
             uint format = GL_RGB;
 
-		    for (int y = 0; y < getHeight(); ++y)
-		    {
+            for (int y = 0; y < getHeight(); ++y)
+            {
                 glReadPixels(0, getHeight() - (y + 1), getWidth() - getWidth() % 4, 1, format, GL_UNSIGNED_BYTE, nint.Add(surface.pixels, y * surface.pitch));
-		    }
+            }
             glErrorCheck();
 #endif
-	    }
-	    else
-	    {
+        }
+        else
+        {
             SDL_BlitSurface(_window, nint.Zero, screenshot, nint.Zero);
-	    }
+        }
 
         //unsigned error = lodepng::encode(filename, (const unsigned char *)(screenshot->pixels), getWidth() - getWidth()%4, getHeight(), LCT_RGB);
         var error = IMG_SavePNG(screenshot, filename);
         if (error == -1)
-	    {
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {SDL_GetError()}");
-	    }
+        }
 
         SDL_FreeSurface(screenshot);
     }

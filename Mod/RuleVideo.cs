@@ -50,64 +50,64 @@ internal class RuleVideo : IRule
 
     ~RuleVideo() { }
 
-	internal void load(YamlNode node)
-	{
-		_useUfoAudioSequence = bool.Parse(node["useUfoAudioSequence"].ToString());
+    internal void load(YamlNode node)
+    {
+        _useUfoAudioSequence = bool.Parse(node["useUfoAudioSequence"].ToString());
 
-		if (node["videos"] is YamlSequenceNode videos)
-		{
-			foreach (var i in videos.Children)
-				_videos.Add(i.ToString());
-		}
+        if (node["videos"] is YamlSequenceNode videos)
+        {
+            foreach (var i in videos.Children)
+                _videos.Add(i.ToString());
+        }
 
-		if (node["audioTracks"] is YamlSequenceNode tracks)
-		{
-			foreach (var i in tracks.Children)
-				_audioTracks.Add(i.ToString());
-		}
+        if (node["audioTracks"] is YamlSequenceNode tracks)
+        {
+            foreach (var i in tracks.Children)
+                _audioTracks.Add(i.ToString());
+        }
 
-		if (node["slideshow"] is YamlNode slideshow)
-		{
-			_slideshowHeader.musicId = slideshow["musicId"] != null ? slideshow["musicId"].ToString() : string.Empty;
-			_slideshowHeader.transitionSeconds = slideshow["transitionSeconds"] != null ? int.Parse(slideshow["transitionSeconds"].ToString()) : 30;
+        if (node["slideshow"] is YamlNode slideshow)
+        {
+            _slideshowHeader.musicId = slideshow["musicId"] != null ? slideshow["musicId"].ToString() : string.Empty;
+            _slideshowHeader.transitionSeconds = slideshow["transitionSeconds"] != null ? int.Parse(slideshow["transitionSeconds"].ToString()) : 30;
 
-			foreach (var i in ((YamlSequenceNode)slideshow["slides"]).Children)
-			{
-				var slide = new SlideshowSlide();
-				_loadSlide(slide, i);
-				_slides.Add(slide);
-			}
-		}
-	}
+            foreach (var i in ((YamlSequenceNode)slideshow["slides"]).Children)
+            {
+                var slide = new SlideshowSlide();
+                _loadSlide(slide, i);
+                _slides.Add(slide);
+            }
+        }
+    }
 
-	static void _loadSlide(SlideshowSlide slide, YamlNode node)
-	{
-		slide.imagePath = node["imagePath"] != null ? node["imagePath"].ToString() : string.Empty;
-		slide.caption = node["caption"] != null ? node["caption"].ToString() : string.Empty;
+    static void _loadSlide(SlideshowSlide slide, YamlNode node)
+    {
+        slide.imagePath = node["imagePath"] != null ? node["imagePath"].ToString() : string.Empty;
+        slide.caption = node["caption"] != null ? node["caption"].ToString() : string.Empty;
 
-		slide.w = node["captionSize"] != null ? int.Parse(node["captionSize"][0].ToString()) : Screen.ORIGINAL_WIDTH;
-		slide.h = node["captionSize"] != null ? int.Parse(node["captionSize"][1].ToString()) : Screen.ORIGINAL_HEIGHT;
+        slide.w = node["captionSize"] != null ? int.Parse(node["captionSize"][0].ToString()) : Screen.ORIGINAL_WIDTH;
+        slide.h = node["captionSize"] != null ? int.Parse(node["captionSize"][1].ToString()) : Screen.ORIGINAL_HEIGHT;
 
-		slide.x = int.Parse(node["captionPos"][0].ToString());
-		slide.y = int.Parse(node["captionPos"][1].ToString());
+        slide.x = int.Parse(node["captionPos"][0].ToString());
+        slide.y = int.Parse(node["captionPos"][1].ToString());
 
-		slide.color = node["captionColor"] != null ? int.Parse(node["captionColor"].ToString()) : int.MaxValue;
-		slide.transitionSeconds = int.Parse(node["transitionSeconds"].ToString());
-		slide.align = node["captionAlign"] != null ? (TextHAlign)int.Parse(node["captionAlign"].ToString()) : TextHAlign.ALIGN_LEFT;
-	}
+        slide.color = node["captionColor"] != null ? int.Parse(node["captionColor"].ToString()) : int.MaxValue;
+        slide.transitionSeconds = int.Parse(node["transitionSeconds"].ToString());
+        slide.align = node["captionAlign"] != null ? (TextHAlign)int.Parse(node["captionAlign"].ToString()) : TextHAlign.ALIGN_LEFT;
+    }
 
-	internal List<string> getVideos() =>
-		_videos;
+    internal List<string> getVideos() =>
+        _videos;
 
-	internal List<SlideshowSlide> getSlides() =>
-		_slides;
+    internal List<SlideshowSlide> getSlides() =>
+        _slides;
 
-	internal List<string> getAudioTracks() =>
-		_audioTracks;
+    internal List<string> getAudioTracks() =>
+        _audioTracks;
 
-	internal bool useUfoAudioSequence() =>
-		_useUfoAudioSequence;
+    internal bool useUfoAudioSequence() =>
+        _useUfoAudioSequence;
 
-	internal SlideshowHeader getSlideshowHeader() =>
-		_slideshowHeader;
+    internal SlideshowHeader getSlideshowHeader() =>
+        _slideshowHeader;
 }

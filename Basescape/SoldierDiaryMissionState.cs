@@ -148,66 +148,66 @@ internal class SoldierDiaryMissionState : State
      */
     internal override void init()
     {
-	    base.init();
-	    if (!_soldier.getDiary().getMissionIdList().Any())
-	    {
-		    _game.popState();
-		    return;
-	    }
-	    List<MissionStatistics> missionStatistics = _game.getSavedGame().getMissionStatistics();
-	    int missionId = _soldier.getDiary().getMissionIdList()[_rowEntry];
-	    if (missionId > missionStatistics.Count)
-	    {
-		    missionId = 0;
-	    }
-	    int daysWounded = missionStatistics[missionId].injuryList[_soldier.getId()];
+        base.init();
+        if (!_soldier.getDiary().getMissionIdList().Any())
+        {
+            _game.popState();
+            return;
+        }
+        List<MissionStatistics> missionStatistics = _game.getSavedGame().getMissionStatistics();
+        int missionId = _soldier.getDiary().getMissionIdList()[_rowEntry];
+        if (missionId > missionStatistics.Count)
+        {
+            missionId = 0;
+        }
+        int daysWounded = missionStatistics[missionId].injuryList[_soldier.getId()];
 
-	    _lstKills.clearList();
+        _lstKills.clearList();
         _txtTitle.setText(tr(missionStatistics[missionId].type));
-	    if (missionStatistics[missionId].isUfoMission())
-	    {
+        if (missionStatistics[missionId].isUfoMission())
+        {
             _txtUFO.setText(tr(missionStatistics[missionId].ufo));
-	    }
+        }
         _txtUFO.setVisible(missionStatistics[missionId].isUfoMission());
         _txtScore.setText(tr("STR_SCORE_VALUE").arg(missionStatistics[missionId].score));
         _txtLocation.setText(tr("STR_LOCATION").arg(tr(missionStatistics[missionId].getLocationString())));
         _txtRace.setText(tr("STR_RACE_TYPE").arg(tr(missionStatistics[missionId].alienRace)));
         _txtRace.setVisible(missionStatistics[missionId].alienRace != "STR_UNKNOWN");
         _txtDaylight.setText(tr("STR_DAYLIGHT_TYPE").arg(tr(missionStatistics[missionId].getDaylightString())));
-	    _txtDaysWounded.setText(tr("STR_DAYS_WOUNDED").arg(daysWounded));
-	    _txtDaysWounded.setVisible(daysWounded != 0);
+        _txtDaysWounded.setText(tr("STR_DAYS_WOUNDED").arg(daysWounded));
+        _txtDaysWounded.setVisible(daysWounded != 0);
 
-	    int kills = 0;
-	    bool stunOrKill = false;
+        int kills = 0;
+        bool stunOrKill = false;
 
-	    foreach (var i in _soldier.getDiary().getKills())
-	    {
-		    if ((uint)i.mission != missionId) continue;
+        foreach (var i in _soldier.getDiary().getKills())
+        {
+            if ((uint)i.mission != missionId) continue;
 
-		    switch (i.status)
-		    {
-		        case UnitStatus.STATUS_DEAD:
-			        kills++;
+            switch (i.status)
+            {
+                case UnitStatus.STATUS_DEAD:
+                    kills++;
                     //Fall-through
                     goto case UnitStatus.STATUS_UNCONSCIOUS;
                 case UnitStatus.STATUS_UNCONSCIOUS:
-		        case UnitStatus.STATUS_PANICKING:
-		        case UnitStatus.STATUS_TURNING:
-			        stunOrKill = true;
+                case UnitStatus.STATUS_PANICKING:
+                case UnitStatus.STATUS_TURNING:
+                    stunOrKill = true;
                     break;
-		        default:
-			        break;
-		    }
+                default:
+                    break;
+            }
 
-		    _lstKills.addRow(3, tr(i.getKillStatusString()),
-							    i.getUnitName(_game.getLanguage()),
-							    tr(i.weapon));
-	    }
+            _lstKills.addRow(3, tr(i.getKillStatusString()),
+                                i.getUnitName(_game.getLanguage()),
+                                tr(i.weapon));
+        }
 
-	    _txtNoRecord.setAlign(TextHAlign.ALIGN_CENTER);
-	    _txtNoRecord.setText(tr("STR_NO_RECORD"));
-	    _txtNoRecord.setVisible(!stunOrKill);
+        _txtNoRecord.setAlign(TextHAlign.ALIGN_CENTER);
+        _txtNoRecord.setText(tr("STR_NO_RECORD"));
+        _txtNoRecord.setVisible(!stunOrKill);
 
-	    _txtKills.setText(tr("STR_KILLS").arg(kills));
+        _txtKills.setText(tr("STR_KILLS").arg(kills));
     }
 }

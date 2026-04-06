@@ -24,11 +24,11 @@ namespace SharpXcom.Battlescape;
  */
 internal class ScannerView : InteractiveSurface
 {
-	Game _game;
-	BattleUnit _unit;
-	int _frame;
+    Game _game;
+    BattleUnit _unit;
+    int _frame;
 
-	/**
+    /**
 	 * Initializes the Scanner view.
 	 * @param w The ScannerView width.
 	 * @param h The ScannerView height.
@@ -37,73 +37,73 @@ internal class ScannerView : InteractiveSurface
 	 * @param game Pointer to the core game.
 	 * @param unit The current unit.
 	 */
-	internal ScannerView(int w, int h, int x, int y, Game game, BattleUnit unit) : base(w, h, x, y)
-	{
-		_game = game;
-		_unit = unit;
-		_frame = 0;
+    internal ScannerView(int w, int h, int x, int y, Game game, BattleUnit unit) : base(w, h, x, y)
+    {
+        _game = game;
+        _unit = unit;
+        _frame = 0;
 
-		_redraw = true;
-	}
+        _redraw = true;
+    }
 
-	/**
+    /**
 	 * Updates the scanner animation.
 	 */
-	internal void animate()
-	{
-		_frame++;
-		if (_frame > 1)
-		{
-			_frame = 0;
-		}
-		_redraw = true;
-	}
+    internal void animate()
+    {
+        _frame++;
+        if (_frame > 1)
+        {
+            _frame = 0;
+        }
+        _redraw = true;
+    }
 
-	/**
+    /**
 	 * Draws the ScannerView view.
 	 */
-	internal override void draw()
-	{
-		SurfaceSet set = _game.getMod().getSurfaceSet("DETBLOB.DAT");
-		Surface surface = null;
+    internal override void draw()
+    {
+        SurfaceSet set = _game.getMod().getSurfaceSet("DETBLOB.DAT");
+        Surface surface = null;
 
-		clear();
+        clear();
 
-		this.@lock();
-		for (int x = -9; x < 10; x++)
-		{
-			for (int y = -9; y < 10; y++)
-			{
-				for (int z = 0; z < _game.getSavedGame().getSavedBattle().getMapSizeZ(); z++)
-				{
-					Tile t = _game.getSavedGame().getSavedBattle().getTile(new Position(x,y,z) + new Position(_unit.getPosition().x, _unit.getPosition().y, 0));
-					if (t != null && t.getUnit() != null && t.getUnit().getMotionPoints() != 0)
-					{
-						int frame = (t.getUnit().getMotionPoints() / 5);
-						if (frame >= 0)
-						{
-							if (frame > 5) frame = 5;
-							surface = set.getFrame(frame + _frame);
-							surface.blitNShade(this, getX()+((9+x)*8)-4, getY()+((9+y)*8)-4, 0);
-						}
-					}
-				}
-			}
-		}
+        this.@lock();
+        for (int x = -9; x < 10; x++)
+        {
+            for (int y = -9; y < 10; y++)
+            {
+                for (int z = 0; z < _game.getSavedGame().getSavedBattle().getMapSizeZ(); z++)
+                {
+                    Tile t = _game.getSavedGame().getSavedBattle().getTile(new Position(x, y, z) + new Position(_unit.getPosition().x, _unit.getPosition().y, 0));
+                    if (t != null && t.getUnit() != null && t.getUnit().getMotionPoints() != 0)
+                    {
+                        int frame = (t.getUnit().getMotionPoints() / 5);
+                        if (frame >= 0)
+                        {
+                            if (frame > 5) frame = 5;
+                            surface = set.getFrame(frame + _frame);
+                            surface.blitNShade(this, getX() + ((9 + x) * 8) - 4, getY() + ((9 + y) * 8) - 4, 0);
+                        }
+                    }
+                }
+            }
+        }
 
-		// the arrow of the direction the unit is pointed
-		surface = set.getFrame(7 + _unit.getDirection());
+        // the arrow of the direction the unit is pointed
+        surface = set.getFrame(7 + _unit.getDirection());
 
-		surface.blitNShade(this, getX()+(9*8)-4, getY()+(9*8)-4, 0);
-		this.unlock();
-	}
+        surface.blitNShade(this, getX() + (9 * 8) - 4, getY() + (9 * 8) - 4, 0);
+        this.unlock();
+    }
 
-	/**
+    /**
 	 * Handles clicks on the scanner view.
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-	protected override void mouseClick(Action _, State __)
-	{
-	}
+    protected override void mouseClick(Action _, State __)
+    {
+    }
 }

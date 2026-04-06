@@ -59,10 +59,10 @@ internal class SoldierDeath
             { "time", _time.save() }
         };
         if (_cause != default)
-	    {
+        {
             node.Add("cause", _cause.save());
-	    }
-	    return node;
+        }
+        return node;
     }
 
     /**
@@ -71,12 +71,12 @@ internal class SoldierDeath
      */
     internal void load(YamlNode node)
     {
-	    _time.load(node["time"]);
-	    if (node["cause"] != null)
-	    {
-		    _cause = new BattleUnitKills();
-		    _cause.load(node["cause"]);
-	    }
+        _time.load(node["time"]);
+        if (node["cause"] != null)
+        {
+            _cause = new BattleUnitKills();
+            _cause.load(node["cause"]);
+        }
     }
 
     /**
@@ -84,12 +84,12 @@ internal class SoldierDeath
     * @return Pointer to the time.
     */
     internal BattleUnitKills getCause() =>
-	    _cause;
+        _cause;
 
     /**
      * Returns the time of death of this soldier.
      * @return Pointer to the time.
      */
     internal GameTime getTime() =>
-	    _time;
+        _time;
 }

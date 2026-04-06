@@ -56,15 +56,15 @@ internal class MissionSite : Target
     internal override YamlNode save()
     {
         var node = (YamlMappingNode)base.save();
-	    node.Add("type", _rules.getType());
-	    node.Add("deployment", _deployment.getType());
-	    node.Add("texture", _texture.ToString());
-	    if (_secondsRemaining != 0)
-		    node.Add("secondsRemaining", _secondsRemaining.ToString());
-	    node.Add("race", _race);
-	    if (_inBattlescape)
-		    node.Add("inBattlescape", _inBattlescape.ToString());
-	    node.Add("detected", _detected.ToString());
+        node.Add("type", _rules.getType());
+        node.Add("deployment", _deployment.getType());
+        node.Add("texture", _texture.ToString());
+        if (_secondsRemaining != 0)
+            node.Add("secondsRemaining", _secondsRemaining.ToString());
+        node.Add("race", _race);
+        if (_inBattlescape)
+            node.Add("inBattlescape", _inBattlescape.ToString());
+        node.Add("detected", _detected.ToString());
         return node;
     }
 
@@ -74,10 +74,10 @@ internal class MissionSite : Target
      */
     internal override int getMarker()
     {
-	    if (!_detected)
-		    return -1;
-	    if (_deployment.getMarkerIcon() == -1)
-		    return 5;
+        if (!_detected)
+            return -1;
+        if (_deployment.getMarkerIcon() == -1)
+            return 5;
         return _deployment.getMarkerIcon();
     }
 
@@ -100,14 +100,14 @@ internal class MissionSite : Target
      * @param race Alien race.
      */
     internal void setAlienRace(string race) =>
-	    _race = race;
+        _race = race;
 
     /**
      * Returns the ruleset for the mission's deployment.
      * @return Pointer to deployment rules.
      */
     internal AlienDeployment getDeployment() =>
-	    _deployment;
+        _deployment;
 
     /**
      * Gets the detection state for this mission site.
@@ -115,21 +115,21 @@ internal class MissionSite : Target
      * @return whether or not this site has been detected.
      */
     internal bool getDetected() =>
-	    _detected;
+        _detected;
 
     /**
      * Returns the number of seconds remaining before the mission site expires.
      * @return Amount of seconds.
      */
     internal uint getSecondsRemaining() =>
-	    _secondsRemaining;
+        _secondsRemaining;
 
     /**
      * Gets the mission site's associated texture.
      * @return Texture ID.
      */
     internal int getTexture() =>
-	    _texture;
+        _texture;
 
     /**
      * Sets the mission site's associated texture.
@@ -143,21 +143,21 @@ internal class MissionSite : Target
      * @param city String ID for the city, "" if none.
      */
     internal void setCity(string city) =>
-	    _city = city;
+        _city = city;
 
     /**
      * Gets the mission site's battlescape status.
      * @return Is the mission currently in battle?
      */
     internal bool isInBattlescape() =>
-	    _inBattlescape;
+        _inBattlescape;
 
     /**
      * Returns the alien race currently residing in the mission site.
      * @return Alien race.
      */
     internal string getAlienRace() =>
-	    _race;
+        _race;
 
     /**
      * Sets the mission site's battlescape status.
@@ -171,7 +171,7 @@ internal class MissionSite : Target
      * @return String ID for the city, "" if none.
      */
     internal string getCity() =>
-	    _city;
+        _city;
 
     /**
      * Returns the mission's unique type used for
@@ -186,7 +186,7 @@ internal class MissionSite : Target
      * @return String ID.
      */
     internal override string getMarkerName() =>
-	    getType();
+        getType();
 
     /**
      * Loads the mission site from a YAML file.
@@ -194,12 +194,12 @@ internal class MissionSite : Target
      */
     internal override void load(YamlNode node)
     {
-	    base.load(node);
-	    _texture = int.Parse(node["texture"].ToString());
-	    _secondsRemaining = uint.Parse(node["secondsRemaining"].ToString());
-	    _race = node["race"].ToString();
-	    _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
-	    _detected = bool.Parse(node["detected"].ToString());
+        base.load(node);
+        _texture = int.Parse(node["texture"].ToString());
+        _secondsRemaining = uint.Parse(node["secondsRemaining"].ToString());
+        _race = node["race"].ToString();
+        _inBattlescape = bool.Parse(node["inBattlescape"].ToString());
+        _detected = bool.Parse(node["detected"].ToString());
     }
 
     /**
@@ -207,5 +207,5 @@ internal class MissionSite : Target
      * @return Pointer to ruleset.
      */
     RuleAlienMission getRules() =>
-	    _rules;
+        _rules;
 }

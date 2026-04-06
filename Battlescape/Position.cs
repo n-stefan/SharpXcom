@@ -24,7 +24,7 @@ namespace SharpXcom.Battlescape;
  */
 internal class Position
 {
-	internal int x, y, z;
+    internal int x, y, z;
 
     /// Null position constructor.
     internal Position()
@@ -59,7 +59,7 @@ internal class Position
     public static Position operator *(Position a, Position b) =>
         new(a.x * b.x, a.y * b.y, a.z * b.z);
 
-	public static Position operator *(Position a, int b) =>
+    public static Position operator *(Position a, int b) =>
         new(a.x * b, a.y * b, a.z * b);
 
     public static Position operator /(Position a, Position b) =>
@@ -68,16 +68,16 @@ internal class Position
     public static Position operator /(Position a, int b) =>
         new(a.x / b, a.y / b, a.z / b);
 
-	/// == operator
-	public static bool operator ==(Position a, Position b) =>
-		a.x == b.x && a.y == b.y && a.z == b.z;
+    /// == operator
+    public static bool operator ==(Position a, Position b) =>
+        a.x == b.x && a.y == b.y && a.z == b.z;
 
-	/// != operator
-	public static bool operator !=(Position a, Position b) =>
-		a.x != b.x || a.y != b.y || a.z != b.z;
+    /// != operator
+    public static bool operator !=(Position a, Position b) =>
+        a.x != b.x || a.y != b.y || a.z != b.z;
 
     public override string ToString() =>
-	    $"({x},{y},{z})";
+        $"({x},{y},{z})";
 
     /**
 	 * Loads the Position from a YAML file.
@@ -85,8 +85,8 @@ internal class Position
 	 */
     internal static Position decode(YamlNode node)
     {
-		if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 3)
-			return null;
+        if (node.NodeType != YamlNodeType.Sequence || ((YamlSequenceNode)node).Count() != 3)
+            return null;
 
         var p = new Position
         {

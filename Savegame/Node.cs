@@ -36,7 +36,7 @@ internal class Node
     /* following data is the order in which certain alien ranks spawn on certain node ranks */
     /* note that they all can fall back to rank 0 nodes - which is scout (outside ufo) */
     internal static int[,] nodeRank = new int[8, 7] {
-	    { 4, 3, 5, 8, 7, 2, 0 }, //commander
+        { 4, 3, 5, 8, 7, 2, 0 }, //commander
 	    { 4, 3, 5, 8, 7, 2, 0 }, //leader
 	    { 5, 4, 3, 2, 7, 8, 0 }, //engineer
 	    { 7, 6, 2, 8, 3, 4, 0 }, //medic
@@ -104,21 +104,21 @@ internal class Node
         _allocated = false;
 
     internal bool isDummy() =>
-	    _dummy;
+        _dummy;
 
     /**
      * Gets the Node's position.
      * @return position
      */
     internal Position getPosition() =>
-	    _pos;
+        _pos;
 
     /**
      * Gets the Node's type.
      * @return type
      */
     internal int getType() =>
-	    _type;
+        _type;
 
     internal void setType(int type) =>
         _type = type;
@@ -151,21 +151,21 @@ internal class Node
      * @return unique id
      */
     internal int getID() =>
-	    _id;
+        _id;
 
     /**
      * Get the priority of this spawnpoint.
      * @return priority
      */
     internal int getPriority() =>
-	    _priority;
+        _priority;
 
     /**
      * Get the rank of units that can spawn on this node.
      * @return noderank
      */
     internal NodeRank getRank() =>
-	    (NodeRank)_rank;
+        (NodeRank)_rank;
 
     /// get the node's paths
     internal List<int> getNodeLinks() =>
@@ -179,20 +179,20 @@ internal class Node
      * @return segment
      */
     internal int getSegment() =>
-	    _segment;
+        _segment;
 
     internal bool isTarget() =>
-	    _reserved == 5;
+        _reserved == 5;
 
     internal bool isAllocated() =>
-	    _allocated;
+        _allocated;
 
-	/// gets "flags" variable, which is really the patrolling desirability value
-	internal int getFlags() =>
+    /// gets "flags" variable, which is really the patrolling desirability value
+    internal int getFlags() =>
         _flags;
 
     internal void allocateNode() =>
-	    _allocated = true;
+        _allocated = true;
 
     /**
      * Loads the UFO from a YAML file.
@@ -200,22 +200,22 @@ internal class Node
      */
     internal void load(YamlNode node)
     {
-	    _id = int.Parse(node["id"].ToString());
+        _id = int.Parse(node["id"].ToString());
         _pos = Position.decode(node["position"]);
-	    //_segment = node["segment"].as<int>(_segment);
-	    _type = int.Parse(node["type"].ToString());
-	    _rank = int.Parse(node["rank"].ToString());
-	    _flags = int.Parse(node["flags"].ToString());
-	    _reserved = int.Parse(node["reserved"].ToString());
-	    _priority = int.Parse(node["priority"].ToString());
-	    _allocated = bool.Parse(node["allocated"].ToString());
+        //_segment = node["segment"].as<int>(_segment);
+        _type = int.Parse(node["type"].ToString());
+        _rank = int.Parse(node["rank"].ToString());
+        _flags = int.Parse(node["flags"].ToString());
+        _reserved = int.Parse(node["reserved"].ToString());
+        _priority = int.Parse(node["priority"].ToString());
+        _allocated = bool.Parse(node["allocated"].ToString());
         _nodeLinks = ((YamlSequenceNode)node["links"]).Children.Select(x => int.Parse(x.ToString())).ToList();
-	    _dummy = bool.Parse(node["dummy"].ToString());
+        _dummy = bool.Parse(node["dummy"].ToString());
     }
 
-	public static bool operator <(Node a, Node b) =>
+    public static bool operator <(Node a, Node b) =>
         a.getFlags() < b.getFlags();
 
-	public static bool operator >(Node a, Node b) =>
+    public static bool operator >(Node a, Node b) =>
         a.getFlags() > b.getFlags();
 }

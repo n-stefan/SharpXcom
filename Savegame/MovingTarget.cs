@@ -149,14 +149,14 @@ internal class MovingTarget : Target
      * @return Pointer to destination.
      */
     internal Target getDestination() =>
-	    _dest;
+        _dest;
 
     /**
      * Returns the radial speed of the moving target.
      * @return Speed in 1 / 5 sec.
      */
     double getSpeedRadian() =>
-	    _speedRadian;
+        _speedRadian;
 
     /**
      * Checks if the moving target has reached its destination.
@@ -164,11 +164,11 @@ internal class MovingTarget : Target
      */
     internal bool reachedDestination()
     {
-	    if (_dest == null)
-	    {
+        if (_dest == null)
+        {
             return false;
-	    }
-	    return ( AreSame(_dest.getLongitude(), _lon) && AreSame(_dest.getLatitude(), _lat) );
+        }
+        return (AreSame(_dest.getLongitude(), _lon) && AreSame(_dest.getLatitude(), _lat));
     }
 
     /**
@@ -241,16 +241,16 @@ internal class MovingTarget : Target
      */
     internal override YamlNode save()
     {
-	    var node = (YamlMappingNode)base.save();
-	    if (_dest != null)
-	    {
-		    node.Add("dest", _dest.saveId());
-	    }
-	    node.Add("speedLon", serializeDouble(_speedLon));
-	    node.Add("speedLat", serializeDouble(_speedLat));
-	    node.Add("speedRadian", serializeDouble(_speedRadian));
-	    node.Add("speed", _speed.ToString());
-	    return node;
+        var node = (YamlMappingNode)base.save();
+        if (_dest != null)
+        {
+            node.Add("dest", _dest.saveId());
+        }
+        node.Add("speedLon", serializeDouble(_speedLon));
+        node.Add("speedLat", serializeDouble(_speedLat));
+        node.Add("speedRadian", serializeDouble(_speedRadian));
+        node.Add("speed", _speed.ToString());
+        return node;
     }
 
     /**
@@ -258,7 +258,7 @@ internal class MovingTarget : Target
      * @return Speed in knots.
      */
     internal int getSpeed() =>
-	    _speed;
+        _speed;
 
     /**
      * Loads the moving target from a YAML file.
@@ -266,11 +266,11 @@ internal class MovingTarget : Target
      */
     internal override void load(YamlNode node)
     {
-	    base.load(node);
-	    _speedLon = double.Parse(node["speedLon"].ToString());
-	    _speedLat = double.Parse(node["speedLat"].ToString());
-	    _speedRadian = double.Parse(node["speedRadian"].ToString());
-	    _speed = int.Parse(node["speed"].ToString());
+        base.load(node);
+        _speedLon = double.Parse(node["speedLon"].ToString());
+        _speedLat = double.Parse(node["speedLat"].ToString());
+        _speedRadian = double.Parse(node["speedRadian"].ToString());
+        _speed = int.Parse(node["speed"].ToString());
     }
 
     /**
@@ -304,19 +304,19 @@ internal class MovingTarget : Target
     }
 
     internal bool isMeetCalculated() =>
-	    _meetCalculated;
+        _meetCalculated;
 
     /**
      * Returns the latitude of the meeting point.
      * @return Angle in rad.
      */
     double getMeetLatitude() =>
-	    _meetPointLat;
+        _meetPointLat;
 
     /**
      * Returns the longitude of the meeting point.
      * @return Angle in rad.
      */
     double getMeetLongitude() =>
-	    _meetPointLon;
+        _meetPointLon;
 }

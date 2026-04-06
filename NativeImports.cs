@@ -21,7 +21,7 @@ internal class NativeImports
     internal static extern int stringRGBA(nint dst, short x, short y, string s, byte r, byte g, byte b, byte a);
 
     [DllImport("SDL_gfx")]
-	internal static extern int texturedPolygon(nint dst, short[] vx, short[] vy, int n, nint texture, int texture_dx, int texture_dy);
+    internal static extern int texturedPolygon(nint dst, short[] vx, short[] vy, int n, nint texture, int texture_dx, int texture_dy);
 
     #endregion
 

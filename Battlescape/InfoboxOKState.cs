@@ -34,47 +34,47 @@ internal class InfoboxOKState : State
 	 * @param msg Message string.
 	 */
     internal InfoboxOKState(string msg)
-	{
-		_screen = false;
+    {
+        _screen = false;
 
-		// Create objects
-		_frame = new Frame(261, 89, 30, 48);
-		_btnOk = new TextButton(120, 18, 100, 112);
-		_txtTitle = new Text(255, 61, 33, 51);
+        // Create objects
+        _frame = new Frame(261, 89, 30, 48);
+        _btnOk = new TextButton(120, 18, 100, 112);
+        _txtTitle = new Text(255, 61, 33, 51);
 
-		// Set palette
-		_game.getSavedGame().getSavedBattle().setPaletteByDepth(this);
+        // Set palette
+        _game.getSavedGame().getSavedBattle().setPaletteByDepth(this);
 
-		add(_frame, "infoBoxOK", "battlescape");
-		add(_btnOk, "infoBoxOKButton", "battlescape");
-		add(_txtTitle, "infoBoxOK", "battlescape");
+        add(_frame, "infoBoxOK", "battlescape");
+        add(_btnOk, "infoBoxOKButton", "battlescape");
+        add(_txtTitle, "infoBoxOK", "battlescape");
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		// Set up objects
-		_frame.setThickness(3);
-		_frame.setHighContrast(true);
+        // Set up objects
+        _frame.setThickness(3);
+        _frame.setHighContrast(true);
 
-		_btnOk.setText(tr("STR_OK"));
-		_btnOk.onMouseClick(btnOkClick);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyOk);
-		_btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
-		_btnOk.setHighContrast(true);
+        _btnOk.setText(tr("STR_OK"));
+        _btnOk.onMouseClick(btnOkClick);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyOk);
+        _btnOk.onKeyboardPress(btnOkClick, Options.keyCancel);
+        _btnOk.setHighContrast(true);
 
-		_txtTitle.setBig();
-		_txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
-		_txtTitle.setVerticalAlign(TextVAlign.ALIGN_MIDDLE);
-		_txtTitle.setHighContrast(true);
-		_txtTitle.setWordWrap(true);
-		_txtTitle.setText(msg);
+        _txtTitle.setBig();
+        _txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
+        _txtTitle.setVerticalAlign(TextVAlign.ALIGN_MIDDLE);
+        _txtTitle.setHighContrast(true);
+        _txtTitle.setWordWrap(true);
+        _txtTitle.setText(msg);
 
-		_game.getCursor().setVisible(true);
-	}
+        _game.getCursor().setVisible(true);
+    }
 
-	/**
+    /**
 	 *
 	 */
-	~InfoboxOKState() { }
+    ~InfoboxOKState() { }
 
     /**
      * Returns to the previous screen.

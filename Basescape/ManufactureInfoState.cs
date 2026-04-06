@@ -573,29 +573,29 @@ internal class ManufactureInfoState : State
         }
     }
 
-	// does not take into account leap years, but a game is unlikely to take long enough for that to matter
-	static int AVG_HOURS_PER_MONTH = (365 * 24) / 12;
+    // does not take into account leap years, but a game is unlikely to take long enough for that to matter
+    static int AVG_HOURS_PER_MONTH = (365 * 24) / 12;
     // note that this function calculates only the change in funds, not the change
     // in net worth.  after discussion in the forums, it was decided that focusing
     // only on visible changes in funds was clearer and more valuable to the player
     // than trying to take used materials and maintenance costs into account.
     int getMonthlyNetFunds()
     {
-	    RuleManufacture item = _production.getRules();
-	    int saleValue = _btnSell.getPressed() ? _producedItemsValue : 0;
+        RuleManufacture item = _production.getRules();
+        int saleValue = _btnSell.getPressed() ? _producedItemsValue : 0;
 
-	    int numEngineers = _production.getAssignedEngineers();
-	    int manHoursPerMonth = AVG_HOURS_PER_MONTH * numEngineers;
-	    if (!_production.getInfiniteAmount())
-	    {
-		    // scale down to actual number of man hours required if the job will
-		    // take less than one month
-		    int manHoursRemaining = item.getManufactureTime() * (_production.getAmountTotal() - _production.getAmountProduced());
-		    manHoursPerMonth = Math.Min(manHoursPerMonth, manHoursRemaining);
-	    }
-	    float itemsPerMonth = (float)manHoursPerMonth / (float)item.getManufactureTime();
+        int numEngineers = _production.getAssignedEngineers();
+        int manHoursPerMonth = AVG_HOURS_PER_MONTH * numEngineers;
+        if (!_production.getInfiniteAmount())
+        {
+            // scale down to actual number of man hours required if the job will
+            // take less than one month
+            int manHoursRemaining = item.getManufactureTime() * (_production.getAmountTotal() - _production.getAmountProduced());
+            manHoursPerMonth = Math.Min(manHoursPerMonth, manHoursRemaining);
+        }
+        float itemsPerMonth = (float)manHoursPerMonth / (float)item.getManufactureTime();
 
-	    return (int)((saleValue - item.getManufactureCost()) * itemsPerMonth);
+        return (int)((saleValue - item.getManufactureCost()) * itemsPerMonth);
     }
 
     /**
@@ -603,10 +603,10 @@ internal class ManufactureInfoState : State
      */
     internal override void think()
     {
-	    base.think();
-	    _timerMoreEngineer.think(this, null);
-	    _timerLessEngineer.think(this, null);
-	    _timerMoreUnit.think(this, null);
-	    _timerLessUnit.think(this, null);
+        base.think();
+        _timerMoreEngineer.think(this, null);
+        _timerLessEngineer.think(this, null);
+        _timerMoreUnit.think(this, null);
+        _timerLessUnit.think(this, null);
     }
 }

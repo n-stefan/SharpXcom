@@ -348,86 +348,86 @@ internal class BaseInfoState : State
      */
     internal override void init()
     {
-	    base.init();
-	    _edtBase.setText(_base.getName());
+        base.init();
+        _edtBase.setText(_base.getName());
 
-	    string ss = $"{_base.getAvailableSoldiers()}:{_base.getTotalSoldiers()}";
-	    _numSoldiers.setText(ss);
+        string ss = $"{_base.getAvailableSoldiers()}:{_base.getTotalSoldiers()}";
+        _numSoldiers.setText(ss);
 
-	    _barSoldiers.setMax(_base.getTotalSoldiers());
-	    _barSoldiers.setValue(_base.getAvailableSoldiers());
+        _barSoldiers.setMax(_base.getTotalSoldiers());
+        _barSoldiers.setValue(_base.getAvailableSoldiers());
 
-	    string ss2 = $"{_base.getAvailableEngineers()}:{_base.getTotalEngineers()}";
-	    _numEngineers.setText(ss2);
+        string ss2 = $"{_base.getAvailableEngineers()}:{_base.getTotalEngineers()}";
+        _numEngineers.setText(ss2);
 
-	    _barEngineers.setMax(_base.getTotalEngineers());
-	    _barEngineers.setValue(_base.getAvailableEngineers());
+        _barEngineers.setMax(_base.getTotalEngineers());
+        _barEngineers.setValue(_base.getAvailableEngineers());
 
-	    string ss3 = $"{_base.getAvailableScientists()}:{_base.getTotalScientists()}";
-	    _numScientists.setText(ss3);
+        string ss3 = $"{_base.getAvailableScientists()}:{_base.getTotalScientists()}";
+        _numScientists.setText(ss3);
 
-	    _barScientists.setMax(_base.getTotalScientists());
-	    _barScientists.setValue(_base.getAvailableScientists());
+        _barScientists.setMax(_base.getTotalScientists());
+        _barScientists.setValue(_base.getAvailableScientists());
 
-	    string ss4 = $"{_base.getUsedQuarters()}:{_base.getAvailableQuarters()}";
-	    _numQuarters.setText(ss4);
+        string ss4 = $"{_base.getUsedQuarters()}:{_base.getAvailableQuarters()}";
+        _numQuarters.setText(ss4);
 
-	    _barQuarters.setMax(_base.getAvailableQuarters());
-	    _barQuarters.setValue(_base.getUsedQuarters());
+        _barQuarters.setMax(_base.getAvailableQuarters());
+        _barQuarters.setValue(_base.getUsedQuarters());
 
-	    string ss5 = $"{(int)Math.Floor(_base.getUsedStores() + 0.05)}:{_base.getAvailableStores()}";
-	    _numStores.setText(ss5);
+        string ss5 = $"{(int)Math.Floor(_base.getUsedStores() + 0.05)}:{_base.getAvailableStores()}";
+        _numStores.setText(ss5);
 
-	    _barStores.setMax(_base.getAvailableStores());
-	    _barStores.setValue((int)Math.Floor(_base.getUsedStores() + 0.05));
+        _barStores.setMax(_base.getAvailableStores());
+        _barStores.setValue((int)Math.Floor(_base.getUsedStores() + 0.05));
 
-	    string ss6 = $"{_base.getUsedLaboratories()}:{_base.getAvailableLaboratories()}";
-	    _numLaboratories.setText(ss6);
+        string ss6 = $"{_base.getUsedLaboratories()}:{_base.getAvailableLaboratories()}";
+        _numLaboratories.setText(ss6);
 
-	    _barLaboratories.setMax(_base.getAvailableLaboratories());
-	    _barLaboratories.setValue(_base.getUsedLaboratories());
+        _barLaboratories.setMax(_base.getAvailableLaboratories());
+        _barLaboratories.setValue(_base.getUsedLaboratories());
 
-	    string ss7 = $"{_base.getUsedWorkshops()}:{_base.getAvailableWorkshops()}";
-	    _numWorkshops.setText(ss7);
+        string ss7 = $"{_base.getUsedWorkshops()}:{_base.getAvailableWorkshops()}";
+        _numWorkshops.setText(ss7);
 
-	    _barWorkshops.setMax(_base.getAvailableWorkshops());
-	    _barWorkshops.setValue(_base.getUsedWorkshops());
+        _barWorkshops.setMax(_base.getAvailableWorkshops());
+        _barWorkshops.setValue(_base.getUsedWorkshops());
 
-	    if (Options.storageLimitsEnforced)
-	    {
-		    string ss72 = $"{_base.getUsedContainment()}:{_base.getAvailableContainment()}";
-		    _numContainment.setText(ss72);
+        if (Options.storageLimitsEnforced)
+        {
+            string ss72 = $"{_base.getUsedContainment()}:{_base.getAvailableContainment()}";
+            _numContainment.setText(ss72);
 
-		    _barContainment.setMax(_base.getAvailableContainment());
-		    _barContainment.setValue(_base.getUsedContainment());
-	    }
+            _barContainment.setMax(_base.getAvailableContainment());
+            _barContainment.setValue(_base.getUsedContainment());
+        }
 
-	    string ss8 = $"{_base.getUsedHangars()}:{_base.getAvailableHangars()}";
-	    _numHangars.setText(ss8);
+        string ss8 = $"{_base.getUsedHangars()}:{_base.getAvailableHangars()}";
+        _numHangars.setText(ss8);
 
-	    _barHangars.setMax(_base.getAvailableHangars());
-	    _barHangars.setValue(_base.getUsedHangars());
+        _barHangars.setMax(_base.getAvailableHangars());
+        _barHangars.setValue(_base.getUsedHangars());
 
-	    string ss9 = _base.getDefenseValue().ToString();
-	    _numDefense.setText(ss9);
+        string ss9 = _base.getDefenseValue().ToString();
+        _numDefense.setText(ss9);
 
-	    _barDefense.setMax(_base.getDefenseValue());
-	    _barDefense.setValue(_base.getDefenseValue());
+        _barDefense.setMax(_base.getDefenseValue());
+        _barDefense.setValue(_base.getDefenseValue());
 
-	    string ss10;
-	    int shortRangeDetection = _base.getShortRangeDetection();
-	    ss10 = shortRangeDetection.ToString();
-	    _numShortRange.setText(ss10);
+        string ss10;
+        int shortRangeDetection = _base.getShortRangeDetection();
+        ss10 = shortRangeDetection.ToString();
+        _numShortRange.setText(ss10);
 
-	    _barShortRange.setMax(shortRangeDetection);
-	    _barShortRange.setValue(shortRangeDetection);
+        _barShortRange.setMax(shortRangeDetection);
+        _barShortRange.setValue(shortRangeDetection);
 
-	    string ss11;
-	    int longRangeDetection = _base.getLongRangeDetection();
-	    ss11 = longRangeDetection.ToString();
-	    _numLongRange.setText(ss11);
+        string ss11;
+        int longRangeDetection = _base.getLongRangeDetection();
+        ss11 = longRangeDetection.ToString();
+        _numLongRange.setText(ss11);
 
-	    _barLongRange.setMax(longRangeDetection);
-	    _barLongRange.setValue(longRangeDetection);
+        _barLongRange.setMax(longRangeDetection);
+        _barLongRange.setValue(longRangeDetection);
     }
 }

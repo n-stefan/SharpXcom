@@ -1242,16 +1242,16 @@ internal class GeoscapeState : State
 
         // Handle crashed UFOs expiration
         _game.getSavedGame().getUfos().ForEach(x =>
-	        /// Decrease UFO expiration timer.
-	        {
-		        if (x.getStatus() == UfoStatus.CRASHED)
-		        {
-			        if (x.getSecondsRemaining() >= 30 * 60)
-			        {
-				        x.setSecondsRemaining(x.getSecondsRemaining() - 30 * 60);
-				        return;
-			        }
-			        // Marked expired UFOs for removal.
+        /// Decrease UFO expiration timer.
+            {
+                if (x.getStatus() == UfoStatus.CRASHED)
+                {
+                    if (x.getSecondsRemaining() >= 30 * 60)
+                    {
+                        x.setSecondsRemaining(x.getSecondsRemaining() - 30 * 60);
+                        return;
+                    }
+                    // Marked expired UFOs for removal.
                     x.setStatus(UfoStatus.DESTROYED);
                 }
             }
@@ -1405,35 +1405,35 @@ internal class GeoscapeState : State
      */
     bool processMissionSite(MissionSite site)
     {
-	    bool removeSite = site.getSecondsRemaining() < 30 * 60;
-	    if (!removeSite)
-	    {
-		    site.setSecondsRemaining(site.getSecondsRemaining() - 30 * 60);
-	    }
-	    else
-	    {
-		    removeSite = !site.getFollowers().Any(); // CHEEKY EXPLOIT
-	    }
+        bool removeSite = site.getSecondsRemaining() < 30 * 60;
+        if (!removeSite)
+        {
+            site.setSecondsRemaining(site.getSecondsRemaining() - 30 * 60);
+        }
+        else
+        {
+            removeSite = !site.getFollowers().Any(); // CHEEKY EXPLOIT
+        }
 
-	    int score = removeSite ? site.getDeployment().getDespawnPenalty() : site.getDeployment().getPoints();
+        int score = removeSite ? site.getDeployment().getDespawnPenalty() : site.getDeployment().getPoints();
 
-	    Region region = _game.getSavedGame().locateRegion(site);
-	    if (region != null)
-	    {
-		    region.addActivityAlien(score);
-	    }
-	    foreach (var k in _game.getSavedGame().getCountries())
-	    {
-		    if (k.getRules().insideCountry(site.getLongitude(), site.getLatitude()))
-		    {
-			    k.addActivityAlien(score);
-			    break;
-		    }
-	    }
-	    if (!removeSite)
-	    {
-		    return false;
-	    }
+        Region region = _game.getSavedGame().locateRegion(site);
+        if (region != null)
+        {
+            region.addActivityAlien(score);
+        }
+        foreach (var k in _game.getSavedGame().getCountries())
+        {
+            if (k.getRules().insideCountry(site.getLongitude(), site.getLatitude()))
+            {
+                k.addActivityAlien(score);
+                break;
+            }
+        }
+        if (!removeSite)
+        {
+            return false;
+        }
         return true;
     }
 
@@ -1515,16 +1515,16 @@ internal class GeoscapeState : State
      */
     bool DetectXCOMBase(Ufo ufo, Base @base)
     {
-	    if (ufo.getTrajectoryPoint() <= 1) return false;
-	    if (ufo.getTrajectory().getZone(ufo.getTrajectoryPoint()) == 5) return false;
-	    if ((ufo.getMission().getRules().getObjective() != MissionObjective.OBJECTIVE_RETALIATION && !Options.aggressiveRetaliation) ||	// only UFOs on retaliation missions actively scan for bases
-		    ufo.getTrajectory().getID() == UfoTrajectory.RETALIATION_ASSAULT_RUN || 									// UFOs attacking a base don't detect!
-		    ufo.isCrashed() ||                                                                                          // Crashed UFOs don't detect!
-            @base.getDistance(ufo) >= Nautical(ufo.getRules().getSightRange()))											// UFOs have a detection range of 80 XCOM units. - we use a great circle fomrula and nautical miles.
-	    {
-		    return false;
-	    }
-	    return RNG.percent((int)@base.getDetectionChance());
+        if (ufo.getTrajectoryPoint() <= 1) return false;
+        if (ufo.getTrajectory().getZone(ufo.getTrajectoryPoint()) == 5) return false;
+        if ((ufo.getMission().getRules().getObjective() != MissionObjective.OBJECTIVE_RETALIATION && !Options.aggressiveRetaliation) || // only UFOs on retaliation missions actively scan for bases
+            ufo.getTrajectory().getID() == UfoTrajectory.RETALIATION_ASSAULT_RUN ||                                     // UFOs attacking a base don't detect!
+            ufo.isCrashed() ||                                                                                          // Crashed UFOs don't detect!
+            @base.getDistance(ufo) >= Nautical(ufo.getRules().getSightRange()))                                         // UFOs have a detection range of 80 XCOM units. - we use a great circle fomrula and nautical miles.
+        {
+            return false;
+        }
+        return RNG.percent((int)@base.getDetectionChance());
     }
 
     /**
@@ -2255,26 +2255,26 @@ internal class GeoscapeState : State
      */
     void GenerateSupplyMission(AlienBase @base, Mod.Mod mod, SavedGame save)
     {
-	    string missionName = @base.getDeployment().chooseGenMissionType();
-	    if (mod.getAlienMission(missionName) != null)
-	    {
-		    if (RNG.percent(@base.getDeployment().getGenMissionFrequency()))
-		    {
-			    //Spawn supply mission for this base.
-			    RuleAlienMission rule = mod.getAlienMission(missionName);
-			    AlienMission mission = new AlienMission(rule);
-			    mission.setRegion(save.locateRegion(@base).getRules().getType(), mod);
-			    mission.setId(save.getId("ALIEN_MISSIONS"));
-			    mission.setRace(@base.getAlienRace());
-			    mission.setAlienBase(@base);
-			    mission.start();
-			    save.getAlienMissions().Add(mission);
-		    }
-	    }
-	    else if (!string.IsNullOrEmpty(missionName))
-	    {
-		    throw new Exception("Alien Base tried to generate undefined mission: " + missionName);
-	    }
+        string missionName = @base.getDeployment().chooseGenMissionType();
+        if (mod.getAlienMission(missionName) != null)
+        {
+            if (RNG.percent(@base.getDeployment().getGenMissionFrequency()))
+            {
+                //Spawn supply mission for this base.
+                RuleAlienMission rule = mod.getAlienMission(missionName);
+                AlienMission mission = new AlienMission(rule);
+                mission.setRegion(save.locateRegion(@base).getRules().getType(), mod);
+                mission.setId(save.getId("ALIEN_MISSIONS"));
+                mission.setRace(@base.getAlienRace());
+                mission.setAlienBase(@base);
+                mission.start();
+                save.getAlienMissions().Add(mission);
+            }
+        }
+        else if (!string.IsNullOrEmpty(missionName))
+        {
+            throw new Exception("Alien Base tried to generate undefined mission: " + missionName);
+        }
     }
 
     /**
@@ -2283,7 +2283,7 @@ internal class GeoscapeState : State
      * @return Pointer to globe.
      */
     internal Globe getGlobe() =>
-	    _globe;
+        _globe;
 
     /**
      * Updates the timer display and resets the palette
@@ -2291,50 +2291,50 @@ internal class GeoscapeState : State
      */
     internal override void init()
     {
-	    base.init();
-	    timeDisplay();
+        base.init();
+        timeDisplay();
 
-	    _globe.onMouseClick(globeClick);
-	    _globe.onMouseOver(null);
-	    _globe.rotateStop();
-	    _globe.setFocus(true);
-	    _globe.draw();
+        _globe.onMouseClick(globeClick);
+        _globe.onMouseOver(null);
+        _globe.rotateStop();
+        _globe.setFocus(true);
+        _globe.draw();
 
-	    // Pop up save screen if it's a new ironman game
-	    if (_game.getSavedGame().isIronman() && string.IsNullOrEmpty(_game.getSavedGame().getName()))
-	    {
-		    popup(new ListSaveState(OptionsOrigin.OPT_GEOSCAPE));
-	    }
+        // Pop up save screen if it's a new ironman game
+        if (_game.getSavedGame().isIronman() && string.IsNullOrEmpty(_game.getSavedGame().getName()))
+        {
+            popup(new ListSaveState(OptionsOrigin.OPT_GEOSCAPE));
+        }
 
-	    // Set music if it's not already playing
-	    if (!_dogfights.Any() && !_dogfightStartTimer.isRunning())
-	    {
-		    if (_game.getSavedGame().getMonthsPassed() == -1)
-		    {
-			    _game.getMod().playMusic("GMGEO", 1);
-		    }
-		    else
-		    {
-			    _game.getMod().playMusic("GMGEO");
-		    }
-	    }
-	    else
-	    {
-		    _game.getMod().playMusic("GMINTER");
-	    }
-	    _globe.setNewBaseHover(false);
+        // Set music if it's not already playing
+        if (!_dogfights.Any() && !_dogfightStartTimer.isRunning())
+        {
+            if (_game.getSavedGame().getMonthsPassed() == -1)
+            {
+                _game.getMod().playMusic("GMGEO", 1);
+            }
+            else
+            {
+                _game.getMod().playMusic("GMGEO");
+            }
+        }
+        else
+        {
+            _game.getMod().playMusic("GMINTER");
+        }
+        _globe.setNewBaseHover(false);
 
-		    // run once
-	    if (_game.getSavedGame().getMonthsPassed() == -1 &&
-		    // as long as there's a base
-		    _game.getSavedGame().getBases().Any() &&
-		    // and it has a name (THIS prevents it from running prior to the base being placed.)
-		    !string.IsNullOrEmpty(_game.getSavedGame().getBases().First().getName()))
-	    {
-		    _game.getSavedGame().addMonth();
-		    determineAlienMissions();
-		    _game.getSavedGame().setFunds(_game.getSavedGame().getFunds() - (_game.getSavedGame().getBaseMaintenance() - _game.getSavedGame().getBases().First().getPersonnelMaintenance()));
-	    }
+        // run once
+        if (_game.getSavedGame().getMonthsPassed() == -1 &&
+            // as long as there's a base
+            _game.getSavedGame().getBases().Any() &&
+            // and it has a name (THIS prevents it from running prior to the base being placed.)
+            !string.IsNullOrEmpty(_game.getSavedGame().getBases().First().getName()))
+        {
+            _game.getSavedGame().addMonth();
+            determineAlienMissions();
+            _game.getSavedGame().setFunds(_game.getSavedGame().getFunds() - (_game.getSavedGame().getBaseMaintenance() - _game.getSavedGame().getBases().First().getPersonnelMaintenance()));
+        }
     }
 
     /**
@@ -2344,32 +2344,32 @@ internal class GeoscapeState : State
      */
     void globeClick(Action action)
     {
-	    int mouseX = (int)Math.Floor(action.getAbsoluteXMouse()), mouseY = (int)Math.Floor(action.getAbsoluteYMouse());
+        int mouseX = (int)Math.Floor(action.getAbsoluteXMouse()), mouseY = (int)Math.Floor(action.getAbsoluteYMouse());
 
-	    // Clicking markers on the globe
-	    if (action.getDetails().button.button == SDL_BUTTON_LEFT)
-	    {
-		    List<Target> v = _globe.getTargets(mouseX, mouseY, false);
-		    if (v.Any())
-		    {
-			    _game.pushState(new MultipleTargetsState(v, null, this));
-		    }
-	    }
+        // Clicking markers on the globe
+        if (action.getDetails().button.button == SDL_BUTTON_LEFT)
+        {
+            List<Target> v = _globe.getTargets(mouseX, mouseY, false);
+            if (v.Any())
+            {
+                _game.pushState(new MultipleTargetsState(v, null, this));
+            }
+        }
 
-	    if (_game.getSavedGame().getDebugMode())
-	    {
-		    double lon, lat;
-		    int texture, shade;
-		    _globe.cartToPolar((short)mouseX, (short)mouseY, out lon, out lat);
-		    double lonDeg = lon / M_PI * 180, latDeg = lat / M_PI * 180;
-		    _globe.getPolygonTextureAndShade(lon, lat, out texture, out shade);
-		    var ss = new StringBuilder();
-		    ss.Append($"rad: {lon}, {lat}{Environment.NewLine}");
-		    ss.Append($"deg: {lonDeg}, {latDeg}{Environment.NewLine}");
-		    ss.Append($"texture: {texture}, shade: {shade}{Environment.NewLine}");
+        if (_game.getSavedGame().getDebugMode())
+        {
+            double lon, lat;
+            int texture, shade;
+            _globe.cartToPolar((short)mouseX, (short)mouseY, out lon, out lat);
+            double lonDeg = lon / M_PI * 180, latDeg = lat / M_PI * 180;
+            _globe.getPolygonTextureAndShade(lon, lat, out texture, out shade);
+            var ss = new StringBuilder();
+            ss.Append($"rad: {lon}, {lat}{Environment.NewLine}");
+            ss.Append($"deg: {lonDeg}, {latDeg}{Environment.NewLine}");
+            ss.Append($"texture: {texture}, shade: {shade}{Environment.NewLine}");
 
-		    _txtDebug.setText(ss.ToString());
-	    }
+            _txtDebug.setText(ss.ToString());
+        }
     }
 
     /**
@@ -2377,37 +2377,37 @@ internal class GeoscapeState : State
      */
     internal override void think()
     {
-	    base.think();
+        base.think();
 
-	    _zoomInEffectTimer.think(this, null);
-	    _zoomOutEffectTimer.think(this, null);
-	    _dogfightStartTimer.think(this, null);
+        _zoomInEffectTimer.think(this, null);
+        _zoomOutEffectTimer.think(this, null);
+        _dogfightStartTimer.think(this, null);
 
-	    if (!_popups.Any() && !_dogfights.Any() && (!_zoomInEffectTimer.isRunning() || _zoomInEffectDone) && (!_zoomOutEffectTimer.isRunning() || _zoomOutEffectDone))
-	    {
-		    // Handle timers
-		    _gameTimer.think(this, null);
-	    }
-	    else
-	    {
-		    if (_dogfights.Any() || _minimizedDogfights != 0)
-		    {
-			    // If all dogfights are minimized rotate the globe, etc.
-			    if (_dogfights.Count == _minimizedDogfights)
-			    {
-				    _pause = false;
-				    _gameTimer.think(this, null);
-			    }
-			    _dogfightTimer.think(this, null);
-		    }
-		    if (_popups.Any())
-		    {
-			    // Handle popups
-			    _globe.rotateStop();
-			    _game.pushState(_popups.First());
+        if (!_popups.Any() && !_dogfights.Any() && (!_zoomInEffectTimer.isRunning() || _zoomInEffectDone) && (!_zoomOutEffectTimer.isRunning() || _zoomOutEffectDone))
+        {
+            // Handle timers
+            _gameTimer.think(this, null);
+        }
+        else
+        {
+            if (_dogfights.Any() || _minimizedDogfights != 0)
+            {
+                // If all dogfights are minimized rotate the globe, etc.
+                if (_dogfights.Count == _minimizedDogfights)
+                {
+                    _pause = false;
+                    _gameTimer.think(this, null);
+                }
+                _dogfightTimer.think(this, null);
+            }
+            if (_popups.Any())
+            {
+                // Handle popups
+                _globe.rotateStop();
+                _game.pushState(_popups.First());
                 _popups.RemoveAt(0);
-		    }
-	    }
+            }
+        }
     }
 
     /**
@@ -2416,66 +2416,66 @@ internal class GeoscapeState : State
      */
     internal override void handle(Action action)
     {
-	    if (_dogfights.Count == _minimizedDogfights)
-	    {
-		    base.handle(action);
-	    }
+        if (_dogfights.Count == _minimizedDogfights)
+        {
+            base.handle(action);
+        }
 
-	    if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
-	    {
-		    // "ctrl-d" - enable debug mode
-		    if (Options.debug && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_d && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
-		    {
-			    _game.getSavedGame().setDebugMode();
-			    if (_game.getSavedGame().getDebugMode())
-			    {
-				    _txtDebug.setText("DEBUG MODE");
-			    }
-			    else
-			    {
-				    _txtDebug.setText(string.Empty);
-			    }
-		    }
-		    // "ctrl-c" - delete all soldier commendations
-		    if (Options.debug && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_c && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
-		    {
-			    if (_game.getSavedGame().getDebugMode())
-			    {
-				    _txtDebug.setText("SOLDIER COMMENDATIONS DELETED");
-				    foreach (var i in _game.getSavedGame().getBases())
-				    {
-					    foreach (var j in i.getSoldiers())
-					    {
-						    j.getDiary().getSoldierCommendations().Clear();
-					    }
-				    }
-			    }
-			    else
-			    {
-				    _txtDebug.setText(string.Empty);
-			    }
-		    }
-		    // quick save and quick load
-		    else if (!_game.getSavedGame().isIronman())
-		    {
-			    if (action.getDetails().key.keysym.sym == Options.keyQuickSave)
-			    {
-				    popup(new SaveGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_QUICK, _palette));
-			    }
-			    else if (action.getDetails().key.keysym.sym == Options.keyQuickLoad)
-			    {
-				    popup(new LoadGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_QUICK, _palette));
-			    }
-		    }
-	    }
-	    if (_dogfights.Any())
-	    {
-		    foreach (var it in _dogfights)
-		    {
-			    it.handle(action);
-		    }
-		    _minimizedDogfights = (uint)minimizedDogfightsCount();
-	    }
+        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+        {
+            // "ctrl-d" - enable debug mode
+            if (Options.debug && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_d && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+            {
+                _game.getSavedGame().setDebugMode();
+                if (_game.getSavedGame().getDebugMode())
+                {
+                    _txtDebug.setText("DEBUG MODE");
+                }
+                else
+                {
+                    _txtDebug.setText(string.Empty);
+                }
+            }
+            // "ctrl-c" - delete all soldier commendations
+            if (Options.debug && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_c && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+            {
+                if (_game.getSavedGame().getDebugMode())
+                {
+                    _txtDebug.setText("SOLDIER COMMENDATIONS DELETED");
+                    foreach (var i in _game.getSavedGame().getBases())
+                    {
+                        foreach (var j in i.getSoldiers())
+                        {
+                            j.getDiary().getSoldierCommendations().Clear();
+                        }
+                    }
+                }
+                else
+                {
+                    _txtDebug.setText(string.Empty);
+                }
+            }
+            // quick save and quick load
+            else if (!_game.getSavedGame().isIronman())
+            {
+                if (action.getDetails().key.keysym.sym == Options.keyQuickSave)
+                {
+                    popup(new SaveGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_QUICK, _palette));
+                }
+                else if (action.getDetails().key.keysym.sym == Options.keyQuickLoad)
+                {
+                    popup(new LoadGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_QUICK, _palette));
+                }
+            }
+        }
+        if (_dogfights.Any())
+        {
+            foreach (var it in _dogfights)
+            {
+                it.handle(action);
+            }
+            _minimizedDogfights = (uint)minimizedDogfightsCount();
+        }
     }
 
     /**
@@ -2484,15 +2484,15 @@ internal class GeoscapeState : State
      */
     int minimizedDogfightsCount()
     {
-	    int minimizedDogfights = 0;
-	    foreach (var d in _dogfights)
-	    {
-		    if (d.isMinimized())
-		    {
-			    ++minimizedDogfights;
-		    }
-	    }
-	    return minimizedDogfights;
+        int minimizedDogfights = 0;
+        foreach (var d in _dogfights)
+        {
+            if (d.isMinimized())
+            {
+                ++minimizedDogfights;
+            }
+        }
+        return minimizedDogfights;
     }
 
     /**
@@ -2502,62 +2502,62 @@ internal class GeoscapeState : State
      */
     internal override void resize(ref int dX, ref int dY)
     {
-	    if (_game.getSavedGame().getSavedBattle() != null)
-		    return;
-	    dX = Options.baseXResolution;
-	    dY = Options.baseYResolution;
-	    int divisor = 1;
-	    double pixelRatioY = 1.0;
+        if (_game.getSavedGame().getSavedBattle() != null)
+            return;
+        dX = Options.baseXResolution;
+        dY = Options.baseYResolution;
+        int divisor = 1;
+        double pixelRatioY = 1.0;
 
-	    if (Options.nonSquarePixelRatio)
-	    {
-		    pixelRatioY = 1.2;
-	    }
-	    switch ((ScaleType)Options.geoscapeScale)
-	    {
-	        case ScaleType.SCALE_SCREEN_DIV_3:
-		        divisor = 3;
-		        break;
-	        case ScaleType.SCALE_SCREEN_DIV_2:
-		        divisor = 2;
-		        break;
-	        case ScaleType.SCALE_SCREEN:
-		        break;
-	        default:
-		        dX = 0;
-		        dY = 0;
-		        return;
-	    }
+        if (Options.nonSquarePixelRatio)
+        {
+            pixelRatioY = 1.2;
+        }
+        switch ((ScaleType)Options.geoscapeScale)
+        {
+            case ScaleType.SCALE_SCREEN_DIV_3:
+                divisor = 3;
+                break;
+            case ScaleType.SCALE_SCREEN_DIV_2:
+                divisor = 2;
+                break;
+            case ScaleType.SCALE_SCREEN:
+                break;
+            default:
+                dX = 0;
+                dY = 0;
+                return;
+        }
 
-	    Options.baseXResolution = Math.Max(Screen.ORIGINAL_WIDTH, Options.displayWidth / divisor);
-	    Options.baseYResolution = Math.Max(Screen.ORIGINAL_HEIGHT, (int)(Options.displayHeight / pixelRatioY / divisor));
+        Options.baseXResolution = Math.Max(Screen.ORIGINAL_WIDTH, Options.displayWidth / divisor);
+        Options.baseYResolution = Math.Max(Screen.ORIGINAL_HEIGHT, (int)(Options.displayHeight / pixelRatioY / divisor));
 
-	    dX = Options.baseXResolution - dX;
-	    dY = Options.baseYResolution - dY;
+        dX = Options.baseXResolution - dX;
+        dY = Options.baseYResolution - dY;
 
-	    _globe.resize();
+        _globe.resize();
 
-	    foreach (var i in _surfaces)
-	    {
-		    if (i != _globe)
-		    {
-			    i.setX(i.getX() + dX);
-			    i.setY(i.getY() + dY/2);
-		    }
-	    }
+        foreach (var i in _surfaces)
+        {
+            if (i != _globe)
+            {
+                i.setX(i.getX() + dX);
+                i.setY(i.getY() + dY / 2);
+            }
+        }
 
-	    _bg.setX((_globe.getWidth() - _bg.getWidth()) / 2);
-	    _bg.setY((_globe.getHeight() - _bg.getHeight()) / 2);
+        _bg.setX((_globe.getWidth() - _bg.getWidth()) / 2);
+        _bg.setY((_globe.getHeight() - _bg.getHeight()) / 2);
 
-	    int height = (Options.baseYResolution - Screen.ORIGINAL_HEIGHT) / 2 + 10;
-	    _sideTop.setHeight(height);
-	    _sideTop.setY(_sidebar.getY() - height - 1);
-	    _sideBottom.setHeight(height);
-	    _sideBottom.setY(_sidebar.getY() + _sidebar.getHeight() + 1);
+        int height = (Options.baseYResolution - Screen.ORIGINAL_HEIGHT) / 2 + 10;
+        _sideTop.setHeight(height);
+        _sideTop.setY(_sidebar.getY() - height - 1);
+        _sideBottom.setHeight(height);
+        _sideBottom.setY(_sidebar.getY() + _sidebar.getHeight() + 1);
 
-	    _sideLine.setHeight(Options.baseYResolution);
-	    _sideLine.setY(0);
-	    _sideLine.drawRect(0, 0, (short)_sideLine.getWidth(), (short)_sideLine.getHeight(), 15);
+        _sideLine.setHeight(Options.baseYResolution);
+        _sideLine.setY(0);
+        _sideLine.drawRect(0, 0, (short)_sideLine.getWidth(), (short)_sideLine.getHeight(), 15);
     }
 
     /**
@@ -2565,10 +2565,10 @@ internal class GeoscapeState : State
      */
     internal override void blit()
     {
-	    base.blit();
-	    foreach (var it in _dogfights)
-	    {
-		    it.blit();
-	    }
+        base.blit();
+        foreach (var it in _dogfights)
+        {
+            it.blit();
+        }
     }
 }

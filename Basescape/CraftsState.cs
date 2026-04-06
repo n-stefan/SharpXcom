@@ -136,14 +136,14 @@ internal class CraftsState : State
      */
     internal override void init()
     {
-	    base.init();
-	    _lstCrafts.clearList();
-	    foreach (var i in _base.getCrafts())
-	    {
-		    string ss = $"{i.getNumWeapons()}/{i.getRules().getWeapons()}";
-		    string ss2 = i.getNumSoldiers().ToString();
-		    string ss3 = i.getNumVehicles().ToString();
-		    _lstCrafts.addRow(5, i.getName(_game.getLanguage()), tr(i.getStatus()), ss, ss2, ss3);
-	    }
+        base.init();
+        _lstCrafts.clearList();
+        foreach (var i in _base.getCrafts())
+        {
+            string ss = $"{i.getNumWeapons()}/{i.getRules().getWeapons()}";
+            string ss2 = i.getNumSoldiers().ToString();
+            string ss3 = i.getNumVehicles().ToString();
+            _lstCrafts.addRow(5, i.getName(_game.getLanguage()), tr(i.getStatus()), ss, ss2, ss3);
+        }
     }
 }

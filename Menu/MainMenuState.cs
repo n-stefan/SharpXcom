@@ -22,12 +22,12 @@ namespace SharpXcom.Menu;
 // Utility class for enqueuing a state in the stack that goes to the main menu
 class GoToMainMenuState : State
 {
-	internal override void init()
-	{
-		Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
-		_game.getScreen().resetDisplay(false);
-		_game.setState(new MainMenuState());
-	}
+    internal override void init()
+    {
+        Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
+        _game.getScreen().resetDisplay(false);
+        _game.setState(new MainMenuState());
+    }
 }
 
 /**
@@ -45,62 +45,62 @@ internal class MainMenuState : State
 	 * @param game Pointer to the core game.
 	 */
     internal MainMenuState()
-	{
-		// Create objects
-		_window = new Window(this, 256, 160, 32, 20, WindowPopup.POPUP_BOTH);
-		_btnNewGame = new TextButton(92, 20, 64, 90);
-		_btnNewBattle = new TextButton(92, 20, 164, 90);
-		_btnLoad = new TextButton(92, 20, 64, 118);
-		_btnOptions = new TextButton(92, 20, 164, 118);
-		_btnMods = new TextButton(92, 20, 64, 146);
-		_btnQuit = new TextButton(92, 20, 164, 146);
-		_txtTitle = new Text(256, 30, 32, 45);
+    {
+        // Create objects
+        _window = new Window(this, 256, 160, 32, 20, WindowPopup.POPUP_BOTH);
+        _btnNewGame = new TextButton(92, 20, 64, 90);
+        _btnNewBattle = new TextButton(92, 20, 164, 90);
+        _btnLoad = new TextButton(92, 20, 64, 118);
+        _btnOptions = new TextButton(92, 20, 164, 118);
+        _btnMods = new TextButton(92, 20, 64, 146);
+        _btnQuit = new TextButton(92, 20, 164, 146);
+        _txtTitle = new Text(256, 30, 32, 45);
 
-		// Set palette
-		setInterface("mainMenu");
+        // Set palette
+        setInterface("mainMenu");
 
-		add(_window, "window", "mainMenu");
-		add(_btnNewGame, "button", "mainMenu");
-		add(_btnNewBattle, "button", "mainMenu");
-		add(_btnLoad, "button", "mainMenu");
-		add(_btnOptions, "button", "mainMenu");
-		add(_btnMods, "button", "mainMenu");
-		add(_btnQuit, "button", "mainMenu");
-		add(_txtTitle, "text", "mainMenu");
+        add(_window, "window", "mainMenu");
+        add(_btnNewGame, "button", "mainMenu");
+        add(_btnNewBattle, "button", "mainMenu");
+        add(_btnLoad, "button", "mainMenu");
+        add(_btnOptions, "button", "mainMenu");
+        add(_btnMods, "button", "mainMenu");
+        add(_btnQuit, "button", "mainMenu");
+        add(_txtTitle, "text", "mainMenu");
 
-		centerAllSurfaces();
+        centerAllSurfaces();
 
-		// Set up objects
-		_window.setBackground(_game.getMod().getSurface("BACK01.SCR"));
+        // Set up objects
+        _window.setBackground(_game.getMod().getSurface("BACK01.SCR"));
 
-		_btnNewGame.setText(tr("STR_NEW_GAME"));
-		_btnNewGame.onMouseClick(btnNewGameClick);
+        _btnNewGame.setText(tr("STR_NEW_GAME"));
+        _btnNewGame.onMouseClick(btnNewGameClick);
 
-		_btnNewBattle.setText(tr("STR_NEW_BATTLE"));
-		_btnNewBattle.onMouseClick(btnNewBattleClick);
+        _btnNewBattle.setText(tr("STR_NEW_BATTLE"));
+        _btnNewBattle.onMouseClick(btnNewBattleClick);
 
-		_btnLoad.setText(tr("STR_LOAD_SAVED_GAME"));
-		_btnLoad.onMouseClick(btnLoadClick);
+        _btnLoad.setText(tr("STR_LOAD_SAVED_GAME"));
+        _btnLoad.onMouseClick(btnLoadClick);
 
-		_btnOptions.setText(tr("STR_OPTIONS"));
-		_btnOptions.onMouseClick(btnOptionsClick);
+        _btnOptions.setText(tr("STR_OPTIONS"));
+        _btnOptions.onMouseClick(btnOptionsClick);
 
-		_btnMods.setText(tr("STR_MODS"));
-		_btnMods.onMouseClick(btnModsClick);
+        _btnMods.setText(tr("STR_MODS"));
+        _btnMods.onMouseClick(btnModsClick);
 
-		_btnQuit.setText(tr("STR_QUIT"));
-		_btnQuit.onMouseClick(btnQuitClick);
+        _btnQuit.setText(tr("STR_QUIT"));
+        _btnQuit.onMouseClick(btnQuitClick);
 
-		_txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
-		_txtTitle.setBig();
-		string title = $"{tr("STR_SHARPXCOM")}{Unicode.TOK_NL_SMALL}{SHARPXCOM_VERSION_SHORT}{SHARPXCOM_VERSION_GIT}";
-		_txtTitle.setText(title);
-	}
+        _txtTitle.setAlign(TextHAlign.ALIGN_CENTER);
+        _txtTitle.setBig();
+        string title = $"{tr("STR_SHARPXCOM")}{Unicode.TOK_NL_SMALL}{SHARPXCOM_VERSION_SHORT}{SHARPXCOM_VERSION_GIT}";
+        _txtTitle.setText(title);
+    }
 
-	/**
+    /**
 	 *
 	 */
-	~MainMenuState() { }
+    ~MainMenuState() { }
 
     /**
      * Opens the New Game window.
@@ -133,12 +133,12 @@ internal class MainMenuState : State
         _game.pushState(new OptionsVideoState(OptionsOrigin.OPT_MENU));
     }
 
-	/**
+    /**
 	* Opens the Mods screen.
 	* @param action Pointer to an action.
 	*/
-	void btnModsClick(Action _) =>
-		_game.pushState(new ModListState());
+    void btnModsClick(Action _) =>
+        _game.pushState(new ModListState());
 
     /**
      * Quits the game.
@@ -147,18 +147,18 @@ internal class MainMenuState : State
     void btnQuitClick(Action _) =>
         _game.quit();
 
-	/**
+    /**
 	 * Updates the scale.
 	 * @param dX delta of X;
 	 * @param dY delta of Y;
 	 */
-	internal override void resize(ref int dX, ref int dY)
-	{
-		dX = Options.baseXResolution;
-		dY = Options.baseYResolution;
-		Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
-		dX = Options.baseXResolution - dX;
-		dY = Options.baseYResolution - dY;
-		base.resize(ref dX, ref dY);
-	}
+    internal override void resize(ref int dX, ref int dY)
+    {
+        dX = Options.baseXResolution;
+        dY = Options.baseYResolution;
+        Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, true);
+        dX = Options.baseXResolution - dX;
+        dY = Options.baseYResolution - dY;
+        base.resize(ref dX, ref dY);
+    }
 }

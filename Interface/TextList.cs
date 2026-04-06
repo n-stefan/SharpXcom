@@ -269,7 +269,7 @@ internal class TextList : InteractiveSurface
      * @return Number of rows.
      */
     internal uint getVisibleRows() =>
-	    _visibleRows;
+        _visibleRows;
 
     /**
      * Updates the visibility of the arrow buttons according to
@@ -495,14 +495,14 @@ internal class TextList : InteractiveSurface
      */
     internal uint getSelectedRow()
     {
-	    if (!_rows.Any() || _selRow >= _rows.Count)
-	    {
+        if (!_rows.Any() || _selRow >= _rows.Count)
+        {
             unchecked { return (uint)-1; }
         }
         else
-	    {
-		    return _rows[(int)_selRow];
-	    }
+        {
+            return _rows[(int)_selRow];
+        }
     }
 
     /**
@@ -510,7 +510,7 @@ internal class TextList : InteractiveSurface
      * @return Color value.
      */
     internal byte getSecondaryColor() =>
-	    _color2;
+        _color2;
 
     /**
      * Changes the text color of a whole row in the list.
@@ -659,8 +659,8 @@ internal class TextList : InteractiveSurface
      */
     internal void setCellText(uint row, uint column, string text)
     {
-	    _texts[(int)row][(int)column].setText(text);
-	    _redraw = true;
+        _texts[(int)row][(int)column].setText(text);
+        _redraw = true;
     }
 
     /**
@@ -668,7 +668,7 @@ internal class TextList : InteractiveSurface
      * @return Color value.
      */
     internal byte getColor() =>
-	    _color;
+        _color;
 
     /**
      * Enables/disables text wordwrapping. When enabled, rows can
@@ -746,7 +746,7 @@ internal class TextList : InteractiveSurface
      * @return height in pixels.
      */
     internal int getNumTextLines(uint row) =>
-	    _texts[(int)row].First().getNumLines();
+        _texts[(int)row].First().getNumLines();
 
     /**
      * Returns the height of a specific text row in the list.
@@ -754,7 +754,7 @@ internal class TextList : InteractiveSurface
      * @return height in pixels.
      */
     internal int getTextHeight(uint row) =>
-	    _texts[(int)row].First().getTextHeight();
+        _texts[(int)row].First().getTextHeight();
 
     /**
      * Returns the Y position of a specific text row in the list.
@@ -762,25 +762,25 @@ internal class TextList : InteractiveSurface
      * @return Y position in pixels.
      */
     internal int getRowY(uint row) =>
-	    getY() + _texts[(int)row][0].getY();
+        getY() + _texts[(int)row][0].getY();
 
     /**
      * Passes ticks to arrow buttons.
      */
     internal override void think()
     {
-	    base.think();
-	    _up.think();
-	    _down.think();
-	    _scrollbar.think();
-	    foreach (var i in _arrowLeft)
-	    {
-		    i.think();
-	    }
-	    foreach (var i in _arrowRight)
-	    {
-		    i.think();
-	    }
+        base.think();
+        _up.think();
+        _down.think();
+        _scrollbar.think();
+        foreach (var i in _arrowLeft)
+        {
+            i.think();
+        }
+        foreach (var i in _arrowRight)
+        {
+            i.think();
+        }
     }
 
     /**
@@ -790,33 +790,33 @@ internal class TextList : InteractiveSurface
      */
     internal override void handle(Action action, State state)
     {
-	    base.handle(action, state);
-	    _up.handle(action, state);
-	    _down.handle(action, state);
-	    _scrollbar.handle(action, state);
-	    if (_arrowPos != -1 && _rows.Any())
-	    {
-		    uint startArrowIdx = _rows[(int)_scroll];
-		    if (0 < _scroll && _rows[(int)_scroll] == _rows[(int)(_scroll - 1)])
-		    {
-			    // arrows for first partially-visible line of text are off-screen; don't process them
-			    ++startArrowIdx;
-		    }
-		    uint endArrowIdx = _rows[(int)_scroll] + 1;
-		    uint endRow = Math.Min((uint)_rows.Count, _scroll + _visibleRows);
-		    for (int i = (int)(_scroll + 1); i < endRow; ++i)
-		    {
-			    if (_rows[i] != _rows[i - 1])
-			    {
-				    ++endArrowIdx;
-			    }
-		    }
-		    for (int i = (int)startArrowIdx; i < endArrowIdx; ++i)
-		    {
-			    _arrowLeft[i].handle(action, state);
-			    _arrowRight[i].handle(action, state);
-		    }
-	    }
+        base.handle(action, state);
+        _up.handle(action, state);
+        _down.handle(action, state);
+        _scrollbar.handle(action, state);
+        if (_arrowPos != -1 && _rows.Any())
+        {
+            uint startArrowIdx = _rows[(int)_scroll];
+            if (0 < _scroll && _rows[(int)_scroll] == _rows[(int)(_scroll - 1)])
+            {
+                // arrows for first partially-visible line of text are off-screen; don't process them
+                ++startArrowIdx;
+            }
+            uint endArrowIdx = _rows[(int)_scroll] + 1;
+            uint endRow = Math.Min((uint)_rows.Count, _scroll + _visibleRows);
+            for (int i = (int)(_scroll + 1); i < endRow; ++i)
+            {
+                if (_rows[i] != _rows[i - 1])
+                {
+                    ++endArrowIdx;
+                }
+            }
+            for (int i = (int)startArrowIdx; i < endArrowIdx; ++i)
+            {
+                _arrowLeft[i].handle(action, state);
+                _arrowRight[i].handle(action, state);
+            }
+        }
     }
 
     /**
@@ -825,47 +825,47 @@ internal class TextList : InteractiveSurface
      * @return X position in pixels.
      */
     internal int getColumnX(uint column) =>
-	    getX() + _texts[0][(int)column].getX();
+        getX() + _texts[0][(int)column].getX();
 
     /**
      * Gets the combobox that this list is attached to, if any.
      * @return the attached combobox.
      */
     internal ComboBox getComboBox() =>
-	    _comboBox;
+        _comboBox;
 
     /**
      * Draws the text list and all the text contained within.
      */
     internal override void draw()
     {
-	    base.draw();
-	    int y = 0;
-	    if (_rows.Any())
-	    {
-		    // for wrapped items, offset the draw height above the visible surface
-		    // so that the correct row appears at the top
-		    for (var row = (int)_scroll; row > 0 && _rows[row] == _rows[row - 1]; --row)
-		    {
-			    y -= _font.getHeight() + _font.getSpacing();
-		    }
-		    for (var i = (int)_rows[(int)_scroll]; i < _texts.Count && i < _rows[(int)_scroll] + _visibleRows; ++i)
-		    {
-			    foreach (var j in _texts[i])
-			    {
-				    j.setY(y);
-				    j.blit(this);
-			    }
-			    if (_texts[i].Any())
-			    {
-				    y += _texts[i].First().getHeight() + _font.getSpacing();
-			    }
-			    else
-			    {
-				    y += _font.getHeight() + _font.getSpacing();
-			    }
-		    }
-	    }
+        base.draw();
+        int y = 0;
+        if (_rows.Any())
+        {
+            // for wrapped items, offset the draw height above the visible surface
+            // so that the correct row appears at the top
+            for (var row = (int)_scroll; row > 0 && _rows[row] == _rows[row - 1]; --row)
+            {
+                y -= _font.getHeight() + _font.getSpacing();
+            }
+            for (var i = (int)_rows[(int)_scroll]; i < _texts.Count && i < _rows[(int)_scroll] + _visibleRows; ++i)
+            {
+                foreach (var j in _texts[i])
+                {
+                    j.setY(y);
+                    j.blit(this);
+                }
+                if (_texts[i].Any())
+                {
+                    y += _texts[i].First().getHeight() + _font.getSpacing();
+                }
+                else
+                {
+                    y += _font.getHeight() + _font.getSpacing();
+                }
+            }
+        }
     }
 
     /**
@@ -874,47 +874,47 @@ internal class TextList : InteractiveSurface
      */
     internal override void blit(Surface surface)
     {
-	    if (_visible && !_hidden)
-	    {
-		    _selector.blit(surface);
-	    }
-	    base.blit(surface);
-	    if (_visible && !_hidden)
-	    {
-		    if (_arrowPos != -1 && _rows.Any())
-		    {
-			    int y = getY();
-			    for (var row = (int)_scroll; row > 0 && _rows[row] == _rows[row - 1]; --row)
-			    {
-				    y -= _font.getHeight() + _font.getSpacing();
-			    }
-			    int maxY = getY() + getHeight();
-			    for (var i = (int)_rows[(int)_scroll]; i < _texts.Count && i < _rows[(int)_scroll] + _visibleRows && y < maxY; ++i)
-			    {
-				    _arrowLeft[i].setY(y);
-				    _arrowRight[i].setY(y);
+        if (_visible && !_hidden)
+        {
+            _selector.blit(surface);
+        }
+        base.blit(surface);
+        if (_visible && !_hidden)
+        {
+            if (_arrowPos != -1 && _rows.Any())
+            {
+                int y = getY();
+                for (var row = (int)_scroll; row > 0 && _rows[row] == _rows[row - 1]; --row)
+                {
+                    y -= _font.getHeight() + _font.getSpacing();
+                }
+                int maxY = getY() + getHeight();
+                for (var i = (int)_rows[(int)_scroll]; i < _texts.Count && i < _rows[(int)_scroll] + _visibleRows && y < maxY; ++i)
+                {
+                    _arrowLeft[i].setY(y);
+                    _arrowRight[i].setY(y);
 
-				    if (y >= getY())
-				    {
-					    // only blit arrows that belong to texts that have their first row on-screen
-					    _arrowLeft[i].blit(surface);
-					    _arrowRight[i].blit(surface);
-				    }
+                    if (y >= getY())
+                    {
+                        // only blit arrows that belong to texts that have their first row on-screen
+                        _arrowLeft[i].blit(surface);
+                        _arrowRight[i].blit(surface);
+                    }
 
-				    if (_texts[i].Any())
-				    {
-					    y += _texts[i].First().getHeight() + _font.getSpacing();
-				    }
-				    else
-				    {
-					    y += _font.getHeight() + _font.getSpacing();
-				    }
-			    }
-		    }
-		    _up.blit(surface);
-		    _down.blit(surface);
-		    _scrollbar.blit(surface);
-	    }
+                    if (_texts[i].Any())
+                    {
+                        y += _texts[i].First().getHeight() + _font.getSpacing();
+                    }
+                    else
+                    {
+                        y += _font.getHeight() + _font.getSpacing();
+                    }
+                }
+            }
+            _up.blit(surface);
+            _down.blit(surface);
+            _scrollbar.blit(surface);
+        }
     }
 
     /**
@@ -923,15 +923,15 @@ internal class TextList : InteractiveSurface
      */
     internal override void unpress(State state)
     {
-	    base.unpress(state);
-	    foreach (var i in _arrowLeft)
-	    {
-		    i.unpress(state);
-	    }
-	    foreach (var i in _arrowRight)
-	    {
-		    i.unpress(state);
-	    }
+        base.unpress(state);
+        foreach (var i in _arrowLeft)
+        {
+            i.unpress(state);
+        }
+        foreach (var i in _arrowRight)
+        {
+            i.unpress(state);
+        }
     }
 
     /**
@@ -941,27 +941,27 @@ internal class TextList : InteractiveSurface
      */
     internal override void mousePress(Action action, State state)
     {
-	    bool allowScroll = true;
-	    if (Options.changeValueByMouseWheel != 0)
-	    {
-		    allowScroll = (action.getAbsoluteXMouse() < _arrowsLeftEdge || action.getAbsoluteXMouse() > _arrowsRightEdge);
-	    }
-	    if (allowScroll)
-	    {
-		    if (action.getDetails().wheel.y > 0) scrollUp(false, true); //button.button == SDL_BUTTON_WHEELUP
-		    else if (action.getDetails().wheel.y < 0) scrollDown(false, true); //button.button == SDL_BUTTON_WHEELDOWN
-	    }
-	    if (_selectable)
-	    {
-		    if (_selRow < _rows.Count)
-		    {
-			    base.mousePress(action, state);
-		    }
-	    }
-	    else
-	    {
-		    base.mousePress(action, state);
-	    }
+        bool allowScroll = true;
+        if (Options.changeValueByMouseWheel != 0)
+        {
+            allowScroll = (action.getAbsoluteXMouse() < _arrowsLeftEdge || action.getAbsoluteXMouse() > _arrowsRightEdge);
+        }
+        if (allowScroll)
+        {
+            if (action.getDetails().wheel.y > 0) scrollUp(false, true); //button.button == SDL_BUTTON_WHEELUP
+            else if (action.getDetails().wheel.y < 0) scrollDown(false, true); //button.button == SDL_BUTTON_WHEELDOWN
+        }
+        if (_selectable)
+        {
+            if (_selRow < _rows.Count)
+            {
+                base.mousePress(action, state);
+            }
+        }
+        else
+        {
+            base.mousePress(action, state);
+        }
     }
 
     /*
@@ -971,17 +971,17 @@ internal class TextList : InteractiveSurface
      */
     protected override void mouseRelease(Action action, State state)
     {
-	    if (_selectable)
-	    {
-		    if (_selRow < _rows.Count)
-		    {
-			    base.mouseRelease(action, state);
-		    }
-	    }
-	    else
-	    {
-		    base.mouseRelease(action, state);
-	    }
+        if (_selectable)
+        {
+            if (_selRow < _rows.Count)
+            {
+                base.mouseRelease(action, state);
+            }
+        }
+        else
+        {
+            base.mouseRelease(action, state);
+        }
     }
 
     /**
@@ -991,22 +991,22 @@ internal class TextList : InteractiveSurface
      */
     protected override void mouseClick(Action action, State state)
     {
-	    if (_selectable)
-	    {
-		    if (_selRow < _rows.Count)
-		    {
-			    base.mouseClick(action, state);
-			    if (_comboBox != null && action.getDetails().button.button == SDL_BUTTON_LEFT)
-			    {
-				    _comboBox.setSelected(_selRow);
-				    _comboBox.toggle();
-			    }
-		    }
-	    }
-	    else
-	    {
-		    base.mouseClick(action, state);
-	    }
+        if (_selectable)
+        {
+            if (_selRow < _rows.Count)
+            {
+                base.mouseClick(action, state);
+                if (_comboBox != null && action.getDetails().button.button == SDL_BUTTON_LEFT)
+                {
+                    _comboBox.setSelected(_selRow);
+                    _comboBox.toggle();
+                }
+            }
+        }
+        else
+        {
+            base.mouseClick(action, state);
+        }
     }
 
     /**
@@ -1016,53 +1016,53 @@ internal class TextList : InteractiveSurface
      */
     protected override void mouseOver(Action action, State state)
     {
-	    if (_selectable)
-	    {
-		    int rowHeight = _font.getHeight() + _font.getSpacing(); //theoretical line height
-		    _selRow = (uint)Math.Max(0, (int)(_scroll + (int)Math.Floor(action.getRelativeYMouse() / (rowHeight * action.getYScale()))));
-		    if (_selRow < _rows.Count)
-		    {
-			    Text selText = _texts[(int)_rows[(int)_selRow]].First();
-			    int y = getY() + selText.getY();
-			    int actualHeight = selText.getHeight() + _font.getSpacing(); //current line height
-			    if (y < getY() || y + actualHeight > getY() + getHeight())
-			    {
-				    actualHeight /= 2;
-			    }
-			    if (y < getY())
-			    {
-				    y = getY();
-			    }
-			    if (_selector.getHeight() != actualHeight)
-			    {
-				    // resizing doesn't work, but recreating does, so let's do that!
-				    _selector = null;
-				    _selector = new Surface(getWidth(), actualHeight, getX(), y);
-				    _selector.setPalette(getPalette());
-			    }
-			    _selector.setY(y);
-			    _selector.copy(_bg);
-			    if (_contrast)
-			    {
-				    _selector.offsetBlock(-5);
-			    }
-			    else if (_comboBox != null)
-			    {
-				    _selector.offset(+1, Palette.backPos);
-			    }
-			    else
-			    {
-				    _selector.offsetBlock(-10);
-			    }
-			    _selector.setVisible(true);
-		    }
-		    else
-		    {
-			    _selector.setVisible(false);
-		    }
-	    }
+        if (_selectable)
+        {
+            int rowHeight = _font.getHeight() + _font.getSpacing(); //theoretical line height
+            _selRow = (uint)Math.Max(0, (int)(_scroll + (int)Math.Floor(action.getRelativeYMouse() / (rowHeight * action.getYScale()))));
+            if (_selRow < _rows.Count)
+            {
+                Text selText = _texts[(int)_rows[(int)_selRow]].First();
+                int y = getY() + selText.getY();
+                int actualHeight = selText.getHeight() + _font.getSpacing(); //current line height
+                if (y < getY() || y + actualHeight > getY() + getHeight())
+                {
+                    actualHeight /= 2;
+                }
+                if (y < getY())
+                {
+                    y = getY();
+                }
+                if (_selector.getHeight() != actualHeight)
+                {
+                    // resizing doesn't work, but recreating does, so let's do that!
+                    _selector = null;
+                    _selector = new Surface(getWidth(), actualHeight, getX(), y);
+                    _selector.setPalette(getPalette());
+                }
+                _selector.setY(y);
+                _selector.copy(_bg);
+                if (_contrast)
+                {
+                    _selector.offsetBlock(-5);
+                }
+                else if (_comboBox != null)
+                {
+                    _selector.offset(+1, Palette.backPos);
+                }
+                else
+                {
+                    _selector.offsetBlock(-10);
+                }
+                _selector.setVisible(true);
+            }
+            else
+            {
+                _selector.setVisible(false);
+            }
+        }
 
-	    base.mouseOver(action, state);
+        base.mouseOver(action, state);
     }
 
     /**
@@ -1072,12 +1072,12 @@ internal class TextList : InteractiveSurface
      */
     protected override void mouseOut(Action action, State state)
     {
-	    if (_selectable)
-	    {
-		    _selector.setVisible(false);
-	    }
+        if (_selectable)
+        {
+            _selector.setVisible(false);
+        }
 
-	    base.mouseOut(action, state);
+        base.mouseOut(action, state);
     }
 
     /**
@@ -1089,17 +1089,17 @@ internal class TextList : InteractiveSurface
      */
     internal override void initText(Font big, Font small, Language lang)
     {
-	    _big = big;
-	    _small = small;
-	    _font = small;
-	    _lang = lang;
+        _big = big;
+        _small = small;
+        _font = small;
+        _lang = lang;
 
-	    _selector = null;
-	    _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
-	    _selector.setPalette(getPalette());
-	    _selector.setVisible(false);
+        _selector = null;
+        _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
+        _selector.setPalette(getPalette());
+        _selector.setVisible(false);
 
-	    updateVisible();
+        updateVisible();
     }
 
     /**
@@ -1111,29 +1111,29 @@ internal class TextList : InteractiveSurface
      */
     internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-	    base.setPalette(colors, firstcolor, ncolors);
-	    foreach (var u in _texts)
-	    {
-		    foreach (var v in u)
-		    {
-			    v.setPalette(colors, firstcolor, ncolors);
-		    }
-	    }
-	    foreach (var i in _arrowLeft)
-	    {
-		    i.setPalette(colors, firstcolor, ncolors);
-	    }
-	    foreach (var i in _arrowRight)
-	    {
-		    i.setPalette(colors, firstcolor, ncolors);
-	    }
-	    if (_selector != null)
-	    {
-		    _selector.setPalette(colors, firstcolor, ncolors);
-	    }
-	    _up.setPalette(colors, firstcolor, ncolors);
-	    _down.setPalette(colors, firstcolor, ncolors);
-	    _scrollbar.setPalette(colors, firstcolor, ncolors);
+        base.setPalette(colors, firstcolor, ncolors);
+        foreach (var u in _texts)
+        {
+            foreach (var v in u)
+            {
+                v.setPalette(colors, firstcolor, ncolors);
+            }
+        }
+        foreach (var i in _arrowLeft)
+        {
+            i.setPalette(colors, firstcolor, ncolors);
+        }
+        foreach (var i in _arrowRight)
+        {
+            i.setPalette(colors, firstcolor, ncolors);
+        }
+        if (_selector != null)
+        {
+            _selector.setPalette(colors, firstcolor, ncolors);
+        }
+        _up.setPalette(colors, firstcolor, ncolors);
+        _down.setPalette(colors, firstcolor, ncolors);
+        _scrollbar.setPalette(colors, firstcolor, ncolors);
     }
 
     /**
@@ -1142,12 +1142,12 @@ internal class TextList : InteractiveSurface
      */
     internal override void setX(int x)
     {
-	    base.setX(x);
-	    _up.setX(getX() + getWidth() + _scrollPos);
-	    _down.setX(getX() + getWidth() + _scrollPos);
-	    _scrollbar.setX(getX() + getWidth() + _scrollPos);
-	    if (_selector != null)
-		    _selector.setX(getX());
+        base.setX(x);
+        _up.setX(getX() + getWidth() + _scrollPos);
+        _down.setX(getX() + getWidth() + _scrollPos);
+        _scrollbar.setX(getX() + getWidth() + _scrollPos);
+        if (_selector != null)
+            _selector.setX(getX());
     }
 
     /**
@@ -1156,12 +1156,12 @@ internal class TextList : InteractiveSurface
      */
     internal override void setY(int y)
     {
-	    base.setY(y);
-	    _up.setY(getY());
-	    _down.setY(getY() + getHeight() - 14);
-	    _scrollbar.setY(_up.getY() + _up.getHeight());
-	    if (_selector != null)
-		    _selector.setY(getY());
+        base.setY(y);
+        _up.setY(getY());
+        _down.setY(getY() + getHeight() - 14);
+        _scrollbar.setY(_up.getY() + _up.getHeight());
+        if (_selector != null)
+            _selector.setY(getY());
     }
 
     /**
@@ -1170,11 +1170,11 @@ internal class TextList : InteractiveSurface
      */
     internal override void setHeight(int height)
     {
-	    base.setHeight(height);
-	    setY(getY());
-	    int h = Math.Max(_down.getY() - _up.getY() - _up.getHeight(), 1);
-	    _scrollbar.setHeight(h);
-	    updateVisible();
+        base.setHeight(height);
+        setY(getY());
+        int h = Math.Max(_down.getY() - _up.getY() - _up.getHeight(), 1);
+        _scrollbar.setHeight(h);
+        updateVisible();
     }
 
     /**
@@ -1182,13 +1182,13 @@ internal class TextList : InteractiveSurface
      * @param color Color value.
      */
     internal override void setSecondaryColor(byte color) =>
-	    _color2 = color;
+        _color2 = color;
 
     internal override void setBorderColor(byte color)
     {
-	    _up.setColor(color);
-	    _down.setColor(color);
-	    _scrollbar.setColor(color);
+        _up.setColor(color);
+        _down.setColor(color);
+        _scrollbar.setColor(color);
     }
 
     /**
@@ -1198,15 +1198,15 @@ internal class TextList : InteractiveSurface
      */
     internal override void setHighContrast(bool contrast)
     {
-	    _contrast = contrast;
-	    foreach (var u in _texts)
-	    {
-		    foreach (var v in u)
-		    {
-			    v.setHighContrast(contrast);
-		    }
-	    }
-	    _scrollbar.setHighContrast(contrast);
+        _contrast = contrast;
+        foreach (var u in _texts)
+        {
+            foreach (var v in u)
+            {
+                v.setHighContrast(contrast);
+            }
+        }
+        _scrollbar.setHighContrast(contrast);
     }
 
     /**
@@ -1214,14 +1214,14 @@ internal class TextList : InteractiveSurface
      */
     void setSmall()
     {
-	    _font = _small;
+        _font = _small;
 
-	    _selector = null;
-	    _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
-	    _selector.setPalette(getPalette());
-	    _selector.setVisible(false);
+        _selector = null;
+        _selector = new Surface(getWidth(), _font.getHeight() + _font.getSpacing(), getX(), getY());
+        _selector.setPalette(getPalette());
+        _selector.setVisible(false);
 
-	    updateVisible();
+        updateVisible();
     }
 
     /**
@@ -1230,12 +1230,12 @@ internal class TextList : InteractiveSurface
      * @param condensed True for condensed layout, False for table layout.
      */
     void setCondensed(bool condensed) =>
-	    _condensed = condensed;
+        _condensed = condensed;
 
     /**
      * Returns the margin of the text in the list.
      * @return Margin in pixels.
      */
     int getMargin() =>
-	    _margin;
+        _margin;
 }

@@ -55,8 +55,8 @@ internal class CraftWeapon
      */
     internal void load(YamlNode node)
     {
-	    _ammo = int.Parse(node["ammo"].ToString());
-	    _rearming = bool.Parse(node["rearming"].ToString());
+        _ammo = int.Parse(node["ammo"].ToString());
+        _rearming = bool.Parse(node["rearming"].ToString());
     }
 
     /**
@@ -64,14 +64,14 @@ internal class CraftWeapon
      * @return Pointer to ruleset.
      */
     internal RuleCraftWeapon getRules() =>
-	    _rules;
+        _rules;
 
     /**
      * Returns whether this craft weapon needs rearming.
      * @return Rearming status.
      */
     internal bool isRearming() =>
-	    _rearming;
+        _rearming;
 
     /**
      * Rearms this craft weapon's ammo.
@@ -81,19 +81,19 @@ internal class CraftWeapon
      */
     internal int rearm(int available, int clipSize)
     {
-	    int ammoUsed = _rules.getRearmRate();
+        int ammoUsed = _rules.getRearmRate();
 
-	    if (clipSize > 0)
-	    {	// +(clipSize - 1) correction for rounding up
-		    int needed = Math.Min(_rules.getRearmRate(), _rules.getAmmoMax() - _ammo + clipSize - 1) / clipSize;
-		    ammoUsed = ((needed > available)? available : needed) * clipSize;
-	    }
+        if (clipSize > 0)
+        {   // +(clipSize - 1) correction for rounding up
+            int needed = Math.Min(_rules.getRearmRate(), _rules.getAmmoMax() - _ammo + clipSize - 1) / clipSize;
+            ammoUsed = ((needed > available) ? available : needed) * clipSize;
+        }
 
-	    setAmmo(_ammo + ammoUsed);
+        setAmmo(_ammo + ammoUsed);
 
-	    _rearming = _ammo < _rules.getAmmoMax();
+        _rearming = _ammo < _rules.getAmmoMax();
 
-	    return (clipSize <= 0)? 0 : ammoUsed / clipSize;
+        return (clipSize <= 0) ? 0 : ammoUsed / clipSize;
     }
 
     /**
@@ -129,7 +129,7 @@ internal class CraftWeapon
      * @return Weapon ammo.
      */
     internal int getAmmo() =>
-	    _ammo;
+        _ammo;
 
     /*
      * get how many clips are loaded into this weapon.
@@ -138,15 +138,15 @@ internal class CraftWeapon
      */
     internal int getClipsLoaded(Mod.Mod mod)
     {
-	    int retVal = (int)Math.Floor((double)_ammo / _rules.getRearmRate());
-	    RuleItem clip = mod.getItem(_rules.getClipItem());
+        int retVal = (int)Math.Floor((double)_ammo / _rules.getRearmRate());
+        RuleItem clip = mod.getItem(_rules.getClipItem());
 
-	    if (clip != null && clip.getClipSize() > 0)
-	    {
-		    retVal = (int)Math.Floor((double)_ammo / clip.getClipSize());
-	    }
+        if (clip != null && clip.getClipSize() > 0)
+        {
+            retVal = (int)Math.Floor((double)_ammo / clip.getClipSize());
+        }
 
-	    return retVal;
+        return retVal;
     }
 
     /*
@@ -155,13 +155,13 @@ internal class CraftWeapon
      */
     internal CraftWeaponProjectile fire()
     {
-	    CraftWeaponProjectile p = new CraftWeaponProjectile();
-	    p.setType(this.getRules().getProjectileType());
-	    p.setSpeed(this.getRules().getProjectileSpeed());
-	    p.setAccuracy(this.getRules().getAccuracy());
-	    p.setDamage(this.getRules().getDamage());
-	    p.setRange(this.getRules().getRange());
-	    return p;
+        CraftWeaponProjectile p = new CraftWeaponProjectile();
+        p.setType(this.getRules().getProjectileType());
+        p.setSpeed(this.getRules().getProjectileSpeed());
+        p.setAccuracy(this.getRules().getAccuracy());
+        p.setDamage(this.getRules().getDamage());
+        p.setRange(this.getRules().getRange());
+        return p;
     }
 
     /**
@@ -170,11 +170,11 @@ internal class CraftWeapon
      */
     internal YamlNode save()
     {
-	    var node = new YamlMappingNode();
-	    node.Add("type", _rules.getType());
-	    node.Add("ammo", _ammo.ToString());
-	    if (_rearming)
-		    node.Add("rearming", _rearming.ToString());
-	    return node;
+        var node = new YamlMappingNode();
+        node.Add("type", _rules.getType());
+        node.Add("ammo", _ammo.ToString());
+        if (_rearming)
+            node.Add("rearming", _rearming.ToString());
+        return node;
     }
 }

@@ -73,28 +73,28 @@ internal class RuleUfo : IRule
      * @return The Ufo's name.
      */
     internal string getType() =>
-	    _type;
+        _type;
 
     /**
      * Returns the globe marker for the UFO when crashed.
      * @return Marker sprite, -1 if none.
      */
     internal int getCrashMarker() =>
-	    _markerCrash;
+        _markerCrash;
 
     /**
      * Returns the globe marker for the UFO while landed.
      * @return Marker sprite, -1 if none.
      */
     internal int getLandMarker() =>
-	    _markerLand;
+        _markerLand;
 
     /**
      * Returns the globe marker for the UFO while in flight.
      * @return Marker sprite, -1 if none.
      */
     internal int getMarker() =>
-	    _marker;
+        _marker;
 
     /**
      * Loads the UFO from a YAML file.
@@ -103,39 +103,39 @@ internal class RuleUfo : IRule
      */
     internal void load(YamlNode node, Mod mod)
     {
-	    _type = node["type"].ToString();
-	    _size = node["size"].ToString();
-	    _sprite = int.Parse(node["sprite"].ToString());
-	    if (node["marker"] != null)
-	    {
-		    _marker = mod.getOffset(int.Parse(node["marker"].ToString()), 8);
-	    }
-	    if (node["markerLand"] != null)
-	    {
-		    _markerLand = mod.getOffset(int.Parse(node["markerLand"].ToString()), 8);
-	    }
-	    if (node["markerCrash"] != null)
-	    {
-		    _markerCrash = mod.getOffset(int.Parse(node["markerCrash"].ToString()), 8);
-	    }
-	    _damageMax = int.Parse(node["damageMax"].ToString());
-	    _speedMax = int.Parse(node["speedMax"].ToString());
-	    _power = int.Parse(node["power"].ToString());
-	    _range = int.Parse(node["range"].ToString());
-	    _score = int.Parse(node["score"].ToString());
-	    _reload = int.Parse(node["reload"].ToString());
-	    _breakOffTime = int.Parse(node["breakOffTime"].ToString());
-	    _sightRange = int.Parse(node["sightRange"].ToString());
-	    _missionScore = int.Parse(node["missionScore"].ToString());
-	    if (node["battlescapeTerrainData"] is YamlNode terrain)
-	    {
-		    if (_battlescapeTerrainData != null)
-			    _battlescapeTerrainData = null;
-		    RuleTerrain rule = new RuleTerrain(terrain["name"].ToString());
-		    rule.load(terrain, mod);
-		    _battlescapeTerrainData = rule;
-	    }
-	    _modSprite = node["modSprite"].ToString();
+        _type = node["type"].ToString();
+        _size = node["size"].ToString();
+        _sprite = int.Parse(node["sprite"].ToString());
+        if (node["marker"] != null)
+        {
+            _marker = mod.getOffset(int.Parse(node["marker"].ToString()), 8);
+        }
+        if (node["markerLand"] != null)
+        {
+            _markerLand = mod.getOffset(int.Parse(node["markerLand"].ToString()), 8);
+        }
+        if (node["markerCrash"] != null)
+        {
+            _markerCrash = mod.getOffset(int.Parse(node["markerCrash"].ToString()), 8);
+        }
+        _damageMax = int.Parse(node["damageMax"].ToString());
+        _speedMax = int.Parse(node["speedMax"].ToString());
+        _power = int.Parse(node["power"].ToString());
+        _range = int.Parse(node["range"].ToString());
+        _score = int.Parse(node["score"].ToString());
+        _reload = int.Parse(node["reload"].ToString());
+        _breakOffTime = int.Parse(node["breakOffTime"].ToString());
+        _sightRange = int.Parse(node["sightRange"].ToString());
+        _missionScore = int.Parse(node["missionScore"].ToString());
+        if (node["battlescapeTerrainData"] is YamlNode terrain)
+        {
+            if (_battlescapeTerrainData != null)
+                _battlescapeTerrainData = null;
+            RuleTerrain rule = new RuleTerrain(terrain["name"].ToString());
+            rule.load(terrain, mod);
+            _battlescapeTerrainData = rule;
+        }
+        _modSprite = node["modSprite"].ToString();
     }
 
     /**
@@ -144,7 +144,7 @@ internal class RuleUfo : IRule
      * @return The maximum damage.
      */
     internal int getMaxDamage() =>
-	    _damageMax;
+        _damageMax;
 
     /**
      * Gets the amount of points awarded every 30 minutes
@@ -152,14 +152,14 @@ internal class RuleUfo : IRule
      * @return Score.
      */
     internal int getMissionScore() =>
-	    _missionScore;
+        _missionScore;
 
     /**
      * Gets the size of this type of UFO.
      * @return The Ufo's size.
      */
     internal string getSize() =>
-	    _size;
+        _size;
 
     /**
      * Gets the UFO's radar range
@@ -167,7 +167,7 @@ internal class RuleUfo : IRule
      * @return The range in nautical miles.
      */
     internal int getSightRange() =>
-	    _sightRange;
+        _sightRange;
 
     /**
      * Gets the maximum speed of the UFO flying
@@ -175,21 +175,21 @@ internal class RuleUfo : IRule
      * @return The maximum speed.
      */
     internal int getMaxSpeed() =>
-	    _speedMax;
+        _speedMax;
 
     /**
      * Gets the terrain data needed to draw the UFO in the battlescape.
      * @return The RuleTerrain.
      */
     internal RuleTerrain getBattlescapeTerrainData() =>
-	    _battlescapeTerrainData;
+        _battlescapeTerrainData;
 
     /**
      * For user-defined UFOs, use a surface for the "preview" image.
      * @return The name of the surface that represents this UFO.
      */
     internal string getModSprite() =>
-	    _modSprite;
+        _modSprite;
 
     /**
      * Gets the ID of the sprite used to draw the UFO
@@ -197,14 +197,14 @@ internal class RuleUfo : IRule
      * @return The sprite ID.
      */
     internal int getSprite() =>
-	    _sprite;
+        _sprite;
 
     /**
      * Gets the UFO's break off time.
      * @return The UFO's break off time in game seconds.
      */
     internal int getBreakOffTime() =>
-	    _breakOffTime;
+        _breakOffTime;
 
     /**
      * Gets the maximum damage done by the
@@ -212,7 +212,7 @@ internal class RuleUfo : IRule
      * @return The weapon power.
      */
     internal int getWeaponPower() =>
-	    _power;
+        _power;
 
     /**
      * Gets the maximum range for the
@@ -220,7 +220,7 @@ internal class RuleUfo : IRule
      * @return The weapon range.
      */
     internal int getWeaponRange() =>
-	    _range;
+        _range;
 
     /**
      * Gets the amount of points the player
@@ -228,14 +228,14 @@ internal class RuleUfo : IRule
      * @return The score.
      */
     internal int getScore() =>
-	    _score;
+        _score;
 
     /**
      * Gets the weapon reload for UFO ships.
      * @return The UFO weapon reload time.
      */
     internal int getWeaponReload() =>
-	    _reload;
+        _reload;
 
     /**
      * Gets the radius of this type of UFO
@@ -244,26 +244,26 @@ internal class RuleUfo : IRule
      */
     internal int getRadius()
     {
-	    if (_size == "STR_VERY_SMALL")
-	    {
-		    return 2;
-	    }
-	    else if (_size == "STR_SMALL")
-	    {
-		    return 3;
-	    }
-	    else if (_size == "STR_MEDIUM_UC")
-	    {
-		    return 4;
-	    }
-	    else if (_size == "STR_LARGE")
-	    {
-		    return 5;
-	    }
-	    else if (_size == "STR_VERY_LARGE")
-	    {
-		    return 6;
-	    }
-	    return 0;
+        if (_size == "STR_VERY_SMALL")
+        {
+            return 2;
+        }
+        else if (_size == "STR_SMALL")
+        {
+            return 3;
+        }
+        else if (_size == "STR_MEDIUM_UC")
+        {
+            return 4;
+        }
+        else if (_size == "STR_LARGE")
+        {
+            return 5;
+        }
+        else if (_size == "STR_VERY_LARGE")
+        {
+            return 6;
+        }
+        return 0;
     }
 }

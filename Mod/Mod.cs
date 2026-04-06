@@ -128,15 +128,15 @@ struct compareSection : IComparer<string>
 struct HairXCOM1 : IColorFunc<byte, byte, int, int, int>
 {
     const byte Hair = 9 << 4;
-	internal const byte Face = 6 << 4;
+    internal const byte Face = 6 << 4;
 
-	public void func(ref byte src, byte cutoff, int _1, int _2, int _3)
+    public void func(ref byte src, byte cutoff, int _1, int _2, int _3)
     {
         if (src > cutoff && src <= Face + Mod.ShadeMax)
-		{
-			src = (byte)(Hair + (src & Mod.ShadeMax) - 6); //make hair color like male in xcom_0.pck
-		}
-	}
+        {
+            src = (byte)(Hair + (src & Mod.ShadeMax) - 6); //make hair color like male in xcom_0.pck
+        }
+    }
 }
 
 /**
@@ -228,7 +228,8 @@ struct FallXCOM2 : IColorFunc<byte, int, int, int, int>
 /**
  * Mod data used when loading resources
  */
-/* struct */ class ModData
+/* struct */
+class ModData
 {
     /// Mod name
     internal string name;
@@ -254,38 +255,38 @@ internal class Mod
     /// Reduction of size allocated for transparcey LUTs.
     const uint ModTransparceySizeReduction = 100;
 
-	internal static int DOOR_OPEN;
-	internal static int SLIDING_DOOR_OPEN;
-	internal static int SLIDING_DOOR_CLOSE;
-	internal static int SMALL_EXPLOSION;
-	internal static int LARGE_EXPLOSION;
-	internal static int EXPLOSION_OFFSET;
-	internal static int SMOKE_OFFSET;
-	internal static int UNDERWATER_SMOKE_OFFSET;
-	internal static int ITEM_DROP;
-	internal static int ITEM_THROW;
-	internal static int ITEM_RELOAD;
-	internal static int WALK_OFFSET;
-	internal static int FLYING_SOUND;
-	static int BUTTON_PRESS;
-	static int[] WINDOW_POPUP = new int[3];
-	internal static int UFO_FIRE;
-	internal static int UFO_HIT;
-	internal static int UFO_CRASH;
-	internal static int UFO_EXPLODE;
-	internal static int INTERCEPTOR_HIT;
-	internal static int INTERCEPTOR_EXPLODE;
-	internal static int GEOSCAPE_CURSOR;
-	internal static int BASESCAPE_CURSOR;
-	internal static int BATTLESCAPE_CURSOR;
-	internal static int UFOPAEDIA_CURSOR;
-	internal static int GRAPHS_CURSOR;
-	internal static int DAMAGE_RANGE;
-	internal static int EXPLOSIVE_DAMAGE_RANGE;
-	internal static int[] FIRE_DAMAGE_RANGE = new int[2];
-	internal static string DEBRIEF_MUSIC_GOOD;
-	internal static string DEBRIEF_MUSIC_BAD;
-	internal static int[] DIFFICULTY_COEFFICIENT = new int[5];
+    internal static int DOOR_OPEN;
+    internal static int SLIDING_DOOR_OPEN;
+    internal static int SLIDING_DOOR_CLOSE;
+    internal static int SMALL_EXPLOSION;
+    internal static int LARGE_EXPLOSION;
+    internal static int EXPLOSION_OFFSET;
+    internal static int SMOKE_OFFSET;
+    internal static int UNDERWATER_SMOKE_OFFSET;
+    internal static int ITEM_DROP;
+    internal static int ITEM_THROW;
+    internal static int ITEM_RELOAD;
+    internal static int WALK_OFFSET;
+    internal static int FLYING_SOUND;
+    static int BUTTON_PRESS;
+    static int[] WINDOW_POPUP = new int[3];
+    internal static int UFO_FIRE;
+    internal static int UFO_HIT;
+    internal static int UFO_CRASH;
+    internal static int UFO_EXPLODE;
+    internal static int INTERCEPTOR_HIT;
+    internal static int INTERCEPTOR_EXPLODE;
+    internal static int GEOSCAPE_CURSOR;
+    internal static int BASESCAPE_CURSOR;
+    internal static int BATTLESCAPE_CURSOR;
+    internal static int UFOPAEDIA_CURSOR;
+    internal static int GRAPHS_CURSOR;
+    internal static int DAMAGE_RANGE;
+    internal static int EXPLOSIVE_DAMAGE_RANGE;
+    internal static int[] FIRE_DAMAGE_RANGE = new int[2];
+    internal static string DEBRIEF_MUSIC_GOOD;
+    internal static string DEBRIEF_MUSIC_BAD;
+    internal static int[] DIFFICULTY_COEFFICIENT = new int[5];
 
     Music _muteMusic;
     Sound _muteSound;
@@ -444,7 +445,7 @@ internal class Mod
      * @return Pointer to the font.
      */
     internal Font getFont(string name, bool error = true) =>
-	    getRule(name, "Font", _fonts, error);
+        getRule(name, "Font", _fonts, error);
 
     /**
      * Changes the palette of all the graphics in the mod.
@@ -480,22 +481,22 @@ internal class Mod
      */
     T getRule<T>(string id, string name, Dictionary<string, T> map, bool error) where T : class
     {
-	    if (string.IsNullOrEmpty(id))
-	    {
-		    return null;
-	    }
-	    if (map.TryGetValue(id, out var value) && value != null)
-	    {
-		    return value;
-	    }
-	    else
-	    {
-		    if (error)
-		    {
-			    throw new Exception($"{name} {id} not found");
-		    }
-		    return null;
-	    }
+        if (string.IsNullOrEmpty(id))
+        {
+            return null;
+        }
+        if (map.TryGetValue(id, out var value) && value != null)
+        {
+            return value;
+        }
+        else
+        {
+            if (error)
+            {
+                throw new Exception($"{name} {id} not found");
+            }
+            return null;
+        }
     }
 
     /**
@@ -504,7 +505,7 @@ internal class Mod
      * @return the interface.
      */
     internal RuleInterface getInterface(string id, bool error = true) =>
-	    getRule(id, "Interface", _interfaces, error);
+        getRule(id, "Interface", _interfaces, error);
 
     /**
      * Returns a specific surface set from the mod.
@@ -513,8 +514,8 @@ internal class Mod
      */
     internal SurfaceSet getSurfaceSet(string name, bool error = true)
     {
-	    lazyLoadSurface(name);
-	    return getRule(name, "Sprite Set", _sets, error);
+        lazyLoadSurface(name);
+        return getRule(name, "Sprite Set", _sets, error);
     }
 
     /**
@@ -522,7 +523,7 @@ internal class Mod
      * @return Pointer to the list of LUTs.
      */
     internal List<List<byte>> getLUTs() =>
-	    _transparencyLUTs;
+        _transparencyLUTs;
 
     /**
      * Loads any extra sprites associated to a surface when
@@ -531,16 +532,16 @@ internal class Mod
      */
     void lazyLoadSurface(string name)
     {
-	    if (Options.lazyLoadResources)
-	    {
-		    if (_extraSprites.TryGetValue(name, out var extraSprites))
-		    {
-			    foreach (var extraSprite in extraSprites)
-			    {
+        if (Options.lazyLoadResources)
+        {
+            if (_extraSprites.TryGetValue(name, out var extraSprites))
+            {
+                foreach (var extraSprite in extraSprites)
+                {
                     loadExtraSprite(extraSprite);
-			    }
-		    }
-	    }
+                }
+            }
+        }
     }
 
     void loadExtraSprite(ExtraSprites spritePack)
@@ -584,7 +585,7 @@ internal class Mod
      * @return Inventory ruleset.
      */
     internal RuleInventory getInventory(string id, bool error = false) =>
-	    getRule(id, "Inventory", _invs, error);
+        getRule(id, "Inventory", _invs, error);
 
     /**
      * Returns the rules for the specified item.
@@ -593,11 +594,11 @@ internal class Mod
      */
     internal RuleItem getItem(string id, bool error = false)
     {
-	    if (id == Armor.NONE)
-	    {
+        if (id == Armor.NONE)
+        {
             return null;
-	    }
-	    return getRule(id, "Item", _items, error);
+        }
+        return getRule(id, "Item", _items, error);
     }
 
     /**
@@ -607,31 +608,31 @@ internal class Mod
      */
     internal void playMusic(string name, int id = 0)
     {
-	    if (!Options.mute && _playingMusic != name)
-	    {
-		    int loop = -1;
-		    // hacks
-		    if (!Options.musicAlwaysLoop && (name == "GMSTORY" || name == "GMWIN" || name == "GMLOSE"))
-		    {
-			    loop = 0;
-		    }
+        if (!Options.mute && _playingMusic != name)
+        {
+            int loop = -1;
+            // hacks
+            if (!Options.musicAlwaysLoop && (name == "GMSTORY" || name == "GMWIN" || name == "GMLOSE"))
+            {
+                loop = 0;
+            }
 
-		    Music music = null;
-		    if (id == 0)
-		    {
-			    music = getRandomMusic(name);
-		    }
-		    else
-		    {
-			    string ss = $"{name}{id}";
-			    music = getMusic(ss);
-		    }
+            Music music = null;
+            if (id == 0)
+            {
+                music = getRandomMusic(name);
+            }
+            else
+            {
+                string ss = $"{name}{id}";
+                music = getMusic(ss);
+            }
             music.play(loop);
-		    if (music != _muteMusic)
-		    {
-			    _playingMusic = name;
-		    }
-	    }
+            if (music != _muteMusic)
+            {
+                _playingMusic = name;
+            }
+        }
     }
 
     /**
@@ -641,14 +642,14 @@ internal class Mod
      */
     internal Music getMusic(string name, bool error = true)
     {
-	    if (Options.mute)
-	    {
-		    return _muteMusic;
-	    }
-	    else
-	    {
-		    return getRule(name, "Music", _musics, error);
-	    }
+        if (Options.mute)
+        {
+            return _muteMusic;
+        }
+        else
+        {
+            return getRule(name, "Music", _musics, error);
+        }
     }
 
     /**
@@ -658,29 +659,29 @@ internal class Mod
      */
     Music getRandomMusic(string name)
     {
-	    if (Options.mute)
-	    {
+        if (Options.mute)
+        {
             return _muteMusic;
-	    }
-	    else
-	    {
-		    var music = new List<Music>();
-		    foreach (var i in _musics)
-		    {
-			    if (i.Key.Contains(name))
-			    {
-				    music.Add(i.Value);
-			    }
-		    }
+        }
+        else
+        {
+            var music = new List<Music>();
+            foreach (var i in _musics)
+            {
+                if (i.Key.Contains(name))
+                {
+                    music.Add(i.Value);
+                }
+            }
             if (!music.Any())
-		    {
-			    return _muteMusic;
-		    }
-		    else
-		    {
-			    return music[RNG.seedless(0, music.Count - 1)];
-		    }
-	    }
+            {
+                return _muteMusic;
+            }
+            else
+            {
+                return music[RNG.seedless(0, music.Count - 1)];
+            }
+        }
     }
 
     /**
@@ -689,7 +690,7 @@ internal class Mod
      * @return Pointer to the palette.
      */
     internal Palette getPalette(string name, bool error = true) =>
-	    getRule(name, "Palette", _palettes, error);
+        getRule(name, "Palette", _palettes, error);
 
     /**
      * Returns a specific surface from the mod.
@@ -698,8 +699,8 @@ internal class Mod
      */
     internal Surface getSurface(string name, bool error = true)
     {
-	    lazyLoadSurface(name);
-	    return getRule(name, "Sprite", _surfaces, error);
+        lazyLoadSurface(name);
+        return getRule(name, "Sprite", _surfaces, error);
     }
 
     internal static void resetGlobalStatics()
@@ -768,14 +769,14 @@ internal class Mod
      * @return Pointer to globe rules.
      */
     internal RuleGlobe getGlobe() =>
-	    _globe;
+        _globe;
 
     /**
      * Gets the list of external strings.
      * @return The list of external strings.
      */
     internal Dictionary<string, ExtraStrings> getExtraStrings() =>
-	    _extraStrings;
+        _extraStrings;
 
     /**
      * Loads a list of mods specified in the options.
@@ -784,8 +785,8 @@ internal class Mod
     internal void loadAll(List<KeyValuePair<string, List<string>>> mods)
     {
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Loading rulesets...");
-	    _modData.Clear();
-	    _modData = new List<ModData>(mods.Count);
+        _modData.Clear();
+        _modData = new List<ModData>(mods.Count);
 
         var usedModNames = new HashSet<string>
         {
@@ -795,61 +796,61 @@ internal class Mod
 
         // calculated offsets and other things for all mods
         var offset = 0;
-	    for (var i = 0; mods.Count > i; ++i)
-	    {
-		    string modId = mods[i].Key;
-		    if (!usedModNames.Add(modId))
-		    {
+        for (var i = 0; mods.Count > i; ++i)
+        {
+            string modId = mods[i].Key;
+            if (!usedModNames.Add(modId))
+            {
                 throwModOnErrorHelper(modId, "this mod name is already used");
-		    }
+            }
             ModInfo modInfo = Options.getModInfos()[modId];
             int size = modInfo.getReservedSpace();
-		    _modData[i].name = modId;
-		    _modData[i].offset = (uint)(1000 * offset);
-		    _modData[i].info = modInfo;
+            _modData[i].name = modId;
+            _modData[i].offset = (uint)(1000 * offset);
+            _modData[i].info = modInfo;
             _modData[i].size = (uint)(1000 * size);
-		    offset += size;
-	    }
+            offset += size;
+        }
 
-	    // load rulesets that can affect loading vanilla resources
-	    for (var i = 0; _modData.Count > i; ++i)
-	    {
-		    _modCurrent = _modData[i];
-		    ModInfo info = _modCurrent.info;
-		    if (info.isMaster() && !string.IsNullOrEmpty(info.getResourceConfigFile()))
-		    {
-			    string path = info.getPath() + "/" + info.getResourceConfigFile();
-			    if (CrossPlatform.fileExists(path))
-			    {
-				    loadResourceConfigFile(path);
-			    }
-		    }
-	    }
+        // load rulesets that can affect loading vanilla resources
+        for (var i = 0; _modData.Count > i; ++i)
+        {
+            _modCurrent = _modData[i];
+            ModInfo info = _modCurrent.info;
+            if (info.isMaster() && !string.IsNullOrEmpty(info.getResourceConfigFile()))
+            {
+                string path = info.getPath() + "/" + info.getResourceConfigFile();
+                if (CrossPlatform.fileExists(path))
+                {
+                    loadResourceConfigFile(path);
+                }
+            }
+        }
 
-	    // vanilla resources load
-	    _modCurrent = _modData[0];
-	    loadVanillaResources();
+        // vanilla resources load
+        _modCurrent = _modData[0];
+        loadVanillaResources();
 
-	    // load rest rulesets
-	    for (var i = 0; mods.Count > i; ++i)
-	    {
-		    try
-		    {
-			    _modCurrent = _modData[i];
-			    loadMod(mods[i].Value);
-		    }
-		    catch (Exception e)
-		    {
-			    string modId = mods[i].Key;
-			    throwModOnErrorHelper(modId, e.Message);
-		    }
-	    }
+        // load rest rulesets
+        for (var i = 0; mods.Count > i; ++i)
+        {
+            try
+            {
+                _modCurrent = _modData[i];
+                loadMod(mods[i].Value);
+            }
+            catch (Exception e)
+            {
+                string modId = mods[i].Key;
+                throwModOnErrorHelper(modId, e.Message);
+            }
+        }
 
-	    //back master
-	    _modCurrent = _modData[0];
-	    sortLists();
-	    loadExtraResources();
-	    modResources();
+        //back master
+        _modCurrent = _modData[0];
+        sortLists();
+        loadExtraResources();
+        modResources();
     }
 
     /**
@@ -861,27 +862,27 @@ internal class Mod
     {
         string errorStream = $"failed to load '{Options.getModInfos()[modId].getName()}'";
 
-	    if (!Options.debug)
-	    {
+        if (!Options.debug)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} disabling mod with invalid ruleset: {modId}");
             var index = Options.mods.FindIndex(x => x.Key == modId && x.Value == true);
-		    if (index == -1)
-		    {
+            if (index == -1)
+            {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} cannot find broken mod in mods list: {modId}");
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} clearing mods list");
-			    Options.mods.Clear();
-		    }
-		    else
-		    {
+                Options.mods.Clear();
+            }
+            else
+            {
                 Options.mods[index] = KeyValuePair.Create(Options.mods[index].Key, false);
-		    }
-		    Options.save();
+            }
+            Options.save();
 
-		    errorStream += "; mod disabled";
-	    }
-	    errorStream += $"{Environment.NewLine}{error}";
+            errorStream += "; mod disabled";
+        }
+        errorStream += $"{Environment.NewLine}{error}";
 
-	    throw new Exception(errorStream);
+        throw new Exception(errorStream);
     }
 
     /**
@@ -909,7 +910,7 @@ internal class Mod
      * @return Rules for the craft.
      */
     internal RuleCraft getCraft(string id, bool error = false) =>
-	    getRule(id, "Craft", _crafts, error);
+        getRule(id, "Craft", _crafts, error);
 
     /**
      * Returns the rules for the specified base facility.
@@ -917,7 +918,7 @@ internal class Mod
      * @return Rules for the facility.
      */
     internal RuleBaseFacility getBaseFacility(string id, bool error = false) =>
-	    getRule(id, "Facility", _facilities, error);
+        getRule(id, "Facility", _facilities, error);
 
     /**
      * Returns the rules for the specified research project.
@@ -925,7 +926,7 @@ internal class Mod
      * @return Rules for the research project.
      */
     internal RuleResearch getResearch(string id, bool error = false) =>
-	    getRule(id, "Research", _research, error);
+        getRule(id, "Research", _research, error);
 
     /**
      * Returns the rules for the specified manufacture project.
@@ -933,7 +934,7 @@ internal class Mod
      * @return Rules for the manufacture project.
      */
     internal RuleManufacture getManufacture(string id, bool error = false) =>
-	    getRule(id, "Manufacture", _manufacture, error);
+        getRule(id, "Manufacture", _manufacture, error);
 
     /**
      * Returns the rules for the specified craft weapon.
@@ -941,7 +942,7 @@ internal class Mod
      * @return Rules for the craft weapon.
      */
     internal RuleCraftWeapon getCraftWeapon(string id, bool error = false) =>
-	    getRule(id, "Craft Weapon", _craftWeapons, error);
+        getRule(id, "Craft Weapon", _craftWeapons, error);
 
     /**
      * Returns the info about a specific armor.
@@ -949,7 +950,7 @@ internal class Mod
      * @return Rules for the armor.
      */
     internal Armor getArmor(string name, bool error = false) =>
-	    getRule(name, "Armor", _armors, error);
+        getRule(name, "Armor", _armors, error);
 
     /**
      * Returns the article definition for a given name.
@@ -1329,7 +1330,7 @@ internal class Mod
         yaml.Load(input);
 
         // Load fonts
-		Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Loading fonts... {_fontName}");
+        Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Loading fonts... {_fontName}");
         foreach (var node in ((YamlSequenceNode)yaml.Documents[0].RootNode["fonts"]).Children)
         {
             string id = node["id"].ToString();
@@ -1428,28 +1429,28 @@ internal class Mod
      */
     internal Sound getSound(string set, uint sound, bool error = true)
     {
-	    if (Options.mute)
-	    {
-		    return _muteSound;
-	    }
-	    else
-	    {
-		    SoundSet ss = getSoundSet(set, error);
-		    if (ss != null)
-		    {
-			    Sound s = ss.getSound(sound);
-			    if (s == null && error)
-			    {
-				    string err = $"Sound {sound} in {set} not found";
-				    throw new Exception(err);
-			    }
-			    return s;
-		    }
-		    else
-		    {
-			    return null;
-		    }
-	    }
+        if (Options.mute)
+        {
+            return _muteSound;
+        }
+        else
+        {
+            SoundSet ss = getSoundSet(set, error);
+            if (ss != null)
+            {
+                Sound s = ss.getSound(sound);
+                if (s == null && error)
+                {
+                    string err = $"Sound {sound} in {set} not found";
+                    throw new Exception(err);
+                }
+                return s;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
     /**
@@ -1472,65 +1473,65 @@ internal class Mod
      */
     Music loadMusic(MusicFormat fmt, RuleMusic rule, CatFile adlibcat, CatFile aintrocat, GMCatFile gmcat)
     {
-	    /* MUSIC_AUTO, MUSIC_FLAC, MUSIC_OGG, MUSIC_MP3, MUSIC_MOD, MUSIC_WAV, MUSIC_ADLIB, MUSIC_GM, MUSIC_MIDI */
-	    Music music = null;
-	    HashSet<string> soundContents = FileMap.getVFolderContents("SOUND");
-	    int track = rule.getCatPos();
-	    try
-	    {
-		    // Try Adlib music
-		    if (fmt == MusicFormat.MUSIC_ADLIB)
-		    {
-			    if (adlibcat != null && Options.audioBitDepth == 16)
-			    {
+        /* MUSIC_AUTO, MUSIC_FLAC, MUSIC_OGG, MUSIC_MP3, MUSIC_MOD, MUSIC_WAV, MUSIC_ADLIB, MUSIC_GM, MUSIC_MIDI */
+        Music music = null;
+        HashSet<string> soundContents = FileMap.getVFolderContents("SOUND");
+        int track = rule.getCatPos();
+        try
+        {
+            // Try Adlib music
+            if (fmt == MusicFormat.MUSIC_ADLIB)
+            {
+                if (adlibcat != null && Options.audioBitDepth == 16)
+                {
                     music = new AdlibMusic(rule.getNormalization());
-				    if (track < adlibcat.getAmount())
-				    {
+                    if (track < adlibcat.getAmount())
+                    {
                         music.load(adlibcat.load((uint)track, true), (int)adlibcat.getObjectSize((uint)track));
-				    }
-				    // separate intro music
-				    else if (aintrocat != null)
-				    {
-					    track -= adlibcat.getAmount();
-					    if (track < aintrocat.getAmount())
-					    {
+                    }
+                    // separate intro music
+                    else if (aintrocat != null)
+                    {
+                        track -= adlibcat.getAmount();
+                        if (track < aintrocat.getAmount())
+                        {
                             music.load(aintrocat.load((uint)track, true), (int)aintrocat.getObjectSize((uint)track));
-					    }
-					    else
-					    {
-						    music = null;
-					    }
-				    }
-			    }
-		    }
-		    // Try MIDI music (from GM.CAT)
-		    else if (fmt == MusicFormat.MUSIC_GM)
-		    {
-			    // DOS MIDI
-			    if (gmcat != null && track < gmcat.getAmount())
-			    {
+                        }
+                        else
+                        {
+                            music = null;
+                        }
+                    }
+                }
+            }
+            // Try MIDI music (from GM.CAT)
+            else if (fmt == MusicFormat.MUSIC_GM)
+            {
+                // DOS MIDI
+                if (gmcat != null && track < gmcat.getAmount())
+                {
                     music = gmcat.loadMIDI((uint)track);
-			    }
-		    }
-		    // Try digital tracks
-		    else
-		    {
+                }
+            }
+            // Try digital tracks
+            else
+            {
                 string fname = rule.getName() + exts[(int)fmt];
                 fname = fname.ToLower();
 
-			    if (soundContents.Contains(fname))
-			    {
-				    music = new Music();
+                if (soundContents.Contains(fname))
+                {
+                    music = new Music();
                     music.load(FileMap.getFilePath("SOUND/" + fname));
-			    }
-		    }
-	    }
-	    catch (Exception e)
-	    {
+                }
+            }
+        }
+        catch (Exception e)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} {e.Message}");
-		    if (music != null) music = null;
-	    }
-	    return music;
+            if (music != null) music = null;
+        }
+        return music;
     }
 
     /**
@@ -1890,49 +1891,49 @@ internal class Mod
         yaml.Load(input);
         var doc = yaml.Documents[0].RootNode;
 
-	    foreach (var node in ((YamlSequenceNode)doc["soundDefs"]).Children)
-	    {
+        foreach (var node in ((YamlSequenceNode)doc["soundDefs"]).Children)
+        {
             SoundDefinition rule = loadRule(node, _soundDefs);
-		    if (rule != null)
-		    {
+            if (rule != null)
+            {
                 rule.load(node);
-		    }
-	    }
+            }
+        }
 
         var luts = doc["transparencyLUTs"];
         if (luts != null)
-	    {
-		    uint start = _modCurrent.offset / ModTransparceySizeReduction;
-		    uint limit =  _modCurrent.size / ModTransparceySizeReduction;
+        {
+            uint start = _modCurrent.offset / ModTransparceySizeReduction;
+            uint limit = _modCurrent.size / ModTransparceySizeReduction;
             uint curr = 0;
 
             _transparencies = new List<SDL_Color>((int)(start + limit));
-		    foreach (var i in ((YamlSequenceNode)luts).Children)
-		    {
-			    var c = i["colors"];
-			    if (c is YamlSequenceNode seq)
-			    {
-				    foreach (var j in seq.Children)
-				    {
-					    if (curr == limit)
-					    {
-						    throw new Exception("transparencyLUTs mod limit reach");
-					    }
-					    SDL_Color color;
-					    color.r = (byte)int.Parse(j[0].ToString());
+            foreach (var i in ((YamlSequenceNode)luts).Children)
+            {
+                var c = i["colors"];
+                if (c is YamlSequenceNode seq)
+                {
+                    foreach (var j in seq.Children)
+                    {
+                        if (curr == limit)
+                        {
+                            throw new Exception("transparencyLUTs mod limit reach");
+                        }
+                        SDL_Color color;
+                        color.r = (byte)int.Parse(j[0].ToString());
                         color.g = (byte)int.Parse(j[1].ToString());
-					    color.b = (byte)int.Parse(j[2].ToString());
-					    color.a = (byte)(j[3] != null ? int.Parse(j[3].ToString()) : 2);
+                        color.b = (byte)int.Parse(j[2].ToString());
+                        color.a = (byte)(j[3] != null ? int.Parse(j[3].ToString()) : 2);
                         // technically its breaking change as it always overwritte from offset `start + 0` but no two mods could work correctly before this change.
                         _transparencies[(int)(start + curr++)] = color;
-				    }
-			    }
-			    else
-			    {
-				    throw new Exception("unknown transparencyLUTs node type");
-			    }
-		    }
-	    }
+                    }
+                }
+                else
+                {
+                    throw new Exception("unknown transparencyLUTs node type");
+                }
+            }
+        }
     }
 
     /**
@@ -1942,35 +1943,35 @@ internal class Mod
      */
     void loadMod(List<string> rulesetFiles)
     {
-	    foreach (var rulesetFile in rulesetFiles)
-	    {
+        foreach (var rulesetFile in rulesetFiles)
+        {
             Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} - {rulesetFile}");
-		    try
-		    {
-			    loadFile(rulesetFile);
-		    }
-		    catch (YamlException e)
-		    {
+            try
+            {
+                loadFile(rulesetFile);
+            }
+            catch (YamlException e)
+            {
                 throw new Exception(rulesetFile + ": " + e.Message);
-		    }
-	    }
+            }
+        }
 
-	    // these need to be validated, otherwise we're gonna get into some serious trouble down the line.
-	    // it may seem like a somewhat arbitrary limitation, but there is a good reason behind it.
-	    // i'd need to know what results are going to be before they are formulated, and there's a hierarchical structure to
-	    // the order in which variables are determined for a mission, and the order is DIFFERENT for regular missions vs
-	    // missions that spawn a mission site. where normally we pick a region, then a mission based on the weights for that region.
-	    // a terror-type mission picks a mission type FIRST, then a region based on the criteria defined by the mission.
-	    // there is no way i can conceive of to reconcile this difference to allow mixing and matching,
-	    // short of knowing the results of calls to the RNG before they're determined.
-	    // the best solution i can come up with is to disallow it, as there are other ways to achieve what this would amount to anyway,
-	    // and they don't require time travel. - Warboy
-	    foreach (var missionScript in _missionScripts)
-	    {
-		    RuleMissionScript rule = missionScript.Value;
+        // these need to be validated, otherwise we're gonna get into some serious trouble down the line.
+        // it may seem like a somewhat arbitrary limitation, but there is a good reason behind it.
+        // i'd need to know what results are going to be before they are formulated, and there's a hierarchical structure to
+        // the order in which variables are determined for a mission, and the order is DIFFERENT for regular missions vs
+        // missions that spawn a mission site. where normally we pick a region, then a mission based on the weights for that region.
+        // a terror-type mission picks a mission type FIRST, then a region based on the criteria defined by the mission.
+        // there is no way i can conceive of to reconcile this difference to allow mixing and matching,
+        // short of knowing the results of calls to the RNG before they're determined.
+        // the best solution i can come up with is to disallow it, as there are other ways to achieve what this would amount to anyway,
+        // and they don't require time travel. - Warboy
+        foreach (var missionScript in _missionScripts)
+        {
+            RuleMissionScript rule = missionScript.Value;
             HashSet<string> missions = rule.getAllMissionTypes();
-		    if (missions.Any())
-		    {
+            if (missions.Any())
+            {
                 foreach (var mission in missions)
                 {
                     if (getAlienMission(mission) == null)
@@ -1983,33 +1984,33 @@ internal class Mod
                     {
                         throw new Exception("Error with MissionScript: " + missionScript.Key + ": cannot mix terror/non-terror missions in a single command, so sayeth the wise Alaundo.");
                     }
-			    }
-		    }
-	    }
+                }
+            }
+        }
 
-	    // instead of passing a pointer to the region load function and moving the alienMission loading before region loading
-	    // and sanitizing there, i'll sanitize here, i'm sure this sanitation will grow, and will need to be refactored into
-	    // its own function at some point, but for now, i'll put it here next to the missionScript sanitation, because it seems
-	    // the logical place for it, given that this sanitation is required as a result of moving all terror mission handling
-	    // into missionScripting behaviour. apologies to all the modders that will be getting errors and need to adjust their
-	    // rulesets, but this will save you weird errors down the line.
-	    foreach (var region in _regions)
-	    {
-		    // bleh, make copies, const correctness kinda screwed me here.
-		    WeightedOptions weights = region.Value.getAvailableMissions();
-		    List<string> names = weights.getNames();
-		    foreach (var name in names)
-		    {
-			    if (getAlienMission(name) == null)
-			    {
-				    throw new Exception("Error with MissionWeights: Region: " + region.Key + ": alien mission type: " + name + " not defined, do not incite the judgement of Amaunator.");
-			    }
-			    if (getAlienMission(name).getObjective() == MissionObjective.OBJECTIVE_SITE)
-			    {
-				    throw new Exception("Error with MissionWeights: Region: " + region.Key + " has " + name + " listed. Terror mission can only be invoked via missionScript, so sayeth the Spider Queen.");
-			    }
-		    }
-	    }
+        // instead of passing a pointer to the region load function and moving the alienMission loading before region loading
+        // and sanitizing there, i'll sanitize here, i'm sure this sanitation will grow, and will need to be refactored into
+        // its own function at some point, but for now, i'll put it here next to the missionScript sanitation, because it seems
+        // the logical place for it, given that this sanitation is required as a result of moving all terror mission handling
+        // into missionScripting behaviour. apologies to all the modders that will be getting errors and need to adjust their
+        // rulesets, but this will save you weird errors down the line.
+        foreach (var region in _regions)
+        {
+            // bleh, make copies, const correctness kinda screwed me here.
+            WeightedOptions weights = region.Value.getAvailableMissions();
+            List<string> names = weights.getNames();
+            foreach (var name in names)
+            {
+                if (getAlienMission(name) == null)
+                {
+                    throw new Exception("Error with MissionWeights: Region: " + region.Key + ": alien mission type: " + name + " not defined, do not incite the judgement of Amaunator.");
+                }
+                if (getAlienMission(name).getObjective() == MissionObjective.OBJECTIVE_SITE)
+                {
+                    throw new Exception("Error with MissionWeights: Region: " + region.Key + " has " + name + " listed. Terror mission can only be invoked via missionScript, so sayeth the Spider Queen.");
+                }
+            }
+        }
     }
 
     /**
@@ -2031,36 +2032,36 @@ internal class Mod
     T loadRule<T>(YamlNode node, Dictionary<string, T> map, List<string> index = null, string key = "type") where T : IRule
     {
         T rule = default;
-	    if (node[key] != null)
-	    {
-		    string type = node[key].ToString();
-		    if (map.TryGetValue(type, out var value))
-		    {
-			    rule = value;
-		    }
-		    else
-		    {
+        if (node[key] != null)
+        {
+            string type = node[key].ToString();
+            if (map.TryGetValue(type, out var value))
+            {
+                rule = value;
+            }
+            else
+            {
                 rule = (T)rule.Create(type);
-			    map[type] = rule;
-			    if (index != null)
-			    {
-				    index.Add(type);
-			    }
-		    }
-	    }
-	    else if (node["delete"] != null)
-	    {
-		    string type = node["delete"].ToString();
-		    if (map.ContainsKey(type))
-		    {
-			    map.Remove(type);
-		    }
-		    if (index != null)
-		    {
+                map[type] = rule;
+                if (index != null)
+                {
+                    index.Add(type);
+                }
+            }
+        }
+        else if (node["delete"] != null)
+        {
+            string type = node["delete"].ToString();
+            if (map.ContainsKey(type))
+            {
+                map.Remove(type);
+            }
+            if (index != null)
+            {
                 index.Remove(type);
-		    }
-	    }
-	    return rule;
+            }
+        }
+        return rule;
     }
 
     /**
@@ -2076,435 +2077,435 @@ internal class Mod
         YamlNode doc = yaml.Documents[0].RootNode;
 
         foreach (var i in ((YamlSequenceNode)doc["countries"]).Children)
-	    {
-		    RuleCountry rule = loadRule(i, _countries, _countriesIndex);
-		    if (rule != null)
-		    {
+        {
+            RuleCountry rule = loadRule(i, _countries, _countriesIndex);
+            if (rule != null)
+            {
                 rule.load(i);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["regions"]).Children)
-	    {
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["regions"]).Children)
+        {
             RuleRegion rule = loadRule(i, _regions, _regionsIndex);
-		    if (rule != null)
-		    {
+            if (rule != null)
+            {
                 rule.load(i);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["facilities"]).Children)
-	    {
-		    RuleBaseFacility rule = loadRule(i, _facilities, _facilitiesIndex);
-		    if (rule != null)
-		    {
-			    _facilityListOrder += 100;
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["facilities"]).Children)
+        {
+            RuleBaseFacility rule = loadRule(i, _facilities, _facilitiesIndex);
+            if (rule != null)
+            {
+                _facilityListOrder += 100;
                 rule.load(i, this, _facilityListOrder);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["crafts"]).Children)
-	    {
-		    RuleCraft rule = loadRule(i, _crafts, _craftsIndex);
-		    if (rule != null)
-		    {
-			    _craftListOrder += 100;
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["crafts"]).Children)
+        {
+            RuleCraft rule = loadRule(i, _crafts, _craftsIndex);
+            if (rule != null)
+            {
+                _craftListOrder += 100;
                 rule.load(i, this, _craftListOrder);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["craftWeapons"]).Children)
-	    {
-		    RuleCraftWeapon rule = loadRule(i, _craftWeapons, _craftWeaponsIndex);
-		    if (rule != null)
-		    {
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["craftWeapons"]).Children)
+        {
+            RuleCraftWeapon rule = loadRule(i, _craftWeapons, _craftWeaponsIndex);
+            if (rule != null)
+            {
                 rule.load(i, this);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["items"]).Children)
-	    {
-		    RuleItem rule = loadRule(i, _items, _itemsIndex);
-		    if (rule != null)
-		    {
-			    _itemListOrder += 100;
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["items"]).Children)
+        {
+            RuleItem rule = loadRule(i, _items, _itemsIndex);
+            if (rule != null)
+            {
+                _itemListOrder += 100;
                 rule.load(i, this, _itemListOrder);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["ufos"]).Children)
-	    {
-		    RuleUfo rule = loadRule(i, _ufos, _ufosIndex);
-		    if (rule != null)
-		    {
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["ufos"]).Children)
+        {
+            RuleUfo rule = loadRule(i, _ufos, _ufosIndex);
+            if (rule != null)
+            {
                 rule.load(i, this);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["invs"]).Children)
-	    {
-		    RuleInventory rule = loadRule(i, _invs, _invsIndex, "id");
-		    if (rule != null)
-		    {
-			    _invListOrder += 10;
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["invs"]).Children)
+        {
+            RuleInventory rule = loadRule(i, _invs, _invsIndex, "id");
+            if (rule != null)
+            {
+                _invListOrder += 10;
                 rule.load(i, _invListOrder);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["terrains"]).Children)
-	    {
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["terrains"]).Children)
+        {
             RuleTerrain rule = loadRule(i, _terrains, _terrainIndex, "name");
-		    if (rule != null)
-		    {
+            if (rule != null)
+            {
                 rule.load(i, this);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["armors"]).Children)
-	    {
-		    Armor rule = loadRule(i, _armors, _armorsIndex);
-		    if (rule != null)
-		    {
-			    rule.load(i);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["soldiers"]).Children)
-	    {
-		    RuleSoldier rule = loadRule(i, _soldiers, _soldiersIndex);
-		    if (rule != null)
-		    {
-			    rule.load(i, this);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["units"]).Children)
-	    {
-		    Unit rule = loadRule(i, _units);
-		    if (rule != null)
-		    {
-                rule.load(i, this);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["alienRaces"]).Children)
-	    {
-            AlienRace rule = loadRule(i, _alienRaces, _aliensIndex, "id");
-		    if (rule != null)
-		    {
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["armors"]).Children)
+        {
+            Armor rule = loadRule(i, _armors, _armorsIndex);
+            if (rule != null)
+            {
                 rule.load(i);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["alienDeployments"]).Children)
-	    {
-		    AlienDeployment rule = loadRule(i, _alienDeployments, _deploymentsIndex);
-		    if (rule != null)
-		    {
-			    rule.load(i, this);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["research"]).Children)
-	    {
-		    RuleResearch rule = loadRule(i, _research, _researchIndex, "name");
-		    if (rule != null)
-		    {
-			    _researchListOrder += 100;
-			    rule.load(i, _researchListOrder);
-			    if (bool.Parse(i["unlockFinalMission"].ToString()))
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["soldiers"]).Children)
+        {
+            RuleSoldier rule = loadRule(i, _soldiers, _soldiersIndex);
+            if (rule != null)
+            {
+                rule.load(i, this);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["units"]).Children)
+        {
+            Unit rule = loadRule(i, _units);
+            if (rule != null)
+            {
+                rule.load(i, this);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["alienRaces"]).Children)
+        {
+            AlienRace rule = loadRule(i, _alienRaces, _aliensIndex, "id");
+            if (rule != null)
+            {
+                rule.load(i);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["alienDeployments"]).Children)
+        {
+            AlienDeployment rule = loadRule(i, _alienDeployments, _deploymentsIndex);
+            if (rule != null)
+            {
+                rule.load(i, this);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["research"]).Children)
+        {
+            RuleResearch rule = loadRule(i, _research, _researchIndex, "name");
+            if (rule != null)
+            {
+                _researchListOrder += 100;
+                rule.load(i, _researchListOrder);
+                if (bool.Parse(i["unlockFinalMission"].ToString()))
                 {
-				    _finalResearch = i["name"].ToString();
-			    }
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["manufacture"]).Children)
-	    {
-		    RuleManufacture rule = loadRule(i, _manufacture, _manufactureIndex, "name");
-		    if (rule != null)
-		    {
-			    _manufactureListOrder += 100;
-			    rule.load(i, _manufactureListOrder);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["ufopaedia"]).Children)
-	    {
-		    if (i["id"] != null)
-		    {
-			    string id = i["id"].ToString();
-			    ArticleDefinition rule;
-			    if (_ufopaediaArticles.TryGetValue(id, out var value))
-			    {
-				    rule = value;
-			    }
-			    else
-			    {
+                    _finalResearch = i["name"].ToString();
+                }
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["manufacture"]).Children)
+        {
+            RuleManufacture rule = loadRule(i, _manufacture, _manufactureIndex, "name");
+            if (rule != null)
+            {
+                _manufactureListOrder += 100;
+                rule.load(i, _manufactureListOrder);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["ufopaedia"]).Children)
+        {
+            if (i["id"] != null)
+            {
+                string id = i["id"].ToString();
+                ArticleDefinition rule;
+                if (_ufopaediaArticles.TryGetValue(id, out var value))
+                {
+                    rule = value;
+                }
+                else
+                {
                     UfopaediaTypeId type = (UfopaediaTypeId)int.Parse(i["type_id"].ToString());
-				    switch (type)
-				    {
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_CRAFT: rule = new ArticleDefinitionCraft(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_CRAFT_WEAPON: rule = new ArticleDefinitionCraftWeapon(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_VEHICLE: rule = new ArticleDefinitionVehicle(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_ITEM: rule = new ArticleDefinitionItem(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_ARMOR: rule = new ArticleDefinitionArmor(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_BASE_FACILITY: rule = new ArticleDefinitionBaseFacility(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TEXTIMAGE: rule = new ArticleDefinitionTextImage(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TEXT: rule = new ArticleDefinitionText(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_UFO: rule = new ArticleDefinitionUfo(); break;
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD:
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_CRAFT:
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_CRAFT_WEAPON:
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_VEHICLE:
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_ITEM:
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_ARMOR:
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_BASE_FACILITY:
-				        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_USO:
+                    switch (type)
+                    {
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_CRAFT: rule = new ArticleDefinitionCraft(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_CRAFT_WEAPON: rule = new ArticleDefinitionCraftWeapon(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_VEHICLE: rule = new ArticleDefinitionVehicle(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_ITEM: rule = new ArticleDefinitionItem(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_ARMOR: rule = new ArticleDefinitionArmor(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_BASE_FACILITY: rule = new ArticleDefinitionBaseFacility(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TEXTIMAGE: rule = new ArticleDefinitionTextImage(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TEXT: rule = new ArticleDefinitionText(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_UFO: rule = new ArticleDefinitionUfo(); break;
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD:
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_CRAFT:
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_CRAFT_WEAPON:
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_VEHICLE:
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_ITEM:
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_ARMOR:
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_BASE_FACILITY:
+                        case UfopaediaTypeId.UFOPAEDIA_TYPE_TFTD_USO:
                             rule = new ArticleDefinitionTFTD();
-					        break;
-				        default: rule = null; break;
-				    }
-				    _ufopaediaArticles[id] = rule;
+                            break;
+                        default: rule = null; break;
+                    }
+                    _ufopaediaArticles[id] = rule;
                     _ufopaediaIndex.Add(id);
-			    }
-			    _ufopaediaListOrder += 100;
-			    rule.load(i, _ufopaediaListOrder);
-			    if (rule.section != Ufopaedia.Ufopaedia.UFOPAEDIA_NOT_AVAILABLE)
-			    {
-				    if (!_ufopaediaSections.ContainsKey(rule.section))
-				    {
-					    _ufopaediaSections[rule.section] = rule.getListOrder();
-					    _ufopaediaCatIndex.Add(rule.section);
-				    }
-				    else
-				    {
-					    _ufopaediaSections[rule.section] = Math.Min(_ufopaediaSections[rule.section], rule.getListOrder());
-				    }
-			    }
-		    }
-		    else if (i["delete"] != null)
-		    {
-			    string type = i["delete"].ToString();
-			    if (_ufopaediaArticles.ContainsKey(type))
-			    {
-				    _ufopaediaArticles.Remove(type);
-			    }
+                }
+                _ufopaediaListOrder += 100;
+                rule.load(i, _ufopaediaListOrder);
+                if (rule.section != Ufopaedia.Ufopaedia.UFOPAEDIA_NOT_AVAILABLE)
+                {
+                    if (!_ufopaediaSections.ContainsKey(rule.section))
+                    {
+                        _ufopaediaSections[rule.section] = rule.getListOrder();
+                        _ufopaediaCatIndex.Add(rule.section);
+                    }
+                    else
+                    {
+                        _ufopaediaSections[rule.section] = Math.Min(_ufopaediaSections[rule.section], rule.getListOrder());
+                    }
+                }
+            }
+            else if (i["delete"] != null)
+            {
+                string type = i["delete"].ToString();
+                if (_ufopaediaArticles.ContainsKey(type))
+                {
+                    _ufopaediaArticles.Remove(type);
+                }
                 if (_ufopaediaIndex.Contains(type))
-			    {
-				    _ufopaediaIndex.Remove(type);
-			    }
-		    }
-	    }
+                {
+                    _ufopaediaIndex.Remove(type);
+                }
+            }
+        }
         // Bases can't be copied, so for savegame purposes we store the node instead
         YamlMappingNode @base = (YamlMappingNode)doc["startingBase"];
-	    if (@base != null)
-	    {
-		    foreach (var i in @base.Children)
-		    {
+        if (@base != null)
+        {
+            foreach (var i in @base.Children)
+            {
                 _startingBase = new YamlMappingNode(i.Key.ToString(), i.Value);
-		    }
-	    }
-	    if (doc["startingTime"] != null)
-	    {
+            }
+        }
+        if (doc["startingTime"] != null)
+        {
             _startingTime.load(doc["startingTime"]);
-	    }
-	    _costEngineer = int.Parse(doc["costEngineer"].ToString());
-	    _costScientist = int.Parse(doc["costScientist"].ToString());
-	    _timePersonnel = int.Parse(doc["timePersonnel"].ToString());
-	    _initialFunding = int.Parse(doc["initialFunding"].ToString());
+        }
+        _costEngineer = int.Parse(doc["costEngineer"].ToString());
+        _costScientist = int.Parse(doc["costScientist"].ToString());
+        _timePersonnel = int.Parse(doc["timePersonnel"].ToString());
+        _initialFunding = int.Parse(doc["initialFunding"].ToString());
         _alienFuel = KeyValuePair.Create(doc["alienFuel"][0].ToString(), int.Parse(doc["alienFuel"][1].ToString()));
-	    _fontName = doc["fontName"].ToString();
-	    _turnAIUseGrenade = int.Parse(doc["turnAIUseGrenade"].ToString());
-	    _turnAIUseBlaster = int.Parse(doc["turnAIUseBlaster"].ToString());
-	    _defeatScore = int.Parse(doc["defeatScore"].ToString());
-	    _defeatFunds = int.Parse(doc["defeatFunds"].ToString());
-	    _difficultyDemigod = bool.Parse(doc["difficultyDemigod"].ToString());
-	    if (doc["difficultyCoefficient"] != null)
-	    {
-		    var num = 0;
-		    for (var i = 0; i < ((YamlSequenceNode)doc["difficultyCoefficient"]).Children.Count && num < 5; ++i)
-		    {
-			    DIFFICULTY_COEFFICIENT[num] = int.Parse(((YamlSequenceNode)doc["difficultyCoefficient"]).Children[i].ToString());
-			    _statAdjustment[num].growthMultiplier = DIFFICULTY_COEFFICIENT[num];
-			    ++num;
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["ufoTrajectories"]).Children)
-	    {
-		    UfoTrajectory rule = loadRule(i, _ufoTrajectories, null, "id");
-		    if (rule != null)
-		    {
+        _fontName = doc["fontName"].ToString();
+        _turnAIUseGrenade = int.Parse(doc["turnAIUseGrenade"].ToString());
+        _turnAIUseBlaster = int.Parse(doc["turnAIUseBlaster"].ToString());
+        _defeatScore = int.Parse(doc["defeatScore"].ToString());
+        _defeatFunds = int.Parse(doc["defeatFunds"].ToString());
+        _difficultyDemigod = bool.Parse(doc["difficultyDemigod"].ToString());
+        if (doc["difficultyCoefficient"] != null)
+        {
+            var num = 0;
+            for (var i = 0; i < ((YamlSequenceNode)doc["difficultyCoefficient"]).Children.Count && num < 5; ++i)
+            {
+                DIFFICULTY_COEFFICIENT[num] = int.Parse(((YamlSequenceNode)doc["difficultyCoefficient"]).Children[i].ToString());
+                _statAdjustment[num].growthMultiplier = DIFFICULTY_COEFFICIENT[num];
+                ++num;
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["ufoTrajectories"]).Children)
+        {
+            UfoTrajectory rule = loadRule(i, _ufoTrajectories, null, "id");
+            if (rule != null)
+            {
                 rule.load(i);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["alienMissions"]).Children)
-	    {
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["alienMissions"]).Children)
+        {
             RuleAlienMission rule = loadRule(i, _alienMissions, _alienMissionsIndex);
-		    if (rule != null)
-		    {
-			    rule.load(i);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["alienItemLevels"]).Children)
+            if (rule != null)
+            {
+                rule.load(i);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["alienItemLevels"]).Children)
         {
             _alienItemLevels.Add(((YamlSequenceNode)i).Children.Select(x => int.Parse(x.ToString())).ToList());
         }
-	    foreach (var i in ((YamlSequenceNode)doc["MCDPatches"]).Children)
-	    {
-		    string type = i["type"].ToString();
-		    if (_MCDPatches.ContainsKey(type))
-		    {
-			    _MCDPatches[type].load(i);
-		    }
-		    else
-		    {
-			    MCDPatch patch = new MCDPatch();
-			    patch.load(i);
-			    _MCDPatches[type] = patch;
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["extraSprites"]).Children)
-	    {
-		    if (i["type"] != null)
-		    {
-			    string type = i["type"].ToString();
+        foreach (var i in ((YamlSequenceNode)doc["MCDPatches"]).Children)
+        {
+            string type = i["type"].ToString();
+            if (_MCDPatches.ContainsKey(type))
+            {
+                _MCDPatches[type].load(i);
+            }
+            else
+            {
+                MCDPatch patch = new MCDPatch();
+                patch.load(i);
+                _MCDPatches[type] = patch;
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["extraSprites"]).Children)
+        {
+            if (i["type"] != null)
+            {
+                string type = i["type"].ToString();
                 ExtraSprites extraSprites = new ExtraSprites();
-			    ModData data = _modCurrent;
-			    // doesn't support modIndex
-			    if (type == "TEXTURE.DAT")
-				    data = _modData[0];
+                ModData data = _modCurrent;
+                // doesn't support modIndex
+                if (type == "TEXTURE.DAT")
+                    data = _modData[0];
                 extraSprites.load(i, data);
-			    _extraSprites[type].Add(extraSprites);
-		    }
-		    else if (i["delete"] != null)
-		    {
-			    string type = i["delete"].ToString();
-			    if (_extraSprites.ContainsKey(type))
-			    {
-				    _extraSprites.Remove(type);
-			    }
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["extraSounds"]).Children)
-	    {
-		    string type = i["type"].ToString();
-		    ExtraSounds extraSounds = new ExtraSounds();
+                _extraSprites[type].Add(extraSprites);
+            }
+            else if (i["delete"] != null)
+            {
+                string type = i["delete"].ToString();
+                if (_extraSprites.ContainsKey(type))
+                {
+                    _extraSprites.Remove(type);
+                }
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["extraSounds"]).Children)
+        {
+            string type = i["type"].ToString();
+            ExtraSounds extraSounds = new ExtraSounds();
             extraSounds.load(i, _modCurrent);
-		    _extraSounds.Add(KeyValuePair.Create(type, extraSounds));
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["extraStrings"]).Children)
-	    {
-		    string type = i["type"].ToString();
-		    if (_extraStrings.ContainsKey(type))
-		    {
-			    _extraStrings[type].load(i);
-		    }
-		    else
-		    {
-			    ExtraStrings extraStrings = new ExtraStrings();
+            _extraSounds.Add(KeyValuePair.Create(type, extraSounds));
+        }
+        foreach (var i in ((YamlSequenceNode)doc["extraStrings"]).Children)
+        {
+            string type = i["type"].ToString();
+            if (_extraStrings.ContainsKey(type))
+            {
+                _extraStrings[type].load(i);
+            }
+            else
+            {
+                ExtraStrings extraStrings = new ExtraStrings();
                 extraStrings.load(i);
-			    _extraStrings[type] = extraStrings;
-		    }
-	    }
+                _extraStrings[type] = extraStrings;
+            }
+        }
 
-	    foreach (var i in ((YamlSequenceNode)doc["statStrings"]).Children)
-	    {
-		    StatString statString = new StatString();
+        foreach (var i in ((YamlSequenceNode)doc["statStrings"]).Children)
+        {
+            StatString statString = new StatString();
             statString.load(i);
-		    _statStrings.Add(statString);
-	    }
+            _statStrings.Add(statString);
+        }
 
-	    foreach (var i in ((YamlSequenceNode)doc["interfaces"]).Children)
-	    {
+        foreach (var i in ((YamlSequenceNode)doc["interfaces"]).Children)
+        {
             RuleInterface rule = loadRule(i, _interfaces);
-		    if (rule != null)
-		    {
-			    rule.load(i);
-		    }
-	    }
-	    if (doc["globe"] != null)
-	    {
-		    _globe.load(doc["globe"]);
-	    }
-	    if (doc["converter"] != null)
-	    {
-		    _converter.load(doc["converter"]);
-	    }
-	    if (doc["constants"] is YamlNode constants)
-	    {
-		    //backward compatibility version
-		    if (constants is YamlSequenceNode seq)
-		    {
-			    foreach (var i in seq.Children)
-			    {
-				    loadConstants(i);
-			    }
-		    }
-		    else
-		    {
-			    loadConstants(constants);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["mapScripts"]).Children)
-	    {
-		    string type = i["type"].ToString();
-		    if (i["delete"] != null)
-		    {
-			    type = i["delete"].ToString();
-		    }
-		    if (_mapScripts.ContainsKey(type))
-		    {
+            if (rule != null)
+            {
+                rule.load(i);
+            }
+        }
+        if (doc["globe"] != null)
+        {
+            _globe.load(doc["globe"]);
+        }
+        if (doc["converter"] != null)
+        {
+            _converter.load(doc["converter"]);
+        }
+        if (doc["constants"] is YamlNode constants)
+        {
+            //backward compatibility version
+            if (constants is YamlSequenceNode seq)
+            {
+                foreach (var i in seq.Children)
+                {
+                    loadConstants(i);
+                }
+            }
+            else
+            {
+                loadConstants(constants);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["mapScripts"]).Children)
+        {
+            string type = i["type"].ToString();
+            if (i["delete"] != null)
+            {
+                type = i["delete"].ToString();
+            }
+            if (_mapScripts.ContainsKey(type))
+            {
                 _mapScripts[type].Clear();
-		    }
-		    foreach (var j in ((YamlSequenceNode)i["commands"]).Children)
-		    {
+            }
+            foreach (var j in ((YamlSequenceNode)i["commands"]).Children)
+            {
                 MapScript mapScript = new MapScript();
                 mapScript.load(j);
-			    _mapScripts[type].Add(mapScript);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["missionScripts"]).Children)
-	    {
-		    RuleMissionScript rule = loadRule(i, _missionScripts, _missionScriptIndex, "type");
-		    if (rule != null)
-		    {
+                _mapScripts[type].Add(mapScript);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["missionScripts"]).Children)
+        {
+            RuleMissionScript rule = loadRule(i, _missionScripts, _missionScriptIndex, "type");
+            if (rule != null)
+            {
                 rule.load(i);
-		    }
-	    }
+            }
+        }
 
-	    // refresh _psiRequirements for psiStrengthEval
-	    foreach (var i in _facilitiesIndex)
-	    {
+        // refresh _psiRequirements for psiStrengthEval
+        foreach (var i in _facilitiesIndex)
+        {
             RuleBaseFacility rule = getBaseFacility(i);
-		    if (rule.getPsiLaboratories() > 0)
-		    {
+            if (rule.getPsiLaboratories() > 0)
+            {
                 _psiRequirements = rule.getRequirements();
                 break;
-		    }
-	    }
+            }
+        }
 
-	    foreach (var i in ((YamlSequenceNode)doc["cutscenes"]).Children)
-	    {
-		    RuleVideo rule = loadRule(i, _videos);
-		    if (rule != null)
-		    {
+        foreach (var i in ((YamlSequenceNode)doc["cutscenes"]).Children)
+        {
+            RuleVideo rule = loadRule(i, _videos);
+            if (rule != null)
+            {
                 rule.load(i);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["musics"]).Children)
-	    {
-		    RuleMusic rule = loadRule(i, _musicDefs);
-		    if (rule != null)
-		    {
-			    rule.load(i);
-		    }
-	    }
-	    foreach (var i in ((YamlSequenceNode)doc["commendations"]).Children)
-	    {
-		    string type = i["type"].ToString();
-		    RuleCommendations commendations = new RuleCommendations();
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["musics"]).Children)
+        {
+            RuleMusic rule = loadRule(i, _musicDefs);
+            if (rule != null)
+            {
+                rule.load(i);
+            }
+        }
+        foreach (var i in ((YamlSequenceNode)doc["commendations"]).Children)
+        {
+            string type = i["type"].ToString();
+            RuleCommendations commendations = new RuleCommendations();
             commendations.load(i);
-		    _commendations[type] = commendations;
-	    }
-	    var count = 0;
-	    for (var i = 0; i < ((YamlSequenceNode)doc["aimAndArmorMultipliers"]).Children.Count && count < 5; ++i)
-	    {
-		    _statAdjustment[count].aimAndArmorMultiplier = double.Parse(((YamlSequenceNode)doc["aimAndArmorMultipliers"]).Children[i].ToString());
-		    ++count;
-	    }
-	    if (doc["statGrowthMultipliers"] != null)
-	    {
+            _commendations[type] = commendations;
+        }
+        var count = 0;
+        for (var i = 0; i < ((YamlSequenceNode)doc["aimAndArmorMultipliers"]).Children.Count && count < 5; ++i)
+        {
+            _statAdjustment[count].aimAndArmorMultiplier = double.Parse(((YamlSequenceNode)doc["aimAndArmorMultipliers"]).Children[i].ToString());
+            ++count;
+        }
+        if (doc["statGrowthMultipliers"] != null)
+        {
             _statAdjustment[0].statGrowth = UnitStats.decode(doc["statGrowthMultipliers"]);
-		    for (var i = 1; i != 5; ++i)
-		    {
+            for (var i = 1; i != 5; ++i)
+            {
                 _statAdjustment[i].statGrowth = _statAdjustment[0].statGrowth;
-		    }
-	    }
+            }
+        }
     }
 
     /**
@@ -2517,10 +2518,10 @@ internal class Mod
      */
     internal void loadSoundOffset(string parent, ref int sound, YamlNode node, string set)
     {
-	    if (node != null)
-	    {
-		    loadOffsetNode(parent, ref sound, node, getSoundSet(set).getMaxSharedSounds(), set, 1);
-	    }
+        if (node != null)
+        {
+            loadOffsetNode(parent, ref sound, node, getSoundSet(set).getMaxSharedSounds(), set, 1);
+        }
     }
 
     /**
@@ -2532,26 +2533,26 @@ internal class Mod
      */
     internal void loadSoundOffset(string parent, List<int> sounds, YamlNode node, string set)
     {
-	    if (node != null)
-	    {
-		    int maxShared = getSoundSet(set).getMaxSharedSounds();
-		    sounds.Clear();
-		    if (node.NodeType == YamlNodeType.Sequence)
-		    {
-			    foreach (var item in ((YamlSequenceNode)node).Children)
-			    {
-				    sounds.Add(-1);
+        if (node != null)
+        {
+            int maxShared = getSoundSet(set).getMaxSharedSounds();
+            sounds.Clear();
+            if (node.NodeType == YamlNodeType.Sequence)
+            {
+                foreach (var item in ((YamlSequenceNode)node).Children)
+                {
+                    sounds.Add(-1);
                     var last = sounds.Last();
-				    loadOffsetNode(parent, ref last, item, maxShared, set, 1);
-			    }
-		    }
-		    else
-		    {
-			    sounds.Add(-1);
+                    loadOffsetNode(parent, ref last, item, maxShared, set, 1);
+                }
+            }
+            else
+            {
+                sounds.Add(-1);
                 var last = sounds.Last();
-			    loadOffsetNode(parent, ref last, node, maxShared, set, 1);
-		    }
-	    }
+                loadOffsetNode(parent, ref last, node, maxShared, set, 1);
+            }
+        }
     }
 
     /**
@@ -2565,10 +2566,10 @@ internal class Mod
      */
     internal void loadSpriteOffset(string parent, ref int sprite, YamlNode node, string set, uint multiplier = 1)
     {
-	    if (node != null)
-	    {
+        if (node != null)
+        {
             loadOffsetNode(parent, ref sprite, node, getRule(set, "Sprite Set", _sets, true).getMaxSharedFrames(), set, multiplier);
-	    }
+        }
     }
 
     /**
@@ -2579,10 +2580,10 @@ internal class Mod
      */
     internal void loadTransparencyOffset(string parent, ref int index, YamlNode node)
     {
-	    if (node != null)
-	    {
+        if (node != null)
+        {
             loadOffsetNode(parent, ref index, node, 0, "TransparencyLUTs", 1, ModTransparceySizeReduction);
-	    }
+        }
     }
 
     /**
@@ -2593,7 +2594,7 @@ internal class Mod
      */
     internal int getOffset(int id, int max)
     {
-	    Debug.Assert(_modCurrent != null);
+        Debug.Assert(_modCurrent != null);
         if (id > max)
             return (int)(id + _modCurrent.offset);
         else
@@ -2607,16 +2608,16 @@ internal class Mod
      */
     internal MapDataSet getMapDataSet(string name)
     {
-	    if (!_mapDataSets.ContainsKey(name))
-	    {
-		    MapDataSet set = new MapDataSet(name);
-		    _mapDataSets[name] = set;
-		    return set;
-	    }
-	    else
-	    {
-		    return _mapDataSets[name];
-	    }
+        if (!_mapDataSets.ContainsKey(name))
+        {
+            MapDataSet set = new MapDataSet(name);
+            _mapDataSets[name] = set;
+            return set;
+        }
+        else
+        {
+            return _mapDataSets[name];
+        }
     }
 
     /**
@@ -2632,69 +2633,69 @@ internal class Mod
     {
         Debug.Assert(_modCurrent != null);
         ModData curr = _modCurrent;
-	    if (node.NodeType == YamlNodeType.Scalar)
-	    {
-		    offset = int.Parse(node.ToString());
-	    }
-	    else if (node.NodeType == YamlNodeType.Mapping)
-	    {
-		    offset = int.Parse(node["index"].ToString());
-		    string mod = node["mod"].ToString();
-		    if (mod == ModNameMaster)
-		    {
-			    curr = _modData[0];
-		    }
-		    else if (mod == ModNameCurrent)
-		    {
-			    //nothing
-		    }
-		    else
-		    {
+        if (node.NodeType == YamlNodeType.Scalar)
+        {
+            offset = int.Parse(node.ToString());
+        }
+        else if (node.NodeType == YamlNodeType.Mapping)
+        {
+            offset = int.Parse(node["index"].ToString());
+            string mod = node["mod"].ToString();
+            if (mod == ModNameMaster)
+            {
+                curr = _modData[0];
+            }
+            else if (mod == ModNameCurrent)
+            {
+                //nothing
+            }
+            else
+            {
                 ModData n = null;
-			    for (var i = 0; i < _modData.Count; ++i)
-			    {
-				    ModData d = _modData[i];
-				    if (d.name == mod)
-				    {
-					    n = d;
+                for (var i = 0; i < _modData.Count; ++i)
+                {
+                    ModData d = _modData[i];
+                    if (d.name == mod)
+                    {
+                        n = d;
                         break;
-				    }
-			    }
+                    }
+                }
 
-			    if (n != null)
-			    {
-				    curr = n;
-			    }
-			    else
-			    {
-				    string err = $"Error for '{parent}': unknown mod '{mod}' used";
-				    throw new Exception(err);
-			    }
-		    }
-	    }
+                if (n != null)
+                {
+                    curr = n;
+                }
+                else
+                {
+                    string err = $"Error for '{parent}': unknown mod '{mod}' used";
+                    throw new Exception(err);
+                }
+            }
+        }
 
-	    if (offset < -1)
-	    {
-		    string err = $"Error for '{parent}': offset '{offset}' has incorrect value in set '{set}' at line {node.Start.Line}";
-		    throw new Exception(err);
-	    }
-	    else if (offset == -1)
-	    {
-		    //ok
-	    }
-	    else
-	    {
-		    int f = offset;
-		    f = (int)(f * multiplier);
-		    if ((uint)f > curr.size / sizeScale)
-		    {
-			    string err = $"Error for '{parent}': offset '{offset}' exceeds mod size limit {(curr.size / multiplier / sizeScale)} in set '{set}'";
-			    throw new Exception(err);
-		    }
-		    if (f >= shared)
-			    f = (int)(f + curr.offset / sizeScale);
+        if (offset < -1)
+        {
+            string err = $"Error for '{parent}': offset '{offset}' has incorrect value in set '{set}' at line {node.Start.Line}";
+            throw new Exception(err);
+        }
+        else if (offset == -1)
+        {
+            //ok
+        }
+        else
+        {
+            int f = offset;
+            f = (int)(f * multiplier);
+            if ((uint)f > curr.size / sizeScale)
+            {
+                string err = $"Error for '{parent}': offset '{offset}' exceeds mod size limit {(curr.size / multiplier / sizeScale)} in set '{set}'";
+                throw new Exception(err);
+            }
+            if (f >= shared)
+                f = (int)(f + curr.offset / sizeScale);
             offset = f;
-	    }
+        }
     }
 
     /**
@@ -2702,51 +2703,51 @@ internal class Mod
      */
     void loadConstants(YamlNode node)
     {
-	    loadSoundOffset("constants", ref DOOR_OPEN, node["doorSound"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ref SLIDING_DOOR_OPEN, node["slidingDoorSound"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ref SLIDING_DOOR_CLOSE, node["slidingDoorClose"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ref SMALL_EXPLOSION, node["smallExplosion"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ref LARGE_EXPLOSION, node["largeExplosion"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref DOOR_OPEN, node["doorSound"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref SLIDING_DOOR_OPEN, node["slidingDoorSound"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref SLIDING_DOOR_CLOSE, node["slidingDoorClose"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref SMALL_EXPLOSION, node["smallExplosion"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref LARGE_EXPLOSION, node["largeExplosion"], "BATTLE.CAT");
 
-	    loadSpriteOffset("constants", ref EXPLOSION_OFFSET, node["explosionOffset"], "X1.PCK");
-	    loadSpriteOffset("constants", ref SMOKE_OFFSET, node["smokeOffset"], "SMOKE.PCK");
-	    loadSpriteOffset("constants", ref UNDERWATER_SMOKE_OFFSET, node["underwaterSmokeOffset"], "SMOKE.PCK");
+        loadSpriteOffset("constants", ref EXPLOSION_OFFSET, node["explosionOffset"], "X1.PCK");
+        loadSpriteOffset("constants", ref SMOKE_OFFSET, node["smokeOffset"], "SMOKE.PCK");
+        loadSpriteOffset("constants", ref UNDERWATER_SMOKE_OFFSET, node["underwaterSmokeOffset"], "SMOKE.PCK");
 
-	    loadSoundOffset("constants", ref ITEM_DROP, node["itemDrop"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ref ITEM_THROW, node["itemThrow"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ref ITEM_RELOAD, node["itemReload"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ref WALK_OFFSET, node["walkOffset"], "BATTLE.CAT");
-	    loadSoundOffset("constants", ref FLYING_SOUND, node["flyingSound"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref ITEM_DROP, node["itemDrop"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref ITEM_THROW, node["itemThrow"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref ITEM_RELOAD, node["itemReload"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref WALK_OFFSET, node["walkOffset"], "BATTLE.CAT");
+        loadSoundOffset("constants", ref FLYING_SOUND, node["flyingSound"], "BATTLE.CAT");
 
-	    loadSoundOffset("constants", ref BUTTON_PRESS, node["buttonPress"], "GEO.CAT");
-	    if (node["windowPopup"] != null)
-	    {
+        loadSoundOffset("constants", ref BUTTON_PRESS, node["buttonPress"], "GEO.CAT");
+        if (node["windowPopup"] != null)
+        {
             var k = 0;
-		    for (var j = 0; j < ((YamlSequenceNode)node["windowPopup"]).Children.Count && k < 3; ++j, ++k)
-		    {
-			    loadSoundOffset("constants", ref WINDOW_POPUP[k], ((YamlSequenceNode)node["windowPopup"]).Children[j], "GEO.CAT");
-		    }
-	    }
-	    loadSoundOffset("constants", ref UFO_FIRE, node["ufoFire"], "GEO.CAT");
-	    loadSoundOffset("constants", ref UFO_HIT, node["ufoHit"], "GEO.CAT");
-	    loadSoundOffset("constants", ref UFO_CRASH, node["ufoCrash"], "GEO.CAT");
-	    loadSoundOffset("constants", ref UFO_EXPLODE, node["ufoExplode"], "GEO.CAT");
-	    loadSoundOffset("constants", ref INTERCEPTOR_HIT, node["interceptorHit"], "GEO.CAT");
-	    loadSoundOffset("constants", ref INTERCEPTOR_EXPLODE, node["interceptorExplode"], "GEO.CAT");
-	    GEOSCAPE_CURSOR = int.Parse(node["geoscapeCursor"].ToString());
-	    BASESCAPE_CURSOR = int.Parse(node["basescapeCursor"].ToString());
-	    BATTLESCAPE_CURSOR = int.Parse(node["battlescapeCursor"].ToString());
-	    UFOPAEDIA_CURSOR = int.Parse(node["ufopaediaCursor"].ToString());
-	    GRAPHS_CURSOR = int.Parse(node["graphsCursor"].ToString());
-	    DAMAGE_RANGE = int.Parse(node["damageRange"].ToString());
+            for (var j = 0; j < ((YamlSequenceNode)node["windowPopup"]).Children.Count && k < 3; ++j, ++k)
+            {
+                loadSoundOffset("constants", ref WINDOW_POPUP[k], ((YamlSequenceNode)node["windowPopup"]).Children[j], "GEO.CAT");
+            }
+        }
+        loadSoundOffset("constants", ref UFO_FIRE, node["ufoFire"], "GEO.CAT");
+        loadSoundOffset("constants", ref UFO_HIT, node["ufoHit"], "GEO.CAT");
+        loadSoundOffset("constants", ref UFO_CRASH, node["ufoCrash"], "GEO.CAT");
+        loadSoundOffset("constants", ref UFO_EXPLODE, node["ufoExplode"], "GEO.CAT");
+        loadSoundOffset("constants", ref INTERCEPTOR_HIT, node["interceptorHit"], "GEO.CAT");
+        loadSoundOffset("constants", ref INTERCEPTOR_EXPLODE, node["interceptorExplode"], "GEO.CAT");
+        GEOSCAPE_CURSOR = int.Parse(node["geoscapeCursor"].ToString());
+        BASESCAPE_CURSOR = int.Parse(node["basescapeCursor"].ToString());
+        BATTLESCAPE_CURSOR = int.Parse(node["battlescapeCursor"].ToString());
+        UFOPAEDIA_CURSOR = int.Parse(node["ufopaediaCursor"].ToString());
+        GRAPHS_CURSOR = int.Parse(node["graphsCursor"].ToString());
+        DAMAGE_RANGE = int.Parse(node["damageRange"].ToString());
         EXPLOSIVE_DAMAGE_RANGE = int.Parse(node["explosiveDamageRange"].ToString());
         var num = 0;
-	    for (var j = 0; j < ((YamlSequenceNode)node["fireDamageRange"]).Children.Count && num < 2; ++j)
-	    {
-		    FIRE_DAMAGE_RANGE[num] = int.Parse(((YamlSequenceNode)node["fireDamageRange"]).Children[j].ToString());
+        for (var j = 0; j < ((YamlSequenceNode)node["fireDamageRange"]).Children.Count && num < 2; ++j)
+        {
+            FIRE_DAMAGE_RANGE[num] = int.Parse(((YamlSequenceNode)node["fireDamageRange"]).Children[j].ToString());
             ++num;
-	    }
-	    DEBRIEF_MUSIC_GOOD = node["goodDebriefingMusic"].ToString();
+        }
+        DEBRIEF_MUSIC_GOOD = node["goodDebriefingMusic"].ToString();
         DEBRIEF_MUSIC_BAD = node["badDebriefingMusic"].ToString();
     }
 
@@ -2755,7 +2756,7 @@ internal class Mod
     * @return Pointer to converter rules.
     */
     internal RuleConverter getConverter() =>
-	    _converter;
+        _converter;
 
     /**
      * Gets an MCDPatch.
@@ -2778,7 +2779,7 @@ internal class Mod
      * @return Rules for the country.
      */
     internal RuleCountry getCountry(string id, bool error = false) =>
-	    getRule(id, "Country", _countries, error);
+        getRule(id, "Country", _countries, error);
 
     /**
      * Returns the rules for the specified region.
@@ -2786,14 +2787,14 @@ internal class Mod
      * @return Rules for the region.
      */
     internal RuleRegion getRegion(string id, bool error = false) =>
-	    getRule(id, "Region", _regions, error);
+        getRule(id, "Region", _regions, error);
 
     /**
      * Gets the defined starting time.
      * @return The time the game starts in.
      */
     internal GameTime getStartingTime() =>
-	    _startingTime;
+        _startingTime;
 
     /**
      * Returns the info about a specific deployment.
@@ -2801,7 +2802,7 @@ internal class Mod
      * @return Rules for the deployment.
      */
     internal AlienDeployment getDeployment(string name, bool error = false) =>
-	    getRule(name, "Alien Deployment", _alienDeployments, error);
+        getRule(name, "Alien Deployment", _alienDeployments, error);
 
     /**
      * Returns the rules for the specified UFO.
@@ -2809,7 +2810,7 @@ internal class Mod
      * @return Rules for the UFO.
      */
     internal RuleUfo getUfo(string id, bool error = false) =>
-	    getRule(id, "UFO", _ufos, error);
+        getRule(id, "UFO", _ufos, error);
 
     /**
      * Returns the info about a specific unit.
@@ -2817,7 +2818,7 @@ internal class Mod
      * @return Rules for the units.
      */
     internal RuleSoldier getSoldier(string name, bool error = false) =>
-	    getRule(name, "Soldier", _soldiers, error);
+        getRule(name, "Soldier", _soldiers, error);
 
     /**
      * Returns the list of all soldiers
@@ -2825,27 +2826,27 @@ internal class Mod
      * @return List of soldiers.
      */
     internal List<string> getSoldiersList() =>
-	    _soldiersIndex;
+        _soldiersIndex;
 
     /**
      * Returns the list of research projects.
      * @return The list of research projects.
      */
     internal List<string> getResearchList() =>
-	    _researchIndex;
+        _researchIndex;
 
     /**
      * Gets the list of StatStrings.
      * @return The list of StatStrings.
      */
     internal List<StatString> getStatStrings() =>
-	    _statStrings;
+        _statStrings;
 
     /**
      * Gets the research-requirements for Psi-Lab (it's a cache for psiStrengthEval)
      */
     internal List<string> getPsiRequirements() =>
-	    _psiRequirements;
+        _psiRequirements;
 
     /**
      * Returns the rules for the specified commendation.
@@ -2853,7 +2854,7 @@ internal class Mod
      * @return Rules for the commendation.
      */
     internal RuleCommendations getCommendation(string id, bool error = false) =>
-	    getRule(id, "Commendation", _commendations, error);
+        getRule(id, "Commendation", _commendations, error);
 
     /**
      * Returns the data for the specified ufo trajectory.
@@ -2861,7 +2862,7 @@ internal class Mod
      * @return A pointer to the data for the specified ufo trajectory.
      */
     internal UfoTrajectory getUfoTrajectory(string id, bool error = false) =>
-	    getRule(id, "Trajectory", _ufoTrajectories, error);
+        getRule(id, "Trajectory", _ufoTrajectories, error);
 
     /**
      * Returns the cost of an individual engineer
@@ -2869,7 +2870,7 @@ internal class Mod
      * @return Cost.
      */
     internal int getEngineerCost() =>
-	    _costEngineer;
+        _costEngineer;
 
     /**
      * Returns the cost of an individual scientist
@@ -2877,13 +2878,13 @@ internal class Mod
      * @return Cost.
      */
     internal int getScientistCost() =>
-	    _costScientist;
+        _costScientist;
 
     internal List<string> getMissionScriptList() =>
-	    _missionScriptIndex;
+        _missionScriptIndex;
 
     internal RuleMissionScript getMissionScript(string name, bool error = false) =>
-	    getRule(name, "Mission Script", _missionScripts, error);
+        getRule(name, "Mission Script", _missionScripts, error);
 
     /**
      * Returns the info about a specific unit.
@@ -2891,14 +2892,14 @@ internal class Mod
      * @return Rules for the units.
      */
     internal Unit getUnit(string name, bool error = false) =>
-	    getRule(name, "Unit", _units, error);
+        getRule(name, "Unit", _units, error);
 
     /**
      * Returns the list of manufacture projects.
      * @return The list of manufacture projects.
      */
     internal List<string> getManufactureList() =>
-	    _manufactureIndex;
+        _manufactureIndex;
 
     /**
      * Returns the list of all regions
@@ -2906,7 +2907,7 @@ internal class Mod
      * @return List of regions.
      */
     internal List<string> getRegionsList() =>
-	    _regionsIndex;
+        _regionsIndex;
 
     /**
      * Returns the info about a specific alien race.
@@ -2914,7 +2915,7 @@ internal class Mod
      * @return Rules for the race.
      */
     internal AlienRace getAlienRace(string name, bool error = false) =>
-	    getRule(name, "Alien Race", _alienRaces, error);
+        getRule(name, "Alien Race", _alienRaces, error);
 
     /**
      * Returns the rules for the specified terrain.
@@ -2922,7 +2923,7 @@ internal class Mod
      * @return Rules for the terrain.
      */
     internal RuleTerrain getTerrain(string name, bool error = false) =>
-	    getRule(name, "Terrain", _terrains, error);
+        getRule(name, "Terrain", _terrains, error);
 
     /**
      * Returns the list of all terrains
@@ -2930,24 +2931,24 @@ internal class Mod
      * @return List of terrains.
      */
     internal List<string> getTerrainList() =>
-	    _terrainIndex;
+        _terrainIndex;
 
     internal List<MapScript> getMapScript(string id) =>
-	    _mapScripts.TryGetValue(id, out List<MapScript> mapScript) ? mapScript : null;
+        _mapScripts.TryGetValue(id, out List<MapScript> mapScript) ? mapScript : null;
 
     /**
      * Gets the name of the item to be used as alien fuel.
      * @return the name of the fuel.
      */
     internal string getAlienFuelName() =>
-	    _alienFuel.Key;
+        _alienFuel.Key;
 
     /**
      * Gets the alien item level table.
      * @return A deep array containing the alien item levels.
      */
     internal List<List<int>> getAlienItemLevels() =>
-	    _alienItemLevels;
+        _alienItemLevels;
 
     /**
      * Returns a specific sound from either the land or underwater sound set.
@@ -2957,10 +2958,10 @@ internal class Mod
      */
     internal Sound getSoundByDepth(uint depth, uint sound, bool error = true)
     {
-	    if (depth == 0)
-		    return getSound("BATTLE.CAT", sound, error);
-	    else
-		    return getSound("BATTLE2.CAT", sound, error);
+        if (depth == 0)
+            return getSound("BATTLE.CAT", sound, error);
+        else
+            return getSound("BATTLE2.CAT", sound, error);
     }
 
     /**
@@ -2968,7 +2969,7 @@ internal class Mod
      * @return The list of inventories.
      */
     internal List<string> getInvsList() =>
-	    _invsIndex;
+        _invsIndex;
 
     internal StatAdjustment getStatAdjustment(int difficulty)
     {
@@ -2985,7 +2986,7 @@ internal class Mod
      * @return Is the player screwed?
     */
     internal bool isDemigod() =>
-	    _difficultyDemigod;
+        _difficultyDemigod;
 
     /**
      * Returns the list of all craft weapons
@@ -2993,7 +2994,7 @@ internal class Mod
      * @return List of craft weapons.
      */
     internal List<string> getCraftWeaponsList() =>
-	    _craftWeaponsIndex;
+        _craftWeaponsIndex;
 
     /**
      * Returns the list of all armors
@@ -3001,7 +3002,7 @@ internal class Mod
      * @return List of armors.
      */
     internal List<string> getArmorsList() =>
-	    _armorsIndex;
+        _armorsIndex;
 
     /**
      * Returns the list of all items
@@ -3009,17 +3010,17 @@ internal class Mod
      * @return List of items.
      */
     internal List<string> getItemsList() =>
-	    _itemsIndex;
+        _itemsIndex;
 
     internal Dictionary<string, SoundDefinition> getSoundDefinitions() =>
-	    _soundDefs;
+        _soundDefs;
 
     /**
      * Gets the list of commendations provided by the mod.
      * @return The list of commendations.
      */
     internal Dictionary<string, RuleCommendations> getCommendationsList() =>
-	    _commendations;
+        _commendations;
 
     /**
      * Returns the list of all crafts
@@ -3027,7 +3028,7 @@ internal class Mod
      * @return List of crafts.
      */
     internal List<string> getCraftsList() =>
-	    _craftsIndex;
+        _craftsIndex;
 
     /**
      * Returns the list of all articles
@@ -3035,7 +3036,7 @@ internal class Mod
      * @return List of articles.
      */
     internal List<string> getUfopaediaList() =>
-	    _ufopaediaIndex;
+        _ufopaediaIndex;
 
     /**
     * Returns the list of all article categories
@@ -3043,10 +3044,10 @@ internal class Mod
     * @return List of categories.
     */
     internal List<string> getUfopaediaCategoryList() =>
-	    _ufopaediaCatIndex;
+        _ufopaediaCatIndex;
 
     internal string getFinalResearch() =>
-	    _finalResearch;
+        _finalResearch;
 
     /**
      * Returns the list of all alien deployments
@@ -3054,7 +3055,7 @@ internal class Mod
      * @return List of alien deployments.
      */
     internal List<string> getDeploymentsList() =>
-	    _deploymentsIndex;
+        _deploymentsIndex;
 
     /**
      * Returns the rules for a random alien mission based on a specific objective.
@@ -3063,28 +3064,28 @@ internal class Mod
      */
     internal RuleAlienMission getRandomMission(MissionObjective objective, uint monthsPassed)
     {
-	    int totalWeight = 0;
-	    var possibilities = new Dictionary<int, RuleAlienMission>();
-	    foreach (var i in _alienMissions)
-	    {
-		    if (i.Value.getObjective() == objective && i.Value.getWeight(monthsPassed) > 0)
-		    {
-			    totalWeight += i.Value.getWeight(monthsPassed);
-			    possibilities[totalWeight] = i.Value;
-		    }
-	    }
-	    if (totalWeight > 0)
-	    {
-		    int pick = RNG.generate(1, totalWeight);
-		    foreach (var i in possibilities)
-		    {
-			    if (pick <= i.Key)
-			    {
-				    return i.Value;
-			    }
-		    }
-	    }
-	    return null;
+        int totalWeight = 0;
+        var possibilities = new Dictionary<int, RuleAlienMission>();
+        foreach (var i in _alienMissions)
+        {
+            if (i.Value.getObjective() == objective && i.Value.getWeight(monthsPassed) > 0)
+            {
+                totalWeight += i.Value.getWeight(monthsPassed);
+                possibilities[totalWeight] = i.Value;
+            }
+        }
+        if (totalWeight > 0)
+        {
+            int pick = RNG.generate(1, totalWeight);
+            foreach (var i in possibilities)
+            {
+                if (pick <= i.Key)
+                {
+                    return i.Value;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -3093,7 +3094,7 @@ internal class Mod
      * @return Score.
      */
     internal int getDefeatScore() =>
-	    _defeatScore;
+        _defeatScore;
 
     /**
      * Returns the minimum amount of funds the player can have,
@@ -3101,7 +3102,7 @@ internal class Mod
      * @return Funds.
      */
     internal int getDefeatFunds() =>
-	    _defeatFunds;
+        _defeatFunds;
 
     /**
      * Returns the list of all base facilities
@@ -3109,7 +3110,7 @@ internal class Mod
      * @return List of base facilities.
      */
     internal List<string> getBaseFacilitiesList() =>
-	    _facilitiesIndex;
+        _facilitiesIndex;
 
     /**
      * Generates and returns a list of facilities for custom bases.
@@ -3119,18 +3120,18 @@ internal class Mod
      */
     internal List<RuleBaseFacility> getCustomBaseFacilities()
     {
-	    var placeList = new List<RuleBaseFacility>();
+        var placeList = new List<RuleBaseFacility>();
 
         foreach (var i in ((YamlSequenceNode)_startingBase["facilities"]).Children)
-	    {
-		    string type = i["type"].ToString();
-		    RuleBaseFacility facility = getBaseFacility(type, true);
-		    if (!facility.isLift())
-		    {
-			    placeList.Add(facility);
-		    }
-	    }
-	    return placeList;
+        {
+            string type = i["type"].ToString();
+            RuleBaseFacility facility = getBaseFacility(type, true);
+            if (!facility.isLift())
+            {
+                placeList.Add(facility);
+            }
+        }
+        return placeList;
     }
 
     /**
@@ -3139,7 +3140,7 @@ internal class Mod
      * @return Time in hours.
      */
     internal int getPersonnelTime() =>
-	    _timePersonnel;
+        _timePersonnel;
 
     /**
      * Creates a new randomly-generated soldier.
@@ -3149,47 +3150,47 @@ internal class Mod
      */
     internal Soldier genSoldier(SavedGame save, string type = "")
     {
-	    Soldier soldier = null;
-	    int newId = save.getId("STR_SOLDIER");
-	    if (string.IsNullOrEmpty(type))
-	    {
-		    type = _soldiersIndex.First();
-	    }
+        Soldier soldier = null;
+        int newId = save.getId("STR_SOLDIER");
+        if (string.IsNullOrEmpty(type))
+        {
+            type = _soldiersIndex.First();
+        }
 
-	    // Check for duplicates
-	    // Original X-COM gives up after 10 tries so might as well do the same here
-	    bool duplicate = true;
-	    for (int tries = 0; tries < 10 && duplicate; ++tries)
-	    {
-		    soldier = null;
-		    soldier = new Soldier(getSoldier(type, true), getArmor(getSoldier(type, true).getArmor(), true), newId);
-		    duplicate = false;
+        // Check for duplicates
+        // Original X-COM gives up after 10 tries so might as well do the same here
+        bool duplicate = true;
+        for (int tries = 0; tries < 10 && duplicate; ++tries)
+        {
+            soldier = null;
+            soldier = new Soldier(getSoldier(type, true), getArmor(getSoldier(type, true).getArmor(), true), newId);
+            duplicate = false;
             var bases = save.getBases();
             for (var i = 0; i < bases.Count && !duplicate; ++i)
-		    {
+            {
                 var soldiers = bases[i].getSoldiers();
                 for (var j = 0; j < soldiers.Count && !duplicate; ++j)
-			    {
-				    if (soldiers[j].getName() == soldier.getName())
-				    {
-					    duplicate = true;
-				    }
-			    }
+                {
+                    if (soldiers[j].getName() == soldier.getName())
+                    {
+                        duplicate = true;
+                    }
+                }
                 var transfers = bases[i].getTransfers();
                 for (var k = 0; k < transfers.Count && !duplicate; ++k)
-			    {
-				    if (transfers[k].getType() == TransferType.TRANSFER_SOLDIER && transfers[k].getSoldier().getName() == soldier.getName())
-				    {
-					    duplicate = true;
-				    }
-			    }
-		    }
-	    }
+                {
+                    if (transfers[k].getType() == TransferType.TRANSFER_SOLDIER && transfers[k].getSoldier().getName() == soldier.getName())
+                    {
+                        duplicate = true;
+                    }
+                }
+            }
+        }
 
-	    // calculate new statString
-	    soldier.calcStatString(getStatStrings(), (Options.psiStrengthEval && save.isResearched(getPsiRequirements())));
+        // calculate new statString
+        soldier.calcStatString(getStatStrings(), (Options.psiStrengthEval && save.isResearched(getPsiRequirements())));
 
-	    return soldier;
+        return soldier;
     }
 
     /**
@@ -3198,21 +3199,21 @@ internal class Mod
      * @return List of alien races.
      */
     internal List<string> getAlienRacesList() =>
-	    _aliensIndex;
+        _aliensIndex;
 
     /**
      * Returns the list of alien mission types.
      * @return The list of alien mission types.
      */
     internal List<string> getAlienMissionList() =>
-	    _alienMissionsIndex;
+        _alienMissionsIndex;
 
     /**
      * Gets the defined starting base.
      * @return The starting base definition.
      */
     internal YamlNode getStartingBase() =>
-	    _startingBase;
+        _startingBase;
 
     /**
      * Generates a brand new saved game with starting data.
@@ -3220,150 +3221,150 @@ internal class Mod
      */
     internal SavedGame newSave()
     {
-	    SavedGame save = new SavedGame();
+        SavedGame save = new SavedGame();
 
-	    // Add countries
-	    foreach (var i in _countriesIndex)
-	    {
-		    RuleCountry country = getCountry(i);
-		    if (country.getLonMin().Any())
-			    save.getCountries().Add(new Country(country));
-	    }
-	    // Adjust funding to total $6M
-	    int missing = ((_initialFunding - save.getCountryFunding()/1000) / (int)save.getCountries().Count) * 1000;
-	    foreach (var i in save.getCountries())
-	    {
-		    int funding = i.getFunding().Last() + missing;
-		    if (funding < 0)
-		    {
-			    funding = i.getFunding().Last();
-		    }
-		    i.setFunding(funding);
-	    }
-	    save.setFunds(save.getCountryFunding());
+        // Add countries
+        foreach (var i in _countriesIndex)
+        {
+            RuleCountry country = getCountry(i);
+            if (country.getLonMin().Any())
+                save.getCountries().Add(new Country(country));
+        }
+        // Adjust funding to total $6M
+        int missing = ((_initialFunding - save.getCountryFunding() / 1000) / (int)save.getCountries().Count) * 1000;
+        foreach (var i in save.getCountries())
+        {
+            int funding = i.getFunding().Last() + missing;
+            if (funding < 0)
+            {
+                funding = i.getFunding().Last();
+            }
+            i.setFunding(funding);
+        }
+        save.setFunds(save.getCountryFunding());
 
-	    // Add regions
-	    foreach (var i in _regionsIndex)
-	    {
-		    RuleRegion region = getRegion(i);
-		    if (region.getLonMin().Any())
-			    save.getRegions().Add(new Region(region));
-	    }
+        // Add regions
+        foreach (var i in _regionsIndex)
+        {
+            RuleRegion region = getRegion(i);
+            if (region.getLonMin().Any())
+                save.getRegions().Add(new Region(region));
+        }
 
-	    // Set up starting base
-	    Base @base = new Base(this);
-	    @base.load(_startingBase, save, true);
-	    save.getBases().Add(@base);
+        // Set up starting base
+        Base @base = new Base(this);
+        @base.load(_startingBase, save, true);
+        save.getBases().Add(@base);
 
-	    // Correct IDs
-	    foreach (var i in @base.getCrafts())
-	    {
-		    save.getId(i.getRules().getType());
-	    }
+        // Correct IDs
+        foreach (var i in @base.getCrafts())
+        {
+            save.getId(i.getRules().getType());
+        }
 
         // Determine starting transport craft
         Craft transportCraft = null;
-	    foreach (var c in @base.getCrafts())
-	    {
-		    if (c.getRules().getSoldiers() > 0)
-		    {
-			    transportCraft = c;
-			    break;
-		    }
-	    }
+        foreach (var c in @base.getCrafts())
+        {
+            if (c.getRules().getSoldiers() > 0)
+            {
+                transportCraft = c;
+                break;
+            }
+        }
 
-	    // Determine starting soldier types
-	    List<string> soldierTypes = _soldiersIndex;
-	    for (var i = 0; i < soldierTypes.Count;)
-	    {
-		    if (!getSoldier(soldierTypes[i]).getRequirements().Any())
-		    {
-			    ++i;
-		    }
-		    else
-		    {
-			    soldierTypes.RemoveAt(i);
-		    }
-	    }
+        // Determine starting soldier types
+        List<string> soldierTypes = _soldiersIndex;
+        for (var i = 0; i < soldierTypes.Count;)
+        {
+            if (!getSoldier(soldierTypes[i]).getRequirements().Any())
+            {
+                ++i;
+            }
+            else
+            {
+                soldierTypes.RemoveAt(i);
+            }
+        }
 
-	    YamlNode node = _startingBase["randomSoldiers"];
-	    var randomTypes = new List<string>();
-	    if (node != null)
-	    {
-		    // Starting soldiers specified by type
-		    if (node is YamlMappingNode m)
-		    {
+        YamlNode node = _startingBase["randomSoldiers"];
+        var randomTypes = new List<string>();
+        if (node != null)
+        {
+            // Starting soldiers specified by type
+            if (node is YamlMappingNode m)
+            {
                 var randomSoldiers = m != null ? m.Children.ToDictionary(x => x.ToString(), x => int.Parse(x.ToString())) : new Dictionary<string, int>();
-			    foreach (var i in randomSoldiers)
-			    {
+                foreach (var i in randomSoldiers)
+                {
                     for (int s = 0; s < int.Parse(i.Value.ToString()); ++s)
-				    {
-					    randomTypes.Add(i.Key.ToString());
-				    }
-			    }
-		    }
-		    // Starting soldiers specified by amount
-		    else if (node is YamlScalarNode)
-		    {
-			    int randomSoldiers = int.Parse(node.ToString());
-			    for (int s = 0; s < randomSoldiers; ++s)
-			    {
-				    randomTypes.Add(soldierTypes[RNG.generate(0, soldierTypes.Count - 1)]);
-			    }
-		    }
-		    // Generate soldiers
-		    int maxSoldiersInTransportCraft = 0;
-		    if (transportCraft != null)
-		    {
-			    maxSoldiersInTransportCraft = transportCraft.getRules().getSoldiers();
+                    {
+                        randomTypes.Add(i.Key.ToString());
+                    }
+                }
+            }
+            // Starting soldiers specified by amount
+            else if (node is YamlScalarNode)
+            {
+                int randomSoldiers = int.Parse(node.ToString());
+                for (int s = 0; s < randomSoldiers; ++s)
+                {
+                    randomTypes.Add(soldierTypes[RNG.generate(0, soldierTypes.Count - 1)]);
+                }
+            }
+            // Generate soldiers
+            int maxSoldiersInTransportCraft = 0;
+            if (transportCraft != null)
+            {
+                maxSoldiersInTransportCraft = transportCraft.getRules().getSoldiers();
                 var vehicles = transportCraft.getVehicles();
-			    for (var v = 0; v < vehicles.Count;)
-			    {
-				    if ((int)maxSoldiersInTransportCraft < vehicles[v].getSize())
-				    {
-					    @base.getStorageItems().addItem(vehicles[v].getRules().getType(), 1);
-					    if (vehicles[v].getAmmo() > 0 && vehicles[v].getRules().getCompatibleAmmo().Any())
-					    {
-						    @base.getStorageItems().addItem(
-							    vehicles[v].getRules().getCompatibleAmmo().First(),
-							    vehicles[v].getAmmo() / getItem(vehicles[v].getRules().getCompatibleAmmo().First()).getClipSize());
-					    }
-					    vehicles.RemoveAt(v);
-				    }
-				    else
-				    {
-					    maxSoldiersInTransportCraft -= vehicles[v].getSize();
-					    ++v;
-				    }
-			    }
-		    }
+                for (var v = 0; v < vehicles.Count;)
+                {
+                    if ((int)maxSoldiersInTransportCraft < vehicles[v].getSize())
+                    {
+                        @base.getStorageItems().addItem(vehicles[v].getRules().getType(), 1);
+                        if (vehicles[v].getAmmo() > 0 && vehicles[v].getRules().getCompatibleAmmo().Any())
+                        {
+                            @base.getStorageItems().addItem(
+                                vehicles[v].getRules().getCompatibleAmmo().First(),
+                                vehicles[v].getAmmo() / getItem(vehicles[v].getRules().getCompatibleAmmo().First()).getClipSize());
+                        }
+                        vehicles.RemoveAt(v);
+                    }
+                    else
+                    {
+                        maxSoldiersInTransportCraft -= vehicles[v].getSize();
+                        ++v;
+                    }
+                }
+            }
 
-		    for (int i = 0; i < randomTypes.Count; ++i)
-		    {
-			    Soldier soldier = genSoldier(save, randomTypes[i]);
-			    if (transportCraft != null && i < maxSoldiersInTransportCraft)
-			    {
-				    soldier.setCraft(transportCraft);
-			    }
-			    @base.getSoldiers().Add(soldier);
-			    // Award soldier a special 'original eight' commendation
-			    if (_commendations.ContainsKey("STR_MEDAL_ORIGINAL8_NAME"))
-			    {
-				    SoldierDiary diary = soldier.getDiary();
-				    diary.awardOriginalEightCommendation();
-				    foreach (var comm in diary.getSoldierCommendations())
-				    {
-					    comm.makeOld();
-				    }
-			    }
-		    }
-	    }
+            for (int i = 0; i < randomTypes.Count; ++i)
+            {
+                Soldier soldier = genSoldier(save, randomTypes[i]);
+                if (transportCraft != null && i < maxSoldiersInTransportCraft)
+                {
+                    soldier.setCraft(transportCraft);
+                }
+                @base.getSoldiers().Add(soldier);
+                // Award soldier a special 'original eight' commendation
+                if (_commendations.ContainsKey("STR_MEDAL_ORIGINAL8_NAME"))
+                {
+                    SoldierDiary diary = soldier.getDiary();
+                    diary.awardOriginalEightCommendation();
+                    foreach (var comm in diary.getSoldierCommendations())
+                    {
+                        comm.makeOld();
+                    }
+                }
+            }
+        }
 
-	    // Setup alien strategy
-	    save.getAlienStrategy().init(this);
-	    save.setTime(_startingTime);
+        // Setup alien strategy
+        save.getAlienStrategy().init(this);
+        save.setTime(_startingTime);
 
-	    return save;
+        return save;
     }
 
     /**
@@ -3397,7 +3398,7 @@ internal class Mod
      * @return A pointer to the data for the specified video.
      */
     internal RuleVideo getVideo(string id, bool error = false) =>
-	    getRule(id, "Video", _videos, error);
+        getRule(id, "Video", _videos, error);
 
     /**
      * Returns the list of all ufos
@@ -3405,7 +3406,7 @@ internal class Mod
      * @return List of ufos.
      */
     internal List<string> getUfosList() =>
-	    _ufosIndex;
+        _ufosIndex;
 
     /**
      * Returns the list of all countries
@@ -3413,7 +3414,7 @@ internal class Mod
      * @return List of countries.
      */
     internal List<string> getCountriesList() =>
-	    _countriesIndex;
+        _countriesIndex;
 
     /**
      * Gets the amount of alien fuel to recover.
@@ -3422,12 +3423,12 @@ internal class Mod
     internal int getAlienFuelQuantity() =>
         _alienFuel.Value;
 
-	/// Gets first turn when AI can use Blaster launcher.
-	internal int getTurnAIUseBlaster() =>
+    /// Gets first turn when AI can use Blaster launcher.
+    internal int getTurnAIUseBlaster() =>
         _turnAIUseBlaster;
 
-	/// Gets first turn when AI can use grenade.
-	internal int getTurnAIUseGrenade() =>
+    /// Gets first turn when AI can use grenade.
+    internal int getTurnAIUseGrenade() =>
         _turnAIUseGrenade;
 
     /**
@@ -3435,7 +3436,7 @@ internal class Mod
      * @return Pointer to inventory list.
      */
     internal Dictionary<string, RuleInventory> getInventories() =>
-	    _invs;
+        _invs;
 
     /**
      * Returns the current mod-based offset for resources.
@@ -3449,25 +3450,25 @@ internal class Mod
      * @return The list of external sprites.
      */
     Dictionary<string, List<ExtraSprites>> getExtraSprites() =>
-	    _extraSprites;
+        _extraSprites;
 
     /**
      * Gets the list of external sounds.
      * @return The list of external sounds.
      */
     List<KeyValuePair<string, ExtraSounds>> getExtraSounds() =>
-	    _extraSounds;
+        _extraSounds;
 
     /**
      * Gets name of font collection.
      * @return the name of YAML-file with font data
      */
     string getFontName() =>
-	    _fontName;
+        _fontName;
 
     List<SDL_Color> getTransparencies() =>
-	    _transparencies;
+        _transparencies;
 
     Dictionary<string, RuleMusic> getMusic() =>
-	    _musicDefs;
+        _musicDefs;
 }

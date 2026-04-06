@@ -191,11 +191,11 @@ internal class ListLoadOriginalState : State
     */
     internal override void init()
     {
-	    base.init();
+        base.init();
 
-	    if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
-	    {
-		    applyBattlescapeTheme();
-	    }
+        if (_origin == OptionsOrigin.OPT_BATTLESCAPE)
+        {
+            applyBattlescapeTheme();
+        }
     }
 }

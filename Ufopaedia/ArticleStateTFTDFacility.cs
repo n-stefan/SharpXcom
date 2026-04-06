@@ -21,49 +21,49 @@ namespace SharpXcom.Ufopaedia;
 
 internal class ArticleStateTFTDFacility : ArticleStateTFTD
 {
-	TextList _lstInfo;
+    TextList _lstInfo;
 
-	internal ArticleStateTFTDFacility(ArticleDefinitionTFTD defs) : base(defs)
-	{
-		_txtInfo.setHeight(112);
+    internal ArticleStateTFTDFacility(ArticleDefinitionTFTD defs) : base(defs)
+    {
+        _txtInfo.setHeight(112);
 
-		RuleBaseFacility facility = _game.getMod().getBaseFacility(defs.id, true);
+        RuleBaseFacility facility = _game.getMod().getBaseFacility(defs.id, true);
 
-		_lstInfo = new TextList(150, 50, 168, 150);
-		add(_lstInfo);
+        _lstInfo = new TextList(150, 50, 168, 150);
+        add(_lstInfo);
 
-		_lstInfo.setColor((byte)(Palette.blockOffset(0)+2));
-		_lstInfo.setColumns(2, 104, 46);
-		_lstInfo.setDot(true);
+        _lstInfo.setColor((byte)(Palette.blockOffset(0) + 2));
+        _lstInfo.setColumns(2, 104, 46);
+        _lstInfo.setDot(true);
 
-		string ss;
-		uint row = 0;
-		if (facility.getDefenseValue() > 0)
-		{
-			_lstInfo.setY(_lstInfo.getY() - 16);
-			_txtInfo.setHeight(_txtInfo.getHeight() - 16);
-			ss = facility.getDefenseValue().ToString();
-			_lstInfo.addRow(2, tr("STR_DEFENSE_VALUE"), ss);
-			_lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15)+4));
+        string ss;
+        uint row = 0;
+        if (facility.getDefenseValue() > 0)
+        {
+            _lstInfo.setY(_lstInfo.getY() - 16);
+            _txtInfo.setHeight(_txtInfo.getHeight() - 16);
+            ss = facility.getDefenseValue().ToString();
+            _lstInfo.addRow(2, tr("STR_DEFENSE_VALUE"), ss);
+            _lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15) + 4));
 
-			ss = Unicode.formatPercentage(facility.getHitRatio());
-			_lstInfo.addRow(2, tr("STR_HIT_RATIO"), ss);
-			_lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15)+4));
-		}
+            ss = Unicode.formatPercentage(facility.getHitRatio());
+            _lstInfo.addRow(2, tr("STR_HIT_RATIO"), ss);
+            _lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15) + 4));
+        }
 
-		_lstInfo.addRow(2, tr("STR_CONSTRUCTION_TIME"), tr("STR_DAY", (uint)facility.getBuildTime()));
-		_lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15)+4));
+        _lstInfo.addRow(2, tr("STR_CONSTRUCTION_TIME"), tr("STR_DAY", (uint)facility.getBuildTime()));
+        _lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15) + 4));
 
-		ss = Unicode.formatFunding(facility.getBuildCost());
-		_lstInfo.addRow(2, tr("STR_CONSTRUCTION_COST"), ss);
-		_lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15)+4));
+        ss = Unicode.formatFunding(facility.getBuildCost());
+        _lstInfo.addRow(2, tr("STR_CONSTRUCTION_COST"), ss);
+        _lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15) + 4));
 
-		ss = Unicode.formatFunding(facility.getMonthlyCost());
-		_lstInfo.addRow(2, tr("STR_MAINTENANCE_COST"), ss);
-		_lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15)+4));
+        ss = Unicode.formatFunding(facility.getMonthlyCost());
+        _lstInfo.addRow(2, tr("STR_MAINTENANCE_COST"), ss);
+        _lstInfo.setCellColor(row++, 1, (byte)(Palette.blockOffset(15) + 4));
 
-		centerAllSurfaces();
-	}
+        centerAllSurfaces();
+    }
 
-	~ArticleStateTFTDFacility() { }
+    ~ArticleStateTFTDFacility() { }
 }
