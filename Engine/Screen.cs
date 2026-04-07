@@ -49,6 +49,7 @@ internal class Screen
     OpenGL glOutput;
     /* SDL_Window */
     nint _window;
+    nint _renderer;
     Surface _surface;
 
     /**
@@ -214,6 +215,8 @@ internal class Screen
                 }
             }
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Display set to {getWidth()}x{getHeight()}x{(int)getBitsPerPixel()}.");
+
+            _renderer = SDL_CreateRenderer(_window, -1, 0);
         }
         else
         {
@@ -633,8 +636,7 @@ internal class Screen
             _pushPalette = false;
         }
 
-        //TODO: Check
-        SDL_RenderPresent(_window); //SDL_Flip(_screen)
+        SDL_RenderPresent(_renderer); //SDL_Flip(_screen)
     }
 
     /**
