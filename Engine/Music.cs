@@ -88,29 +88,8 @@ internal class Music
     internal virtual void load(byte[] data, int size)
     {
 #if !__NO_MUSIC
-        nint dataPtr = Marshal.AllocHGlobal(data.Length);
-        Marshal.Copy(data, 0, dataPtr, data.Length);
-        nint rwops = SDL_RWFromConstMem(dataPtr, size);
-        _music = Mix_LoadMUS_RW(rwops);
-        SDL_FreeRW(rwops);
-        if (_music == nint.Zero)
-        {
-            throw new Exception(Mix_GetError());
-        }
-#endif
-    }
-
-    //TODO: Consolidate
-    /**
-     * Loads a music file from a specified memory chunk.
-     * @param data Pointer to the music file in memory
-     * @param size Size of the music file in bytes.
-     */
-    unsafe internal void load(List<byte> data, int size)
-    {
-#if !__NO_MUSIC
-        nint dataPtr = Marshal.AllocHGlobal(data.Count);
-        Unsafe.Copy((byte*)dataPtr, ref data);
+        nint dataPtr = Marshal.AllocHGlobal(size);
+        Marshal.Copy(data, 0, dataPtr, size);
         nint rwops = SDL_RWFromConstMem(dataPtr, size);
         _music = Mix_LoadMUS_RW(rwops);
         SDL_FreeRW(rwops);

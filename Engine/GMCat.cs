@@ -104,7 +104,8 @@ internal class GMCatFile : CatFile
 
         raw = null;
 
-        music.load(midi, midi.Count);
+        var midiArray = midi.ToArray();
+        music.load(midiArray, midiArray.Length);
 
         return music;
     }
