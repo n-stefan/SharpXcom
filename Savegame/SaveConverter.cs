@@ -613,9 +613,8 @@ internal class SaveConverter
             double lat = Xcom2Rad(BitConverter.ToInt16(data, tdata + 0x04));
             int timer = BitConverter.ToInt16(data, tdata + 0x06);
             int id = BitConverter.ToInt16(data, tdata + 0x0A);
-            //TODO: Check
             BitVector32 visibility = new BitVector32(BitConverter.ToInt32(data, tdata + 0x10));
-            bool detected = !visibility[BitVector32.CreateMask()];
+            bool detected = !visibility[0];
 
             // can't declare variables in switches :(
             Target target = null;
