@@ -142,9 +142,7 @@ internal class Surface
         //if is native SharpXcom aligned surface
         if (other._alignedBuffer != nint.Zero)
         {
-            //TODO
-            var format = SDL_GetWindowPixelFormat(other._surface.pixels);
-            byte bpp = SDL_BITSPERPIXEL(format); //byte bpp = other._surface.format.BitsPerPixel;
+            byte bpp = getFormat(other._surface).BitsPerPixel;
             int width = other.getWidth();
             int height = other.getHeight();
             int pitch = GetPitch(bpp, width);
@@ -396,10 +394,9 @@ internal class Surface
      */
     internal virtual void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
     {
-        //TODO
-        var format = SDL_GetWindowPixelFormat(_surface.pixels);
-        if (SDL_BITSPERPIXEL(format) == 8) //if (_surface.format.BitsPerPixel == 8)
-            SDL_SetPaletteColors(_surface.pixels, colors, firstcolor, ncolors);
+        var format = getFormat(_surface);
+	    if (format.BitsPerPixel == 8)
+		    SDL_SetPaletteColors(format.palette, colors, firstcolor, ncolors);
     }
 
     /// Initializes the surface's various text resources.
