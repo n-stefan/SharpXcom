@@ -25,7 +25,14 @@ internal class NativeImports
 
     #endregion
 
-    #region SDL2
+    #region SDL2_mixer
+
+    [DllImport("SDL2_mixer", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern nint Mix_LoadMUS_RW(nint src);
+
+    #endregion
+
+    //#region SDL2
 
     //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
     //internal static extern nint SDL_LoadBMP_RW(nint src, int freesrc);
@@ -42,12 +49,5 @@ internal class NativeImports
     //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
     //internal static extern void glReadPixels(int x, int y, int width, int height, uint format, uint type, nint pixels);
 
-    #endregion
-
-    #region SDL2_mixer
-
-    [DllImport("SDL2_mixer", CallingConvention = CallingConvention.Cdecl)]
-    internal static extern nint Mix_LoadMUS_RW(nint src);
-
-    #endregion
+    //#endregion
 }
