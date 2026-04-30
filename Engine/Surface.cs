@@ -49,7 +49,7 @@ struct ColorReplace : IColorFunc<byte, byte, int, int, int>
 /**
  * help class used for Surface::blitNShade
  */
-struct StandardShade : IColorFunc<byte, byte, int, int, int>
+struct StandardShade : IColorFunc<nint, nint, int, int, int>
 {
     /**
 	* Function used by ShaderDraw in Surface::blitNShade
@@ -60,16 +60,16 @@ struct StandardShade : IColorFunc<byte, byte, int, int, int>
 	* @param notused
 	* @param notused
 	*/
-    public void func(ref byte dest, byte src, int shade, int _, int __)
+    public void func(ref nint dest, nint src, int shade, int _, int __)
     {
         if (src != default)
         {
-            int newShade = (src & 15) + shade;
+            var newShade = (src & 15) + shade;
             if (newShade > 15)
                 // so dark it would flip over to another color - make it black instead
                 dest = 15;
             else
-                dest = (byte)((src & (15 << 4)) | newShade);
+                dest = (src & (15 << 4)) | newShade;
         }
     }
 }
@@ -83,6 +83,7 @@ struct StandardShade : IColorFunc<byte, byte, int, int, int>
  */
 internal class Surface
 {
+    protected nint _surfacePtr;
     protected SDL_Surface _surface;
     protected int _x, _y;
     protected SDL_Rect _crop, _clear;
@@ -113,14 +114,14 @@ internal class Surface
 
         _alignedBuffer = NewAligned(bpp, width, height);
 
-        var surfacePtr = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, GetPitch(bpp, width), 0, 0, 0, 0);
-        if (surfacePtr == nint.Zero)
+        _surfacePtr = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, GetPitch(bpp, width), 0, 0, 0, 0);
+        if (_surfacePtr == nint.Zero)
         {
             throw new Exception(SDL_GetError());
         }
-        _surface = Marshal.PtrToStructure<SDL_Surface>(surfacePtr);
+        _surface = Marshal.PtrToStructure<SDL_Surface>(_surfacePtr);
 
-        SDL_SetColorKey(_surface.pixels, (int)SDL_bool.SDL_TRUE /* SDL_SRCCOLORKEY */, 0);
+        SDL_SetColorKey(_surfacePtr, (int)SDL_bool.SDL_TRUE /* SDL_SRCCOLORKEY */, 0);
 
         _crop.w = 0;
         _crop.h = 0;
@@ -138,7 +139,6 @@ internal class Surface
      */
     unsafe internal Surface(Surface other)
     {
-        nint surfacePtr;
         //if is native SharpXcom aligned surface
         if (other._alignedBuffer != nint.Zero)
         {
@@ -147,21 +147,21 @@ internal class Surface
             int height = other.getHeight();
             int pitch = GetPitch(bpp, width);
             _alignedBuffer = NewAligned(bpp, width, height);
-            surfacePtr = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
-            _surface = Marshal.PtrToStructure<SDL_Surface>(surfacePtr);
-            SDL_SetColorKey(_surface.pixels, (int)SDL_bool.SDL_TRUE /* SDL_SRCCOLORKEY */, 0);
+            _surfacePtr = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
+            _surface = Marshal.PtrToStructure<SDL_Surface>(_surfacePtr);
+            SDL_SetColorKey(_surfacePtr, (int)SDL_bool.SDL_TRUE /* SDL_SRCCOLORKEY */, 0);
             //cant call `setPalette` because its virtual function and it dont work correctly in constructor
             SDL_SetPaletteColors(_surface.pixels, other.getPalette(), 0, 255);
             new Span<byte>((byte*)other._alignedBuffer, height * pitch).CopyTo(new Span<byte>((byte*)_alignedBuffer, height * pitch)); //memcpy(_alignedBuffer, other._alignedBuffer, height * pitch);
         }
         else
         {
-            surfacePtr = SDL_ConvertSurface(other._surface.pixels, other._surface.format, other._surface.flags);
-            _surface = Marshal.PtrToStructure<SDL_Surface>(surfacePtr);
+            _surfacePtr = SDL_ConvertSurface(other._surface.pixels, other._surface.format, other._surface.flags);
+            _surface = Marshal.PtrToStructure<SDL_Surface>(_surfacePtr);
             _alignedBuffer = 0;
         }
 
-        if (surfacePtr == nint.Zero)
+        if (_surfacePtr == nint.Zero)
         {
             throw new Exception(SDL_GetError());
         }
@@ -341,7 +341,7 @@ internal class Surface
      */
     internal void blitNShade(Surface surface, int x, int y, int off, bool half = false, int newBaseColor = 0)
     {
-        var src = new ShaderMove<byte>(this, x, y);
+        var src = new ShaderMove<nint>(this, x, y);
         if (half)
         {
             var g = src.getDomain();
@@ -436,6 +436,9 @@ internal class Surface
 	 */
     internal SDL_Surface getSurface() =>
         _surface;
+
+    internal nint getSurfacePtr() =>
+        _surfacePtr;
 
     /**
      * Draws the graphic that the surface contains before it
@@ -636,23 +639,23 @@ internal class Surface
         var bpp = getFormat(_surface).BitsPerPixel;
         int pitch = GetPitch(bpp, width);
         nint alignedBuffer = NewAligned(bpp, width, height);
-        nint surface = SDL_CreateRGBSurfaceFrom(alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
+        nint surfacePtr = SDL_CreateRGBSurfaceFrom(alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
 
-        if (surface == nint.Zero)
+        if (surfacePtr == nint.Zero)
         {
             throw new Exception(SDL_GetError());
         }
 
         // Copy old contents
-        SDL_SetColorKey(surface, (int)SDL_bool.SDL_TRUE, 0);
-        SDL_SetPaletteColors(surface, getPalette(), 0, 256);
-        SDL_BlitSurface(_surface.pixels, nint.Zero, surface, nint.Zero);
+        SDL_SetColorKey(surfacePtr, (int)SDL_bool.SDL_TRUE, 0);
+        SDL_SetPaletteColors(surfacePtr, getPalette(), 0, 256);
+        SDL_BlitSurface(_surfacePtr, nint.Zero, surfacePtr, nint.Zero);
 
         // Delete old surface
         DeleteAligned(_alignedBuffer);
-        SDL_FreeSurface(_surface.pixels);
+        SDL_FreeSurface(_surfacePtr);
         _alignedBuffer = alignedBuffer;
-        _surface.pixels = surface;
+        _surfacePtr = surfacePtr;
 
         _clear.w = getWidth();
         _clear.h = getHeight();

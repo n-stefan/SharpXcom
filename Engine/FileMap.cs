@@ -25,7 +25,7 @@ namespace SharpXcom.Engine;
  */
 internal class FileMap
 {
-    static Dictionary<string, string> _resources;
+    static Dictionary<string, string> _resources = [];
     static Dictionary<string, HashSet<string>> _vdirs;
     static HashSet<string> _emptySet;
     static List<KeyValuePair<string, List<string>>> _rulesets;

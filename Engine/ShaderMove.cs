@@ -79,7 +79,7 @@ partial class Shader
 	 * @param s standard 8bit SharpXcom surface
 	 * @return
 	 */
-    internal static ShaderMove<byte> ShaderSurface(Surface s) =>
+    internal static ShaderMove<nint> ShaderSurface(Surface s) =>
         new(s);
 
     /**

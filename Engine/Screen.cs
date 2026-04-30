@@ -167,16 +167,15 @@ internal class Screen
 
         makeVideoFlags();
 
-        var bpp = Surface.getFormat(_surface.getSurface()).BitsPerPixel;
-        if (_surface == null || (bpp != _bpp ||
+        if (_surface == null || (Surface.getFormat(_surface.getSurface()).BitsPerPixel != _bpp ||
             _surface.getSurface().w != _baseWidth ||
             _surface.getSurface().h != _baseHeight)) // don't reallocate _surface if not necessary, it's a waste of CPU cycles
         {
             if (_surface != null) _surface = null;
             _surface = new Surface(_baseWidth, _baseHeight, 0, 0, use32bitScaler() ? 32 : 8); // only HQX/XBRZ needs 32bpp for this surface; the OpenGL class has its own 32bpp buffer
-            if (bpp == 8) _surface.setPalette(deferredPalette);
+            if (Surface.getFormat(_surface.getSurface()).BitsPerPixel == 8) _surface.setPalette(deferredPalette);
         }
-        SDL_SetColorKey(_surface.getSurface().pixels, 0, 0); // turn off color key!
+        SDL_SetColorKey(_surface.getSurfacePtr(), 0, 0); // turn off color key!
 
         if (resetVideo || getBitsPerPixel() != _bpp)
         {

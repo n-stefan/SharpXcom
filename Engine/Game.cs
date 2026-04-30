@@ -89,9 +89,6 @@ internal class Game
         // Set the window icon
         CrossPlatform.setWindowIcon(/* IDI_ICON1, */ FileMap.getFilePath("sharpxcom.png"));
 
-        // Set the window caption
-        SDL_SetWindowTitle(nint.Zero, title); //SDL_WM_SetCaption(title, 0);
-
         // Set up unicode
         //SDL_EnableUNICODE(1);
         Unicode.getUtf8Locale();
@@ -99,12 +96,15 @@ internal class Game
         // Create display
         _screen = new Screen();
 
+        // Set the window caption
+        SDL_SetWindowTitle(_screen.getWindow(), title); //SDL_WM_SetCaption(title, 0);
+
         // Create cursor
         _cursor = new Interface.Cursor(9, 13);
 
         // Create invisible hardware cursor to workaround bug with absolute positioning pointing devices
         SDL_ShowCursor(SDL_ENABLE);
-        nint cursor = 0;
+        nint cursor = Marshal.AllocHGlobal(1);
         SDL_SetCursor(SDL_CreateCursor(cursor, cursor, 1, 1, 0, 0));
 
         // Create fps counter

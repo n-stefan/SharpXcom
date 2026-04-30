@@ -106,16 +106,16 @@ internal class Options
     internal static bool mute, reload, newOpenGL, newScaleFilter, newHQXFilter, newXBRZFilter, newRootWindowedMode, newFullscreen, newAllowResize, newBorderless;
     internal static int newDisplayWidth, newDisplayHeight, newBattlescapeScale, newGeoscapeScale, newWindowedModePositionX, newWindowedModePositionY;
     internal static string newOpenGLShader;
-    internal static List<KeyValuePair<string, bool>> mods; // ordered list of available mods (lowest priority to highest) and whether they are active
+    internal static List<KeyValuePair<string, bool>> mods = []; // ordered list of available mods (lowest priority to highest) and whether they are active
     internal static SoundFormat currentSound;
 
     static string _masterMod;
     static string _dataFolder;
-    static List<string> _dataList;
+    static List<string> _dataList = [];
     static string _userFolder;
     static string _configFolder;
-    static Dictionary<string, string> _commandLine;
-    static List<OptionInfo> _info;
+    static Dictionary<string, string> _commandLine = [];
+    static List<OptionInfo> _info = [];
     static Dictionary<string, ModInfo> _modInfos;
 
     /**

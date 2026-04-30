@@ -19,7 +19,7 @@
 
 namespace SharpXcom.Geoscape;
 
-internal struct Cord : IAdditionOperators<Cord, Cord, Cord>
+internal struct Cord
 {
     internal double x, y, z;
 

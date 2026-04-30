@@ -24,14 +24,12 @@ interface IColorFunc<DestType, Src0Type, Src1Type, Src2Type, Src3Type>
     void func(ref DestType destType, Src0Type src0Type, Src1Type src1Type, Src2Type src2Type, Src3Type src3Type);
 }
 
-interface IShaderParam { }
-
 /**
  * This is surface argument to `ShaderDraw`.
  * every pixel of this surface will have type `Pixel`.
  * Modify pixels of this surface, that will modifying original data.
  */
-class ShaderBase<TPixel> : IShaderParam
+class ShaderBase<TPixel>
 {
     protected TPixel _origin;
     protected GraphSubset _range_base;
@@ -103,9 +101,9 @@ class ShaderBase<TPixel> : IShaderParam
  * This is scalar argument to `ShaderDraw`.
  * when used in `ShaderDraw` return value of `t` to `ColorFunc::func` for every pixel
  */
-class Scalar<T> : IShaderParam
+class Scalar<T>
 {
-    T @ref;
+    internal T @ref;
 
     internal Scalar(T t) =>
         @ref = t;
@@ -115,23 +113,82 @@ class Scalar<T> : IShaderParam
  * This is empty argument to `ShaderDraw`.
  * when used in `ShaderDraw` return always 0 to `ColorFunc::func` for every pixel
  */
-class Nothing : IShaderParam { }
+class Nothing { }
 
-class controller_base<T, TPixel>
-    where T : ShaderBase<TPixel>
-    where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
+abstract class BaseController
 {
-    TPixel data;
-    TPixel ptr_pos_y;
-    TPixel ptr_pos_x;
+    //cant use this function
+    internal virtual GraphSubset get_range() => throw new NotImplementedException();
+ 
+	internal virtual void mod_range(ref GraphSubset _) { }
+
+	internal virtual void set_range(GraphSubset _) { }
+
+	internal virtual void mod_y(int _, int __) { }
+
+	internal virtual void set_y(int _, int __) { }
+
+	internal virtual void inc_y() { }
+
+	internal virtual void mod_x(int _, int __) { }
+
+	internal virtual void set_x(int _, int __) { }
+
+	internal virtual void inc_x() { }
+
+    internal virtual ref object get_ref() => throw new NotImplementedException();
+
+    internal static BaseController Create<T>(T type) =>
+        type switch
+        {
+            Nothing => new NothingController(),
+            //Scalar<byte> sb => new ScalarController<byte>(sb),
+            Scalar<int> si => new ScalarController<int>(si),
+            //Scalar<nint> sn => new ScalarController<nint>(sn),
+            //Scalar<double> sd => new ScalarController<double>(sd),
+            //Scalar<float> sf => new ScalarController<float>(sf),
+            //ShaderBase<byte> sbb => new ShaderBaseController<byte>(sbb),
+            //ShaderBase<int> sbi => new ShaderBaseController<int>(sbi),
+            ShaderBase<nint> sbn => new ShaderBaseController<nint>(sbn),
+            //ShaderBase<double> sbd => new ShaderBaseController<double>(sbd),
+            //ShaderBase<float> sbf => new ShaderBaseController<float>(sbf),
+            _ => throw new NotImplementedException()
+        };
+}
+
+/// implementation for not used arg
+class NothingController : BaseController
+{
+	int i;
+
+    internal NothingController() => i = 0;
+
+    internal new ref int get_ref() => ref i;
+}
+
+/// implementation for scalars types aka `int`, `double`, `float`
+class ScalarController<T> : BaseController
+{
+	T @ref;
+
+    internal ScalarController(Scalar<T> s) => @ref = s.@ref;
+
+    internal new ref T get_ref() => ref @ref;
+}
+
+class ShaderBaseController<T> : BaseController
+{
+    T data;
+    T ptr_pos_y;
+    T ptr_pos_x;
     GraphSubset range;
     int start_x;
     int start_y;
     KeyValuePair<int, int> step;
 
-    protected controller_base(TPixel @base, GraphSubset d, GraphSubset r, KeyValuePair<int, int> s)
+    ShaderBaseController(T @base, GraphSubset d, GraphSubset r, KeyValuePair<int, int> s)
     {
-        data = @base + (TPixel)(object)(d.beg_x * s.Key) + (TPixel)(object)(d.beg_y * s.Value);
+        data = Add(@base, (d.beg_x * s.Key) + (d.beg_y * s.Value));
         ptr_pos_y = default;
         ptr_pos_x = default;
         range = r;
@@ -140,44 +197,50 @@ class controller_base<T, TPixel>
         step = s;
     }
 
-    internal GraphSubset get_range() =>
+    internal ShaderBaseController(ShaderBase<T> f) : this(f.ptr(), f.getDomain(), f.getImage(), KeyValuePair.Create(1, f.pitch())) { }
+
+    internal override GraphSubset get_range() =>
         range;
 
-    internal void mod_range(ref GraphSubset r) =>
+    internal override void mod_range(ref GraphSubset r) =>
         r = GraphSubset.intersection(range, r);
 
-    internal void set_range(GraphSubset r)
+    internal override void set_range(GraphSubset r)
     {
         start_x = r.beg_x - range.beg_x;
         start_y = r.beg_y - range.beg_y;
         range = r;
     }
 
-    internal void mod_y(int _, int __) =>
-        ptr_pos_y = data + (TPixel)(object)(step.Key * start_x) + (TPixel)(object)(step.Value * start_y);
+    internal override void mod_y(int _, int __) =>
+        ptr_pos_y = Add(data, (step.Key * start_x) + (step.Value * start_y));
 
-    internal void set_y(int begin, int _) =>
-        ptr_pos_y += (TPixel)(object)(step.Value * begin);
+    internal override void set_y(int begin, int _) =>
+        ptr_pos_y = Add(ptr_pos_y, (step.Value * begin));
 
-    internal void inc_y() =>
-        ptr_pos_y += (TPixel)(object)step.Value;
+    internal override void inc_y() =>
+        ptr_pos_y = Add(ptr_pos_y, step.Value);
 
-    internal void mod_x(int _, int __) =>
+    internal override void mod_x(int _, int __) =>
         ptr_pos_x = ptr_pos_y;
 
-    internal void set_x(int begin, int _) =>
-        ptr_pos_x += (TPixel)(object)(step.Key * begin);
+    internal override void set_x(int begin, int _) =>
+        ptr_pos_x = Add(ptr_pos_x, (step.Key * begin));
 
-    internal void inc_x() =>
-        ptr_pos_x += (TPixel)(object)step.Key;
+    internal override void inc_x() =>
+        ptr_pos_x = Add(ptr_pos_x, step.Key);
 
-    internal ref TPixel get_ref() =>
+    internal new ref T get_ref() =>
         ref ptr_pos_x;
-}
 
-class controller<T, TPixel> : controller_base<T, TPixel>
-    where T : ShaderBase<TPixel>
-    where TPixel : IAdditionOperators<TPixel, TPixel, TPixel>
-{
-    internal controller(ShaderBase<TPixel> f) : base(f.ptr(), f.getDomain(), f.getImage(), KeyValuePair.Create(1, f.pitch())) { }
+    T Add(T lhs, int rhs) =>
+        lhs switch
+        {
+            //byte b => (T)(object)(b + rhs),
+            //int i => (T)(object)(i + rhs),
+            nint n => (T)(object)(n + rhs),
+            //double d => (T)(object)(d + rhs),
+            //float f => (T)(object)(f + rhs),
+            _ => throw new NotImplementedException()
+        };
 }

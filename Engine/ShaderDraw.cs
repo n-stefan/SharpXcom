@@ -36,19 +36,15 @@ internal partial class Shader
 	 * @param src2_frame surface or scalar
 	 * @param src3_frame surface or scalar
 	 */
-    internal static void ShaderDraw<DestType, Src0Type, Src1Type, Src2Type, Src3Type>(IColorFunc<DestType, Src0Type, Src1Type, Src2Type, Src3Type> colorFunc, IShaderParam dest_frame, IShaderParam src0_frame, IShaderParam src1_frame, IShaderParam src2_frame, IShaderParam src3_frame)
-        where DestType : IAdditionOperators<DestType, DestType, DestType>
-        where Src0Type : IAdditionOperators<Src0Type, Src0Type, Src0Type>
-        where Src1Type : IAdditionOperators<Src1Type, Src1Type, Src1Type>
-        where Src2Type : IAdditionOperators<Src2Type, Src2Type, Src2Type>
-        where Src3Type : IAdditionOperators<Src3Type, Src3Type, Src3Type>
+    internal static void ShaderDraw<T1, T2, T3, T4, T5, DestType, Src0Type, Src1Type, Src2Type, Src3Type>(
+        IColorFunc<T1, T2, T3, T4, T5> colorFunc, DestType dest_frame, Src0Type src0_frame, Src1Type src1_frame, Src2Type src2_frame, Src3Type src3_frame)
     {
-        //creating helper objects
-        var dest = new controller<ShaderBase<DestType>, DestType>((ShaderBase<DestType>)dest_frame);
-        var src0 = new controller<ShaderBase<Src0Type>, Src0Type>((ShaderBase<Src0Type>)src0_frame);
-        var src1 = new controller<ShaderBase<Src1Type>, Src1Type>((ShaderBase<Src1Type>)src1_frame);
-        var src2 = new controller<ShaderBase<Src2Type>, Src2Type>((ShaderBase<Src2Type>)src2_frame);
-        var src3 = new controller<ShaderBase<Src3Type>, Src3Type>((ShaderBase<Src3Type>)src3_frame);
+	    //creating helper objects
+        var dest = BaseController.Create<DestType>(dest_frame);
+        var src0 = BaseController.Create<Src0Type>(src0_frame);
+        var src1 = BaseController.Create<Src1Type>(src1_frame);
+        var src2 = BaseController.Create<Src2Type>(src2_frame);
+        var src3 = BaseController.Create<Src3Type>(src3_frame);
 
         //get basic draw range in 2d space
         GraphSubset end_temp = dest.get_range();
@@ -105,39 +101,37 @@ internal partial class Shader
             src3.set_x(begin_x, end_x);
 
             //iteration on x-axis
+            //TODO: without Reflection
+            Type destType = dest.GetType(), src0Type = src0.GetType(), src1Type = src1.GetType(), src2Type = src2.GetType(), src3Type = src3.GetType();
+            var flags = BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic;
             for (int x = end_x - begin_x; x > 0; --x, dest.inc_x(), src0.inc_x(), src1.inc_x(), src2.inc_x(), src3.inc_x())
             {
-                colorFunc.func(ref dest.get_ref(), src0.get_ref(), src1.get_ref(), src2.get_ref(), src3.get_ref());
+                var result = (T1)destType.InvokeMember("get_ref", flags, null, dest, null);
+                colorFunc.func(ref result,
+                    (T2)src0Type.InvokeMember("get_ref", flags, null, src0, null),
+                    (T3)src1Type.InvokeMember("get_ref", flags, null, src1, null),
+                    (T4)src2Type.InvokeMember("get_ref", flags, null, src2, null),
+                    (T5)src3Type.InvokeMember("get_ref", flags, null, src3, null));
             }
         }
     }
 
-    internal static void ShaderDraw<DestType, Src0Type, Src1Type, Src2Type>(IColorFunc<DestType, Src0Type, Src1Type, Src2Type, int> colorFunc, IShaderParam dest_frame, IShaderParam src0_frame, IShaderParam src1_frame, IShaderParam src2_frame)
-        where DestType : IAdditionOperators<DestType, DestType, DestType>
-        where Src0Type : IAdditionOperators<Src0Type, Src0Type, Src0Type>
-        where Src1Type : IAdditionOperators<Src1Type, Src1Type, Src1Type>
-        where Src2Type : IAdditionOperators<Src2Type, Src2Type, Src2Type>
+    internal static void ShaderDraw<T1, T2, T3, T4, T5, DestType, Src0Type, Src1Type, Src2Type>(IColorFunc<T1, T2, T3, T4, T5> colorFunc, DestType dest_frame, Src0Type src0_frame, Src1Type src1_frame, Src2Type src2_frame)
     {
         ShaderDraw(colorFunc, dest_frame, src0_frame, src1_frame, src2_frame, new Nothing());
     }
 
-    internal static void ShaderDraw<DestType, Src0Type, Src1Type>(IColorFunc<DestType, Src0Type, Src1Type, int, int> colorFunc, IShaderParam dest_frame, IShaderParam src0_frame, IShaderParam src1_frame)
-        where DestType : IAdditionOperators<DestType, DestType, DestType>
-        where Src0Type : IAdditionOperators<Src0Type, Src0Type, Src0Type>
-        where Src1Type : IAdditionOperators<Src1Type, Src1Type, Src1Type>
+    internal static void ShaderDraw<T1, T2, T3, T4, T5, DestType, Src0Type, Src1Type>(IColorFunc<T1, T2, T3, T4, T5> colorFunc, DestType dest_frame, Src0Type src0_frame, Src1Type src1_frame)
     {
         ShaderDraw(colorFunc, dest_frame, src0_frame, src1_frame, new Nothing(), new Nothing());
     }
 
-    internal static void ShaderDraw<DestType, Src0Type>(IColorFunc<DestType, Src0Type, int, int, int> colorFunc, IShaderParam dest_frame, IShaderParam src0_frame)
-        where DestType : IAdditionOperators<DestType, DestType, DestType>
-        where Src0Type : IAdditionOperators<Src0Type, Src0Type, Src0Type>
+    internal static void ShaderDraw<T1, T2, T3, T4, T5, DestType, Src0Type>(IColorFunc<T1, T2, T3, T4, T5> colorFunc, DestType dest_frame, Src0Type src0_frame)
     {
         ShaderDraw(colorFunc, dest_frame, src0_frame, new Nothing(), new Nothing(), new Nothing());
     }
 
-    internal static void ShaderDraw<DestType>(IColorFunc<DestType, int, int, int, int> colorFunc, IShaderParam dest_frame)
-        where DestType : IAdditionOperators<DestType, DestType, DestType>
+    internal static void ShaderDraw<T1, T2, T3, T4, T5, DestType>(IColorFunc<T1, T2, T3, T4, T5> colorFunc, DestType dest_frame)
     {
         ShaderDraw(colorFunc, dest_frame, new Nothing(), new Nothing(), new Nothing(), new Nothing());
     }
