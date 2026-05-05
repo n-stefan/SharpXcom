@@ -70,7 +70,7 @@ internal class Options
         autosave, allowResize, borderless, debug, debugUi, fpsCounter, newSeedOnLoad, keepAspectRatio, nonSquarePixelRatio,
         cursorInBlackBandsInFullscreen, cursorInBlackBandsInWindow, cursorInBlackBandsInBorderlessWindow, maximizeInfoScreens, musicAlwaysLoop, StereoSound, verboseLogging, soldierDiaries, touchEnabled,
         rootWindowedMode, lazyLoadResources, backgroundMute;
-    internal static string language, useOpenGLShader;
+    internal static string language = string.Empty, useOpenGLShader;
     internal static KeyboardType keyboardMode;
     internal static SaveSort saveOrder;
     internal static MusicFormat preferredMusic;

@@ -33,9 +33,9 @@ struct FontImage
  */
 internal class Font
 {
-    List<FontImage> _images;
+    List<FontImage> _images = [];
     bool _monospace;
-    Dictionary<uint, KeyValuePair<uint, SDL_Rect>> _chars;
+    Dictionary<uint, KeyValuePair<uint, SDL_Rect>> _chars = [];
 
     /**
      * Initializes the font with a blank surface.

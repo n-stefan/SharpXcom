@@ -75,7 +75,7 @@ internal class State
     {
         if (colors != null)
         {
-            colors.CopyTo(_palette.AsSpan(firstcolor, ncolors)); //memcpy(_palette + firstcolor, colors, ncolors * sizeof(SDL_Color));
+            colors.Slice(0, ncolors).CopyTo(_palette.AsSpan(firstcolor)); //memcpy(_palette + firstcolor, colors, ncolors * sizeof(SDL_Color));
         }
         if (immediately)
         {

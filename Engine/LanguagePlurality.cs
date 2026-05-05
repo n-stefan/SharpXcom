@@ -27,7 +27,11 @@ delegate LanguagePlurality PFCreate();
  */
 internal class LanguagePlurality
 {
-    static Dictionary<string, PFCreate> s_factoryFunctions;
+    /** A mapping of language to plurality rules.
+     * It is populated the first time plurality rules are requested.
+     * @see LanguagePlurality::create
+     */
+    static Dictionary<string, PFCreate> s_factoryFunctions = [];
 
     protected LanguagePlurality() { /* Empty by design. */ }
 

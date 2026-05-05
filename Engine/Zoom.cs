@@ -61,11 +61,11 @@ internal class Zoom
         else
         {
             var tmp = Marshal.PtrToStructure<SDL_Surface>(SDL_CreateRGBSurface(dst.flags, dstWidth, dstHeight, Surface.getFormat(dst).BitsPerPixel, 0, 0, 0, 0));
-            _zoomSurfaceY(src, tmp, 0, 0);
+		    _zoomSurfaceY(src, tmp, 0, 0);
             var palette = Surface.getPalette(src);
-            if (palette.colors != nint.Zero && palette.ncolors != 0)
+            if (palette != null)
             {
-                SDL_SetPaletteColors(tmp.pixels, /* SDL_LOGPAL|SDL_PHYSPAL, */ Marshal.PtrToStructure<SDL_Color[]>(palette.colors), 0, palette.ncolors);
+                SDL_SetPaletteColors(tmp.pixels, /* SDL_LOGPAL|SDL_PHYSPAL, */ palette, 0, palette.Length);
             }
             var dstrect = new SDL_Rect { x = (short)leftBlackBand, y = (short)topBlackBand, w = (ushort)tmp.w, h = (ushort)tmp.h };
             SDL_BlitSurface(tmp.pixels, 0, dst.pixels, ref dstrect);

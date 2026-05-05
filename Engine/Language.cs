@@ -32,8 +32,8 @@ internal class Language
     LanguagePlurality _handler;
     TextDirection _direction;
     TextWrapping _wrap;
-    static Dictionary<string, string> _names;
-    static List<string> _rtl, _cjk;
+    static Dictionary<string, string> _names = [];
+    static List<string> _rtl = [], _cjk = [];
     Dictionary<string, LocalizedText> _strings;
 
     /**

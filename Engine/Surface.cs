@@ -187,7 +187,7 @@ internal class Surface
     ~Surface()
     {
         DeleteAligned(_alignedBuffer);
-        SDL_FreeSurface(_surface.pixels);
+        SDL_FreeSurface(_surfacePtr);
     }
 
     /**
@@ -250,19 +250,20 @@ internal class Surface
 	 * Returns the surface's 8bpp palette.
 	 * @return Pointer to the palette's colors.
 	 */
-    internal SDL_Color[] getPalette()
-    {
-        var format = Marshal.PtrToStructure<SDL_PixelFormat>(_surface.format);
-        var palette = Marshal.PtrToStructure<SDL_Palette>(format.palette);
-        var colors = Marshal.PtrToStructure<SDL_Color[]>(palette.colors);
-        return colors;
-    }
+    internal SDL_Color[] getPalette() =>
+        getPalette(_surface);
 
-    internal static SDL_Palette getPalette(SDL_Surface surface)
+    internal static SDL_Color[] getPalette(SDL_Surface surface)
     {
         var format = Marshal.PtrToStructure<SDL_PixelFormat>(surface.format);
         var palette = Marshal.PtrToStructure<SDL_Palette>(format.palette);
-        return palette;
+        var size = Marshal.SizeOf(typeof(SDL_Color));
+        var colors = new SDL_Color[palette.ncolors];
+        for (var i = 0; i < colors.Length; i++)
+        {
+            colors[i] = Marshal.PtrToStructure<SDL_Color>(nint.Add(palette.colors, i * size));
+        }
+	    return colors;
     }
 
     internal static SDL_PixelFormat getFormat(SDL_Surface surface) =>

@@ -32,22 +32,19 @@ internal class NativeImports
 
     #endregion
 
-    //#region SDL2
+    #region OpenGL
 
-    //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
-    //internal static extern nint SDL_LoadBMP_RW(nint src, int freesrc);
+    [DllImport("opengl32", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void glDeleteProgram(uint program);
 
-    //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
-    //internal static extern void glDeleteProgram(uint program);
+    [DllImport("opengl32", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void glDeleteTextures(int n, ref uint textures);
 
-    //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
-    //internal static extern void glDeleteTextures(int n, ref uint textures);
+    [DllImport("opengl32", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern uint glGetError();
 
-    //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
-    //internal static extern uint glGetError();
+    [DllImport("opengl32", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void glReadPixels(int x, int y, int width, int height, uint format, uint type, nint pixels);
 
-    //[DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
-    //internal static extern void glReadPixels(int x, int y, int width, int height, uint format, uint type, nint pixels);
-
-    //#endregion
+    #endregion
 }
