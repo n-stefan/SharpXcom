@@ -1259,7 +1259,7 @@ internal class BattlescapeState : State
                 if (t.getTUCost((int)TilePart.O_FLOOR, MovementType.MT_FLY) != 255 && t.getTUCost((int)TilePart.O_OBJECT, MovementType.MT_FLY) != 255)
                 {
                     SDL_FillRect(img.pixels, ref r, SDL_MapRGB(img.format, 255, 0, 0x20));
-                    characterRGBA(img.pixels, (short)r.x, (short)r.y, (sbyte)'*', 0x7f, 0x7f, 0x7f, 0x7f);
+                    characterRGBA(img.pixels, (short)r.x, (short)r.y, '*', 0x7f, 0x7f, 0x7f, 0x7f);
                 }
                 else
                 {
@@ -1277,13 +1277,13 @@ internal class BattlescapeState : State
                         {
                             case UnitFaction.FACTION_HOSTILE:
                                 // #4080C0 is Volutar Blue
-                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (sbyte)((tilePos.z - z != 0) ? 'a' : 'A'), 0x40, 0x80, 0xC0, 0xff);
+                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'a' : 'A', 0x40, 0x80, 0xC0, 0xff);
                                 break;
                             case UnitFaction.FACTION_PLAYER:
-                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (sbyte)((tilePos.z - z != 0) ? 'x' : 'X'), 255, 255, 127, 0xff);
+                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'x' : 'X', 255, 255, 127, 0xff);
                                 break;
                             case UnitFaction.FACTION_NEUTRAL:
-                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (sbyte)((tilePos.z - z != 0) ? 'c' : 'C'), 255, 127, 127, 0xff);
+                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'c' : 'C', 255, 127, 127, 0xff);
                                 break;
                         }
                         break;

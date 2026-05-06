@@ -3,32 +3,32 @@ namespace SharpXcom;
 
 internal class NativeImports
 {
-    #region SDL_gfx
+    #region SDL2_gfx
 
-    [DllImport("SDL_gfx")]
-    internal static extern int lineColor(nint dst, short x1, short y1, short x2, short y2, uint color);
+    [DllImport("SDL2_gfx", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int lineColor(nint renderer, short x1, short y1, short x2, short y2, uint color);
 
-    [DllImport("SDL_gfx")]
-    internal static extern int lineRGBA(nint dst, short x1, short y1, short x2, short y2, byte r, byte g, byte b, byte a);
+    [DllImport("SDL2_gfx", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int lineRGBA(nint renderer, short x1, short y1, short x2, short y2, byte r, byte g, byte b, byte a);
 
-    [DllImport("SDL_gfx")]
-    internal static extern int filledCircleColor(nint dst, short x, short y, short r, uint color);
+    [DllImport("SDL2_gfx", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int filledCircleColor(nint renderer, short x, short y, short rad, uint color);
 
-    [DllImport("SDL_gfx")]
-    internal static extern int characterRGBA(nint dst, short x, short y, sbyte c, byte r, byte g, byte b, byte a);
+    [DllImport("SDL2_gfx", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int characterRGBA(nint renderer, short x, short y, char c, byte r, byte g, byte b, byte a);
 
-    [DllImport("SDL_gfx")]
-    internal static extern int stringRGBA(nint dst, short x, short y, string s, byte r, byte g, byte b, byte a);
+    [DllImport("SDL2_gfx", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int stringRGBA(nint renderer, short x, short y, string s, byte r, byte g, byte b, byte a);
 
-    [DllImport("SDL_gfx")]
-    internal static extern int texturedPolygon(nint dst, short[] vx, short[] vy, int n, nint texture, int texture_dx, int texture_dy);
+    [DllImport("SDL2_gfx", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int texturedPolygon(nint renderer, [In] short[] vx, [In] short[] vy, int n, nint texture, int texture_dx, int texture_dy);
 
     #endregion
 
     #region SDL2_mixer
 
     [DllImport("SDL2_mixer", CallingConvention = CallingConvention.Cdecl)]
-    internal static extern nint Mix_LoadMUS_RW(nint src);
+    internal static extern nint Mix_LoadMUS_RW(nint src, int freesrc = 1);
 
     #endregion
 
