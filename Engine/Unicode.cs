@@ -82,11 +82,11 @@ internal class Unicode
 	 */
     internal static string convUtf8ToUtf32(string src)
     {
+        if (string.IsNullOrEmpty(src))
+            return null;
         var bytes = Encoding.UTF8.GetBytes(src);
         return Encoding.UTF32.GetString(bytes);
 
-        //if (string.IsNullOrEmpty(src))
-        //	return null;
         //var @out = new List<uint>(src.Length);
         //uint codepoint = 0;
         //for (var i = 0; i < src.Length; i++)

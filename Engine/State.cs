@@ -37,7 +37,7 @@ internal class State
     protected RuleInterface _ruleInterfaceParent;
     protected SDL_Color[] _palette = new SDL_Color[256];
     protected byte _cursorColor;
-    protected List<Surface> _surfaces;
+    protected List<Surface> _surfaces = [];
 
     /// Sets game object pointer
     internal static void setGamePtr(Game game) =>
@@ -322,7 +322,7 @@ internal class State
         }
         foreach (var i in _surfaces)
         {
-            Window window = (Window)i;
+            Window window = i as Window;
             if (window != null)
             {
                 window.invalidate();

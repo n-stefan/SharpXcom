@@ -47,9 +47,8 @@ internal class Screen
     SDL_Rect _clear;
     int _bpp;
     OpenGL glOutput;
-    /* SDL_Window */
-    nint _window;
-    nint _renderer;
+    /* SDL_Window */ nint _screen;
+    /* SDL_Renderer */ nint _renderer;
     Surface _surface;
 
     /**
@@ -198,13 +197,13 @@ internal class Screen
             }
 
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Attempting to set display to {width}x{height}x{_bpp}...");
-            _window = SDL_CreateWindow(string.Empty, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, _flags);
-            if (_window == nint.Zero)
+            _screen = SDL_CreateWindow(string.Empty, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, _flags);
+            if (_screen == nint.Zero)
             {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {SDL_GetError()}");
                 Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Attempting to set display to default resolution...");
-                _window = SDL_CreateWindow(string.Empty, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 400, _flags);
-                if (_window == nint.Zero)
+                _screen = SDL_CreateWindow(string.Empty, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 400, _flags);
+                if (_screen == nint.Zero)
                 {
                     if ((_flags & SDL_WindowFlags.SDL_WINDOW_OPENGL) != 0)
                     {
@@ -215,7 +214,7 @@ internal class Screen
             }
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Display set to {getWidth()}x{getHeight()}x{(int)getBitsPerPixel()}.");
 
-            _renderer = SDL_CreateRenderer(_window, -1, 0);
+            _renderer = SDL_CreateRenderer(_screen, -1, 0);
         }
         else
         {
@@ -394,8 +393,8 @@ internal class Screen
      */
     internal int getWidth()
     {
-        SDL_GetWindowDisplayMode(_window, out SDL_DisplayMode mode);
-        return mode.w;
+        SDL_GetWindowSizeInPixels(_screen, out int width, out int _);
+        return width;
     }
 
     /**
@@ -404,21 +403,25 @@ internal class Screen
      */
     internal int getHeight()
     {
-        SDL_GetWindowDisplayMode(_window, out SDL_DisplayMode mode);
-        return mode.h;
+        SDL_GetWindowSizeInPixels(_screen, out int _, out int height);
+        return height;
     }
 
     internal byte getBitsPerPixel()
     {
-        SDL_GetWindowDisplayMode(_window, out SDL_DisplayMode mode);
-        return SDL_BITSPERPIXEL(mode.format);
+        var format = SDL_GetWindowPixelFormat(_screen);
+        SDL_PixelFormatEnumToMasks(format, out int bpp, out uint _, out uint _, out uint _, out uint _);
+        return (byte)bpp;
     }
 
-    internal SDL_WindowFlags getFlags() =>
-        _flags;
+    SDL_PixelFormat getFormat()
+    {
+        var surface = Marshal.PtrToStructure<SDL_Surface>(SDL_GetWindowSurface(_screen));
+        return Marshal.PtrToStructure<SDL_PixelFormat>(surface.format);
+    }
 
     internal nint getWindow() =>
-        _window;
+        _screen;
 
     /**
      * Returns the screen's internal buffer surface. Any
@@ -483,10 +486,10 @@ internal class Screen
         _surface.clear();
         if ((_flags & SDL_SWSURFACE) != 0)
         {
-            var span = new Span<uint>((uint*)_window, getHeight() * getWidth());
-            span.Fill(0); //memset(_screen->pixels, 0, _screen->h * _screen->pitch);
+            var surface = Marshal.PtrToStructure<SDL_Surface>(SDL_GetWindowSurface(_screen));
+            NativeMemory.Fill((void*)surface.pixels, (nuint)(surface.h * surface.pitch), 0); //memset(_screen->pixels, 0, _screen->h*_screen->pitch);
         }
-        else SDL_FillRect(_window, ref _clear, 0);
+        else SDL_FillRect(SDL_GetWindowSurface(_screen), ref _clear, 0);
     }
 
     /**
@@ -516,7 +519,7 @@ internal class Screen
         _surface.setPalette(colors, firstcolor, ncolors);
 
         // defer actual update of screen until SDL_Flip()
-        if (immediately && getBitsPerPixel() == 8 && SDL_SetPaletteColors(_window, colors, firstcolor, ncolors) == 0)
+        if (immediately && getBitsPerPixel() == 8 && SDL_SetPaletteColors(getFormat().palette, colors, firstcolor, ncolors) == 0)
         {
             Console.WriteLine($"{Log(SeverityLevel.LOG_DEBUG)} Display palette doesn't match requested palette");
         }
@@ -617,17 +620,17 @@ internal class Screen
     {
         if (getWidth() != _baseWidth || getHeight() != _baseHeight || useOpenGL())
         {
-            Zoom.flipWithZoom(_surface.getSurface(), getSurface().getSurface(), _topBlackBand, _bottomBlackBand, _leftBlackBand, _rightBlackBand, glOutput);
+            Zoom.flipWithZoom(_surface.getSurface(), Marshal.PtrToStructure<SDL_Surface>(SDL_GetWindowSurface(_screen)), _topBlackBand, _bottomBlackBand, _leftBlackBand, _rightBlackBand, glOutput);
         }
         else
         {
-            SDL_BlitSurface(_surface.getSurface().pixels, nint.Zero, _window, nint.Zero);
+            SDL_BlitSurface(_surface.getSurfacePtr(), nint.Zero, SDL_GetWindowSurface(_screen), nint.Zero);
         }
 
         // perform any requested palette update
         if (_pushPalette && _numColors != 0 && getBitsPerPixel() == 8)
         {
-            if (getBitsPerPixel() == 8 && SDL_SetPaletteColors(_window, deferredPalette[_firstColor..], _firstColor, _numColors) == 0)
+            if (getBitsPerPixel() == 8 && SDL_SetPaletteColors(getFormat().palette, deferredPalette[_firstColor..], _firstColor, _numColors) == 0)
             {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_DEBUG)} Display palette doesn't match requested palette");
             }
@@ -661,7 +664,7 @@ internal class Screen
         }
         else
         {
-            SDL_BlitSurface(_window, nint.Zero, screenshot, nint.Zero);
+            SDL_BlitSurface(SDL_GetWindowSurface(_screen), nint.Zero, screenshot, nint.Zero);
         }
 
         //unsigned error = lodepng::encode(filename, (const unsigned char *)(screenshot->pixels), getWidth() - getWidth()%4, getHeight(), LCT_RGB);

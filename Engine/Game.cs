@@ -41,7 +41,7 @@ internal class Game
     bool _mouseActive;
     uint _timeOfLastFrame;
     int _timeUntilNextFrame;
-    List<State> _states, _deleted;
+    List<State> _states = [], _deleted = [];
     SDL_Event _event;
 
     /**

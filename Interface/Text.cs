@@ -46,7 +46,7 @@ internal class Text : InteractiveSurface
     Font _big, _small, _font, _fontOrig;
     Language _lang;
     string _text;
-    List<int> _lineWidth, _lineHeight;
+    List<int> _lineWidth = [], _lineHeight = [];
     bool _wrap, _invert, _contrast, _indent, _scroll;
     TextHAlign _align;
     TextVAlign _valign;
