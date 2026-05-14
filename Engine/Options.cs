@@ -70,14 +70,21 @@ internal class Options
         autosave, allowResize, borderless, debug, debugUi, fpsCounter, newSeedOnLoad, keepAspectRatio, nonSquarePixelRatio,
         cursorInBlackBandsInFullscreen, cursorInBlackBandsInWindow, cursorInBlackBandsInBorderlessWindow, maximizeInfoScreens, musicAlwaysLoop, StereoSound, verboseLogging, soldierDiaries, touchEnabled,
         rootWindowedMode, lazyLoadResources, backgroundMute;
-    internal static string language = string.Empty, useOpenGLShader;
-    internal static KeyboardType keyboardMode;
-    internal static SaveSort saveOrder;
-    internal static MusicFormat preferredMusic;
-    internal static SoundFormat preferredSound;
-    internal static VideoFormat preferredVideo;
-    internal static SDL_bool /* SDL_GrabMode */ captureMouse;
-    internal static TextWrapping wordwrap;
+    internal static string language, useOpenGLShader;
+    private static int _keyboardMode;
+    internal static KeyboardType keyboardMode => (KeyboardType)_keyboardMode;
+    private static int _saveOrder;
+    internal static SaveSort saveOrder { get => (SaveSort)_saveOrder; set => _saveOrder = (int)value; }
+    private static int _preferredMusic;
+    internal static MusicFormat preferredMusic { get => (MusicFormat)_preferredMusic; set => _preferredMusic = (int)value; }
+    private static int _preferredSound;
+    internal static SoundFormat preferredSound { get => (SoundFormat)_preferredSound; set => _preferredSound = (int)value; }
+    private static int _preferredVideo;
+    internal static VideoFormat preferredVideo { get => (VideoFormat)_preferredVideo; set => _preferredVideo = (int)value; }
+    private static bool _captureMouse;
+    internal static SDL_bool /* SDL_GrabMode */ captureMouse { get => _captureMouse ? SDL_bool.SDL_TRUE : SDL_bool.SDL_FALSE; set => _captureMouse = value == SDL_bool.SDL_TRUE; }
+    private static int _wordwrap;
+    internal static TextWrapping wordwrap => (TextWrapping)_wordwrap;
     internal static SDL_Keycode keyOk, keyCancel, keyScreenshot, keyFps, keyQuickLoad, keyQuickSave;
 
     // Geoscape options
@@ -90,8 +97,10 @@ internal class Options
         keyBaseSelect1, keyBaseSelect2, keyBaseSelect3, keyBaseSelect4, keyBaseSelect5, keyBaseSelect6, keyBaseSelect7, keyBaseSelect8;
 
     // Battlescape options
-    internal static ScrollType battleEdgeScroll;
-    internal static PathPreview battleNewPreviewPath;
+    private static int _battleEdgeScroll;
+    internal static ScrollType battleEdgeScroll { get => (ScrollType)_battleEdgeScroll; set => _battleEdgeScroll = (int)value; }
+    private static int _battleNewPreviewPath;
+    internal static PathPreview battleNewPreviewPath { get => (PathPreview)_battleNewPreviewPath; set => _battleNewPreviewPath = (int)value; }
     internal static int battleScrollSpeed, battleDragScrollButton, battleFireSpeed, battleXcomSpeed, battleAlienSpeed, battleExplosionHeight, battlescapeScale;
     internal static bool traceAI, sneakyAI, battleInstantGrenade, battleNotifyDeath, battleTooltips, battleHairBleach, battleAutoEnd,
         strafe, forceFire, showMoreStatsInInventoryView, allowPsionicCapture, skipNextTurnScreen, disableAutoEquip, battleDragScrollInvert,
@@ -239,9 +248,9 @@ internal class Options
      */
     internal static void resetDefault(bool includeMods)
     {
-        foreach (var item in _info)
+        for (var i = 0; i < _info.Count; i++)
         {
-            item.reset();
+            _info[i].reset();
         }
         backupDisplay();
 
@@ -480,211 +489,211 @@ internal class Options
      */
     static void create()
     {
-        _info.Add(new OptionInfo("displayWidth", displayWidth, Screen.ORIGINAL_WIDTH * 2));
-        _info.Add(new OptionInfo("displayHeight", displayHeight, Screen.ORIGINAL_HEIGHT * 2));
-        _info.Add(new OptionInfo("fullscreen", fullscreen, false));
-        _info.Add(new OptionInfo("asyncBlit", asyncBlit, true));
-        _info.Add(new OptionInfo("keyboardMode", (int)keyboardMode, (int)KeyboardType.KEYBOARD_ON));
+        _info.Add(new OptionInfo("displayWidth", ref displayWidth, Screen.ORIGINAL_WIDTH * 2));
+        _info.Add(new OptionInfo("displayHeight", ref displayHeight, Screen.ORIGINAL_HEIGHT * 2));
+        _info.Add(new OptionInfo("fullscreen", ref fullscreen, false));
+        _info.Add(new OptionInfo("asyncBlit", ref asyncBlit, true));
+        _info.Add(new OptionInfo("keyboardMode", ref _keyboardMode, (int)KeyboardType.KEYBOARD_ON));
 
-        _info.Add(new OptionInfo("maxFrameSkip", maxFrameSkip, 0));
-        _info.Add(new OptionInfo("traceAI", traceAI, false));
-        _info.Add(new OptionInfo("verboseLogging", verboseLogging, false));
-        _info.Add(new OptionInfo("StereoSound", StereoSound, true));
+        _info.Add(new OptionInfo("maxFrameSkip", ref maxFrameSkip, 0));
+        _info.Add(new OptionInfo("traceAI", ref traceAI, false));
+        _info.Add(new OptionInfo("verboseLogging", ref verboseLogging, false));
+        _info.Add(new OptionInfo("StereoSound", ref StereoSound, true));
         //_info.Add(new OptionInfo("baseXResolution", baseXResolution, Screen.ORIGINAL_WIDTH));
         //_info.Add(new OptionInfo("baseYResolution", baseYResolution, Screen.ORIGINAL_HEIGHT));
         //_info.Add(new OptionInfo("baseXGeoscape", baseXGeoscape, Screen.ORIGINAL_WIDTH));
         //_info.Add(new OptionInfo("baseYGeoscape", baseYGeoscape, Screen.ORIGINAL_HEIGHT));
         //_info.Add(new OptionInfo("baseXBattlescape", baseXBattlescape, Screen.ORIGINAL_WIDTH));
         //_info.Add(new OptionInfo("baseYBattlescape", baseYBattlescape, Screen.ORIGINAL_HEIGHT));
-        _info.Add(new OptionInfo("geoscapeScale", geoscapeScale, 0));
-        _info.Add(new OptionInfo("battlescapeScale", battlescapeScale, 0));
-        _info.Add(new OptionInfo("useScaleFilter", useScaleFilter, false));
-        _info.Add(new OptionInfo("useHQXFilter", useHQXFilter, false));
-        _info.Add(new OptionInfo("useXBRZFilter", useXBRZFilter, false));
-        _info.Add(new OptionInfo("useOpenGL", useOpenGL, false));
-        _info.Add(new OptionInfo("checkOpenGLErrors", checkOpenGLErrors, false));
-        _info.Add(new OptionInfo("useOpenGLShader", useOpenGLShader, "Shaders/Raw.OpenGL.shader"));
-        _info.Add(new OptionInfo("vSyncForOpenGL", vSyncForOpenGL, true));
-        _info.Add(new OptionInfo("useOpenGLSmoothing", useOpenGLSmoothing, true));
-        _info.Add(new OptionInfo("debug", debug, false));
-        _info.Add(new OptionInfo("debugUi", debugUi, false));
-        _info.Add(new OptionInfo("soundVolume", soundVolume, 2 * (MIX_MAX_VOLUME / 3)));
-        _info.Add(new OptionInfo("musicVolume", musicVolume, 2 * (MIX_MAX_VOLUME / 3)));
-        _info.Add(new OptionInfo("uiVolume", uiVolume, MIX_MAX_VOLUME / 3));
-        _info.Add(new OptionInfo("language", language, string.Empty));
-        _info.Add(new OptionInfo("battleScrollSpeed", battleScrollSpeed, 8));
-        _info.Add(new OptionInfo("battleEdgeScroll", (int)battleEdgeScroll, (int)ScrollType.SCROLL_AUTO));
-        _info.Add(new OptionInfo("battleDragScrollButton", battleDragScrollButton, (int)SDL_BUTTON_MIDDLE));
-        _info.Add(new OptionInfo("dragScrollTimeTolerance", dragScrollTimeTolerance, 300)); // miliSecond
-        _info.Add(new OptionInfo("dragScrollPixelTolerance", dragScrollPixelTolerance, 10)); // count of pixels
-        _info.Add(new OptionInfo("battleFireSpeed", battleFireSpeed, 6));
-        _info.Add(new OptionInfo("battleXcomSpeed", battleXcomSpeed, 30));
-        _info.Add(new OptionInfo("battleAlienSpeed", battleAlienSpeed, 30));
-        _info.Add(new OptionInfo("battleNewPreviewPath", (int)battleNewPreviewPath, (int)PathPreview.PATH_NONE)); // requires double-click to confirm moves
-        _info.Add(new OptionInfo("fpsCounter", fpsCounter, false));
-        _info.Add(new OptionInfo("globeDetail", globeDetail, true));
-        _info.Add(new OptionInfo("globeRadarLines", globeRadarLines, true));
-        _info.Add(new OptionInfo("globeFlightPaths", globeFlightPaths, true));
-        _info.Add(new OptionInfo("globeAllRadarsOnBaseBuild", globeAllRadarsOnBaseBuild, true));
-        _info.Add(new OptionInfo("audioSampleRate", audioSampleRate, 22050));
-        _info.Add(new OptionInfo("audioBitDepth", audioBitDepth, 16));
-        _info.Add(new OptionInfo("audioChunkSize", audioChunkSize, 1024));
-        _info.Add(new OptionInfo("pauseMode", pauseMode, 0));
-        _info.Add(new OptionInfo("battleNotifyDeath", battleNotifyDeath, false));
-        _info.Add(new OptionInfo("showFundsOnGeoscape", showFundsOnGeoscape, false));
-        _info.Add(new OptionInfo("allowResize", allowResize, false));
-        _info.Add(new OptionInfo("windowedModePositionX", windowedModePositionX, 0));
-        _info.Add(new OptionInfo("windowedModePositionY", windowedModePositionY, 0));
-        _info.Add(new OptionInfo("borderless", borderless, false));
-        _info.Add(new OptionInfo("captureMouse", captureMouse == SDL_bool.SDL_TRUE, false));
-        _info.Add(new OptionInfo("battleTooltips", battleTooltips, true));
-        _info.Add(new OptionInfo("keepAspectRatio", keepAspectRatio, true));
-        _info.Add(new OptionInfo("nonSquarePixelRatio", nonSquarePixelRatio, false));
-        _info.Add(new OptionInfo("cursorInBlackBandsInFullscreen", cursorInBlackBandsInFullscreen, false));
-        _info.Add(new OptionInfo("cursorInBlackBandsInWindow", cursorInBlackBandsInWindow, true));
-        _info.Add(new OptionInfo("cursorInBlackBandsInBorderlessWindow", cursorInBlackBandsInBorderlessWindow, false));
-        _info.Add(new OptionInfo("saveOrder", (int)saveOrder, (int)SaveSort.SORT_DATE_DESC));
-        _info.Add(new OptionInfo("geoClockSpeed", geoClockSpeed, 80));
-        _info.Add(new OptionInfo("dogfightSpeed", dogfightSpeed, 30));
-        _info.Add(new OptionInfo("geoScrollSpeed", geoScrollSpeed, 20));
-        _info.Add(new OptionInfo("geoDragScrollButton", geoDragScrollButton, (int)SDL_BUTTON_MIDDLE));
-        _info.Add(new OptionInfo("preferredMusic", (int)preferredMusic, (int)MusicFormat.MUSIC_AUTO));
-        _info.Add(new OptionInfo("preferredSound", (int)preferredSound, (int)SoundFormat.SOUND_AUTO));
-        _info.Add(new OptionInfo("preferredVideo", (int)preferredVideo, (int)VideoFormat.VIDEO_FMV));
-        _info.Add(new OptionInfo("wordwrap", (int)wordwrap, (int)TextWrapping.WRAP_AUTO));
-        _info.Add(new OptionInfo("musicAlwaysLoop", musicAlwaysLoop, false));
-        _info.Add(new OptionInfo("touchEnabled", touchEnabled, false));
-        _info.Add(new OptionInfo("rootWindowedMode", rootWindowedMode, false));
-        _info.Add(new OptionInfo("lazyLoadResources", lazyLoadResources, true));
-        _info.Add(new OptionInfo("backgroundMute", backgroundMute, false));
+        _info.Add(new OptionInfo("geoscapeScale", ref geoscapeScale, 0));
+        _info.Add(new OptionInfo("battlescapeScale", ref battlescapeScale, 0));
+        _info.Add(new OptionInfo("useScaleFilter", ref useScaleFilter, false));
+        _info.Add(new OptionInfo("useHQXFilter", ref useHQXFilter, false));
+        _info.Add(new OptionInfo("useXBRZFilter", ref useXBRZFilter, false));
+        _info.Add(new OptionInfo("useOpenGL", ref useOpenGL, false));
+        _info.Add(new OptionInfo("checkOpenGLErrors", ref checkOpenGLErrors, false));
+        _info.Add(new OptionInfo("useOpenGLShader", ref useOpenGLShader, "Shaders/Raw.OpenGL.shader"));
+        _info.Add(new OptionInfo("vSyncForOpenGL", ref vSyncForOpenGL, true));
+        _info.Add(new OptionInfo("useOpenGLSmoothing", ref useOpenGLSmoothing, true));
+        _info.Add(new OptionInfo("debug", ref debug, false));
+        _info.Add(new OptionInfo("debugUi", ref debugUi, false));
+        _info.Add(new OptionInfo("soundVolume", ref soundVolume, 2 * (MIX_MAX_VOLUME / 3)));
+        _info.Add(new OptionInfo("musicVolume", ref musicVolume, 2 * (MIX_MAX_VOLUME / 3)));
+        _info.Add(new OptionInfo("uiVolume", ref uiVolume, MIX_MAX_VOLUME / 3));
+        _info.Add(new OptionInfo("language", ref language, string.Empty));
+        _info.Add(new OptionInfo("battleScrollSpeed", ref battleScrollSpeed, 8));
+        _info.Add(new OptionInfo("battleEdgeScroll", ref _battleEdgeScroll, (int)ScrollType.SCROLL_AUTO));
+        _info.Add(new OptionInfo("battleDragScrollButton", ref battleDragScrollButton, (int)SDL_BUTTON_MIDDLE));
+        _info.Add(new OptionInfo("dragScrollTimeTolerance", ref dragScrollTimeTolerance, 300)); // miliSecond
+        _info.Add(new OptionInfo("dragScrollPixelTolerance", ref dragScrollPixelTolerance, 10)); // count of pixels
+        _info.Add(new OptionInfo("battleFireSpeed", ref battleFireSpeed, 6));
+        _info.Add(new OptionInfo("battleXcomSpeed", ref battleXcomSpeed, 30));
+        _info.Add(new OptionInfo("battleAlienSpeed", ref battleAlienSpeed, 30));
+        _info.Add(new OptionInfo("battleNewPreviewPath", ref _battleNewPreviewPath, (int)PathPreview.PATH_NONE)); // requires double-click to confirm moves
+        _info.Add(new OptionInfo("fpsCounter", ref fpsCounter, false));
+        _info.Add(new OptionInfo("globeDetail", ref globeDetail, true));
+        _info.Add(new OptionInfo("globeRadarLines", ref globeRadarLines, true));
+        _info.Add(new OptionInfo("globeFlightPaths", ref globeFlightPaths, true));
+        _info.Add(new OptionInfo("globeAllRadarsOnBaseBuild", ref globeAllRadarsOnBaseBuild, true));
+        _info.Add(new OptionInfo("audioSampleRate", ref audioSampleRate, 22050));
+        _info.Add(new OptionInfo("audioBitDepth", ref audioBitDepth, 16));
+        _info.Add(new OptionInfo("audioChunkSize", ref audioChunkSize, 1024));
+        _info.Add(new OptionInfo("pauseMode", ref pauseMode, 0));
+        _info.Add(new OptionInfo("battleNotifyDeath", ref battleNotifyDeath, false));
+        _info.Add(new OptionInfo("showFundsOnGeoscape", ref showFundsOnGeoscape, false));
+        _info.Add(new OptionInfo("allowResize", ref allowResize, false));
+        _info.Add(new OptionInfo("windowedModePositionX", ref windowedModePositionX, 0));
+        _info.Add(new OptionInfo("windowedModePositionY", ref windowedModePositionY, 0));
+        _info.Add(new OptionInfo("borderless", ref borderless, false));
+        _info.Add(new OptionInfo("captureMouse", ref _captureMouse, false));
+        _info.Add(new OptionInfo("battleTooltips", ref battleTooltips, true));
+        _info.Add(new OptionInfo("keepAspectRatio", ref keepAspectRatio, true));
+        _info.Add(new OptionInfo("nonSquarePixelRatio", ref nonSquarePixelRatio, false));
+        _info.Add(new OptionInfo("cursorInBlackBandsInFullscreen", ref cursorInBlackBandsInFullscreen, false));
+        _info.Add(new OptionInfo("cursorInBlackBandsInWindow", ref cursorInBlackBandsInWindow, true));
+        _info.Add(new OptionInfo("cursorInBlackBandsInBorderlessWindow", ref cursorInBlackBandsInBorderlessWindow, false));
+        _info.Add(new OptionInfo("saveOrder", ref _saveOrder, (int)SaveSort.SORT_DATE_DESC));
+        _info.Add(new OptionInfo("geoClockSpeed", ref geoClockSpeed, 80));
+        _info.Add(new OptionInfo("dogfightSpeed", ref dogfightSpeed, 30));
+        _info.Add(new OptionInfo("geoScrollSpeed", ref geoScrollSpeed, 20));
+        _info.Add(new OptionInfo("geoDragScrollButton", ref geoDragScrollButton, (int)SDL_BUTTON_MIDDLE));
+        _info.Add(new OptionInfo("preferredMusic", ref _preferredMusic, (int)MusicFormat.MUSIC_AUTO));
+        _info.Add(new OptionInfo("preferredSound", ref _preferredSound, (int)SoundFormat.SOUND_AUTO));
+        _info.Add(new OptionInfo("preferredVideo", ref _preferredVideo, (int)VideoFormat.VIDEO_FMV));
+        _info.Add(new OptionInfo("wordwrap", ref _wordwrap, (int)TextWrapping.WRAP_AUTO));
+        _info.Add(new OptionInfo("musicAlwaysLoop", ref musicAlwaysLoop, false));
+        _info.Add(new OptionInfo("touchEnabled", ref touchEnabled, false));
+        _info.Add(new OptionInfo("rootWindowedMode", ref rootWindowedMode, false));
+        _info.Add(new OptionInfo("lazyLoadResources", ref lazyLoadResources, true));
+        _info.Add(new OptionInfo("backgroundMute", ref backgroundMute, false));
 
         // advanced options
-        _info.Add(new OptionInfo("playIntro", playIntro, true, "STR_PLAYINTRO", "STR_GENERAL"));
-        _info.Add(new OptionInfo("autosave", autosave, true, "STR_AUTOSAVE", "STR_GENERAL"));
-        _info.Add(new OptionInfo("autosaveFrequency", autosaveFrequency, 5, "STR_AUTOSAVE_FREQUENCY", "STR_GENERAL"));
-        _info.Add(new OptionInfo("newSeedOnLoad", newSeedOnLoad, false, "STR_NEWSEEDONLOAD", "STR_GENERAL"));
-        _info.Add(new OptionInfo("mousewheelSpeed", mousewheelSpeed, 3, "STR_MOUSEWHEEL_SPEED", "STR_GENERAL"));
-        _info.Add(new OptionInfo("changeValueByMouseWheel", changeValueByMouseWheel, 0, "STR_CHANGEVALUEBYMOUSEWHEEL", "STR_GENERAL"));
-        _info.Add(new OptionInfo("soldierDiaries", soldierDiaries, true));
+        _info.Add(new OptionInfo("playIntro", ref playIntro, true, "STR_PLAYINTRO", "STR_GENERAL"));
+        _info.Add(new OptionInfo("autosave", ref autosave, true, "STR_AUTOSAVE", "STR_GENERAL"));
+        _info.Add(new OptionInfo("autosaveFrequency", ref autosaveFrequency, 5, "STR_AUTOSAVE_FREQUENCY", "STR_GENERAL"));
+        _info.Add(new OptionInfo("newSeedOnLoad", ref newSeedOnLoad, false, "STR_NEWSEEDONLOAD", "STR_GENERAL"));
+        _info.Add(new OptionInfo("mousewheelSpeed", ref mousewheelSpeed, 3, "STR_MOUSEWHEEL_SPEED", "STR_GENERAL"));
+        _info.Add(new OptionInfo("changeValueByMouseWheel", ref changeValueByMouseWheel, 0, "STR_CHANGEVALUEBYMOUSEWHEEL", "STR_GENERAL"));
+        _info.Add(new OptionInfo("soldierDiaries", ref soldierDiaries, true));
 
-        _info.Add(new OptionInfo("maximizeInfoScreens", maximizeInfoScreens, false, "STR_MAXIMIZE_INFO_SCREENS", "STR_GENERAL"));
+        _info.Add(new OptionInfo("maximizeInfoScreens", ref maximizeInfoScreens, false, "STR_MAXIMIZE_INFO_SCREENS", "STR_GENERAL"));
 
-        _info.Add(new OptionInfo("geoDragScrollInvert", geoDragScrollInvert, false, "STR_DRAGSCROLLINVERT", "STR_GEOSCAPE")); // true drags away from the cursor, false drags towards (like a grab)
-        _info.Add(new OptionInfo("aggressiveRetaliation", aggressiveRetaliation, false, "STR_AGGRESSIVERETALIATION", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("customInitialBase", customInitialBase, false, "STR_CUSTOMINITIALBASE", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("allowBuildingQueue", allowBuildingQueue, false, "STR_ALLOWBUILDINGQUEUE", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("craftLaunchAlways", craftLaunchAlways, false, "STR_CRAFTLAUNCHALWAYS", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("storageLimitsEnforced", storageLimitsEnforced, false, "STR_STORAGELIMITSENFORCED", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("canSellLiveAliens", canSellLiveAliens, false, "STR_CANSELLLIVEALIENS", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("anytimePsiTraining", anytimePsiTraining, false, "STR_ANYTIMEPSITRAINING", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("globeSeasons", globeSeasons, false, "STR_GLOBESEASONS", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("psiStrengthEval", psiStrengthEval, false, "STR_PSISTRENGTHEVAL", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("canTransferCraftsWhileAirborne", canTransferCraftsWhileAirborne, false, "STR_CANTRANSFERCRAFTSWHILEAIRBORNE", "STR_GEOSCAPE")); // When the craft can reach the destination base with its fuel
-        _info.Add(new OptionInfo("retainCorpses", retainCorpses, false, "STR_RETAINCORPSES", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("fieldPromotions", fieldPromotions, false, "STR_FIELDPROMOTIONS", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("meetingPoint", meetingPoint, false, "STR_MEETINGPOINT", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("geoDragScrollInvert", ref geoDragScrollInvert, false, "STR_DRAGSCROLLINVERT", "STR_GEOSCAPE")); // true drags away from the cursor, false drags towards (like a grab)
+        _info.Add(new OptionInfo("aggressiveRetaliation", ref aggressiveRetaliation, false, "STR_AGGRESSIVERETALIATION", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("customInitialBase", ref customInitialBase, false, "STR_CUSTOMINITIALBASE", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("allowBuildingQueue", ref allowBuildingQueue, false, "STR_ALLOWBUILDINGQUEUE", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("craftLaunchAlways", ref craftLaunchAlways, false, "STR_CRAFTLAUNCHALWAYS", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("storageLimitsEnforced", ref storageLimitsEnforced, false, "STR_STORAGELIMITSENFORCED", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("canSellLiveAliens", ref canSellLiveAliens, false, "STR_CANSELLLIVEALIENS", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("anytimePsiTraining", ref anytimePsiTraining, false, "STR_ANYTIMEPSITRAINING", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("globeSeasons", ref globeSeasons, false, "STR_GLOBESEASONS", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("psiStrengthEval", ref psiStrengthEval, false, "STR_PSISTRENGTHEVAL", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("canTransferCraftsWhileAirborne", ref canTransferCraftsWhileAirborne, false, "STR_CANTRANSFERCRAFTSWHILEAIRBORNE", "STR_GEOSCAPE")); // When the craft can reach the destination base with its fuel
+        _info.Add(new OptionInfo("retainCorpses", ref retainCorpses, false, "STR_RETAINCORPSES", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("fieldPromotions", ref fieldPromotions, false, "STR_FIELDPROMOTIONS", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("meetingPoint", ref meetingPoint, false, "STR_MEETINGPOINT", "STR_GEOSCAPE"));
 
-        _info.Add(new OptionInfo("battleDragScrollInvert", battleDragScrollInvert, false, "STR_DRAGSCROLLINVERT", "STR_BATTLESCAPE")); // true drags away from the cursor, false drags towards (like a grab)
-        _info.Add(new OptionInfo("sneakyAI", sneakyAI, false, "STR_SNEAKYAI", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("battleUFOExtenderAccuracy", battleUFOExtenderAccuracy, false, "STR_BATTLEUFOEXTENDERACCURACY", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("showMoreStatsInInventoryView", showMoreStatsInInventoryView, false, "STR_SHOWMORESTATSININVENTORYVIEW", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("battleHairBleach", battleHairBleach, true, "STR_BATTLEHAIRBLEACH", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("battleInstantGrenade", battleInstantGrenade, false, "STR_BATTLEINSTANTGRENADE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("includePrimeStateInSavedLayout", includePrimeStateInSavedLayout, false, "STR_INCLUDE_PRIMESTATE_IN_SAVED_LAYOUT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("battleExplosionHeight", battleExplosionHeight, 0, "STR_BATTLEEXPLOSIONHEIGHT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("battleAutoEnd", battleAutoEnd, false, "STR_BATTLEAUTOEND", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("battleSmoothCamera", battleSmoothCamera, false, "STR_BATTLESMOOTHCAMERA", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("disableAutoEquip", disableAutoEquip, false, "STR_DISABLEAUTOEQUIP", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("battleConfirmFireMode", battleConfirmFireMode, false, "STR_BATTLECONFIRMFIREMODE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("weaponSelfDestruction", weaponSelfDestruction, false, "STR_WEAPONSELFDESTRUCTION", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("allowPsionicCapture", allowPsionicCapture, false, "STR_ALLOWPSIONICCAPTURE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("allowPsiStrengthImprovement", allowPsiStrengthImprovement, false, "STR_ALLOWPSISTRENGTHIMPROVEMENT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("strafe", strafe, false, "STR_STRAFE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("forceFire", forceFire, true, "STR_FORCE_FIRE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("skipNextTurnScreen", skipNextTurnScreen, false, "STR_SKIPNEXTTURNSCREEN", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("noAlienPanicMessages", noAlienPanicMessages, false, "STR_NOALIENPANICMESSAGES", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("alienBleeding", alienBleeding, false, "STR_ALIENBLEEDING", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("battleDragScrollInvert", ref battleDragScrollInvert, false, "STR_DRAGSCROLLINVERT", "STR_BATTLESCAPE")); // true drags away from the cursor, false drags towards (like a grab)
+        _info.Add(new OptionInfo("sneakyAI", ref sneakyAI, false, "STR_SNEAKYAI", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("battleUFOExtenderAccuracy", ref battleUFOExtenderAccuracy, false, "STR_BATTLEUFOEXTENDERACCURACY", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("showMoreStatsInInventoryView", ref showMoreStatsInInventoryView, false, "STR_SHOWMORESTATSININVENTORYVIEW", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("battleHairBleach", ref battleHairBleach, true, "STR_BATTLEHAIRBLEACH", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("battleInstantGrenade", ref battleInstantGrenade, false, "STR_BATTLEINSTANTGRENADE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("includePrimeStateInSavedLayout", ref includePrimeStateInSavedLayout, false, "STR_INCLUDE_PRIMESTATE_IN_SAVED_LAYOUT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("battleExplosionHeight", ref battleExplosionHeight, 0, "STR_BATTLEEXPLOSIONHEIGHT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("battleAutoEnd", ref battleAutoEnd, false, "STR_BATTLEAUTOEND", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("battleSmoothCamera", ref battleSmoothCamera, false, "STR_BATTLESMOOTHCAMERA", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("disableAutoEquip", ref disableAutoEquip, false, "STR_DISABLEAUTOEQUIP", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("battleConfirmFireMode", ref battleConfirmFireMode, false, "STR_BATTLECONFIRMFIREMODE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("weaponSelfDestruction", ref weaponSelfDestruction, false, "STR_WEAPONSELFDESTRUCTION", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("allowPsionicCapture", ref allowPsionicCapture, false, "STR_ALLOWPSIONICCAPTURE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("allowPsiStrengthImprovement", ref allowPsiStrengthImprovement, false, "STR_ALLOWPSISTRENGTHIMPROVEMENT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("strafe", ref strafe, false, "STR_STRAFE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("forceFire", ref forceFire, true, "STR_FORCE_FIRE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("skipNextTurnScreen", ref skipNextTurnScreen, false, "STR_SKIPNEXTTURNSCREEN", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("noAlienPanicMessages", ref noAlienPanicMessages, false, "STR_NOALIENPANICMESSAGES", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("alienBleeding", ref alienBleeding, false, "STR_ALIENBLEEDING", "STR_BATTLESCAPE"));
 
         // controls
-        _info.Add(new OptionInfo("keyOk", keyOk, SDL_Keycode.SDLK_RETURN, "STR_OK", "STR_GENERAL"));
-        _info.Add(new OptionInfo("keyCancel", keyCancel, SDL_Keycode.SDLK_ESCAPE, "STR_CANCEL", "STR_GENERAL"));
-        _info.Add(new OptionInfo("keyScreenshot", keyScreenshot, SDL_Keycode.SDLK_F12, "STR_SCREENSHOT", "STR_GENERAL"));
-        _info.Add(new OptionInfo("keyFps", keyFps, SDL_Keycode.SDLK_F7, "STR_FPS_COUNTER", "STR_GENERAL"));
-        _info.Add(new OptionInfo("keyQuickSave", keyQuickSave, SDL_Keycode.SDLK_F5, "STR_QUICK_SAVE", "STR_GENERAL"));
-        _info.Add(new OptionInfo("keyQuickLoad", keyQuickLoad, SDL_Keycode.SDLK_F9, "STR_QUICK_LOAD", "STR_GENERAL"));
-        _info.Add(new OptionInfo("keyGeoLeft", keyGeoLeft, SDL_Keycode.SDLK_LEFT, "STR_ROTATE_LEFT", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoRight", keyGeoRight, SDL_Keycode.SDLK_RIGHT, "STR_ROTATE_RIGHT", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoUp", keyGeoUp, SDL_Keycode.SDLK_UP, "STR_ROTATE_UP", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoDown", keyGeoDown, SDL_Keycode.SDLK_DOWN, "STR_ROTATE_DOWN", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoZoomIn", keyGeoZoomIn, SDL_Keycode.SDLK_PLUS, "STR_ZOOM_IN", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoZoomOut", keyGeoZoomOut, SDL_Keycode.SDLK_MINUS, "STR_ZOOM_OUT", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoSpeed1", keyGeoSpeed1, SDL_Keycode.SDLK_1, "STR_5_SECONDS", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoSpeed2", keyGeoSpeed2, SDL_Keycode.SDLK_2, "STR_1_MINUTE", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoSpeed3", keyGeoSpeed3, SDL_Keycode.SDLK_3, "STR_5_MINUTES", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoSpeed4", keyGeoSpeed4, SDL_Keycode.SDLK_4, "STR_30_MINUTES", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoSpeed5", keyGeoSpeed5, SDL_Keycode.SDLK_5, "STR_1_HOUR", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoSpeed6", keyGeoSpeed6, SDL_Keycode.SDLK_6, "STR_1_DAY", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoIntercept", keyGeoIntercept, SDL_Keycode.SDLK_i, "STR_INTERCEPT", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoBases", keyGeoBases, SDL_Keycode.SDLK_b, "STR_BASES", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoGraphs", keyGeoGraphs, SDL_Keycode.SDLK_g, "STR_GRAPHS", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoUfopedia", keyGeoUfopedia, SDL_Keycode.SDLK_u, "STR_UFOPAEDIA_UC", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoOptions", keyGeoOptions, SDL_Keycode.SDLK_ESCAPE, "STR_OPTIONS_UC", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoFunding", keyGeoFunding, SDL_Keycode.SDLK_f, "STR_FUNDING_UC", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoToggleDetail", keyGeoToggleDetail, SDL_Keycode.SDLK_TAB, "STR_TOGGLE_COUNTRY_DETAIL", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoToggleRadar", keyGeoToggleRadar, SDL_Keycode.SDLK_r, "STR_TOGGLE_RADAR_RANGES", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBaseSelect1", keyBaseSelect1, SDL_Keycode.SDLK_1, "STR_SELECT_BASE_1", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBaseSelect2", keyBaseSelect2, SDL_Keycode.SDLK_2, "STR_SELECT_BASE_2", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBaseSelect3", keyBaseSelect3, SDL_Keycode.SDLK_3, "STR_SELECT_BASE_3", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBaseSelect4", keyBaseSelect4, SDL_Keycode.SDLK_4, "STR_SELECT_BASE_4", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBaseSelect5", keyBaseSelect5, SDL_Keycode.SDLK_5, "STR_SELECT_BASE_5", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBaseSelect6", keyBaseSelect6, SDL_Keycode.SDLK_6, "STR_SELECT_BASE_6", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBaseSelect7", keyBaseSelect7, SDL_Keycode.SDLK_7, "STR_SELECT_BASE_7", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBaseSelect8", keyBaseSelect8, SDL_Keycode.SDLK_8, "STR_SELECT_BASE_8", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyBattleLeft", keyBattleLeft, SDL_Keycode.SDLK_LEFT, "STR_SCROLL_LEFT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleRight", keyBattleRight, SDL_Keycode.SDLK_RIGHT, "STR_SCROLL_RIGHT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleUp", keyBattleUp, SDL_Keycode.SDLK_UP, "STR_SCROLL_UP", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleDown", keyBattleDown, SDL_Keycode.SDLK_DOWN, "STR_SCROLL_DOWN", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleLevelUp", keyBattleLevelUp, SDL_Keycode.SDLK_PAGEUP, "STR_VIEW_LEVEL_ABOVE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleLevelDown", keyBattleLevelDown, SDL_Keycode.SDLK_PAGEDOWN, "STR_VIEW_LEVEL_BELOW", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterUnit", keyBattleCenterUnit, SDL_Keycode.SDLK_HOME, "STR_CENTER_SELECTED_UNIT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattlePrevUnit", keyBattlePrevUnit, SDL_Keycode.SDLK_LSHIFT, "STR_PREVIOUS_UNIT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleNextUnit", keyBattleNextUnit, SDL_Keycode.SDLK_TAB, "STR_NEXT_UNIT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleDeselectUnit", keyBattleDeselectUnit, SDL_Keycode.SDLK_BACKSLASH, "STR_DESELECT_UNIT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleUseLeftHand", keyBattleUseLeftHand, SDL_Keycode.SDLK_q, "STR_USE_LEFT_HAND", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleUseRightHand", keyBattleUseRightHand, SDL_Keycode.SDLK_e, "STR_USE_RIGHT_HAND", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleInventory", keyBattleInventory, SDL_Keycode.SDLK_i, "STR_INVENTORY", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleMap", keyBattleMap, SDL_Keycode.SDLK_m, "STR_MINIMAP", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleOptions", keyBattleOptions, SDL_Keycode.SDLK_ESCAPE, "STR_OPTIONS", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleEndTurn", keyBattleEndTurn, SDL_Keycode.SDLK_BACKSPACE, "STR_END_TURN", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleAbort", keyBattleAbort, SDL_Keycode.SDLK_a, "STR_ABORT_MISSION", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleStats", keyBattleStats, SDL_Keycode.SDLK_s, "STR_UNIT_STATS", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleKneel", keyBattleKneel, SDL_Keycode.SDLK_k, "STR_KNEEL", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleReload", keyBattleReload, SDL_Keycode.SDLK_r, "STR_RELOAD", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattlePersonalLighting", keyBattlePersonalLighting, SDL_Keycode.SDLK_l, "STR_TOGGLE_PERSONAL_LIGHTING", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleReserveNone", keyBattleReserveNone, SDL_Keycode.SDLK_F1, "STR_DONT_RESERVE_TIME_UNITS", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleReserveSnap", keyBattleReserveSnap, SDL_Keycode.SDLK_F2, "STR_RESERVE_TIME_UNITS_FOR_SNAP_SHOT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleReserveAimed", keyBattleReserveAimed, SDL_Keycode.SDLK_F3, "STR_RESERVE_TIME_UNITS_FOR_AIMED_SHOT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleReserveAuto", keyBattleReserveAuto, SDL_Keycode.SDLK_F4, "STR_RESERVE_TIME_UNITS_FOR_AUTO_SHOT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleReserveKneel", keyBattleReserveKneel, SDL_Keycode.SDLK_j, "STR_RESERVE_TIME_UNITS_FOR_KNEEL", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleZeroTUs", keyBattleZeroTUs, SDL_Keycode.SDLK_DELETE, "STR_EXPEND_ALL_TIME_UNITS", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy1", keyBattleCenterEnemy1, SDL_Keycode.SDLK_1, "STR_CENTER_ON_ENEMY_1", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy2", keyBattleCenterEnemy2, SDL_Keycode.SDLK_2, "STR_CENTER_ON_ENEMY_2", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy3", keyBattleCenterEnemy3, SDL_Keycode.SDLK_3, "STR_CENTER_ON_ENEMY_3", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy4", keyBattleCenterEnemy4, SDL_Keycode.SDLK_4, "STR_CENTER_ON_ENEMY_4", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy5", keyBattleCenterEnemy5, SDL_Keycode.SDLK_5, "STR_CENTER_ON_ENEMY_5", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy6", keyBattleCenterEnemy6, SDL_Keycode.SDLK_6, "STR_CENTER_ON_ENEMY_6", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy7", keyBattleCenterEnemy7, SDL_Keycode.SDLK_7, "STR_CENTER_ON_ENEMY_7", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy8", keyBattleCenterEnemy8, SDL_Keycode.SDLK_8, "STR_CENTER_ON_ENEMY_8", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy9", keyBattleCenterEnemy9, SDL_Keycode.SDLK_9, "STR_CENTER_ON_ENEMY_9", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleCenterEnemy10", keyBattleCenterEnemy10, SDL_Keycode.SDLK_0, "STR_CENTER_ON_ENEMY_10", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleVoxelView", keyBattleVoxelView, SDL_Keycode.SDLK_F10, "STR_SAVE_VOXEL_VIEW", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyInvCreateTemplate", keyInvCreateTemplate, SDL_Keycode.SDLK_c, "STR_CREATE_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyInvApplyTemplate", keyInvApplyTemplate, SDL_Keycode.SDLK_v, "STR_APPLY_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyInvClear", keyInvClear, SDL_Keycode.SDLK_x, "STR_CLEAR_INVENTORY", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyInvAutoEquip", keyInvAutoEquip, SDL_Keycode.SDLK_z, "STR_AUTO_EQUIP", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyOk", ref keyOk, SDL_Keycode.SDLK_RETURN, "STR_OK", "STR_GENERAL"));
+        _info.Add(new OptionInfo("keyCancel", ref keyCancel, SDL_Keycode.SDLK_ESCAPE, "STR_CANCEL", "STR_GENERAL"));
+        _info.Add(new OptionInfo("keyScreenshot", ref keyScreenshot, SDL_Keycode.SDLK_F12, "STR_SCREENSHOT", "STR_GENERAL"));
+        _info.Add(new OptionInfo("keyFps", ref keyFps, SDL_Keycode.SDLK_F7, "STR_FPS_COUNTER", "STR_GENERAL"));
+        _info.Add(new OptionInfo("keyQuickSave", ref keyQuickSave, SDL_Keycode.SDLK_F5, "STR_QUICK_SAVE", "STR_GENERAL"));
+        _info.Add(new OptionInfo("keyQuickLoad", ref keyQuickLoad, SDL_Keycode.SDLK_F9, "STR_QUICK_LOAD", "STR_GENERAL"));
+        _info.Add(new OptionInfo("keyGeoLeft", ref keyGeoLeft, SDL_Keycode.SDLK_LEFT, "STR_ROTATE_LEFT", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoRight", ref keyGeoRight, SDL_Keycode.SDLK_RIGHT, "STR_ROTATE_RIGHT", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoUp", ref keyGeoUp, SDL_Keycode.SDLK_UP, "STR_ROTATE_UP", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoDown", ref keyGeoDown, SDL_Keycode.SDLK_DOWN, "STR_ROTATE_DOWN", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoZoomIn", ref keyGeoZoomIn, SDL_Keycode.SDLK_PLUS, "STR_ZOOM_IN", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoZoomOut", ref keyGeoZoomOut, SDL_Keycode.SDLK_MINUS, "STR_ZOOM_OUT", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoSpeed1", ref keyGeoSpeed1, SDL_Keycode.SDLK_1, "STR_5_SECONDS", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoSpeed2", ref keyGeoSpeed2, SDL_Keycode.SDLK_2, "STR_1_MINUTE", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoSpeed3", ref keyGeoSpeed3, SDL_Keycode.SDLK_3, "STR_5_MINUTES", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoSpeed4", ref keyGeoSpeed4, SDL_Keycode.SDLK_4, "STR_30_MINUTES", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoSpeed5", ref keyGeoSpeed5, SDL_Keycode.SDLK_5, "STR_1_HOUR", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoSpeed6", ref keyGeoSpeed6, SDL_Keycode.SDLK_6, "STR_1_DAY", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoIntercept", ref keyGeoIntercept, SDL_Keycode.SDLK_i, "STR_INTERCEPT", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoBases", ref keyGeoBases, SDL_Keycode.SDLK_b, "STR_BASES", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoGraphs", ref keyGeoGraphs, SDL_Keycode.SDLK_g, "STR_GRAPHS", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoUfopedia", ref keyGeoUfopedia, SDL_Keycode.SDLK_u, "STR_UFOPAEDIA_UC", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoOptions", ref keyGeoOptions, SDL_Keycode.SDLK_ESCAPE, "STR_OPTIONS_UC", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoFunding", ref keyGeoFunding, SDL_Keycode.SDLK_f, "STR_FUNDING_UC", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoToggleDetail", ref keyGeoToggleDetail, SDL_Keycode.SDLK_TAB, "STR_TOGGLE_COUNTRY_DETAIL", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoToggleRadar", ref keyGeoToggleRadar, SDL_Keycode.SDLK_r, "STR_TOGGLE_RADAR_RANGES", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBaseSelect1", ref keyBaseSelect1, SDL_Keycode.SDLK_1, "STR_SELECT_BASE_1", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBaseSelect2", ref keyBaseSelect2, SDL_Keycode.SDLK_2, "STR_SELECT_BASE_2", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBaseSelect3", ref keyBaseSelect3, SDL_Keycode.SDLK_3, "STR_SELECT_BASE_3", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBaseSelect4", ref keyBaseSelect4, SDL_Keycode.SDLK_4, "STR_SELECT_BASE_4", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBaseSelect5", ref keyBaseSelect5, SDL_Keycode.SDLK_5, "STR_SELECT_BASE_5", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBaseSelect6", ref keyBaseSelect6, SDL_Keycode.SDLK_6, "STR_SELECT_BASE_6", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBaseSelect7", ref keyBaseSelect7, SDL_Keycode.SDLK_7, "STR_SELECT_BASE_7", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBaseSelect8", ref keyBaseSelect8, SDL_Keycode.SDLK_8, "STR_SELECT_BASE_8", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyBattleLeft", ref keyBattleLeft, SDL_Keycode.SDLK_LEFT, "STR_SCROLL_LEFT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleRight", ref keyBattleRight, SDL_Keycode.SDLK_RIGHT, "STR_SCROLL_RIGHT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleUp", ref keyBattleUp, SDL_Keycode.SDLK_UP, "STR_SCROLL_UP", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleDown", ref keyBattleDown, SDL_Keycode.SDLK_DOWN, "STR_SCROLL_DOWN", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleLevelUp", ref keyBattleLevelUp, SDL_Keycode.SDLK_PAGEUP, "STR_VIEW_LEVEL_ABOVE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleLevelDown", ref keyBattleLevelDown, SDL_Keycode.SDLK_PAGEDOWN, "STR_VIEW_LEVEL_BELOW", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterUnit", ref keyBattleCenterUnit, SDL_Keycode.SDLK_HOME, "STR_CENTER_SELECTED_UNIT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattlePrevUnit", ref keyBattlePrevUnit, SDL_Keycode.SDLK_LSHIFT, "STR_PREVIOUS_UNIT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleNextUnit", ref keyBattleNextUnit, SDL_Keycode.SDLK_TAB, "STR_NEXT_UNIT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleDeselectUnit", ref keyBattleDeselectUnit, SDL_Keycode.SDLK_BACKSLASH, "STR_DESELECT_UNIT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleUseLeftHand", ref keyBattleUseLeftHand, SDL_Keycode.SDLK_q, "STR_USE_LEFT_HAND", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleUseRightHand", ref keyBattleUseRightHand, SDL_Keycode.SDLK_e, "STR_USE_RIGHT_HAND", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleInventory", ref keyBattleInventory, SDL_Keycode.SDLK_i, "STR_INVENTORY", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleMap", ref keyBattleMap, SDL_Keycode.SDLK_m, "STR_MINIMAP", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleOptions", ref keyBattleOptions, SDL_Keycode.SDLK_ESCAPE, "STR_OPTIONS", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleEndTurn", ref keyBattleEndTurn, SDL_Keycode.SDLK_BACKSPACE, "STR_END_TURN", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleAbort", ref keyBattleAbort, SDL_Keycode.SDLK_a, "STR_ABORT_MISSION", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleStats", ref keyBattleStats, SDL_Keycode.SDLK_s, "STR_UNIT_STATS", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleKneel", ref keyBattleKneel, SDL_Keycode.SDLK_k, "STR_KNEEL", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleReload", ref keyBattleReload, SDL_Keycode.SDLK_r, "STR_RELOAD", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattlePersonalLighting", ref keyBattlePersonalLighting, SDL_Keycode.SDLK_l, "STR_TOGGLE_PERSONAL_LIGHTING", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleReserveNone", ref keyBattleReserveNone, SDL_Keycode.SDLK_F1, "STR_DONT_RESERVE_TIME_UNITS", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleReserveSnap", ref keyBattleReserveSnap, SDL_Keycode.SDLK_F2, "STR_RESERVE_TIME_UNITS_FOR_SNAP_SHOT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleReserveAimed", ref keyBattleReserveAimed, SDL_Keycode.SDLK_F3, "STR_RESERVE_TIME_UNITS_FOR_AIMED_SHOT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleReserveAuto", ref keyBattleReserveAuto, SDL_Keycode.SDLK_F4, "STR_RESERVE_TIME_UNITS_FOR_AUTO_SHOT", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleReserveKneel", ref keyBattleReserveKneel, SDL_Keycode.SDLK_j, "STR_RESERVE_TIME_UNITS_FOR_KNEEL", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleZeroTUs", ref keyBattleZeroTUs, SDL_Keycode.SDLK_DELETE, "STR_EXPEND_ALL_TIME_UNITS", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy1", ref keyBattleCenterEnemy1, SDL_Keycode.SDLK_1, "STR_CENTER_ON_ENEMY_1", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy2", ref keyBattleCenterEnemy2, SDL_Keycode.SDLK_2, "STR_CENTER_ON_ENEMY_2", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy3", ref keyBattleCenterEnemy3, SDL_Keycode.SDLK_3, "STR_CENTER_ON_ENEMY_3", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy4", ref keyBattleCenterEnemy4, SDL_Keycode.SDLK_4, "STR_CENTER_ON_ENEMY_4", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy5", ref keyBattleCenterEnemy5, SDL_Keycode.SDLK_5, "STR_CENTER_ON_ENEMY_5", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy6", ref keyBattleCenterEnemy6, SDL_Keycode.SDLK_6, "STR_CENTER_ON_ENEMY_6", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy7", ref keyBattleCenterEnemy7, SDL_Keycode.SDLK_7, "STR_CENTER_ON_ENEMY_7", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy8", ref keyBattleCenterEnemy8, SDL_Keycode.SDLK_8, "STR_CENTER_ON_ENEMY_8", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy9", ref keyBattleCenterEnemy9, SDL_Keycode.SDLK_9, "STR_CENTER_ON_ENEMY_9", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleCenterEnemy10", ref keyBattleCenterEnemy10, SDL_Keycode.SDLK_0, "STR_CENTER_ON_ENEMY_10", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleVoxelView", ref keyBattleVoxelView, SDL_Keycode.SDLK_F10, "STR_SAVE_VOXEL_VIEW", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyInvCreateTemplate", ref keyInvCreateTemplate, SDL_Keycode.SDLK_c, "STR_CREATE_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyInvApplyTemplate", ref keyInvApplyTemplate, SDL_Keycode.SDLK_v, "STR_APPLY_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyInvClear", ref keyInvClear, SDL_Keycode.SDLK_x, "STR_CLEAR_INVENTORY", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyInvAutoEquip", ref keyInvAutoEquip, SDL_Keycode.SDLK_z, "STR_AUTO_EQUIP", "STR_BATTLESCAPE"));
 
-        _info.Add(new OptionInfo("FPS", FPS, 60, "STR_FPS_LIMIT", "STR_GENERAL"));
-        _info.Add(new OptionInfo("FPSInactive", FPSInactive, 30, "STR_FPS_INACTIVE_LIMIT", "STR_GENERAL"));
+        _info.Add(new OptionInfo("FPS", ref FPS, 60, "STR_FPS_LIMIT", "STR_GENERAL"));
+        _info.Add(new OptionInfo("FPSInactive", ref FPSInactive, 30, "STR_FPS_INACTIVE_LIMIT", "STR_GENERAL"));
     }
 
     /**

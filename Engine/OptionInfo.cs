@@ -29,16 +29,25 @@ struct OptionDef
     internal SDL_Keycode k;
 }
 
+unsafe struct OptionRef
+{
+    internal bool* b;
+    internal int* i;
+    internal string* s;
+    internal SDL_Keycode* k;
+}
+
 /**
  * Helper class that ties metadata to particular options to help in serializing
  * and stuff. The option variable must already exist, this info just points to it.
  * Does some special shenanigans to be able to be tied to different variable types.
  */
-internal class OptionInfo
+unsafe internal class OptionInfo
 {
     string _id, _desc, _cat;
     OptionType _type;
-    OptionDef _ref, _def;
+    OptionDef _def;
+    OptionRef _ref;
 
     /**
      * Creates info for a boolean option.
@@ -48,14 +57,14 @@ internal class OptionInfo
      * @param desc Language ID for the option description (if any).
      * @param cat Language ID for the option category (if any).
      */
-    internal OptionInfo(string id, bool option, bool def, string desc = "", string cat = "")
+    internal OptionInfo(string id, ref bool option, bool def, string desc = "", string cat = "")
     {
         _id = id;
         _desc = desc;
         _cat = cat;
         _type = OptionType.OPTION_BOOL;
 
-        _ref.b = option;
+        fixed (bool* p = &option) { _ref.b = p; }
         _def.b = def;
     }
 
@@ -67,14 +76,14 @@ internal class OptionInfo
      * @param desc Language ID for the option description (if any).
      * @param cat Language ID for the option category (if any).
      */
-    internal OptionInfo(string id, int option, int def, string desc = "", string cat = "")
+    internal OptionInfo(string id, ref int option, int def, string desc = "", string cat = "")
     {
         _id = id;
         _desc = desc;
         _cat = cat;
         _type = OptionType.OPTION_INT;
 
-        _ref.i = option;
+        fixed (int* p = &option) { _ref.i = p; }
         _def.i = def;
     }
 
@@ -86,14 +95,14 @@ internal class OptionInfo
      * @param desc Language ID for the option description (if any).
      * @param cat Language ID for the option category (if any).
      */
-    internal OptionInfo(string id, SDL_Keycode option, SDL_Keycode def, string desc = "", string cat = "")
+    internal OptionInfo(string id, ref SDL_Keycode option, SDL_Keycode def, string desc = "", string cat = "")
     {
         _id = id;
         _desc = desc;
         _cat = cat;
         _type = OptionType.OPTION_KEY;
 
-        _ref.k = option;
+        fixed (SDL_Keycode* p = &option) { _ref.k = p; }
         _def.k = def;
     }
 
@@ -105,14 +114,14 @@ internal class OptionInfo
      * @param desc Language ID for the option description (if any).
      * @param cat Language ID for the option category (if any).
      */
-    internal OptionInfo(string id, string option, string def, string desc = "", string cat = "")
+    internal OptionInfo(string id, ref string option, string def, string desc = "", string cat = "")
     {
         _id = id;
         _desc = desc;
         _cat = cat;
         _type = OptionType.OPTION_STRING;
 
-        _ref.s = option;
+        fixed (string* p = &option) { _ref.s = p; }
         _def.s = def;
     }
 
@@ -124,16 +133,16 @@ internal class OptionInfo
         switch (_type)
         {
             case OptionType.OPTION_BOOL:
-                _ref.b = _def.b;
+                *_ref.b = _def.b;
                 break;
             case OptionType.OPTION_INT:
-                _ref.i = _def.i;
+                *_ref.i = _def.i;
                 break;
             case OptionType.OPTION_KEY:
-                _ref.k = _def.k;
+                *_ref.k = _def.k;
                 break;
             case OptionType.OPTION_STRING:
-                _ref.s = _def.s;
+                *_ref.s = _def.s;
                 break;
         }
     }
@@ -151,16 +160,16 @@ internal class OptionInfo
             switch (_type)
             {
                 case OptionType.OPTION_BOOL:
-                    _ref.b = bool.Parse(value);
+                    *_ref.b = bool.Parse(value);
                     break;
                 case OptionType.OPTION_INT:
-                    _ref.i = int.Parse(value);
+                    *_ref.i = int.Parse(value);
                     break;
                 case OptionType.OPTION_KEY:
-                    _ref.k = Enum.Parse<SDL_Keycode>(value);
+                    *_ref.k = Enum.Parse<SDL_Keycode>(value);
                     break;
                 case OptionType.OPTION_STRING:
-                    _ref.s = value;
+                    *_ref.s = value;
                     break;
             }
         }
@@ -175,16 +184,16 @@ internal class OptionInfo
         switch (_type)
         {
             case OptionType.OPTION_BOOL:
-                _ref.b = node[_id] != null ? bool.Parse(node[_id].ToString()) : _def.b;
+                *_ref.b = node[_id] != null ? bool.Parse(node[_id].ToString()) : _def.b;
                 break;
             case OptionType.OPTION_INT:
-                _ref.i = node[_id] != null ? int.Parse(node[_id].ToString()) : _def.i;
+                *_ref.i = node[_id] != null ? int.Parse(node[_id].ToString()) : _def.i;
                 break;
             case OptionType.OPTION_KEY:
-                _ref.k = node[_id] != null ? (SDL_Keycode)int.Parse(node[_id].ToString()) : _def.k;
+                *_ref.k = node[_id] != null ? (SDL_Keycode)int.Parse(node[_id].ToString()) : _def.k;
                 break;
             case OptionType.OPTION_STRING:
-                _ref.s = node[_id] != null ? node[_id].ToString() : _def.s;
+                *_ref.s = node[_id] != null ? node[_id].ToString() : _def.s;
                 break;
         }
     }
@@ -223,7 +232,7 @@ internal class OptionInfo
         {
             throw new Exception(_id + " is not a key!");
         }
-        return ref _ref.k;
+        return ref *_ref.k;
     }
 
     /**
@@ -237,7 +246,7 @@ internal class OptionInfo
         {
             throw new Exception(_id + " is not a boolean!");
         }
-        return ref _ref.b;
+        return ref *_ref.b;
     }
 
     /**
@@ -251,7 +260,7 @@ internal class OptionInfo
         {
             throw new Exception(_id + " is not an integer!");
         }
-        return ref _ref.i;
+        return ref *_ref.i;
     }
 
     /**
@@ -265,7 +274,7 @@ internal class OptionInfo
         {
             throw new Exception(_id + " is not a string!");
         }
-        return ref _ref.s;
+        return ref *_ref.s;
     }
 
     /**
@@ -277,16 +286,16 @@ internal class OptionInfo
         switch (_type)
         {
             case OptionType.OPTION_BOOL:
-                ((YamlMappingNode)node).Add(_id, _ref.b.ToString());
+                ((YamlMappingNode)node).Add(_id, (*_ref.b).ToString());
                 break;
             case OptionType.OPTION_INT:
-                ((YamlMappingNode)node).Add(_id, _ref.i.ToString());
+                ((YamlMappingNode)node).Add(_id, (*_ref.i).ToString());
                 break;
             case OptionType.OPTION_KEY:
-                ((YamlMappingNode)node).Add(_id, ((int)_ref.k).ToString());
+                ((YamlMappingNode)node).Add(_id, (*_ref.k).ToString());
                 break;
             case OptionType.OPTION_STRING:
-                ((YamlMappingNode)node).Add(_id, _ref.s);
+                ((YamlMappingNode)node).Add(_id, *_ref.s);
                 break;
         }
     }
