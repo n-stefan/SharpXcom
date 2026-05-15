@@ -477,7 +477,7 @@ internal class Game
                     _timeOfLastFrame = SDL_GetTicks();
                     _fpsCounter.addFrame();
                     _screen.clear();
-                    var i = _states.Count - 1;
+                    var i = _states.Count;
                     do
                     {
                         --i;

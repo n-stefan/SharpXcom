@@ -62,7 +62,7 @@ struct StandardShade : IColorFunc<nint, nint, int, int, int>
 	*/
     public void func(ref nint dest, nint src, int shade, int _, int __)
     {
-        if (src != default)
+        if (src != nint.Zero)
         {
             var newShade = (src & 15) + shade;
             if (newShade > 15)

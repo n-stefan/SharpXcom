@@ -89,7 +89,7 @@ partial class Shader
 	 * @param y offset on y
 	 * @return
 	 */
-    internal static ShaderMove<byte> ShaderSurface(Surface s, int x, int y) =>
+    internal static ShaderMove<nint> ShaderSurface(Surface s, int x, int y) =>
         new(s, x, y);
 
     /**
@@ -99,9 +99,9 @@ partial class Shader
 	 * @param y offset on y
 	 * @return
 	 */
-    static ShaderMove<byte> ShaderCrop(Surface s, int x, int y)
+    static ShaderMove<nint> ShaderCrop(Surface s, int x, int y)
     {
-        ShaderMove<byte> ret = new ShaderMove<byte>(s, x, y);
+        ShaderMove<nint> ret = new ShaderMove<nint>(s, x, y);
         SDL_Rect s_crop = s.getCrop();
         if (s_crop.w != 0 && s_crop.h != 0)
         {
@@ -117,6 +117,6 @@ partial class Shader
 	 * @param s standard 8bit SharpXcom surface
 	 * @return
 	 */
-    internal static ShaderMove<byte> ShaderCrop(Surface s) =>
+    internal static ShaderMove<nint> ShaderCrop(Surface s) =>
         ShaderCrop(s, s.getX(), s.getY());
 }

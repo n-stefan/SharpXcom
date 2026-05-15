@@ -23,14 +23,14 @@ enum TextHAlign { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
 
 enum TextVAlign { ALIGN_TOP, ALIGN_MIDDLE, ALIGN_BOTTOM };
 
-struct PaletteShift : IColorFunc<byte, byte, int, int, int>
+struct PaletteShift : IColorFunc<nint, nint, int, int, int>
 {
-    public void func(ref byte dest, byte src, int off, int mul, int mid)
+    public void func(ref nint dest, nint src, int off, int mul, int mid)
     {
-        if (src != 0)
+        if (src != nint.Zero)
         {
-            int inverseOffset = mid != 0 ? 2 * (mid - src) : 0;
-            dest = (byte)(off + src * mul + inverseOffset);
+            var inverseOffset = mid != 0 ? 2 * (mid - src) : 0;
+            dest = off + src * mul + inverseOffset;
         }
     }
 }
