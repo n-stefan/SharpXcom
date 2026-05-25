@@ -36,8 +36,8 @@ internal class InteractiveSurface : Surface
     byte _buttonsPressed;
     protected ActionHandler _in, _over, _out;
     protected bool _isHovered, _isFocused, _listButton;
-    protected Dictionary<uint, ActionHandler> _click, _press, _release;
-    protected Dictionary<SDL_Keycode, ActionHandler> _keyPress, _keyRelease;
+    protected Dictionary<uint, ActionHandler> _click = [], _press = [], _release = [];
+    protected Dictionary<SDL_Keycode, ActionHandler> _keyPress = [], _keyRelease = [];
 
     /**
      * Sets up a blank interactive surface with the specified size and position.

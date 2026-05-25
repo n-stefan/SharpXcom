@@ -63,11 +63,11 @@ internal class Text : InteractiveSurface
      */
     internal Text(int width, int height, int x = 0, int y = 0) : base(width, height, x, y)
     {
-        _big = new Font();
-        _small = new Font();
-        _font = new Font();
-        _fontOrig = new Font();
-        _lang = new Language();
+        _big = null;
+        _small = null;
+        _font = null;
+        _fontOrig = null;
+        _lang = null;
         _wrap = false;
         _invert = false;
         _contrast = false;
@@ -78,6 +78,7 @@ internal class Text : InteractiveSurface
         _color = 0;
         _color2 = 0;
         _scrollY = 0;
+        _text = string.Empty;
     }
 
     /**
@@ -243,7 +244,7 @@ internal class Text : InteractiveSurface
         var str = new StringBuilder(_processedText);
 
         // Go through the text character by character
-        for (int c = 0; c <= str.Length - 1; ++c)
+        for (int c = 0; c <= str.Length; ++c)
         {
             // End of the line
             if (c == str.Length || Unicode.isLinebreak(str[c]))

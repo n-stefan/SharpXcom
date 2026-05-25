@@ -23,7 +23,7 @@ struct FontImage
 {
     internal int width, height, spacing;
     internal Surface surface;
-};
+}
 
 /**
  * Takes care of loading and storing each character in a sprite font.
@@ -141,8 +141,7 @@ internal class Font
 
         var dosFontPtr = Marshal.AllocHGlobal(DOSFONT_SIZE);
         Marshal.Copy(dosFont, 0, dosFontPtr, DOSFONT_SIZE);
-        /* SDL_RWops */
-        nint rw = SDL_RWFromConstMem(dosFontPtr, DOSFONT_SIZE);
+        /* SDL_RWops */ nint rw = SDL_RWFromConstMem(dosFontPtr, DOSFONT_SIZE);
         nint s = SDL_LoadBMP_RW(rw, 0);
         SDL_FreeRW(rw);
         Marshal.FreeHGlobal(dosFontPtr);
@@ -150,10 +149,10 @@ internal class Font
         image.surface = new Surface(surface.w, surface.h);
         var terminal = new SDL_Color[] { new() { r = 0, g = 0, b = 0, a = 0 }, new() { r = 185, g = 185, b = 185, a = 255 } };
         image.surface.setPalette(terminal, 0, 2);
-        SDL_BlitSurface(s, 0, image.surface.getSurface().pixels, 0);
+        SDL_BlitSurface(s, 0, image.surface.getSurfacePtr(), 0);
         SDL_FreeSurface(s);
         _images.Add(image);
-
+        
         string chars = Unicode.convUtf8ToUtf32(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
         init((uint)(_images.Count - 1), chars);
     }

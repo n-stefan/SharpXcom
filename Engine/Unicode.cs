@@ -52,7 +52,9 @@ internal class Unicode
 	 */
     internal static string convPathToUtf8(string src)
     {
-        var bytes = Encoding.UTF8.GetBytes(src);
+        if (string.IsNullOrEmpty(src))
+            return null;
+        var bytes = Encoding.Default.GetBytes(src);
         return Encoding.UTF8.GetString(bytes);
     }
 
@@ -84,31 +86,9 @@ internal class Unicode
     {
         if (string.IsNullOrEmpty(src))
             return null;
-        var bytes = Encoding.UTF8.GetBytes(src);
-        return Encoding.UTF32.GetString(bytes);
-
-        //var @out = new List<uint>(src.Length);
-        //uint codepoint = 0;
-        //for (var i = 0; i < src.Length; i++)
-        //{
-        //	char ch = src[i];
-        //	if (ch <= 0x7f)
-        //		codepoint = ch;
-        //	else if (ch <= 0xbf)
-        //		codepoint = (uint)((codepoint << 6) | (ch & 0x3f));
-        //	else if (ch <= 0xdf)
-        //		codepoint = (uint)(ch & 0x1f);
-        //	else if (ch <= 0xef)
-        //		codepoint = (uint)(ch & 0x0f);
-        //	else
-        //		codepoint = (uint)(ch & 0x07);
-        //	++i;
-        //	if (i == src.Length - 1 || ((src[i] & 0xc0) != 0x80 && codepoint <= 0x10ffff))
-        //	{
-        //		@out[i] = codepoint;
-        //	}
-        //}
-        //return @out;
+        var utf8Bytes = Encoding.UTF8.GetBytes(src);
+        var utf32Bytes = Encoding.Convert(Encoding.UTF8, Encoding.UTF32, utf8Bytes);
+        return Encoding.UTF32.GetString(utf32Bytes);
     }
 
     /**
@@ -121,8 +101,11 @@ internal class Unicode
 	 */
     internal static string convUtf32ToUtf8(string src)
     {
-        var bytes = Encoding.UTF32.GetBytes(src);
-        return Encoding.UTF8.GetString(bytes);
+        if (string.IsNullOrEmpty(src))
+            return null;
+        var utf32Bytes = Encoding.UTF32.GetBytes(src);
+        var utf8Bytes = Encoding.Convert(Encoding.UTF32, Encoding.UTF8, utf32Bytes);
+        return Encoding.UTF8.GetString(utf8Bytes);
     }
 
     /**
@@ -134,6 +117,8 @@ internal class Unicode
      */
     internal static string convUtf8ToPath(string src)
     {
+        if (string.IsNullOrEmpty(src))
+            return null;
         var bytes = Encoding.UTF8.GetBytes(src);
         return Encoding.Default.GetString(bytes);
     }

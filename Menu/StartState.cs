@@ -120,7 +120,7 @@ internal class StartState : State
      */
     void addLine(string str)
     {
-        _output = $"{_output}{Environment.NewLine}{str}";
+        _output = $"{_output}\n{str}";
         _text.setText(_output);
         int y = _text.getTextHeight() - _font.getHeight();
         int x = _text.getTextWidth(y / _font.getHeight());

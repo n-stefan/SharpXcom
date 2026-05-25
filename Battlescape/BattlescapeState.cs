@@ -1221,8 +1221,7 @@ internal class BattlescapeState : State
         nint imgPtr = SDL_CreateRGBSurface(0, w * 8, h * 8, 24, 0xff, 0xff00, 0xff0000, 0); //SDL_AllocSurface
         SDL_Surface img = Marshal.PtrToStructure<SDL_Surface>(imgPtr);
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} unit = {unit.getId()}");
-        var span = new Span<byte>((byte*)img.pixels, img.pitch * img.h);
-        span.Fill(0); //memset(img->pixels, 0, img->pitch * img->h);
+        NativeMemory.Fill((void*)img.pixels, (nuint)(img.pitch * img.h), 0); //memset(img->pixels, 0, img->pitch * img->h);
 
         Position tilePos = unit.getPosition();
         SDL_Rect r;
