@@ -97,7 +97,7 @@ internal class AbandonGameState : State
      * Goes back to the Main Menu.
      * @param action Pointer to an action.
      */
-    void btnYesClick(Action _)
+    unsafe void btnYesClick(Action _)
     {
         if (_origin == OptionsOrigin.OPT_BATTLESCAPE && _game.getSavedGame().getSavedBattle().getAmbientSound() != -1)
             _game.getMod().getSoundByDepth(0, (uint)_game.getSavedGame().getSavedBattle().getAmbientSound()).stopLoop();

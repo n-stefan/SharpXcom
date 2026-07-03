@@ -177,7 +177,7 @@ internal class OptionsControlsState : OptionsBaseState
     {
         if (_selected != -1)
         {
-            SDL_Keycode key = action.getDetails().key.keysym.sym;
+            SDL_Keycode key = action.getDetails().key.key;
             if (key != 0)
             {
                 _selKey.asKey() = key;

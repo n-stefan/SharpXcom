@@ -88,7 +88,7 @@ internal class ConfirmLoadState : State
 	 * Proceed to load the save.
 	 * @param action Pointer to an action.
 	 */
-    void btnYesClick(Action _)
+    unsafe void btnYesClick(Action _)
     {
         _game.popState();
         _game.pushState(new LoadGameState(_origin, _fileName, _palette));

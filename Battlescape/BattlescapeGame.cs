@@ -2090,7 +2090,7 @@ internal class BattlescapeGame
             }
             else if (playableUnitSelected())
             {
-                bool modifierPressed = (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0;
+                bool modifierPressed = (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0;
                 if (bPreviewed &&
                     (_currentAction.target != pos || (_save.getPathfinding().isModifierUsed() != modifierPressed)))
                 {
@@ -2131,7 +2131,7 @@ internal class BattlescapeGame
         //  -= turn to or open door =-
         _currentAction.target = pos;
         _currentAction.actor = _save.getSelectedUnit();
-        _currentAction.strafe = Options.strafe && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0 && _save.getSelectedUnit().getTurretType() > -1;
+        _currentAction.strafe = Options.strafe && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0 && _save.getSelectedUnit().getTurretType() > -1;
         statePushBack(new UnitTurnBState(this, _currentAction));
     }
 

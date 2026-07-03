@@ -192,7 +192,7 @@ internal class ProjectileFlyBState : BattleState
         }
 
         bool forceEnableObstacles = false;
-        if (_action.type == BattleActionType.BA_LAUNCH || (Options.forceFire && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0 && isPlayer) || !_parent.getPanicHandled())
+        if (_action.type == BattleActionType.BA_LAUNCH || (Options.forceFire && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0 && isPlayer) || !_parent.getPanicHandled())
         {
             // target nothing, targets the middle of the tile
             _targetVoxel = new Position(_action.target.x * 16 + 8, _action.target.y * 16 + 8, _action.target.z * 24 + 12);

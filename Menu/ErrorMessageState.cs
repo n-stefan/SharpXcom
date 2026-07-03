@@ -37,7 +37,7 @@ internal class ErrorMessageState : State
 	 * @param bg Background image.
 	 * @param bgColor Background color (-1 for Battlescape).
 	 */
-    internal ErrorMessageState(string msg, SDL_Color[] palette, byte color, string bg, int bgColor) =>
+    unsafe internal ErrorMessageState(string msg, SDL_Color* palette, byte color, string bg, int bgColor) =>
         create(msg, palette, color, bg, bgColor);
 
     /**
@@ -53,7 +53,7 @@ internal class ErrorMessageState : State
 	 * @param bg Background image.
 	 * @param bgColor Background color (-1 for Battlescape).
 	 */
-    void create(string str, SDL_Color[] palette, byte color, string bg, int bgColor)
+    unsafe void create(string str, SDL_Color* palette, byte color, string bg, int bgColor)
     {
         _screen = false;
 

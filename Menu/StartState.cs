@@ -43,7 +43,7 @@ internal class StartState : State
      * Initializes all the elements in the Loading screen.
      * @param game Pointer to the core game.
      */
-    internal StartState()
+    unsafe internal StartState()
     {
         _anim = 0;
 
@@ -184,7 +184,7 @@ internal class StartState : State
     /**
      * Reset and reload data.
      */
-    internal override void init()
+    unsafe internal override void init()
     {
         base.init();
 
@@ -193,7 +193,7 @@ internal class StartState : State
         Music.stop();
         if (!Options.mute && Options.reload)
         {
-            Mix_CloseAudio();
+            MIX_DestroyMixer(Game.Mixer);
             _game.initAudio();
         }
 
@@ -236,7 +236,7 @@ internal class StartState : State
     /**
      * If the loading fails, it shows an error, otherwise moves on to the game.
      */
-    internal override void think()
+    unsafe internal override void think()
     {
         base.think();
         _timer.think(this, null);
@@ -284,7 +284,7 @@ internal class StartState : State
         base.handle(action);
         if (loading == LoadingPhase.LOADING_DONE)
         {
-            if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+            if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN)
             {
                 _game.quit();
             }

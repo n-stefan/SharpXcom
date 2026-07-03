@@ -86,7 +86,7 @@ internal class DeleteGameState : State
      */
     ~DeleteGameState() { }
 
-    void btnYesClick(Action _)
+    unsafe void btnYesClick(Action _)
     {
         _game.popState();
         if (!CrossPlatform.deleteFile(_filename))

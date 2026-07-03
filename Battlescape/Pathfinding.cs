@@ -109,7 +109,7 @@ internal class Pathfinding
             switchBack = true;
             _save.getBattleGame().setTUReserved(BattleActionType.BA_AUTOSHOT);
         }
-        _modifierUsed = (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0;
+        _modifierUsed = (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0;
         bool running = Options.strafe && _modifierUsed && _unit.getArmor().getSize() == 1 && _path.Count > 1;
 
         for (var i = _path.Count - 1; i >= 0; i--)
@@ -871,7 +871,7 @@ internal class Pathfinding
             }
         }
         // Strafing move allowed only to adjacent squares on same z. "Same z" rule mainly to simplify walking render.
-        _strafeMove = Options.strafe && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0 && (startPosition.z == endPosition.z) &&
+        _strafeMove = Options.strafe && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0 && (startPosition.z == endPosition.z) &&
                                 (Math.Abs(startPosition.x - endPosition.x) <= 1) && (Math.Abs(startPosition.y - endPosition.y) <= 1);
 
         // look for a possible fast and accurate bresenham path and skip A*

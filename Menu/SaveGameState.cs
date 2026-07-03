@@ -37,7 +37,7 @@ internal class SaveGameState : State
      * @param filename Name of the save file without extension.
      * @param palette Parent state palette.
      */
-    internal SaveGameState(OptionsOrigin origin, string filename, SDL_Color[] palette)
+    unsafe internal SaveGameState(OptionsOrigin origin, string filename, SDL_Color* palette)
     {
         _firstRun = 0;
         _origin = origin;
@@ -54,7 +54,7 @@ internal class SaveGameState : State
      * @param type Type of auto-save being used.
      * @param palette Parent state palette.
      */
-    internal SaveGameState(OptionsOrigin origin, SaveType type, SDL_Color[] palette)
+    unsafe internal SaveGameState(OptionsOrigin origin, SaveType type, SDL_Color* palette)
     {
         _firstRun = 0;
         _origin = origin;
@@ -91,7 +91,7 @@ internal class SaveGameState : State
      * Builds the interface.
      * @param palette Parent state palette.
      */
-    void buildUi(SDL_Color[] palette)
+    unsafe void buildUi(SDL_Color* palette)
     {
         _screen = false;
 
@@ -183,7 +183,7 @@ internal class SaveGameState : State
      * Pops up a window with an error message.
      * @param msg Error message.
      */
-    void error(string msg)
+    unsafe void error(string msg)
     {
         Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {msg}");
         string error = $"{tr("STR_SAVE_UNSUCCESSFUL")}{Unicode.TOK_NL_SMALL}{Unicode.convPathToUtf8(msg)}";

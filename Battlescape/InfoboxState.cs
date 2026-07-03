@@ -92,7 +92,7 @@ internal class InfoboxState : State
     {
         base.handle(action);
 
-        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN || action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN)
         {
             close();
         }

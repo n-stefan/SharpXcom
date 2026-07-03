@@ -95,7 +95,7 @@ internal class OptionsAudioState : OptionsBaseState
         // Set up objects
         _txtMusicVolume.setText(tr("STR_MUSIC_VOLUME"));
 
-        _slrMusicVolume.setRange(0, SDL_MIX_MAXVOLUME);
+        _slrMusicVolume.setRange(0, 128);
         _slrMusicVolume.setValue(Options.musicVolume);
         _slrMusicVolume.onChange(slrMusicVolumeChange);
         _slrMusicVolume.setTooltip("STR_MUSIC_VOLUME_DESC");
@@ -104,7 +104,7 @@ internal class OptionsAudioState : OptionsBaseState
 
         _txtSoundVolume.setText(tr("STR_SFX_VOLUME"));
 
-        _slrSoundVolume.setRange(0, SDL_MIX_MAXVOLUME);
+        _slrSoundVolume.setRange(0, 128);
         _slrSoundVolume.setValue(Options.soundVolume);
         _slrSoundVolume.onChange(slrSoundVolumeChange);
         _slrSoundVolume.onMouseRelease(slrSoundVolumeRelease);
@@ -114,7 +114,7 @@ internal class OptionsAudioState : OptionsBaseState
 
         _txtUiVolume.setText(tr("STR_UI_VOLUME"));
 
-        _slrUiVolume.setRange(0, SDL_MIX_MAXVOLUME);
+        _slrUiVolume.setRange(0, 128);
         _slrUiVolume.setValue(Options.uiVolume);
         _slrUiVolume.onChange(slrUiVolumeChange);
         _slrUiVolume.onMouseRelease(slrUiVolumeRelease);
@@ -158,7 +158,7 @@ internal class OptionsAudioState : OptionsBaseState
         _cbxMusicFormat.onMouseIn(txtTooltipIn);
         _cbxMusicFormat.onMouseOut(txtTooltipOut);
 
-        string curMusic = musFormats[(int)Mix_GetMusicType(0)];
+        string curMusic = /*musFormats[(int)*/ Music.GetMusicType() /*]*/;
         _txtCurrentMusic.setText(tr("STR_CURRENT_FORMAT").arg(curMusic));
 
         _txtSoundFormat.setText(tr("STR_PREFERRED_SFX_FORMAT"));
@@ -249,7 +249,7 @@ internal class OptionsAudioState : OptionsBaseState
      * @param action Pointer to an action.
      */
     void slrUiVolumeRelease(Action _) =>
-        TextButton.soundPress.play(Mix_GroupAvailable(0));
+        TextButton.soundPress.play(Game.GroupAvailable());
 
     /**
      * Changes the Music Format option.

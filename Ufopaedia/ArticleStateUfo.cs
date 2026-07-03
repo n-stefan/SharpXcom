@@ -67,7 +67,7 @@ internal class ArticleStateUfo : ArticleState
         graphic.getCrop().y = 0;
         graphic.getCrop().w = _image.getWidth();
         graphic.getCrop().h = _image.getHeight();
-        _image.drawRect(ref graphic.getCrop(), 15);
+        _image.drawRect(graphic.getCrop(), 15);
         graphic.blit(_image);
 
         if (string.IsNullOrEmpty(ufo.getModSprite()))

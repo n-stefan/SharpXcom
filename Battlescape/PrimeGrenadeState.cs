@@ -97,12 +97,12 @@ internal class PrimeGrenadeState : State
             square.y = 0;
             square.w = _button[i].getWidth();
             square.h = _button[i].getHeight();
-            _button[i].drawRect(ref square, (byte)grenadeBackground.border);
+            _button[i].drawRect(square, (byte)grenadeBackground.border);
             square.x++;
             square.y++;
             square.w -= 2;
             square.h -= 2;
-            _button[i].drawRect(ref square, (byte)grenadeBackground.color2);
+            _button[i].drawRect(square, (byte)grenadeBackground.color2);
 
             string ss = i.ToString();
             add(_number[i], "grenadeMenu", "battlescape");
@@ -162,7 +162,7 @@ internal class PrimeGrenadeState : State
     internal override void handle(Action action)
     {
         base.handle(action);
-        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
         {
             if (!_inInventoryView) _action.value = -1;
             _game.popState();

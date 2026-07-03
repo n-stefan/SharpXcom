@@ -123,7 +123,7 @@ internal class Window : Surface
             int sound = RNG.seedless(0, 2);
             if (soundPopup[sound] != null)
             {
-                soundPopup[sound].play(Mix_GroupAvailable(0));
+                soundPopup[sound].play(Game.GroupAvailable());
             }
         }
         if (_popupStep < 1.0)
@@ -224,7 +224,7 @@ internal class Window : Surface
             color = (byte)(_color + 1 * mul);
             for (int i = 0; i < 5; ++i)
             {
-                drawRect(ref square, color);
+                drawRect(square, color);
 
                 if (i % 2 == 0)
                 {
@@ -257,7 +257,7 @@ internal class Window : Surface
         {
             for (int i = 0; i < 5; ++i)
             {
-                drawRect(ref square, color);
+                drawRect(square, color);
                 if (i < 2)
                     color = (byte)(color - 1 * mul);
                 else

@@ -204,7 +204,7 @@ internal class TextEdit : InteractiveSurface
     internal override void handle(Action action, State state)
     {
         base.handle(action, state);
-        if (_isFocused && _modal && action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN &&
+        if (_isFocused && _modal && action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN &&
             (action.getAbsoluteXMouse() < getX() || action.getAbsoluteXMouse() >= getX() + getWidth() ||
              action.getAbsoluteYMouse() < getY() || action.getAbsoluteYMouse() >= getY() + getHeight()))
         {
@@ -320,7 +320,7 @@ internal class TextEdit : InteractiveSurface
     {
         if (Options.keyboardMode == KeyboardType.KEYBOARD_OFF)
         {
-            switch (action.getDetails().key.keysym.sym)
+            switch (action.getDetails().key.key)
             {
                 case SDL_Keycode.SDLK_UP:
                     _char++;
@@ -354,7 +354,7 @@ internal class TextEdit : InteractiveSurface
         }
         else if (Options.keyboardMode == KeyboardType.KEYBOARD_ON)
         {
-            switch (action.getDetails().key.keysym.sym)
+            switch (action.getDetails().key.key)
             {
                 case SDL_Keycode.SDLK_LEFT:
                     if (_caretPos > 0)
@@ -395,7 +395,7 @@ internal class TextEdit : InteractiveSurface
                     }
                     break;
                 default:
-                    char c = (char)action.getDetails().key.keysym.unicode;
+                    char c = (char)action.getDetails().key.key;
                     if (isValidChar(c) && !exceedsMaxWidth(c))
                     {
                         _value.Insert((int)_caretPos, new string(c, 1));
@@ -490,7 +490,7 @@ internal class TextEdit : InteractiveSurface
 	 * @param firstcolor Offset of the first color to replace.
 	 * @param ncolors Amount of colors to replace.
 	 */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         _text.setPalette(colors, firstcolor, ncolors);

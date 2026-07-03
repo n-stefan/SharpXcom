@@ -307,14 +307,14 @@ internal class ActionMenuState : State
     internal override void handle(Action action)
     {
         base.handle(action);
-        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
         {
             _game.popState();
         }
-        else if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN &&
-            (action.getDetails().key.keysym.sym == Options.keyCancel ||
-            action.getDetails().key.keysym.sym == Options.keyBattleUseLeftHand ||
-            action.getDetails().key.keysym.sym == Options.keyBattleUseRightHand))
+        else if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN &&
+            (action.getDetails().key.key == Options.keyCancel ||
+            action.getDetails().key.key == Options.keyBattleUseLeftHand ||
+            action.getDetails().key.key == Options.keyBattleUseRightHand))
         {
             _game.popState();
         }

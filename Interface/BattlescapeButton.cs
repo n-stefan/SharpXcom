@@ -64,9 +64,9 @@ internal class BattlescapeButton : InteractiveSurface
      * we use two separate surfaces because it's far easier to keep track of
      * whether or not this surface is inverted.
      */
-    internal void initSurfaces()
+    unsafe internal void initSurfaces()
     {
-        _altSurface = new Surface(_surface.w, _surface.h, _x, _y);
+        _altSurface = new Surface(_surface->w, _surface->h, _x, _y);
         _altSurface.setPalette(getPalette());
 
         // Lock the surface

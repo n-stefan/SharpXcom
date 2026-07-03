@@ -300,7 +300,7 @@ internal class DebriefingState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Action _)
+    unsafe void btnOkClick(Action _)
     {
         _game.popState();
         if (_game.getSavedGame().getMonthsPassed() == -1)
@@ -393,7 +393,7 @@ internal class DebriefingState : State
         _btnStats.setText(_showSoldierStats ? tr("STR_SCORE") : tr("STR_STATS"));
     }
 
-    internal override void init()
+    unsafe internal override void init()
     {
         base.init();
 

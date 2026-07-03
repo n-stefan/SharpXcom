@@ -64,7 +64,7 @@ internal class FpsCounter : Surface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         _text.setPalette(colors, firstcolor, ncolors);
@@ -103,7 +103,7 @@ internal class FpsCounter : Surface
      */
     internal void handle(Action action)
     {
-        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == Options.keyFps)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN && action.getDetails().key.key == Options.keyFps)
         {
             _visible = !_visible;
             Options.fpsCounter = _visible;

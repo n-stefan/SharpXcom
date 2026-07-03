@@ -436,12 +436,12 @@ internal class Text : InteractiveSurface
             r.h = getHeight();
             r.x = 0;
             r.y = 0;
-            this.drawRect(ref r, 5);
+            this.drawRect(r, 5);
             r.w -= 2;
             r.h -= 2;
             r.x++;
             r.y++;
-            this.drawRect(ref r, 0);
+            this.drawRect(r, 0);
         }
 
         int x = 0, y = 0, line = 0, height = 0;

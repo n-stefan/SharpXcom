@@ -168,7 +168,7 @@ internal class OptionsBaseState : State
      * Saves the new options and returns to the proper origin screen.
      * @param action Pointer to an action.
      */
-    internal void btnOkClick(Action _)
+    unsafe internal void btnOkClick(Action _)
     {
         Options.switchDisplay();
         int dX = Options.baseXResolution;
@@ -184,7 +184,7 @@ internal class OptionsBaseState : State
             Options.mapResources();
         }
         _game.loadLanguages();
-        SDL_SetRelativeMouseMode(Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
+        SDL_SetWindowRelativeMouseMode(_game.getScreen().getWindow(), Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
         _game.getScreen().resetDisplay();
         _game.setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
         if (Options.reload && _origin == OptionsOrigin.OPT_MENU)
@@ -233,11 +233,11 @@ internal class OptionsBaseState : State
      * Loads previous options and returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnCancelClick(Action _)
+    unsafe void btnCancelClick(Action _)
     {
         Options.reload = false;
         Options.load();
-        SDL_SetRelativeMouseMode(Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
+        SDL_SetWindowRelativeMouseMode(_game.getScreen().getWindow(), Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
         Screen.updateScale(Options.battlescapeScale, ref Options.baseXBattlescape, ref Options.baseYBattlescape, _origin == OptionsOrigin.OPT_BATTLESCAPE);
         Screen.updateScale(Options.geoscapeScale, ref Options.baseXGeoscape, ref Options.baseYGeoscape, _origin != OptionsOrigin.OPT_BATTLESCAPE);
         _game.setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);

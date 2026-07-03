@@ -56,7 +56,7 @@ internal class adlplayer
     static byte[] iCurrentFNum = new byte[12];
     struc_instruments[][] saved_instruments;
 
-    static FM_OPL[] opl = { default, default };
+    internal static FM_OPL[] opl = [ default, default ];
 
     static short[] adl_gv_freq_table = { // 9 * 12 -- notes frequency
 		0x0B5,0x0C0,0x0CC,0x0D8,0x0E5,0x0F2,0x101,0x110,0x120,0x131,0x143,0x157,

@@ -169,7 +169,7 @@ internal class TextButton : InteractiveSurface
 
         for (int i = 0; i < 5; ++i)
         {
-            drawRect(ref square, (byte)color);
+            drawRect(square, (byte)color);
 
             if (i % 2 == 0)
             {
@@ -260,7 +260,7 @@ internal class TextButton : InteractiveSurface
             if (soundPress != null && _group == null &&
                 action.getDetails().wheel.y == 0) //button.button != SDL_BUTTON_WHEELUP && button.button != SDL_BUTTON_WHEELDOWN
             {
-                soundPress.play(Mix_GroupAvailable(0));
+                soundPress.play(Game.GroupAvailable());
             }
 
             if (_comboBox != null)
@@ -310,7 +310,7 @@ internal class TextButton : InteractiveSurface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         _text.setPalette(colors, firstcolor, ncolors);

@@ -169,7 +169,7 @@ internal class Projectile
             _trajectory.Any() &&
             _action.actor.getFaction() == UnitFaction.FACTION_PLAYER &&
             _action.autoShotCounter == 1 &&
-            ((SDL_GetModState() & SDL_Keymod.KMOD_CTRL) == 0 || !Options.forceFire) &&
+            ((SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) == 0 || !Options.forceFire) &&
             _save.getBattleGame().getPanicHandled() &&
             _action.type != BattleActionType.BA_LAUNCH)
         {
@@ -358,7 +358,7 @@ internal class Projectile
             BattleUnit tu = targetTile.getUnit();
             if (tu == null && _action.target.z > 0 && targetTile.hasNoFloor(null))
                 tu = _save.getTile(_action.target - new Position(0, 0, 1)).getUnit();
-            if (Options.forceFire && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0 && _save.getSide() == UnitFaction.FACTION_PLAYER)
+            if (Options.forceFire && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0 && _save.getSide() == UnitFaction.FACTION_PLAYER)
             {
                 targets.Add(_action.target * new Position(16, 16, 24) + new Position(0, 0, 12));
                 forced = true;

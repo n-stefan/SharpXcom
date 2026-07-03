@@ -141,7 +141,7 @@ internal class MiniMapState : State
     internal override void handle(Action action)
     {
         base.handle(action);
-        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN)
         {
             if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
             {

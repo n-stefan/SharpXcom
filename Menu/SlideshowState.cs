@@ -32,7 +32,7 @@ internal class SlideshowState : State
     List<Text> _captions;
     Timer _transitionTimer;
 
-    internal SlideshowState(SlideshowHeader slideshowHeader, List<SlideshowSlide> slideshowSlides)
+    unsafe internal SlideshowState(SlideshowHeader slideshowHeader, List<SlideshowSlide> slideshowSlides)
     {
         _slideshowHeader = slideshowHeader;
         _slideshowSlides = slideshowSlides;
@@ -85,7 +85,7 @@ internal class SlideshowState : State
     /**
 	 * Shows the next screen in the slideshow; pops the state when there are no more slides
 	 */
-    void screenClick(Action action)
+    unsafe void screenClick(Action action)
     {
         if (_curScreen >= 0)
         {

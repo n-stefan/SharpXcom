@@ -101,7 +101,7 @@ internal class ConfirmNewBaseState : State
      * Go to the Place Access Lift screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Action _)
+    unsafe void btnOkClick(Action _)
     {
         if (_game.getSavedGame().getFunds() >= _cost)
         {

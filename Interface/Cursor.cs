@@ -84,7 +84,7 @@ internal class Cursor : Surface
      */
     internal void handle(Action action)
     {
-        if (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION)
         {
             setX((int)Math.Floor((action.getDetails().motion.x - action.getLeftBlackBand()) / action.getXScale()));
             setY((int)Math.Floor((action.getDetails().motion.y - action.getTopBlackBand()) / action.getYScale()));

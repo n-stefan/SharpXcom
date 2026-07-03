@@ -126,8 +126,8 @@ internal class TargetInfoState : State
         {
             _target.setName(_edtTitle.getText());
         }
-        if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_RETURN ||
-            action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_KP_ENTER)
+        if (action.getDetails().key.key == SDL_Keycode.SDLK_RETURN ||
+            action.getDetails().key.key == SDL_Keycode.SDLK_KP_ENTER)
         {
             _edtTitle.setText(_target.getName(_game.getLanguage()));
         }

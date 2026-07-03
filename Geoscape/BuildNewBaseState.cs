@@ -180,7 +180,7 @@ internal class BuildNewBaseState : State
      * or right-clicks to scroll the globe.
      * @param action Pointer to an action.
      */
-    void globeClick(Action action)
+    unsafe void globeClick(Action action)
     {
         double lon, lat;
         int mouseX = (int)Math.Floor(action.getAbsoluteXMouse()), mouseY = (int)Math.Floor(action.getAbsoluteYMouse());

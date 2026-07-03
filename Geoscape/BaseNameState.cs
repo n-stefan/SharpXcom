@@ -121,8 +121,8 @@ internal class BaseNameState : State
     void edtNameChange(Action action)
     {
         _base.setName(_edtName.getText());
-        if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_RETURN ||
-            action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_KP_ENTER)
+        if (action.getDetails().key.key == SDL_Keycode.SDLK_RETURN ||
+            action.getDetails().key.key == SDL_Keycode.SDLK_KP_ENTER)
         {
             if (!string.IsNullOrEmpty(_edtName.getText()))
             {

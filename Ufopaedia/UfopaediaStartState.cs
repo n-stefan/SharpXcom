@@ -81,7 +81,7 @@ internal class UfopaediaStartState : State
             button.onMouseClick(btnSectionClick);
             //button.onMousePress(btnScrollUpClick, SDL_BUTTON_WHEELUP);
             //button.onMousePress(btnScrollDownClick, SDL_BUTTON_WHEELDOWN);
-            button.onMousePress(btnScrollClick, (uint)SDL_EventType.SDL_MOUSEWHEEL);
+            button.onMousePress(btnScrollClick, (uint)SDL_EventType.SDL_EVENT_MOUSE_WHEEL);
 
             _btnSections.Add(button);
         }

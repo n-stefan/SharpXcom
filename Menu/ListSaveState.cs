@@ -89,7 +89,7 @@ internal class ListSaveState : ListGamesState
     /**
      * Saves the selected save.
      */
-    void saveGame()
+    unsafe void saveGame()
     {
         _game.getSavedGame().setName(_edtSave.getText());
         string oldFilename, newFilename;
@@ -125,8 +125,8 @@ internal class ListSaveState : ListGamesState
      */
     void edtSaveKeyPress(Action action)
     {
-        if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_RETURN ||
-            action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_KP_ENTER)
+        if (action.getDetails().key.key == SDL_Keycode.SDLK_RETURN ||
+            action.getDetails().key.key == SDL_Keycode.SDLK_KP_ENTER)
         {
             saveGame();
         }

@@ -161,7 +161,7 @@ internal class Slider : InteractiveSurface
     {
         base.handle(action, state);
         //_button.handle(action, state);
-        if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
+        if (_pressed && (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION || action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN))
         {
             int cursorX = (int)action.getAbsoluteXMouse();
             double buttonX = Math.Clamp(cursorX + _offsetX, _minX, _maxX);
@@ -251,7 +251,7 @@ internal class Slider : InteractiveSurface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         _txtMinus.setPalette(colors, firstcolor, ncolors);

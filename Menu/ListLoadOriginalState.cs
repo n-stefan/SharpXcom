@@ -139,14 +139,14 @@ internal class ListLoadOriginalState : State
     {
         _game.popState();
         _game.popState();
-        action.getDetails().type = SDL_EventType.SDL_FIRSTEVENT; //SDL_NOEVENT
+        action.getDetails().type = (uint)SDL_EventType.SDL_EVENT_FIRST; //SDL_NOEVENT
     }
 
     /**
      * Loads the specified save.
      * @param action Pointer to an action.
      */
-    void btnSlotClick(Action action)
+    unsafe void btnSlotClick(Action action)
     {
         int n = 0;
         for (int i = 0; i < SaveConverter.NUM_SAVES; ++i)

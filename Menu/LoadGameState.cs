@@ -36,7 +36,7 @@ internal class LoadGameState : State
 	 * @param filename Name of the save file without extension.
 	 * @param palette Parent state palette.
 	 */
-    internal LoadGameState(OptionsOrigin origin, string filename, SDL_Color[] palette)
+    unsafe internal LoadGameState(OptionsOrigin origin, string filename, SDL_Color* palette)
     {
         _firstRun = 0;
         _origin = origin;
@@ -52,7 +52,7 @@ internal class LoadGameState : State
 	 * @param type Type of auto-load being used.
 	 * @param palette Parent state palette.
 	 */
-    internal LoadGameState(OptionsOrigin origin, SaveType type, SDL_Color[] palette)
+    unsafe internal LoadGameState(OptionsOrigin origin, SaveType type, SDL_Color* palette)
     {
         _firstRun = 0;
         _origin = origin;
@@ -85,7 +85,7 @@ internal class LoadGameState : State
 	 * Builds the interface.
 	 * @param palette Parent state palette.
 	 */
-    void buildUi(SDL_Color[] palette)
+    unsafe void buildUi(SDL_Color* palette)
     {
         _screen = false;
 
@@ -133,7 +133,7 @@ internal class LoadGameState : State
     /**
 	 * Loads the specified save.
 	 */
-    internal override void think()
+    unsafe internal override void think()
     {
         base.think();
         // Make sure it gets drawn properly
@@ -194,7 +194,7 @@ internal class LoadGameState : State
 	 * @param msg Error message.
 	 * @param save Pending save.
 	 */
-    void error(string msg, SavedGame save)
+    unsafe void error(string msg, SavedGame save)
     {
         Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {msg}");
         string error = $"{tr("STR_LOAD_UNSUCCESSFUL")}{Unicode.TOK_NL_SMALL}{Unicode.convPathToUtf8(msg)}";

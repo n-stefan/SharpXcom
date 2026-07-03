@@ -97,9 +97,9 @@ internal class Frame : Surface
         for (int i = 0; i < _thickness; ++i)
         {
             if (_thickness > 5 && (i == 0 || i == _thickness - 1))
-                drawRect(ref square, darkest);
+                drawRect(square, darkest);
             else
-                drawRect(ref square, color);
+                drawRect(square, color);
             if (i < _thickness / 2)
                 color = (byte)(color - 1 * mul);
             else
@@ -116,7 +116,7 @@ internal class Frame : Surface
             else
                 square.h = 1;
         }
-        drawRect(ref square, _bg);
+        drawRect(square, _bg);
     }
 
     /**

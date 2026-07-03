@@ -74,7 +74,7 @@ internal class NextTurnState : State
         rect.w = _bg.getWidth();
         rect.x = rect.y = 0;
 
-        _bg.drawRect(ref rect, (byte)(Palette.blockOffset(0) + 15));
+        _bg.drawRect(rect, (byte)(Palette.blockOffset(0) + 15));
         // make this screen line up with the hidden movement screen
         _window.setY(y);
         _txtTitle.setY(y + 68);
@@ -180,7 +180,7 @@ internal class NextTurnState : State
     {
         base.handle(action);
 
-        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN || action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN)
         {
             close();
         }

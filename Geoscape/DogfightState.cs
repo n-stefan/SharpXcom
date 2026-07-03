@@ -334,10 +334,10 @@ internal class DogfightState : State
         graphic.getCrop().y = 0;
         graphic.getCrop().w = _window.getWidth();
         graphic.getCrop().h = _window.getHeight();
-        _window.drawRect(ref graphic.getCrop(), 15);
+        _window.drawRect(graphic.getCrop(), 15);
         graphic.blit(_window);
 
-        _preview.drawRect(ref graphic.getCrop(), 15);
+        _preview.drawRect(graphic.getCrop(), 15);
         graphic.getCrop().y = dogfightInterface.getElement("previewTop").y;
         graphic.getCrop().h = dogfightInterface.getElement("previewTop").h;
         graphic.blit(_preview);

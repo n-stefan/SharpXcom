@@ -164,7 +164,7 @@ internal class ActionMenuItem : InteractiveSurface
 	 * @param firstcolor Offset of the first color to replace.
 	 * @param ncolors Amount of colors to replace.
 	 */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor, int ncolors)
     {
         base.setPalette(colors, firstcolor, ncolors);
         _frame.setPalette(colors, firstcolor, ncolors);

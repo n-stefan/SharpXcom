@@ -65,7 +65,7 @@ internal class ListLoadState : ListGamesState
      * Loads the selected save.
      * @param action Pointer to an action.
      */
-    protected override void lstSavesPress(Action action)
+    unsafe protected override void lstSavesPress(Action action)
     {
         base.lstSavesPress(action);
         if (action.getDetails().button.button == SDL_BUTTON_LEFT)

@@ -25,13 +25,6 @@ internal class NativeImports
 
     #endregion
 
-    #region SDL2_mixer
-
-    [DllImport("SDL2_mixer", CallingConvention = CallingConvention.Cdecl)]
-    internal static extern nint Mix_LoadMUS_RW(nint src, int freesrc = 1);
-
-    #endregion
-
     #region OpenGL
 
     [DllImport("opengl32", CallingConvention = CallingConvention.Cdecl)]
