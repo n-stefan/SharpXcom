@@ -73,7 +73,7 @@ internal class SurfaceSet
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         foreach (var i in _frames)
         {

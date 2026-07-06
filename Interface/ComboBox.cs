@@ -220,11 +220,11 @@ internal class ComboBox : InteractiveSurface
 
         for (; square.w > 1; square.w -= 2)
         {
-            _arrow.drawRect(ref square, (byte)(color + 2));
+            _arrow.drawRect(square, (byte)(color + 2));
             square.x++;
             square.y++;
         }
-        _arrow.drawRect(ref square, (byte)(color + 2));
+        _arrow.drawRect(square, (byte)(color + 2));
 
         // Draw arrow triangle 2
         square.x = 2;
@@ -234,11 +234,11 @@ internal class ComboBox : InteractiveSurface
 
         for (; square.w > 1; square.w -= 2)
         {
-            _arrow.drawRect(ref square, (byte)color);
+            _arrow.drawRect(square, (byte)color);
             square.x++;
             square.y++;
         }
-        _arrow.drawRect(ref square, (byte)color);
+        _arrow.drawRect(square, (byte)color);
     }
 
     /**
@@ -330,7 +330,7 @@ internal class ComboBox : InteractiveSurface
         _list.handle(action, state);
         base.handle(action, state);
         int topY = Math.Min(getY(), _window.getY());
-        if (_window.getVisible() && action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN &&
+        if (_window.getVisible() && action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN &&
             (action.getAbsoluteXMouse() < getX() || action.getAbsoluteXMouse() >= getX() + getWidth() ||
              action.getAbsoluteYMouse() < topY || action.getAbsoluteYMouse() >= topY + getHeight() + _window.getHeight()))
         {
@@ -383,7 +383,7 @@ internal class ComboBox : InteractiveSurface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         _button.setPalette(colors, firstcolor, ncolors);

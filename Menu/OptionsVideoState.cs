@@ -82,15 +82,12 @@ internal class OptionsVideoState : OptionsBaseState
         _btnRootWindowedMode = new ToggleTextButton(104, 16, 206, 128);
 
         // Get available fullscreen modes
-        for (int j = 0; j < SDL_GetNumDisplayModes(0); ++j)
-        {
-            SDL_GetDisplayMode(0, j, out _res[j]); //SDL_ListModes(NULL, SDL_FULLSCREEN)
-        }
+        SDLPointerArray<SDL_DisplayMode>? _res = SDL_GetFullscreenDisplayModes(0); //SDL_ListModes(NULL, SDL_FULLSCREEN)
         if (_res != null)
         {
             int i;
             _resCurrent = -1;
-            for (i = 0; i < _res.Length; ++i)
+            for (i = 0; i < _res.Count; ++i)
             {
                 if (_resCurrent == -1 &&
                     ((_res[i].w == Options.displayWidth && _res[i].h <= Options.displayHeight) || _res[i].w < Options.displayWidth))
@@ -180,7 +177,7 @@ internal class OptionsVideoState : OptionsBaseState
         _btnLetterbox.onMouseOut(txtTooltipOut);
 
         _btnLockMouse.setText(tr("STR_LOCK_MOUSE"));
-        _btnLockMouse.setPressed(Options.captureMouse == SDL_bool.SDL_TRUE /* SDL_GRAB_ON */);
+        _btnLockMouse.setPressed(Options.captureMouse /* SDL_GRAB_ON */);
         _btnLockMouse.onMouseClick(btnLockMouseClick);
         _btnLockMouse.setTooltip("STR_LOCK_MOUSE_DESC");
         _btnLockMouse.onMouseIn(txtTooltipIn);
@@ -548,10 +545,10 @@ internal class OptionsVideoState : OptionsBaseState
      * Changes the Lock Mouse option.
      * @param action Pointer to an action.
      */
-    void btnLockMouseClick(Action _)
+    unsafe void btnLockMouseClick(Action _)
     {
-        Options.captureMouse = _btnLockMouse.getPressed() ? SDL_bool.SDL_TRUE : SDL_bool.SDL_FALSE; //SDL_GrabMode
-        SDL_SetRelativeMouseMode(Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
+        Options.captureMouse = _btnLockMouse.getPressed(); //SDL_GrabMode
+        SDL_SetWindowRelativeMouseMode(_game.getScreen().getWindow(), Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
     }
 
     /**
@@ -605,9 +602,9 @@ internal class OptionsVideoState : OptionsBaseState
     internal override void handle(Action action)
     {
         base.handle(action);
-        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_g && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN && action.getDetails().key.key == SDL_Keycode.SDLK_G && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
         {
-            _btnLockMouse.setPressed(Options.captureMouse == SDL_bool.SDL_TRUE /* SDL_GRAB_ON */);
+            _btnLockMouse.setPressed(Options.captureMouse /* SDL_GRAB_ON */);
         }
     }
 

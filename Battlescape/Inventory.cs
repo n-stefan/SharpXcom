@@ -435,7 +435,7 @@ internal class Inventory : InteractiveSurface
     /**
      * Draws the items contained in the soldier's inventory.
      */
-    void drawItems()
+    unsafe void drawItems()
     {
         _items.clear();
         _grenadeIndicators.Clear();
@@ -529,7 +529,7 @@ internal class Inventory : InteractiveSurface
     /**
      * Draws the inventory grid for item placement.
      */
-    void drawGrid()
+    unsafe void drawGrid()
     {
         _grid.clear();
         Text text = new Text(80, 9, 0, 0);
@@ -555,12 +555,12 @@ internal class Inventory : InteractiveSurface
                     r.y = i.Value.getY() + RuleInventory.SLOT_H * j.y;
                     r.w = RuleInventory.SLOT_W + 1;
                     r.h = RuleInventory.SLOT_H + 1;
-                    _grid.drawRect(ref r, color);
+                    _grid.drawRect(r, color);
                     r.x++;
                     r.y++;
                     r.w -= 2;
                     r.h -= 2;
-                    _grid.drawRect(ref r, 0);
+                    _grid.drawRect(r, 0);
                 }
             }
             else if (i.Value.getType() == InventoryType.INV_HAND)
@@ -570,12 +570,12 @@ internal class Inventory : InteractiveSurface
                 r.y = i.Value.getY();
                 r.w = RuleInventory.HAND_W * RuleInventory.SLOT_W;
                 r.h = RuleInventory.HAND_H * RuleInventory.SLOT_H;
-                _grid.drawRect(ref r, color);
+                _grid.drawRect(r, color);
                 r.x++;
                 r.y++;
                 r.w -= 2;
                 r.h -= 2;
-                _grid.drawRect(ref r, 0);
+                _grid.drawRect(r, 0);
             }
             else if (i.Value.getType() == InventoryType.INV_GROUND)
             {
@@ -588,12 +588,12 @@ internal class Inventory : InteractiveSurface
                         r.y = y;
                         r.w = RuleInventory.SLOT_W + 1;
                         r.h = RuleInventory.SLOT_H + 1;
-                        _grid.drawRect(ref r, color);
+                        _grid.drawRect(r, color);
                         r.x++;
                         r.y++;
                         r.w -= 2;
                         r.h -= 2;
-                        _grid.drawRect(ref r, 0);
+                        _grid.drawRect(r, 0);
                     }
                 }
             }
@@ -646,7 +646,7 @@ internal class Inventory : InteractiveSurface
                     BattleItem item = _selUnit.getItem(slot, x, y);
                     if (item != null && !item.getRules().isFixed())
                     {
-                        if ((SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                        if ((SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                         {
                             RuleInventory newSlot = _game.getMod().getInventory("STR_GROUND", true);
                             string warning = "STR_NOT_ENOUGH_SPACE";
@@ -1022,7 +1022,7 @@ internal class Inventory : InteractiveSurface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         _grid.setPalette(colors, firstcolor, ncolors);

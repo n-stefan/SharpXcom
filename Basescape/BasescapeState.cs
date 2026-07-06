@@ -162,7 +162,7 @@ internal class BasescapeState : State
      * Processes clicking on facilities.
      * @param action Pointer to an action.
      */
-    void viewLeftClick(Action _)
+    unsafe void viewLeftClick(Action _)
     {
         BaseFacility fac = _view.getSelectedFacility();
         if (fac != null)
@@ -294,7 +294,7 @@ internal class BasescapeState : State
      */
     void handleKeyPress(Action action)
     {
-        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN)
         {
             SDL_Keycode[] baseKeys = {Options.keyBaseSelect1,
                              Options.keyBaseSelect2,
@@ -304,7 +304,7 @@ internal class BasescapeState : State
                              Options.keyBaseSelect6,
                              Options.keyBaseSelect7,
                              Options.keyBaseSelect8};
-            var key = action.getDetails().key.keysym.sym;
+            var key = action.getDetails().key.key;
             for (int i = 0; i < _game.getSavedGame().getBases().Count; ++i)
             {
                 if (key == baseKeys[i])

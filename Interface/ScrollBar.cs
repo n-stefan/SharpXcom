@@ -103,7 +103,7 @@ internal class ScrollBar : InteractiveSurface
     internal override void handle(Action action, State state)
     {
         base.handle(action, state);
-        if (_pressed && (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN))
+        if (_pressed && (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION || action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN))
         {
             int cursorY = (int)(action.getAbsoluteYMouse() - getY());
             int y = Math.Clamp(cursorY + _offset, 0, getHeight() - _thumbRect.h + 1);
@@ -163,19 +163,19 @@ internal class ScrollBar : InteractiveSurface
         square.w--;
         square.h--;
 
-        _thumb.drawRect(ref square, (byte)color);
+        _thumb.drawRect(square, (byte)color);
 
         square.x++;
         square.y++;
         color = _color + 5;
 
-        _thumb.drawRect(ref square, (byte)color);
+        _thumb.drawRect(square, (byte)color);
 
         square.w--;
         square.h--;
         color = _color + 4;
 
-        _thumb.drawRect(ref square, (byte)color);
+        _thumb.drawRect(square, (byte)color);
 
         _thumb.setPixel(_thumbRect.x, _thumbRect.y, (byte)(_color + 1));
         _thumb.setPixel(_thumbRect.x, _thumbRect.y + _thumbRect.h - 1, (byte)(_color + 4));
@@ -191,19 +191,19 @@ internal class ScrollBar : InteractiveSurface
             square.w -= 3;
             square.h -= 3;
 
-            _thumb.drawRect(ref square, (byte)color);
+            _thumb.drawRect(square, (byte)color);
 
             square.x++;
             square.y++;
             color = _color + 2;
 
-            _thumb.drawRect(ref square, (byte)color);
+            _thumb.drawRect(square, (byte)color);
 
             square.w--;
             square.h--;
             color = 0;
 
-            _thumb.drawRect(ref square, (byte)color);
+            _thumb.drawRect(square, (byte)color);
 
             _thumb.setPixel(_thumbRect.x + 2 + _thumbRect.w - 1 - 4, _thumbRect.y + 2 + _thumbRect.h - 1 - 4, (byte)(_color + 1));
             _thumb.setPixel(_thumbRect.x + 2, _thumbRect.y + 2 + _thumbRect.h - 1 - 4, (byte)(_color + 4));
@@ -279,7 +279,7 @@ internal class ScrollBar : InteractiveSurface
 	 * @param firstcolor Offset of the first color to replace.
 	 * @param ncolors Amount of colors to replace.
 	 */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         _track.setPalette(colors, firstcolor, ncolors);

@@ -117,29 +117,29 @@ internal class Bar : Surface
         square.h = getHeight();
 
         if (_borderColor != 0)
-            drawRect(ref square, _borderColor);
+            drawRect(square, _borderColor);
         else
-            drawRect(ref square, (byte)(_color + 4));
+            drawRect(square, (byte)(_color + 4));
 
         square.y++;
         square.w--;
         square.h -= 2;
 
-        drawRect(ref square, 0);
+        drawRect(square, 0);
 
         if (_secondOnTop)
         {
             square.w = (ushort)(_scale * _value);
-            drawRect(ref square, _color);
+            drawRect(square, _color);
             square.w = (ushort)(_scale * _value2);
-            drawRect(ref square, _color2);
+            drawRect(square, _color2);
         }
         else
         {
             square.w = (ushort)(_scale * _value2);
-            drawRect(ref square, _color2);
+            drawRect(square, _color2);
             square.w = (ushort)(_scale * _value);
-            drawRect(ref square, _color);
+            drawRect(square, _color);
         }
     }
 

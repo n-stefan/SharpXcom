@@ -121,19 +121,19 @@ internal class ArrowButton : ImageButton
         square.w = getWidth() - 1;
         square.h = getHeight() - 1;
 
-        drawRect(ref square, (byte)color);
+        drawRect(square, (byte)color);
 
         square.x++;
         square.y++;
         color = _color + 5;
 
-        drawRect(ref square, (byte)color);
+        drawRect(square, (byte)color);
 
         square.w--;
         square.h--;
         color = _color + 4;
 
-        drawRect(ref square, (byte)color);
+        drawRect(square, (byte)color);
 
         setPixel(0, 0, (byte)(_color + 1));
         setPixel(0, getHeight() - 1, (byte)(_color + 4));
@@ -150,7 +150,7 @@ internal class ArrowButton : ImageButton
                 square.w = 3;
                 square.h = 3;
 
-                drawRect(ref square, (byte)color);
+                drawRect(square, (byte)color);
 
                 // Draw arrow triangle
                 square.x = 2;
@@ -160,11 +160,11 @@ internal class ArrowButton : ImageButton
 
                 for (; square.w > 1; square.w -= 2)
                 {
-                    drawRect(ref square, (byte)color);
+                    drawRect(square, (byte)color);
                     square.x++;
                     square.y--;
                 }
-                drawRect(ref square, (byte)color);
+                drawRect(square, (byte)color);
                 break;
             case ArrowShape.ARROW_BIG_DOWN:
                 // Draw arrow square
@@ -173,7 +173,7 @@ internal class ArrowButton : ImageButton
                 square.w = 3;
                 square.h = 3;
 
-                drawRect(ref square, (byte)color);
+                drawRect(square, (byte)color);
 
                 // Draw arrow triangle
                 square.x = 2;
@@ -183,11 +183,11 @@ internal class ArrowButton : ImageButton
 
                 for (; square.w > 1; square.w -= 2)
                 {
-                    drawRect(ref square, (byte)color);
+                    drawRect(square, (byte)color);
                     square.x++;
                     square.y++;
                 }
-                drawRect(ref square, (byte)color);
+                drawRect(square, (byte)color);
                 break;
             case ArrowShape.ARROW_SMALL_UP:
                 // Draw arrow triangle 1
@@ -198,11 +198,11 @@ internal class ArrowButton : ImageButton
 
                 for (; square.w > 1; square.w -= 2)
                 {
-                    drawRect(ref square, (byte)(color + 2));
+                    drawRect(square, (byte)(color + 2));
                     square.x++;
                     square.y--;
                 }
-                drawRect(ref square, (byte)(color + 2));
+                drawRect(square, (byte)(color + 2));
 
                 // Draw arrow triangle 2
                 square.x = 2;
@@ -212,11 +212,11 @@ internal class ArrowButton : ImageButton
 
                 for (; square.w > 1; square.w -= 2)
                 {
-                    drawRect(ref square, (byte)color);
+                    drawRect(square, (byte)color);
                     square.x++;
                     square.y--;
                 }
-                drawRect(ref square, (byte)color);
+                drawRect(square, (byte)color);
                 break;
             case ArrowShape.ARROW_SMALL_DOWN:
                 // Draw arrow triangle 1
@@ -227,11 +227,11 @@ internal class ArrowButton : ImageButton
 
                 for (; square.w > 1; square.w -= 2)
                 {
-                    drawRect(ref square, (byte)(color + 2));
+                    drawRect(square, (byte)(color + 2));
                     square.x++;
                     square.y++;
                 }
-                drawRect(ref square, (byte)(color + 2));
+                drawRect(square, (byte)(color + 2));
 
                 // Draw arrow triangle 2
                 square.x = 2;
@@ -241,11 +241,11 @@ internal class ArrowButton : ImageButton
 
                 for (; square.w > 1; square.w -= 2)
                 {
-                    drawRect(ref square, (byte)color);
+                    drawRect(square, (byte)color);
                     square.x++;
                     square.y++;
                 }
-                drawRect(ref square, (byte)color);
+                drawRect(square, (byte)color);
                 break;
             case ArrowShape.ARROW_SMALL_LEFT:
                 // Draw arrow triangle 1
@@ -256,12 +256,12 @@ internal class ArrowButton : ImageButton
 
                 for (; square.h < 5; square.h += 2)
                 {
-                    drawRect(ref square, (byte)(color + 2));
+                    drawRect(square, (byte)(color + 2));
                     square.x += 2;
                     square.y--;
                 }
                 square.w = 1;
-                drawRect(ref square, (byte)(color + 2));
+                drawRect(square, (byte)(color + 2));
 
                 // Draw arrow triangle 2
                 square.x = 3;
@@ -271,12 +271,12 @@ internal class ArrowButton : ImageButton
 
                 for (; square.h < 5; square.h += 2)
                 {
-                    drawRect(ref square, (byte)color);
+                    drawRect(square, (byte)color);
                     square.x += 2;
                     square.y--;
                 }
                 square.w = 1;
-                drawRect(ref square, (byte)color);
+                drawRect(square, (byte)color);
                 break;
             case ArrowShape.ARROW_SMALL_RIGHT:
                 // Draw arrow triangle 1
@@ -287,13 +287,13 @@ internal class ArrowButton : ImageButton
 
                 for (; square.h < 5; square.h += 2)
                 {
-                    drawRect(ref square, (byte)(color + 2));
+                    drawRect(square, (byte)(color + 2));
                     square.x -= 2;
                     square.y--;
                 }
                 square.x++;
                 square.w = 1;
-                drawRect(ref square, (byte)(color + 2));
+                drawRect(square, (byte)(color + 2));
 
                 // Draw arrow triangle 2
                 square.x = 6;
@@ -303,13 +303,13 @@ internal class ArrowButton : ImageButton
 
                 for (; square.h < 5; square.h += 2)
                 {
-                    drawRect(ref square, (byte)color);
+                    drawRect(square, (byte)color);
                     square.x -= 2;
                     square.y--;
                 }
                 square.x++;
                 square.w = 1;
-                drawRect(ref square, (byte)color);
+                drawRect(square, (byte)color);
                 break;
             default:
                 break;

@@ -283,7 +283,7 @@ internal class BaseInfoState : State
      */
     void handleKeyPress(Action action)
     {
-        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN)
         {
             SDL_Keycode[] baseKeys = {Options.keyBaseSelect1,
                              Options.keyBaseSelect2,
@@ -293,7 +293,7 @@ internal class BaseInfoState : State
                              Options.keyBaseSelect6,
                              Options.keyBaseSelect7,
                              Options.keyBaseSelect8};
-            SDL_Keycode key = action.getDetails().key.keysym.sym;
+            SDL_Keycode key = action.getDetails().key.key;
             for (uint i = 0; i < _game.getSavedGame().getBases().Count; ++i)
             {
                 if (key == baseKeys[i])

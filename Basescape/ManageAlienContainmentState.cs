@@ -193,7 +193,7 @@ internal class ManageAlienContainmentState : State
      * Deals with the selected aliens.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Action _)
+    unsafe void btnOkClick(Action _)
     {
         for (int i = 0; i < _qtys.Count; ++i)
         {

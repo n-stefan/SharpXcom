@@ -194,8 +194,8 @@ internal class CraftInfoState : State
         {
             _craft.setName(_edtCraft.getText());
         }
-        if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_RETURN ||
-            action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_KP_ENTER)
+        if (action.getDetails().key.key == SDL_Keycode.SDLK_RETURN ||
+            action.getDetails().key.key == SDL_Keycode.SDLK_KP_ENTER)
         {
             _edtCraft.setText(_craft.getName(_game.getLanguage()));
         }

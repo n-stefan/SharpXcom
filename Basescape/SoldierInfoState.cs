@@ -492,7 +492,7 @@ internal class SoldierInfoState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Action _)
+    unsafe void btnOkClick(Action _)
     {
         _game.popState();
         if (_game.getSavedGame().getMonthsPassed() > -1 && Options.storageLimitsEnforced && _base != null && _base.storesOverfull())

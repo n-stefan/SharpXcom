@@ -107,7 +107,7 @@ internal class CraftsState : State
      * Returns to the previous screen.
      * @param action Pointer to an action.
      */
-    void btnOkClick(Action _)
+    unsafe void btnOkClick(Action _)
     {
         _game.popState();
 

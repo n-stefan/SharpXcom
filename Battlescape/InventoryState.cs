@@ -693,12 +693,12 @@ internal class InventoryState : State
                 r.y = 0;
                 r.w = RuleInventory.HAND_W * RuleInventory.SLOT_W;
                 r.h = RuleInventory.HAND_H * RuleInventory.SLOT_H;
-                _selAmmo.drawRect(ref r, (byte)_game.getMod().getInterface("inventory").getElement("grid").color);
+                _selAmmo.drawRect(r, (byte)_game.getMod().getInterface("inventory").getElement("grid").color);
                 r.x++;
                 r.y++;
                 r.w -= 2;
                 r.h -= 2;
-                _selAmmo.drawRect(ref r, (byte)(Palette.blockOffset(0) + 15));
+                _selAmmo.drawRect(r, (byte)(Palette.blockOffset(0) + 15));
                 item.getAmmoItem().getRules().drawHandSprite(_game.getMod().getSurfaceSet("BIGOBS.PCK"), _selAmmo);
                 _updateTemplateButtons(false);
             }
@@ -769,13 +769,13 @@ internal class InventoryState : State
         }
     }
 
-    void _refreshMouse()
+    unsafe void _refreshMouse()
     {
         // send a mouse motion event to refresh any hover actions
-        int x, y;
-        SDL_GetMouseState(out x, out y);
+        float x, y;
+        SDL_GetMouseState(&x, &y);
         SDL_WarpMouseGlobal(x + 1, y);
-
+        
         // move the mouse back to avoid cursor creep
         SDL_WarpMouseGlobal(x, y);
     }
@@ -940,7 +940,7 @@ internal class InventoryState : State
     {
         base.handle(action);
 
-        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN)
         {
             if (action.getDetails().button.button == SDL_BUTTON_X1)
             {

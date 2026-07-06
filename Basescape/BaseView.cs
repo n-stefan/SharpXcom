@@ -101,12 +101,12 @@ internal class BaseView : InteractiveSurface
                 r.h = _selector.getHeight();
                 r.x = 0;
                 r.y = 0;
-                _selector.drawRect(ref r, _selectorColor);
+                _selector.drawRect(r, _selectorColor);
                 r.w -= 2;
                 r.h -= 2;
                 r.x++;
                 r.y++;
-                _selector.drawRect(ref r, 0);
+                _selector.drawRect(r, 0);
             }
             else
             {
@@ -114,7 +114,7 @@ internal class BaseView : InteractiveSurface
                 r.h = _selector.getHeight();
                 r.x = 0;
                 r.y = 0;
-                _selector.drawRect(ref r, 0);
+                _selector.drawRect(r, 0);
             }
         }
     }
@@ -173,7 +173,7 @@ internal class BaseView : InteractiveSurface
      * highlighting the selected facility.
      * @param size Facility length (0 disables it).
      */
-    internal void setSelectable(int size)
+    unsafe internal void setSelectable(int size)
     {
         _selSize = size;
         if (_selSize > 0)
@@ -185,12 +185,12 @@ internal class BaseView : InteractiveSurface
             r.h = _selector.getHeight();
             r.x = 0;
             r.y = 0;
-            _selector.drawRect(ref r, _selectorColor);
+            _selector.drawRect(r, _selectorColor);
             r.w -= 2;
             r.h -= 2;
             r.x++;
             r.y++;
-            _selector.drawRect(ref r, 0);
+            _selector.drawRect(r, 0);
             _selector.setVisible(false);
         }
         else
@@ -343,7 +343,7 @@ internal class BaseView : InteractiveSurface
      * Draws the view of all the facilities in the base, connectors
      * between them and crafts landed in hangars.
      */
-    internal override void draw()
+    unsafe internal override void draw()
     {
         base.draw();
 

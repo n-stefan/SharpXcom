@@ -94,7 +94,7 @@ internal class Timer
     }
 
     const uint accurate = 4;
-    static uint old_time = SDL_GetTicks();
+    static uint old_time = (uint)SDL_GetTicks();
     static ulong false_time = (ulong)old_time << (byte)accurate;
     uint slowTick()
     {

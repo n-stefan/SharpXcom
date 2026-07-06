@@ -492,7 +492,7 @@ internal class ManufactureInfoState : State
      * Adds given number of units to produce to the project if possible.
      * @param change How much we want to add.
      */
-    void moreUnit(int change)
+    unsafe void moreUnit(int change)
     {
         if (change <= 0) return;
         if (_production.getRules().getCategory() == "STR_CRAFT" && _base.getAvailableHangars() - _base.getUsedHangars() <= 0)

@@ -421,7 +421,7 @@ internal class TransferItemsState : State
      * Increases the quantity of the selected item to transfer by "change".
      * @param change How much we want to add.
      */
-    void increaseByValue(int change)
+    unsafe void increaseByValue(int change)
     {
         if (0 >= change || getRow().qtySrc <= getRow().amount) return;
         string errorMessage = null;

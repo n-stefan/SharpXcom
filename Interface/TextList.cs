@@ -310,7 +310,7 @@ internal class TextList : InteractiveSurface
      * @param cols Number of columns.
      * @param ... Text for each cell in the new row.
      */
-    internal void addRow(int cols, params string[] args)
+    unsafe internal void addRow(int cols, params string[] args)
     {
         int ncols;
         if (cols > 0)
@@ -711,7 +711,7 @@ internal class TextList : InteractiveSurface
     /**
      * Changes the text list to use the big-size font.
      */
-    internal void setBig()
+    unsafe internal void setBig()
     {
         _font = _big;
 
@@ -1014,7 +1014,7 @@ internal class TextList : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void mouseOver(Action action, State state)
+    unsafe protected override void mouseOver(Action action, State state)
     {
         if (_selectable)
         {
@@ -1087,7 +1087,7 @@ internal class TextList : InteractiveSurface
      * @param small Pointer to small-size font.
      * @param lang Pointer to current language.
      */
-    internal override void initText(Font big, Font small, Language lang)
+    unsafe internal override void initText(Font big, Font small, Language lang)
     {
         _big = big;
         _small = small;
@@ -1109,7 +1109,7 @@ internal class TextList : InteractiveSurface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         foreach (var u in _texts)
@@ -1212,7 +1212,7 @@ internal class TextList : InteractiveSurface
     /**
      * Changes the text list to use the small-size font.
      */
-    void setSmall()
+    unsafe void setSmall()
     {
         _font = _small;
 

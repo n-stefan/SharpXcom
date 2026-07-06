@@ -109,7 +109,7 @@ internal class MiniBaseView : InteractiveSurface
                 r.y = 0;
                 r.w = MINI_SIZE + 2;
                 r.h = MINI_SIZE + 2;
-                drawRect(ref r, 1);
+                drawRect(r, 1);
             }
             _texture.getFrame(41).setX(i * (MINI_SIZE + 2));
             _texture.getFrame(41).setY(0);
@@ -132,20 +132,20 @@ internal class MiniBaseView : InteractiveSurface
                     r.y = 2 + f.getY() * 2;
                     r.w = f.getRules().getSize() * 2;
                     r.h = f.getRules().getSize() * 2;
-                    drawRect(ref r, (byte)(color + 3));
+                    drawRect(r, (byte)(color + 3));
                     r.x++;
                     r.y++;
                     r.w--;
                     r.h--;
-                    drawRect(ref r, (byte)(color + 5));
+                    drawRect(r, (byte)(color + 5));
                     r.x--;
                     r.y--;
-                    drawRect(ref r, (byte)(color + 2));
+                    drawRect(r, (byte)(color + 2));
                     r.x++;
                     r.y++;
                     r.w--;
                     r.h--;
-                    drawRect(ref r, (byte)(color + 3));
+                    drawRect(r, (byte)(color + 3));
                     r.x--;
                     r.y--;
                     setPixel(r.x, r.y, (byte)(color + 1));

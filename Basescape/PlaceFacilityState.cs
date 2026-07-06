@@ -112,7 +112,7 @@ internal class PlaceFacilityState : State
      * Processes clicking on facilities.
      * @param action Pointer to an action.
      */
-    void viewClick(Action _)
+    unsafe void viewClick(Action _)
     {
         if (!_view.isPlaceable(_rule))
         {

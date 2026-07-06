@@ -336,7 +336,7 @@ internal class Mod
     StatAdjustment[] _statAdjustment = new StatAdjustment[5];
     int _facilityListOrder, _craftListOrder, _itemListOrder, _researchListOrder, _manufactureListOrder, _ufopaediaListOrder, _invListOrder;
     ModData _modCurrent;
-    SDL_Color[] _statePalette;
+    unsafe SDL_Color* _statePalette;
     List<List<byte>> _transparencyLUTs;
     string _playingMusic;
     List<ModData> _modData;
@@ -355,7 +355,7 @@ internal class Mod
     /**
      * Creates an empty mod.
      */
-    internal Mod()
+    unsafe internal Mod()
     {
         _costEngineer = 0;
         _costScientist = 0;
@@ -453,7 +453,7 @@ internal class Mod
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         _statePalette = colors;
         foreach (var i in _fonts)
@@ -544,7 +544,7 @@ internal class Mod
         }
     }
 
-    void loadExtraSprite(ExtraSprites spritePack)
+    unsafe void loadExtraSprite(ExtraSprites spritePack)
     {
         if (spritePack.isLoaded())
             return;
@@ -967,7 +967,7 @@ internal class Mod
     /**
      * Applies necessary modifications to vanilla resources.
      */
-    void modResources()
+    unsafe void modResources()
     {
         // we're gonna need these
         getSurface("GEOBORD.SCR");
@@ -1074,7 +1074,7 @@ internal class Mod
     /**
      * Loads the vanilla resources required by the game.
      */
-    void loadVanillaResources()
+    unsafe void loadVanillaResources()
     {
         // Create Geoscape surface
         _sets["GlobeMarkers"] = new SurfaceSet(3, 3);
@@ -1125,10 +1125,10 @@ internal class Mod
                 new() { r = 3, g = 4, b = 8, a = 255 },
                 new() { r = 3, g = 3, b = 6, a = 255 }
             };
-            Span<SDL_Color> color = _palettes[s2].getColors(Palette.backPos + 16);
             for (var i = 0; i < gradient.Length; ++i)
             {
-                color[i] = gradient[i];
+                SDL_Color* color = _palettes[s2].getColors(Palette.backPos + 16 + i);
+                *color = gradient[i];
             }
         }
 
@@ -1537,7 +1537,7 @@ internal class Mod
     /**
      * Loads the resources required by the Battlescape.
      */
-    void loadBattlescapeResources()
+    unsafe void loadBattlescapeResources()
     {
         // Load Battlescape ICONS
         _sets["SPICONS.DAT"] = new SurfaceSet(32, 24);
@@ -1628,7 +1628,7 @@ internal class Mod
             Surface tempSurface = new Surface(1, 1);
             tempSurface.loadImage(FileMap.getFilePath("UFOGRAPH/" + lbms[i]));
             _palettes[pals[i]] = new Palette();
-            SDL_Color[] colors = tempSurface.getPalette();
+            SDL_Color* colors = tempSurface.getPalette();
             colors[255] = backPal[i];
             _palettes[pals[i]].setColors(colors, 256);
             createTransparencyLUT(_palettes[pals[i]]);
@@ -1826,10 +1826,10 @@ internal class Mod
      * each additional tint in the rulesets will result in over a million iterations more.
      * @param pal the palette to base the lookup table on.
      */
-    void createTransparencyLUT(Palette pal)
+    unsafe void createTransparencyLUT(Palette pal)
     {
         const int opacityMax = 4;
-        Span<SDL_Color> palColors = pal.getColors(0);
+        SDL_Color* palColors = pal.getColors(0);
         List<byte> lookUpTable;
         // start with the color sets
         lookUpTable = new List<byte>(_transparencies.Count * 256 * opacityMax);

@@ -77,7 +77,7 @@ internal class Map : InteractiveSurface
      * @param y Y position in pixels.
      * @param visibleMapHeight Current visible map height.
      */
-    internal Map(Game game, int width, int height, int x, int y, int visibleMapHeight) : base(width, height, x, y)
+    unsafe internal Map(Game game, int width, int height, int x, int y, int visibleMapHeight) : base(width, height, x, y)
     {
         _game = game;
         _arrow = null;
@@ -264,7 +264,7 @@ internal class Map : InteractiveSurface
      * Check if a certain unit needs to be redrawn.
      * @param unit Pointer to battleUnit.
      */
-    internal void cacheUnit(BattleUnit unit)
+    unsafe internal void cacheUnit(BattleUnit unit)
     {
         UnitSprite unitSprite = new UnitSprite(_spriteWidth * 2, _spriteHeight, 0, 0, _save.getDepth() != 0);
         unitSprite.setPalette(this.getPalette());
@@ -335,7 +335,7 @@ internal class Map : InteractiveSurface
     /**
      * Initializes the map.
      */
-    internal void init()
+    unsafe internal void init()
     {
         // load the tiny arrow into a surface
         int f = Palette.blockOffset(1); // yellow
@@ -564,7 +564,7 @@ internal class Map : InteractiveSurface
 	 * Keep this function as optimised as possible. It's big to minimise overhead of function calls.
 	 * @param surface The surface to draw on.
 	 */
-    void drawTerrain(Surface surface)
+    unsafe void drawTerrain(Surface surface)
     {
         int frameNumber = 0;
         Surface tmpSurface;
@@ -1754,7 +1754,7 @@ internal class Map : InteractiveSurface
 	 * @param firstcolor Offset of the first color to replace.
 	 * @param ncolors Amount of colors to replace.
 	 */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
         foreach (var i in _save.getMapDataSets())

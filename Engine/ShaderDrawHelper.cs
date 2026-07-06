@@ -70,12 +70,12 @@ class ShaderBase<TPixel>
 	 * then `_orgin` will be invalid and use of this object will cause memory exception.
      * @param s vector that are treated as surface
      */
-    internal ShaderBase(Surface s)
+    unsafe internal ShaderBase(Surface s)
     {
-        _origin = (TPixel)(object)s.getSurface().pixels;
+        _origin = (TPixel)(object)s.getSurface()->pixels;
         _range_base = new GraphSubset(s.getWidth(), s.getHeight());
         _range_domain = new GraphSubset(s.getWidth(), s.getHeight());
-        _pitch = s.getSurface().pitch;
+        _pitch = s.getSurface()->pitch;
     }
 
     internal GraphSubset getDomain() =>

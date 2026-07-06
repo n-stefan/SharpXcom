@@ -510,7 +510,7 @@ internal class PurchaseState : State
      * Increases the quantity of the selected item to buy by "change".
      * @param change How much we want to add.
      */
-    void increaseByValue(int change)
+    unsafe void increaseByValue(int change)
     {
         if (0 >= change) return;
         string errorMessage = null;

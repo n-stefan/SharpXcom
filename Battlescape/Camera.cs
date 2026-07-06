@@ -374,14 +374,14 @@ internal class Camera
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    internal void mousePress(Action action, State _)
+    unsafe internal void mousePress(Action action, State _)
     {
         if (action.getDetails().button.button == SDL_BUTTON_LEFT && Options.battleEdgeScroll == ScrollType.SCROLL_TRIGGER)
         {
             _scrollTrigger = true;
             mouseOver(action, null);
         }
-        else if (Options.battleDragScrollButton != SDL_BUTTON_MIDDLE || (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)) == 0)
+        else if (Options.battleDragScrollButton != SDL_BUTTON_MIDDLE || (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.battleDragScrollButton)) == 0)
         {
             if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
             {
@@ -399,7 +399,7 @@ internal class Camera
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-    internal void mouseOver(Action action, State _)
+    unsafe internal void mouseOver(Action action, State _)
     {
         if (_map.getCursorType() == CursorType.CT_NONE)
         {
@@ -492,7 +492,7 @@ internal class Camera
                 _scrollMouseY = 0;
             }
 
-            if ((_scrollMouseX != 0 || _scrollMouseY != 0) && !_scrollMouseTimer.isRunning() && !_scrollKeyTimer.isRunning() && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)))
+            if ((_scrollMouseX != 0 || _scrollMouseY != 0) && !_scrollMouseTimer.isRunning() && !_scrollKeyTimer.isRunning() && 0 == (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.battleDragScrollButton)))
             {
                 _scrollMouseTimer.start();
             }
@@ -547,14 +547,14 @@ internal class Camera
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    internal void keyboardPress(Action action, State _)
+    unsafe internal void keyboardPress(Action action, State _)
     {
         if (_map.getCursorType() == CursorType.CT_NONE)
         {
             return;
         }
 
-        var key = action.getDetails().key.keysym.sym;
+        var key = action.getDetails().key.key;
         int scrollSpeed = Options.battleScrollSpeed;
         if (key == Options.keyBattleLeft)
         {
@@ -573,7 +573,7 @@ internal class Camera
             _scrollKeyY = -scrollSpeed;
         }
 
-        if ((_scrollKeyX != 0 || _scrollKeyY != 0) && !_scrollKeyTimer.isRunning() && !_scrollMouseTimer.isRunning() && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)))
+        if ((_scrollKeyX != 0 || _scrollKeyY != 0) && !_scrollKeyTimer.isRunning() && !_scrollMouseTimer.isRunning() && 0 == (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.battleDragScrollButton)))
         {
             _scrollKeyTimer.start();
         }
@@ -588,14 +588,14 @@ internal class Camera
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-    internal void keyboardRelease(Action action, State _)
+    unsafe internal void keyboardRelease(Action action, State _)
     {
         if (_map.getCursorType() == CursorType.CT_NONE)
         {
             return;
         }
 
-        var key = action.getDetails().key.keysym.sym;
+        var key = action.getDetails().key.key;
         if (key == Options.keyBattleLeft)
         {
             _scrollKeyX = 0;
@@ -613,7 +613,7 @@ internal class Camera
             _scrollKeyY = 0;
         }
 
-        if ((_scrollKeyX != 0 || _scrollKeyY != 0) && !_scrollKeyTimer.isRunning() && !_scrollMouseTimer.isRunning() && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)))
+        if ((_scrollKeyX != 0 || _scrollKeyY != 0) && !_scrollKeyTimer.isRunning() && !_scrollMouseTimer.isRunning() && 0 == (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.battleDragScrollButton)))
         {
             _scrollKeyTimer.start();
         }

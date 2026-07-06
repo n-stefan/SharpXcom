@@ -446,7 +446,7 @@ internal class CraftEquipmentState : State
      * Moves the given number of items (selected) to the craft.
      * @param change Item difference.
      */
-    void moveRightByValue(int change)
+    unsafe void moveRightByValue(int change)
     {
         Craft c = _base.getCrafts()[(int)_craft];
         RuleItem item = _game.getMod().getItem(_items[(int)_sel], true);

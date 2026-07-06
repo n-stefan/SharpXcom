@@ -158,7 +158,7 @@ internal class ManufactureStartState : State
 	 * Go to the Production settings screen.
 	 * @param action A pointer to an Action.
 	 */
-    void btnStartClick(Action _)
+    unsafe void btnStartClick(Action _)
     {
         if (_item.getCategory() == "STR_CRAFT" && _base.getAvailableHangars() - _base.getUsedHangars() <= 0)
         {

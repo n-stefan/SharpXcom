@@ -122,7 +122,7 @@ internal class ScannerState : State
     internal override void handle(Action action)
     {
         base.handle(action);
-        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN && action.getDetails().button.button == SDL_BUTTON_RIGHT)
         {
             exitClick(action);
         }
