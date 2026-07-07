@@ -1389,7 +1389,7 @@ internal class Globe : InteractiveSurface
      * Draws the details of the countries on the globe,
      * based on the current zoom level.
      */
-    void drawDetail()
+    unsafe void drawDetail()
     {
         _countries.clear();
 
@@ -1632,7 +1632,7 @@ internal class Globe : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    internal override void mousePress(Action action, State state)
+    unsafe internal override void mousePress(Action action, State state)
     {
         double lon, lat;
         cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
@@ -1641,12 +1641,14 @@ internal class Globe : InteractiveSurface
         {
             _isMouseScrolling = true;
             _isMouseScrolled = false;
-            SDL_GetMouseState(out _xBeforeMouseScrolling, out _yBeforeMouseScrolling);
+            float xBeforeMouseScrolling, yBeforeMouseScrolling;
+            SDL_GetMouseState(&xBeforeMouseScrolling, &yBeforeMouseScrolling);
+            _xBeforeMouseScrolling = (int)xBeforeMouseScrolling; _yBeforeMouseScrolling = (int)yBeforeMouseScrolling;
             _lonBeforeMouseScrolling = _cenLon;
             _latBeforeMouseScrolling = _cenLat;
             _totalMouseMoveX = 0; _totalMouseMoveY = 0;
             _mouseMovedOverThreshold = false;
-            _mouseScrollingStartTime = SDL_GetTicks();
+            _mouseScrollingStartTime = (uint)SDL_GetTicks();
         }
         // Check for errors
         //if (lat == lat && lon == lon)
@@ -1691,7 +1693,7 @@ internal class Globe : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void mouseClick(Action action, State state)
+    unsafe protected override void mouseClick(Action action, State state)
     {
         if (action.getDetails().wheel.y > 0) //button.button == SDL_BUTTON_WHEELUP
         {
@@ -1712,7 +1714,7 @@ internal class Globe : InteractiveSurface
         if (_isMouseScrolling)
         {
             if (action.getDetails().button.button != Options.geoDragScrollButton
-                && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.geoDragScrollButton)))
+                && 0 == (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.geoDragScrollButton)))
             { // so we missed again the mouse-release :(
               // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
                 if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
@@ -1763,18 +1765,18 @@ internal class Globe : InteractiveSurface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    protected override void mouseOver(Action action, State state)
+    unsafe protected override void mouseOver(Action action, State state)
     {
         double lon, lat;
         cartToPolar((short)Math.Floor(action.getAbsoluteXMouse()), (short)Math.Floor(action.getAbsoluteYMouse()), out lon, out lat);
 
-        if (_isMouseScrolling && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+        if (_isMouseScrolling && action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION)
         {
             // The following is the workaround for a rare problem where sometimes
             // the mouse-release event is missed for any reason.
             // (checking: is the dragScroll-mouse-button still pressed?)
             // However if the SDL is also missed the release event, then it is to no avail :(
-            if (0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.geoDragScrollButton)))
+            if (0 == (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.geoDragScrollButton)))
             { // so we missed again the mouse-release :(
               // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
                 if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
@@ -1791,14 +1793,14 @@ internal class Globe : InteractiveSurface
             if (Options.touchEnabled == false)
             {
                 // Set the mouse cursor back
-                SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_IGNORE);
+                SDL_SetEventEnabled(SDL_EventType.SDL_EVENT_MOUSE_MOTION, false);
                 SDL_WarpMouseGlobal((_game.getScreen().getWidth() - 100) / 2, _game.getScreen().getHeight() / 2);
-                SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_ENABLE);
+                SDL_SetEventEnabled(SDL_EventType.SDL_EVENT_MOUSE_MOTION, true);
             }
 
             // Check the threshold
-            _totalMouseMoveX += action.getDetails().motion.xrel;
-            _totalMouseMoveY += action.getDetails().motion.yrel;
+            _totalMouseMoveX += (int)action.getDetails().motion.xrel;
+            _totalMouseMoveY += (int)action.getDetails().motion.yrel;
 
             if (!_mouseMovedOverThreshold)
                 _mouseMovedOverThreshold = ((Math.Abs(_totalMouseMoveX) > Options.dragScrollPixelTolerance) || (Math.Abs(_totalMouseMoveY) > Options.dragScrollPixelTolerance));
@@ -1850,11 +1852,11 @@ internal class Globe : InteractiveSurface
     protected override void keyboardPress(Action action, State state)
     {
         base.keyboardPress(action, state);
-        if (action.getDetails().key.keysym.sym == Options.keyGeoToggleDetail)
+        if (action.getDetails().key.key == Options.keyGeoToggleDetail)
         {
             toggleDetail();
         }
-        if (action.getDetails().key.keysym.sym == Options.keyGeoToggleRadar)
+        if (action.getDetails().key.key == Options.keyGeoToggleRadar)
         {
             toggleRadarLines();
         }
@@ -1885,7 +1887,7 @@ internal class Globe : InteractiveSurface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal override void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal override void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
         base.setPalette(colors, firstcolor, ncolors);
 

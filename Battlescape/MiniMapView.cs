@@ -213,7 +213,7 @@ internal class MiniMapView : InteractiveSurface
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-    internal override void mousePress(Action action, State state)
+    unsafe internal override void mousePress(Action action, State state)
     {
         base.mousePress(action, state);
 
@@ -221,19 +221,21 @@ internal class MiniMapView : InteractiveSurface
         {
             _isMouseScrolling = true;
             _isMouseScrolled = false;
-            SDL_GetMouseState(out _xBeforeMouseScrolling, out _yBeforeMouseScrolling);
+            float xBeforeMouseScrolling, yBeforeMouseScrolling;
+            SDL_GetMouseState(&xBeforeMouseScrolling, &yBeforeMouseScrolling);
+            _xBeforeMouseScrolling = (int)xBeforeMouseScrolling; _yBeforeMouseScrolling = (int)yBeforeMouseScrolling;
             _posBeforeMouseScrolling = _camera.getCenterPosition();
             if (!Options.battleDragScrollInvert && _cursorPosition.z == 0)
             {
-                _cursorPosition.x = action.getDetails().motion.x;
-                _cursorPosition.y = action.getDetails().motion.y;
+                _cursorPosition.x = (int)action.getDetails().motion.x;
+                _cursorPosition.y = (int)action.getDetails().motion.y;
                 // the Z is irrelevant to our mouse position, but we can use it as a boolean to check if the position is set or not
                 _cursorPosition.z = 1;
             }
             _mouseScrollX = 0; _mouseScrollY = 0;
             _totalMouseMoveX = 0; _totalMouseMoveY = 0;
             _mouseMovedOverThreshold = false;
-            _mouseScrollingStartTime = SDL_GetTicks();
+            _mouseScrollingStartTime = (uint)SDL_GetTicks();
         }
     }
 
@@ -242,7 +244,7 @@ internal class MiniMapView : InteractiveSurface
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-    protected override void mouseClick(Action action, State state)
+    unsafe protected override void mouseClick(Action action, State state)
     {
         base.mouseClick(action, state);
 
@@ -253,7 +255,7 @@ internal class MiniMapView : InteractiveSurface
         if (_isMouseScrolling)
         {
             if (action.getDetails().button.button != Options.battleDragScrollButton
-            && 0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)))
+            && 0 == (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.battleDragScrollButton)))
             { // so we missed again the mouse-release :(
               // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
                 if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
@@ -338,17 +340,17 @@ internal class MiniMapView : InteractiveSurface
 	 * @param action Pointer to an action.
 	 * @param state State that the action handlers belong to.
 	 */
-    protected override void mouseOver(Action action, State state)
+    unsafe protected override void mouseOver(Action action, State state)
     {
         base.mouseOver(action, state);
 
-        if (_isMouseScrolling && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+        if (_isMouseScrolling && action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION)
         {
             // The following is the workaround for a rare problem where sometimes
             // the mouse-release event is missed for any reason.
             // However if the SDL is also missed the release event, then it is to no avail :(
             // (checking: is the dragScroll-mouse-button still pressed?)
-            if (0 == (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)))
+            if (0 == (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.battleDragScrollButton)))
             { // so we missed again the mouse-release :(
               // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
                 if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
@@ -366,14 +368,14 @@ internal class MiniMapView : InteractiveSurface
             if (Options.touchEnabled == false)
             {
                 // Set the mouse cursor back
-                SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_IGNORE);
+                SDL_SetEventEnabled(SDL_EventType.SDL_EVENT_MOUSE_MOTION, false);
                 SDL_WarpMouseGlobal(_xBeforeMouseScrolling, _yBeforeMouseScrolling);
-                SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_ENABLE);
+                SDL_SetEventEnabled(SDL_EventType.SDL_EVENT_MOUSE_MOTION, true);
             }
 
             // Check the threshold
-            _totalMouseMoveX += action.getDetails().motion.xrel;
-            _totalMouseMoveY += action.getDetails().motion.yrel;
+            _totalMouseMoveX += (int)action.getDetails().motion.xrel;
+            _totalMouseMoveY += (int)action.getDetails().motion.yrel;
             if (!_mouseMovedOverThreshold)
                 _mouseMovedOverThreshold = ((Math.Abs(_totalMouseMoveX) > Options.dragScrollPixelTolerance) || (Math.Abs(_totalMouseMoveY) > Options.dragScrollPixelTolerance));
 
@@ -383,13 +385,13 @@ internal class MiniMapView : InteractiveSurface
 
             if (Options.battleDragScrollInvert)
             {
-                scrollX = action.getDetails().motion.xrel;
-                scrollY = action.getDetails().motion.yrel;
+                scrollX = (int)action.getDetails().motion.xrel;
+                scrollY = (int)action.getDetails().motion.yrel;
             }
             else
             {
-                scrollX = -action.getDetails().motion.xrel;
-                scrollY = -action.getDetails().motion.yrel;
+                scrollX = (int)-action.getDetails().motion.xrel;
+                scrollY = (int)-action.getDetails().motion.yrel;
             }
             _mouseScrollX += scrollX;
             _mouseScrollY += scrollY;

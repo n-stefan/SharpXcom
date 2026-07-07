@@ -284,7 +284,7 @@ struct AudioSequence
         _flcPlayer = flcPlayer;
     }
 
-    internal void play()
+    unsafe internal void play()
     {
         while (_flcPlayer.getFrameCount() >= introSoundTrack[trackPosition].frameNumber)
         {
@@ -326,13 +326,13 @@ struct AudioSequence
                 {
                     soundInFile sf = introSounds[sounds + command].Value;
                     int channel = trackPosition % 4; // use at most four channels to play sound effects
-                    double ratio = (double)Options.soundVolume / MIX_MAX_VOLUME;
+                    double ratio = (double)Options.soundVolume / 1.0f;
                     Console.WriteLine($"{Log(SeverityLevel.LOG_DEBUG)} playing: {sf.catFile}:{sf.sound} for index {command}");
                     s = mod.getSound(sf.catFile, (uint)sf.sound, false);
                     if (s != null)
                     {
                         s.play(channel);
-                        Mix_Volume(channel, (int)(sf.volume * ratio));
+                        MIX_SetTrackGain(Game.Tracks[channel], (float)(sf.volume * ratio));
                         break;
                     }
                     else Console.WriteLine($"{Log(SeverityLevel.LOG_DEBUG)} Couldn't play {sf.catFile}:{sf.sound}");
@@ -369,7 +369,7 @@ internal class VideoState : State
 	 */
     ~VideoState() { }
 
-    internal override void init()
+    unsafe internal override void init()
     {
         base.init();
 
@@ -460,37 +460,39 @@ internal class VideoState : State
 
 #if !__NO_MUSIC
         // fade out!
-        if (fade)
-        {
-            Mix_FadeOutChannel(-1, FADE_DELAY * FADE_STEPS);
-            // SDL_Mixer has trouble with native midi and volume on windows,
-            // which is the most likely use case, so f@%# it.
-            if (Mix_GetMusicType(0) != Mix_MusicType.MUS_MID)
-            {
-                Mix_FadeOutMusic(FADE_DELAY * FADE_STEPS);
-                func_fade();
-            }
-            else
-            {
-                Mix_HaltMusic();
-            }
-        }
-        else
-        {
-            Mix_HaltChannel(-1);
-            Mix_HaltMusic();
-        }
+	    if (fade)
+	    {
+            for (var i = 1; i < Game.Tracks.Length; i++)
+                MIX_StopTrack(Game.Tracks[i], MIX_TrackMSToFrames(Game.Tracks[i], FADE_DELAY * FADE_STEPS));
+		    // SDL_Mixer has trouble with native midi and volume on windows,
+		    // which is the most likely use case, so f@%# it.
+		    if (Music.GetMusicType() != "MID")
+		    {
+                MIX_StopTrack(Game.Tracks[0], MIX_TrackMSToFrames(Game.Tracks[0], FADE_DELAY * FADE_STEPS));
+			    func_fade();
+		    }
+		    else
+		    {
+                MIX_StopTrack(Game.Tracks[0], 0);
+		    }
+	    }
+	    else
+	    {
+            for (var i = 1; i < Game.Tracks.Length; i++)
+                MIX_StopTrack(Game.Tracks[i], 0);
+            MIX_StopTrack(Game.Tracks[0], 0);
+	    }
 #endif
 
         if (fade)
         {
-            var pal = new SDL_Color[256];
-            var pal2 = new SDL_Color[256];
-            Array.Copy(_game.getScreen().getPalette(), pal, 256);
+            SDL_Color* pal = null; //SDL_Color pal[256];
+            SDL_Color* pal2 = null; //SDL_Color pal2[256];
+            NativeMemory.Copy(_game.getScreen().getPalette(), pal, 4 * 256); //memcpy(pal, _game->getScreen()->getPalette(), sizeof(SDL_Color) * 256);
             for (int i = FADE_STEPS; i > 0; --i)
             {
                 SDL_Event @event;
-                if (SDL_PollEvent(out @event) != 0 && @event.type == SDL_EventType.SDL_KEYDOWN) break;
+                if (SDL_PollEvent(&@event) && @event.Type == SDL_EventType.SDL_EVENT_KEY_DOWN) break;
                 for (int color = 0; color < 256; ++color)
                 {
                     pal2[color].r = (byte)((((int)pal[color].r) * i) / 20);

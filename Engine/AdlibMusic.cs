@@ -25,11 +25,9 @@ namespace SharpXcom.Engine;
  */
 internal class AdlibMusic : Music
 {
-    FM_OPL[] opl = new FM_OPL[2];
-
-    byte[] _data;
-    uint _size;
-    float _volume;
+    static byte[] _data;
+    static uint _size;
+    static float _volume;
     static int delay, rate;
     static Dictionary<int, int> delayRates;
 
@@ -126,7 +124,10 @@ internal class AdlibMusic : Music
      * Plays the contained music track.
      * @param loop Amount of times to loop the track. -1 = infinite
      */
-    internal override void play(int loop = -1)
+    internal override void play(int loop = -1) =>
+        playImpl(loop);
+
+    unsafe static void playImpl(int loop = -1)
     {
 #if !__NO_MUSIC
         if (!Options.mute)
@@ -134,7 +135,9 @@ internal class AdlibMusic : Music
             stop();
             func_setup_music(_data, (int)_size);
             func_set_music_volume((int)(127 * _volume));
-            Mix_HookMusic(player, nint.Zero /*(void*)this*/);
+            SDL_AudioStream* stream = SDL_CreateAudioStream(null, null);
+            SDL_SetAudioStreamGetCallback(stream, &player, nint.Zero /* (void*)this */);
+            MIX_SetTrackAudioStream(Game.Tracks[0], stream);
         }
 #endif
     }
@@ -145,17 +148,17 @@ internal class AdlibMusic : Music
      * @param stream Raw audio to output.
      * @param len Length of audio to output.
      */
-    internal unsafe void player(nint udata, nint stream, int len)
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    unsafe internal static void player(nint udata, SDL_AudioStream* stream, int len, int total)
     {
 #if !__NO_MUSIC
         // Check SDL volume for Background Mute functionality
-        if (Options.musicVolume == 0 || Mix_VolumeMusic(-1) == 0)
+        if (Options.musicVolume == 0 || MIX_GetTrackGain(Game.Tracks[0]) == 0.0f)
             return;
         if (Options.musicAlwaysLoop && !func_is_music_playing())
         {
-            //AdlibMusic *music = (AdlibMusic*)udata;
-            /*music.*/
-            play();
+            //AdlibMusic* music = (AdlibMusic*)udata;
+            /* music-> */playImpl();
             return;
         }
         while (len != 0)
@@ -167,7 +170,7 @@ internal class AdlibMusic : Music
             {
                 float volume = (float)Game.volumeExponent(Options.musicVolume);
                 var buffer = new short[i / 2];
-                Marshal.Copy(stream, buffer, 0, i);
+                Marshal.Copy((nint)stream, buffer, 0, i);
                 YM3812UpdateOne(opl[0], buffer.AsSpan(), i / 2, 2, volume);
                 YM3812UpdateOne(opl[1], buffer.AsSpan(1), i / 2, 2, volume);
                 stream += i;
@@ -177,7 +180,7 @@ internal class AdlibMusic : Music
             if (len == 0)
                 return;
             func_play_tick();
-
+        
             delay = delayRates[rate];
         }
 #endif

@@ -431,7 +431,7 @@ internal class GeoscapeState : State
     void btnTimerClick(Action action)
     {
         var ev = new SDL_Event();
-        ev.type = SDL_EventType.SDL_MOUSEBUTTONDOWN;
+        ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN;
         ev.button.button = (byte)SDL_BUTTON_LEFT;
         var a = new Action(ev, 0.0, 0.0, 0, 0);
         action.getSender().mousePress(a, this);
@@ -925,7 +925,7 @@ internal class GeoscapeState : State
      * Takes care of any game logic that has to
      * run every game day, like constructions.
      */
-    void time1Day()
+    unsafe void time1Day()
     {
         foreach (var i in _game.getSavedGame().getBases())
         {
@@ -1141,7 +1141,7 @@ internal class GeoscapeState : State
      * Takes care of any game logic that has to
      * run every game hour, like transfers.
      */
-    void time1Hour()
+    unsafe void time1Hour()
     {
         // Handle craft maintenance
         foreach (var i in _game.getSavedGame().getBases())
@@ -1531,7 +1531,7 @@ internal class GeoscapeState : State
      * Takes care of any game logic that has to
      * run every game second, like craft movement.
      */
-    void time5Seconds()
+    unsafe void time5Seconds()
     {
         // Game over if there are no more bases.
         if (!_game.getSavedGame().getBases().Any())
@@ -2414,17 +2414,17 @@ internal class GeoscapeState : State
      * Handle key shortcuts.
      * @param action Pointer to an action.
      */
-    internal override void handle(Action action)
+    unsafe internal override void handle(Action action)
     {
         if (_dogfights.Count == _minimizedDogfights)
         {
             base.handle(action);
         }
 
-        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN)
         {
             // "ctrl-d" - enable debug mode
-            if (Options.debug && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_d && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+            if (Options.debug && action.getDetails().key.key == SDL_Keycode.SDLK_D && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
             {
                 _game.getSavedGame().setDebugMode();
                 if (_game.getSavedGame().getDebugMode())
@@ -2437,7 +2437,7 @@ internal class GeoscapeState : State
                 }
             }
             // "ctrl-c" - delete all soldier commendations
-            if (Options.debug && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_c && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+            if (Options.debug && action.getDetails().key.key == SDL_Keycode.SDLK_C && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
             {
                 if (_game.getSavedGame().getDebugMode())
                 {
@@ -2458,11 +2458,11 @@ internal class GeoscapeState : State
             // quick save and quick load
             else if (!_game.getSavedGame().isIronman())
             {
-                if (action.getDetails().key.keysym.sym == Options.keyQuickSave)
+                if (action.getDetails().key.key == Options.keyQuickSave)
                 {
                     popup(new SaveGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_QUICK, _palette));
                 }
-                else if (action.getDetails().key.keysym.sym == Options.keyQuickLoad)
+                else if (action.getDetails().key.key == Options.keyQuickLoad)
                 {
                     popup(new LoadGameState(OptionsOrigin.OPT_GEOSCAPE, SaveType.SAVE_QUICK, _palette));
                 }

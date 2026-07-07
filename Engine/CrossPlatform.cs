@@ -37,14 +37,14 @@ internal class CrossPlatform
 	 * @param winResource ID for Windows icon.
 	 * @param path Path to PNG icon for Unix.
 	 */
-    internal static void setWindowIcon(string path)
+    unsafe internal static void setWindowIcon(SDL_Window* window, string path)
     {
         string utf8 = Unicode.convPathToUtf8(path);
-        nint /* SDL_Surface */ icon = IMG_Load(utf8);
-        if (icon != nint.Zero)
+        SDL_Surface* icon = IMG_Load(utf8);
+        if (icon != null)
         {
-            SDL_SetWindowIcon(nint.Zero, icon);
-            SDL_FreeSurface(icon);
+            SDL_SetWindowIcon(window, icon); //SDL_WM_SetIcon(icon, NULL);
+            SDL_DestroySurface(icon);
         }
     }
 
@@ -476,12 +476,12 @@ internal class CrossPlatform
 	 * @param ev SDL event.
 	 * @return Is quitting necessary?
 	 */
-    internal static bool isQuitShortcut(SDL_Event ev)
+    unsafe internal static bool isQuitShortcut(SDL_Event* ev)
     {
         if (OperatingSystem.IsWindows())
         {
             // Alt + F4
-            return (ev.type == SDL_EventType.SDL_KEYDOWN && ev.key.keysym.sym == SDL_Keycode.SDLK_F4 && (ev.key.keysym.mod & SDL_Keymod.KMOD_ALT) != 0);
+            return (ev->Type == SDL_EventType.SDL_EVENT_KEY_DOWN && ev->key.key == SDL_Keycode.SDLK_F4 && (ev->key.mod & SDL_Keymod.SDL_KMOD_ALT) != 0);
         }
         else
         {
@@ -584,15 +584,8 @@ internal class CrossPlatform
     /**
 	 * Notifies the user that maybe he should have a look.
 	 */
-    internal static void flashWindow(nint window)
-    {
-        var wminfo = new SDL_SysWMinfo();
-        SDL_VERSION(out wminfo.version);
-        if (SDL_GetWindowWMInfo(window, ref wminfo) == SDL_bool.SDL_TRUE)
-        {
-            SDL_FlashWindow(window, SDL_FlashOperation.SDL_FLASH_BRIEFLY);
-        }
-    }
+    unsafe internal static void flashWindow(SDL_Window* window) =>
+        SDL_FlashWindow(window, SDL_FlashOperation.SDL_FLASH_BRIEFLY);
 
     /**
 	 * Gets the last modified date of a file.

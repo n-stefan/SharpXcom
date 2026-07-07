@@ -19,12 +19,13 @@
 
 namespace SharpXcom.Engine;
 
-enum OptionType { OPTION_BOOL, OPTION_INT, OPTION_STRING, OPTION_KEY };
+enum OptionType { OPTION_BOOL, OPTION_INT, OPTION_FLOAT, OPTION_STRING, OPTION_KEY };
 
 struct OptionDef
 {
     internal bool b;
     internal int i;
+    internal float f;
     internal string s;
     internal SDL_Keycode k;
 }
@@ -33,6 +34,7 @@ unsafe struct OptionRef
 {
     internal bool* b;
     internal int* i;
+    internal float* f;
     internal string* s;
     internal SDL_Keycode* k;
 }
@@ -42,7 +44,7 @@ unsafe struct OptionRef
  * and stuff. The option variable must already exist, this info just points to it.
  * Does some special shenanigans to be able to be tied to different variable types.
  */
-unsafe internal class OptionInfo
+internal class OptionInfo
 {
     string _id, _desc, _cat;
     OptionType _type;
@@ -57,7 +59,7 @@ unsafe internal class OptionInfo
      * @param desc Language ID for the option description (if any).
      * @param cat Language ID for the option category (if any).
      */
-    internal OptionInfo(string id, ref bool option, bool def, string desc = "", string cat = "")
+    unsafe internal OptionInfo(string id, ref bool option, bool def, string desc = "", string cat = "")
     {
         _id = id;
         _desc = desc;
@@ -76,7 +78,7 @@ unsafe internal class OptionInfo
      * @param desc Language ID for the option description (if any).
      * @param cat Language ID for the option category (if any).
      */
-    internal OptionInfo(string id, ref int option, int def, string desc = "", string cat = "")
+    unsafe internal OptionInfo(string id, ref int option, int def, string desc = "", string cat = "")
     {
         _id = id;
         _desc = desc;
@@ -88,6 +90,25 @@ unsafe internal class OptionInfo
     }
 
     /**
+     * Creates info for a float option.
+     * @param id String ID used in serializing.
+     * @param option Pointer to the option.
+     * @param def Default option value.
+     * @param desc Language ID for the option description (if any).
+     * @param cat Language ID for the option category (if any).
+     */
+    unsafe internal OptionInfo(string id, ref float option, float def, string desc = "", string cat = "")
+    {
+        _id = id;
+        _desc = desc;
+        _cat = cat;
+        _type = OptionType.OPTION_FLOAT;
+
+        fixed (float* p = &option) { _ref.f = p; }
+        _def.f = def;
+    }
+
+    /**
      * Creates info for a keyboard shortcut option.
      * @param id String ID used in serializing.
      * @param option Pointer to the option.
@@ -95,7 +116,7 @@ unsafe internal class OptionInfo
      * @param desc Language ID for the option description (if any).
      * @param cat Language ID for the option category (if any).
      */
-    internal OptionInfo(string id, ref SDL_Keycode option, SDL_Keycode def, string desc = "", string cat = "")
+    unsafe internal OptionInfo(string id, ref SDL_Keycode option, SDL_Keycode def, string desc = "", string cat = "")
     {
         _id = id;
         _desc = desc;
@@ -114,7 +135,7 @@ unsafe internal class OptionInfo
      * @param desc Language ID for the option description (if any).
      * @param cat Language ID for the option category (if any).
      */
-    internal OptionInfo(string id, ref string option, string def, string desc = "", string cat = "")
+    unsafe internal OptionInfo(string id, ref string option, string def, string desc = "", string cat = "")
     {
         _id = id;
         _desc = desc;
@@ -128,7 +149,7 @@ unsafe internal class OptionInfo
     /**
      * Resets an option back to its default value.
      */
-    internal void reset()
+    unsafe internal void reset()
     {
         switch (_type)
         {
@@ -137,6 +158,9 @@ unsafe internal class OptionInfo
                 break;
             case OptionType.OPTION_INT:
                 *_ref.i = _def.i;
+                break;
+            case OptionType.OPTION_FLOAT:
+                *_ref.f = _def.f;
                 break;
             case OptionType.OPTION_KEY:
                 *_ref.k = _def.k;
@@ -152,7 +176,7 @@ unsafe internal class OptionInfo
      * (eg. for command-line options).
      * @param map Options map.
      */
-    internal void load(Dictionary<string, string> map)
+    unsafe internal void load(Dictionary<string, string> map)
     {
         string id = _id.ToLower();
         if (map.TryGetValue(id, out var value))
@@ -164,6 +188,9 @@ unsafe internal class OptionInfo
                     break;
                 case OptionType.OPTION_INT:
                     *_ref.i = int.Parse(value);
+                    break;
+                case OptionType.OPTION_FLOAT:
+                    *_ref.f = float.Parse(value);
                     break;
                 case OptionType.OPTION_KEY:
                     *_ref.k = Enum.Parse<SDL_Keycode>(value);
@@ -179,7 +206,7 @@ unsafe internal class OptionInfo
      * Loads an option value from the corresponding YAML.
      * @param node Options YAML node.
      */
-    internal void load(YamlNode node)
+    unsafe internal void load(YamlNode node)
     {
         switch (_type)
         {
@@ -188,6 +215,9 @@ unsafe internal class OptionInfo
                 break;
             case OptionType.OPTION_INT:
                 *_ref.i = node[_id] != null ? int.Parse(node[_id].ToString()) : _def.i;
+                break;
+            case OptionType.OPTION_FLOAT:
+                *_ref.f = node[_id] != null ? float.Parse(node[_id].ToString()) : _def.f;
                 break;
             case OptionType.OPTION_KEY:
                 *_ref.k = node[_id] != null ? (SDL_Keycode)int.Parse(node[_id].ToString()) : _def.k;
@@ -226,7 +256,7 @@ unsafe internal class OptionInfo
      * or throws an exception if it's not a key.
      * @return Pointer to the option.
      */
-    internal ref SDL_Keycode asKey()
+    unsafe internal ref SDL_Keycode asKey()
     {
         if (_type != OptionType.OPTION_KEY)
         {
@@ -240,7 +270,7 @@ unsafe internal class OptionInfo
      * or throws an exception if it's not a boolean.
      * @return Pointer to the option.
      */
-    internal ref bool asBool()
+    unsafe internal ref bool asBool()
     {
         if (_type != OptionType.OPTION_BOOL)
         {
@@ -254,7 +284,7 @@ unsafe internal class OptionInfo
      * or throws an exception if it's not a integer.
      * @return Pointer to the option.
      */
-    internal ref int asInt()
+    unsafe internal ref int asInt()
     {
         if (_type != OptionType.OPTION_INT)
         {
@@ -264,11 +294,25 @@ unsafe internal class OptionInfo
     }
 
     /**
+     * Returns the pointer to the float option,
+     * or throws an exception if it's not a float.
+     * @return Pointer to the option.
+     */
+    unsafe internal ref float asFloat()
+    {
+        if (_type != OptionType.OPTION_FLOAT)
+        {
+            throw new Exception(_id + " is not a float!");
+        }
+        return ref *_ref.f;
+    }
+
+    /**
      * Returns the pointer to the string option,
      * or throws an exception if it's not a string.
      * @return Pointer to the option.
      */
-    ref string asString()
+    unsafe ref string asString()
     {
         if (_type != OptionType.OPTION_STRING)
         {
@@ -281,7 +325,7 @@ unsafe internal class OptionInfo
      * Saves an option value to the corresponding YAML.
      * @param node Options YAML node.
      */
-    internal void save(YamlNode node)
+    unsafe internal void save(YamlNode node)
     {
         switch (_type)
         {
@@ -290,6 +334,9 @@ unsafe internal class OptionInfo
                 break;
             case OptionType.OPTION_INT:
                 ((YamlMappingNode)node).Add(_id, (*_ref.i).ToString());
+                break;
+            case OptionType.OPTION_FLOAT:
+                ((YamlMappingNode)node).Add(_id, (*_ref.f).ToString());
                 break;
             case OptionType.OPTION_KEY:
                 ((YamlMappingNode)node).Add(_id, (*_ref.k).ToString());

@@ -10,7 +10,7 @@
 
 namespace SharpXcom.Engine;
 
-unsafe internal class OpenGL
+internal class OpenGL
 {
     const int GL_UNSIGNED_INT_8_8_8_8_REV = 0x8367;
     const int GL_CLAMP_TO_BORDER = 0x812D;
@@ -82,52 +82,52 @@ unsafe internal class OpenGL
 
     internal static bool checkErrors;
 
-    internal static delegate* unmanaged<int, int, int, int, uint, uint, nint, void> glReadPixels;
-    static delegate* unmanaged<uint> glGetError;
-    static delegate* unmanaged<uint, uint, out int, void> glGetShaderiv;
-    static delegate* unmanaged<uint, int, int[], out string, void> glGetShaderInfoLog;
-    static delegate* unmanaged<uint, void> glDeleteShader;
-    static delegate* unmanaged<uint, void> glCompileShader;
-    static delegate* unmanaged<uint, int, string, int, void> glShaderSource;
-    static delegate* unmanaged<uint, void> glDeleteProgram;
-    static delegate* unmanaged<int, uint[], void> glDeleteTextures;
-    static delegate* unmanaged<uint> glCreateProgram;
-    static delegate* unmanaged<uint, void> glUseProgram;
-    static delegate* unmanaged<uint, byte> glIsProgram;
-    static delegate* unmanaged<uint, byte> glIsShader;
-    static delegate* unmanaged<uint, uint> glCreateShader;
-    static delegate* unmanaged<uint, uint, void> glAttachShader;
-    static delegate* unmanaged<uint, uint, void> glDetachShader;
-    static delegate* unmanaged<uint, int, int[], uint[], void> glGetAttachedShaders;
-    static delegate* unmanaged<uint, uint, out int, void> glGetProgramiv;
-    static delegate* unmanaged<uint, int, int[], out string, void> glGetProgramInfoLog;
-    static delegate* unmanaged<uint, void> glLinkProgram;
-    static delegate* unmanaged<uint, string, int> glGetUniformLocation;
-    static delegate* unmanaged<int, int, void> glUniform1i;
-    static delegate* unmanaged<int, int, float[], void> glUniform2fv;
-    static delegate* unmanaged<int, int, float[], void> glUniform4fv;
-    static delegate* unmanaged<nint> glXGetCurrentDisplay;
-    static delegate* unmanaged<uint> glXGetCurrentDrawable;
-    static delegate* unmanaged<nint, uint, int, void> glXSwapIntervalEXT;
-    static delegate* unmanaged<int, uint> wglSwapIntervalEXT;
-    static delegate* unmanaged<uint, void> glDisable;
-    static delegate* unmanaged<uint, void> glEnable;
-    static delegate* unmanaged<float, float, void> glTexCoord2f;
-    static delegate* unmanaged<int, int, int, void> glVertex3i;
-    static delegate* unmanaged<uint, uint, int, void> glTexParameteri;
-    static delegate* unmanaged<uint, void> glBegin;
-    static delegate* unmanaged<void> glEnd;
-    static delegate* unmanaged<void> glLoadIdentity;
-    static delegate* unmanaged<uint, void> glMatrixMode;
-    static delegate* unmanaged<double, double, double, double, double, double, void> glOrtho;
-    static delegate* unmanaged<int, int, int, int, void> glViewport;
-    static delegate* unmanaged<uint, int, void> glPixelStorei;
-    static delegate* unmanaged<uint, int, int, int, int, int, uint, uint, nint, void> glTexSubImage2D;
-    static delegate* unmanaged<uint, void> glClear;
-    static delegate* unmanaged<float, float, float, float, void> glClearColor;
-    static delegate* unmanaged<int, uint[], void> glGenTextures;
-    static delegate* unmanaged<uint, uint[], void> glBindTexture;
-    static delegate* unmanaged<uint, int, int, int, int, int, uint, uint, nint, void> glTexImage2D;
+    unsafe internal static delegate* unmanaged<int, int, int, int, uint, uint, nint, void> glReadPixels;
+    unsafe static delegate* unmanaged<uint> glGetError;
+    unsafe static delegate* unmanaged<uint, uint, out int, void> glGetShaderiv;
+    unsafe static delegate* unmanaged<uint, int, int[], out string, void> glGetShaderInfoLog;
+    unsafe static delegate* unmanaged<uint, void> glDeleteShader;
+    unsafe static delegate* unmanaged<uint, void> glCompileShader;
+    unsafe static delegate* unmanaged<uint, int, string, int, void> glShaderSource;
+    unsafe static delegate* unmanaged<uint, void> glDeleteProgram;
+    unsafe static delegate* unmanaged<int, uint[], void> glDeleteTextures;
+    unsafe static delegate* unmanaged<uint> glCreateProgram;
+    unsafe static delegate* unmanaged<uint, void> glUseProgram;
+    unsafe static delegate* unmanaged<uint, byte> glIsProgram;
+    unsafe static delegate* unmanaged<uint, byte> glIsShader;
+    unsafe static delegate* unmanaged<uint, uint> glCreateShader;
+    unsafe static delegate* unmanaged<uint, uint, void> glAttachShader;
+    unsafe static delegate* unmanaged<uint, uint, void> glDetachShader;
+    unsafe static delegate* unmanaged<uint, int, int[], uint[], void> glGetAttachedShaders;
+    unsafe static delegate* unmanaged<uint, uint, out int, void> glGetProgramiv;
+    unsafe static delegate* unmanaged<uint, int, int[], out string, void> glGetProgramInfoLog;
+    unsafe static delegate* unmanaged<uint, void> glLinkProgram;
+    unsafe static delegate* unmanaged<uint, string, int> glGetUniformLocation;
+    unsafe static delegate* unmanaged<int, int, void> glUniform1i;
+    unsafe static delegate* unmanaged<int, int, float[], void> glUniform2fv;
+    unsafe static delegate* unmanaged<int, int, float[], void> glUniform4fv;
+    unsafe static delegate* unmanaged<nint> glXGetCurrentDisplay;
+    unsafe static delegate* unmanaged<uint> glXGetCurrentDrawable;
+    unsafe static delegate* unmanaged<nint, uint, int, void> glXSwapIntervalEXT;
+    unsafe static delegate* unmanaged<int, uint> wglSwapIntervalEXT;
+    unsafe static delegate* unmanaged<uint, void> glDisable;
+    unsafe static delegate* unmanaged<uint, void> glEnable;
+    unsafe static delegate* unmanaged<float, float, void> glTexCoord2f;
+    unsafe static delegate* unmanaged<int, int, int, void> glVertex3i;
+    unsafe static delegate* unmanaged<uint, uint, int, void> glTexParameteri;
+    unsafe static delegate* unmanaged<uint, void> glBegin;
+    unsafe static delegate* unmanaged<void> glEnd;
+    unsafe static delegate* unmanaged<void> glLoadIdentity;
+    unsafe static delegate* unmanaged<uint, void> glMatrixMode;
+    unsafe static delegate* unmanaged<double, double, double, double, double, double, void> glOrtho;
+    unsafe static delegate* unmanaged<int, int, int, int, void> glViewport;
+    unsafe static delegate* unmanaged<uint, int, void> glPixelStorei;
+    unsafe static delegate* unmanaged<uint, int, int, int, int, int, uint, uint, nint, void> glTexSubImage2D;
+    unsafe static delegate* unmanaged<uint, void> glClear;
+    unsafe static delegate* unmanaged<float, float, float, float, void> glClearColor;
+    unsafe static delegate* unmanaged<int, uint[], void> glGenTextures;
+    unsafe static delegate* unmanaged<uint, uint[], void> glBindTexture;
+    unsafe static delegate* unmanaged<uint, int, int, int, int, int, uint, uint, nint, void> glTexImage2D;
 
     OpenGL()
     {
@@ -146,7 +146,7 @@ unsafe internal class OpenGL
     ~OpenGL() =>
         term();
 
-    void term()
+    unsafe void term()
     {
         if (gltexture != null)
         {
@@ -172,7 +172,7 @@ unsafe internal class OpenGL
     }
 
     static bool reported = false;
-    internal static void glErrorCheck([CallerFilePath] string file = default, [CallerLineNumber] int line = default)
+    unsafe internal static void glErrorCheck([CallerFilePath] string file = default, [CallerLineNumber] int line = default)
     {
         uint glErr;
         if (checkErrors && !reported && (glErr = glGetError()) != GL_NO_ERROR)
@@ -221,7 +221,7 @@ unsafe internal class OpenGL
         return err;
     }
 
-    internal void setVSync(bool sync)
+    unsafe internal void setVSync(bool sync)
     {
         int interval = sync ? 1 : 0;
         if (glXGetCurrentDisplay != null && glXGetCurrentDrawable != null && glXSwapIntervalEXT != null)
@@ -246,7 +246,7 @@ unsafe internal class OpenGL
         }
     }
 
-    internal void init(int w, int h)
+    unsafe internal void init(int w, int h)
     {
         //disable unused features
         glDisable(GL_ALPHA_TEST);
@@ -336,7 +336,7 @@ unsafe internal class OpenGL
         resize((uint)w, (uint)h);
     }
 
-    internal void refresh(bool smooth, uint inwidth, uint inheight, uint outwidth, uint outheight, int topBlackBand, int bottomBlackBand, int leftBlackBand, int rightBlackBand)
+    unsafe internal void refresh(bool smooth, uint inwidth, uint inheight, uint outwidth, uint outheight, int topBlackBand, int bottomBlackBand, int leftBlackBand, int rightBlackBand)
     {
         while (glGetError() != GL_NO_ERROR) ; // clear possible error from who knows where
         clear();
@@ -377,8 +377,8 @@ unsafe internal class OpenGL
 
         glErrorCheck();
 
-        var bpp = Surface.getFormat(buffer_surface.getSurface()).BytesPerPixel;
-        glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer_surface.getSurface().pitch / bpp);
+        var bpp = Surface.getFormat(buffer_surface.getSurface())->bytes_per_pixel;
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer_surface.getSurface()->pitch / bpp);
 
         glErrorCheck();
 
@@ -430,7 +430,7 @@ unsafe internal class OpenGL
         }
     }
 
-    void clear()
+    unsafe void clear()
     {
         //memset(buffer, 0, iwidth * iheight * ibpp);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -439,7 +439,7 @@ unsafe internal class OpenGL
         glErrorCheck();
     }
 
-    void resize(uint width, uint height)
+    unsafe void resize(uint width, uint height)
     {
         if (gltexture == null)
         {
@@ -451,7 +451,7 @@ unsafe internal class OpenGL
         iheight = height;
         if (buffer_surface != null) buffer_surface = null;
         buffer_surface = new Surface((int)iwidth, (int)iheight, 0, 0, (int)ibpp); // use SharpXcom's Surface class to get an aligned buffer with bonus SDL_Surface
-        buffer = buffer_surface.getSurface().pixels;
+        buffer = buffer_surface.getSurface()->pixels;
 
         glBindTexture(GL_TEXTURE_2D, gltexture);
         glErrorCheck();
@@ -464,7 +464,7 @@ unsafe internal class OpenGL
         glErrorCheck();
     }
 
-    internal bool set_shader(string source_yaml_filename)
+    unsafe internal bool set_shader(string source_yaml_filename)
     {
         if (!shader_support) return false;
 
@@ -544,7 +544,7 @@ unsafe internal class OpenGL
         return glprogram != 0;
     }
 
-    void set_fragment_shader(string source)
+    unsafe void set_fragment_shader(string source)
     {
         int fragmentshader = (int)createShader(GL_FRAGMENT_SHADER, source);
         if (fragmentshader != 0)
@@ -555,7 +555,7 @@ unsafe internal class OpenGL
         }
     }
 
-    void set_vertex_shader(string source)
+    unsafe void set_vertex_shader(string source)
     {
         int vertexshader = (int)createShader(GL_VERTEX_SHADER, source);
         if (vertexshader != 0)
@@ -566,7 +566,7 @@ unsafe internal class OpenGL
         }
     }
 
-    static uint createShader(uint type, string source)
+    unsafe static uint createShader(uint type, string source)
     {
         uint shader = glCreateShader(type);
         glErrorCheck();

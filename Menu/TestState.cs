@@ -142,30 +142,30 @@ internal class TestState : State
 	 * testing 8bpp functionality, still useful for debugging palette issues.
 	 * @return Test surface.
 	 */
-    SDL_Surface testSurface()
+    unsafe SDL_Surface* testSurface()
     {
-        SDL_Surface surface;
-
+        SDL_Surface* surface;
+        
         // Create surface
-        surface = Marshal.PtrToStructure<SDL_Surface>(SDL_CreateRGBSurface(/* SDL_HWSURFACE */ SDL_SWSURFACE, 256, 25, 8, 0, 0, 0, 0));
-
-        if (surface.Equals(default))
+        surface = SDL_CreateSurface(256, 25, SDL_GetPixelFormatForMasks(8, 0, 0, 0, 0));
+        
+        if (surface == null)
         {
             throw new Exception(SDL_GetError());
         }
-
+        
         // Lock the surface
-        SDL_LockSurface(surface.pixels);
-
-        nint index = surface.pixels;
-
-        for (byte j = 0; j < 25; ++j)
-            for (byte i = 0; i <= 255; i++, nint.Add(index, 1))
-                Marshal.WriteByte(index, i);
-
+        SDL_LockSurface(surface);
+        
+        byte* index = (byte*)surface->pixels;
+        
+        for (int j = 0; j < 25; ++j)
+            for (int i = 0; i < 256; i++, ++index)
+                *index = (byte)i;
+        
         // Unlock the surface
-        SDL_UnlockSurface(surface.pixels);
-
+        SDL_UnlockSurface(surface);
+        
         return surface;
     }
 }

@@ -35,7 +35,7 @@ internal class State
     protected InteractiveSurface _modal;
     protected RuleInterface _ruleInterface;
     protected RuleInterface _ruleInterfaceParent;
-    protected SDL_Color[] _palette = new SDL_Color[256];
+    unsafe protected SDL_Color* _palette; //SDL_Color[] _palette = new SDL_Color[256];
     protected byte _cursorColor;
     protected List<Surface> _surfaces = [];
 
@@ -71,11 +71,11 @@ internal class State
      * @param ncolors Amount of colors to replace.
      * @param immediately Apply changes immediately, otherwise wait in case of multiple setPalettes.
      */
-    protected void setPalette(Span<SDL_Color> colors, int firstcolor = 0, int ncolors = 256, bool immediately = true)
+    unsafe protected void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256, bool immediately = true)
     {
         if (colors != null)
         {
-            colors.Slice(0, ncolors).CopyTo(_palette.AsSpan(firstcolor)); //memcpy(_palette + firstcolor, colors, ncolors * sizeof(SDL_Color));
+            NativeMemory.Copy(colors, _palette + firstcolor, (nuint)(ncolors * 4)); //memcpy(_palette + firstcolor, colors, ncolors * sizeof(SDL_Color));
         }
         if (immediately)
         {
@@ -95,7 +95,7 @@ internal class State
      * @param palette String ID of the palette to load.
      * @param backpals BACKPALS.DAT offset to use.
      */
-    internal virtual void setPalette(string palette, int backpals = -1)
+    unsafe internal virtual void setPalette(string palette, int backpals = -1)
     {
         setPalette(_game.getMod().getPalette(palette).getColors(), 0, 256, false);
         if (palette == "PAL_GEOSCAPE")
@@ -133,7 +133,7 @@ internal class State
      * they have to be added in ascending Z-Order to be blitted
      * correctly onto the screen.
      */
-    internal void add(Surface surface)
+    unsafe internal void add(Surface surface)
     {
         // Set palette
         surface.setPalette(_palette);
@@ -155,7 +155,7 @@ internal class State
      * @param parent the surface to base the coordinates of this element off.
      * @note if no parent is defined the element will not be moved.
      */
-    internal void add(Surface surface, string id, string category, Surface parent = null)
+    unsafe internal void add(Surface surface, string id, string category, Surface parent = null)
     {
         // Set palette
         surface.setPalette(_palette);
@@ -307,7 +307,7 @@ internal class State
      * of states, so they can be created once while being
      * repeatedly switched back into focus).
      */
-    internal virtual void init()
+    unsafe internal virtual void init()
     {
         _game.getScreen().setPalette(_palette);
         _game.getCursor().setPalette(_palette);
@@ -529,6 +529,6 @@ internal class State
      * Returns the state's 8bpp palette.
      * @return Pointer to the palette's colors.
      */
-    SDL_Color[] getPalette() =>
+    unsafe SDL_Color* getPalette() =>
         _palette;
 }

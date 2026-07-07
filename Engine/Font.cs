@@ -67,7 +67,7 @@ internal class Font
      * Returns the font's 8bpp palette.
      * @return Pointer to the palette's colors.
      */
-    internal SDL_Color[] getPalette() =>
+    unsafe internal SDL_Color* getPalette() =>
         _images[0].surface.getPalette();
 
     /**
@@ -76,12 +76,12 @@ internal class Font
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal void setPalette(SDL_Color[] colors, int firstcolor, int ncolors)
+    unsafe internal void setPalette(SDL_Color* colors, int firstcolor, int ncolors)
     {
         foreach (var i in _images)
-        {
+	    {
             i.surface.setPalette(colors, firstcolor, ncolors);
-        }
+	    }
     }
 
     /**
@@ -131,7 +131,7 @@ internal class Font
     /**
      * Generates a pre-defined Codepage 437 (MS-DOS terminal) font.
      */
-    internal void loadTerminal()
+    unsafe internal void loadTerminal()
     {
         FontImage image;
         image.width = 9;
@@ -141,16 +141,15 @@ internal class Font
 
         var dosFontPtr = Marshal.AllocHGlobal(DOSFONT_SIZE);
         Marshal.Copy(dosFont, 0, dosFontPtr, DOSFONT_SIZE);
-        /* SDL_RWops */ nint rw = SDL_RWFromConstMem(dosFontPtr, DOSFONT_SIZE);
-        nint s = SDL_LoadBMP_RW(rw, 0);
-        SDL_FreeRW(rw);
+        SDL_IOStream* io = SDL_IOFromConstMem(dosFontPtr, DOSFONT_SIZE);
+        SDL_Surface* s = SDL_LoadBMP_IO(io, true);
+        SDL_CloseIO(io);
         Marshal.FreeHGlobal(dosFontPtr);
-        SDL_Surface surface = Marshal.PtrToStructure<SDL_Surface>(s);
-        image.surface = new Surface(surface.w, surface.h);
+        image.surface = new Surface(s->w, s->h);
         var terminal = new SDL_Color[] { new() { r = 0, g = 0, b = 0, a = 0 }, new() { r = 185, g = 185, b = 185, a = 255 } };
-        image.surface.setPalette(terminal, 0, 2);
-        SDL_BlitSurface(s, 0, image.surface.getSurfacePtr(), 0);
-        SDL_FreeSurface(s);
+        fixed (SDL_Color* p = &terminal[0]) { image.surface.setPalette(p, 0, 2); }
+        SDL_BlitSurface(s, null, image.surface.getSurface(), null);
+        SDL_DestroySurface(s);
         _images.Add(image);
         
         string chars = Unicode.convUtf8ToUtf32(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
