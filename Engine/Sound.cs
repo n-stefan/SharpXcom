@@ -25,28 +25,28 @@ namespace SharpXcom.Engine;
  */
 internal class Sound
 {
-    MIX_Chunk _sound;
+    unsafe MIX_Audio* _sound;
 
     /**
      * Initializes a new sound effect.
      */
-    internal Sound() =>
-        _sound = default;
+    unsafe internal Sound() =>
+        _sound = null;
 
     /**
      * Deletes the loaded sound content.
      */
-    ~Sound() =>
-        Mix_FreeChunk(_sound.abuf);
+    unsafe ~Sound() =>
+        MIX_DestroyAudio(_sound);
 
     /**
      * Stops all sounds playing.
      */
-    internal static void stop()
+    unsafe internal static void stop()
     {
         if (!Options.mute)
         {
-            Mix_HaltChannel(-1);
+            for (var i = 1; i < Game.Tracks.Length; i++) MIX_StopTrack(Game.Tracks[i], 0);
         }
     }
 
@@ -54,20 +54,28 @@ internal class Sound
      * Plays the contained sound effect.
      * @param channel Use specified channel, -1 to use any channel
      */
-    internal void play(int channel = -1, int angle = 0, int distance = 0)
+    unsafe internal void play(int channel = -1, int angle = 0, int distance = 0)
     {
-        if (!Options.mute && _sound.abuf != nint.Zero)
+        if (!Options.mute && _sound != null)
         {
-            int chan = Mix_PlayChannel(channel, _sound.abuf, 0);
-            if (chan == -1)
+            MIX_SetTrackAudio(Game.Tracks[channel], _sound);
+            SDL_PropertiesID props = MIX_GetAudioProperties(_sound);
+            SDLBool success = MIX_PlayTrack(Game.Tracks[channel], props);
+            SDL_DestroyProperties(props);
+            if (!success)
             {
-                Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
+                Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {SDL_GetError()}");
             }
             else if (Options.StereoSound)
             {
-                if (Mix_SetPosition(chan, (short)angle, (byte)distance) == 0)
+                float radians = angle * (SDL_PI_F / 180.0f);
+                MIX_Point3D position;
+                position.x = SDL_cosf(radians) * (float)distance;
+                position.y = 0.0f;
+                position.z = SDL_sinf(radians) * (float)distance;
+                if (!MIX_SetTrack3DPosition(Game.Tracks[channel], &position))
                 {
-                    Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
+                    Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {SDL_GetError()}");
                 }
             }
         }
@@ -78,15 +86,15 @@ internal class Sound
      * @param data Pointer to the sound file in memory
      * @param size Size of the sound file in bytes.
      */
-    internal void load(byte[] data, uint size)
+    unsafe internal void load(byte[] data, uint size)
     {
         nint dataPtr = Marshal.AllocHGlobal(data.Length);
         Marshal.Copy(data, 0, dataPtr, data.Length);
-        nint rw = SDL_RWFromConstMem(dataPtr, (int)size);
-        _sound.abuf = Mix_LoadWAV_RW(rw, 1);
-        if (_sound.abuf == nint.Zero)
+        SDL_IOStream* io = SDL_IOFromConstMem(dataPtr, size);
+        _sound = MIX_LoadAudio_IO(Game.Mixer, io, true, true);
+        if (_sound == null)
         {
-            throw new Exception(Mix_GetError());
+            throw new Exception(SDL_GetError());
         }
     }
 
@@ -94,13 +102,13 @@ internal class Sound
      * Loads a sound file from a specified filename.
      * @param filename Filename of the sound file.
      */
-    internal void load(string filename)
+    unsafe internal void load(string filename)
     {
         string utf8 = Unicode.convPathToUtf8(filename);
-        _sound.abuf = Mix_LoadWAV(utf8);
-        if (_sound.abuf == nint.Zero)
+        _sound = MIX_LoadAudio(Game.Mixer, utf8, true);
+        if (_sound == null)
         {
-            string err = filename + ":" + Mix_GetError();
+            string err = filename + ":" + SDL_GetError();
             throw new Exception(err);
         }
     }
@@ -108,25 +116,28 @@ internal class Sound
     /**
      * Stops the contained sound from looping.
      */
-    internal void stopLoop()
+    unsafe internal void stopLoop()
     {
         if (!Options.mute)
         {
-            Mix_HaltChannel(3);
+            MIX_StopTrack(Game.Tracks[3], 0);
         }
     }
 
     /**
      * Plays the contained sound effect repeatedly on the reserved ambience channel.
      */
-    internal void loop()
+    unsafe internal void loop()
     {
-        if (!Options.mute && _sound.abuf != nint.Zero && Mix_Playing(3) == 0)
+        if (!Options.mute && _sound != null && !MIX_TrackPlaying(Game.Tracks[3]))
         {
-            int chan = Mix_PlayChannel(3, _sound.abuf, -1);
-            if (chan == -1)
+            MIX_SetTrackAudio(Game.Tracks[3], _sound);
+            SDL_PropertiesID props = MIX_GetAudioProperties(_sound);
+            SDLBool success = MIX_PlayTrack(Game.Tracks[3], props);
+            SDL_DestroyProperties(props);
+            if (!success)
             {
-                Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
+                Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {SDL_GetError()}");
             }
         }
     }

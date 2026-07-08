@@ -33,43 +33,46 @@ internal class Zoom
 	 * @param rightBlackBand Size of right black band in pixels (letterboxing).
 	 * @param glOut OpenGL output.
 	 */
-    internal static void flipWithZoom(SDL_Surface src, SDL_Surface dst, int topBlackBand, int bottomBlackBand, int leftBlackBand, int rightBlackBand, OpenGL glOut)
+    unsafe internal static void flipWithZoom(SDL_Surface* src, SDL_Window* wnd, int topBlackBand, int bottomBlackBand, int leftBlackBand, int rightBlackBand, OpenGL glOut)
     {
-        int dstWidth = dst.w - leftBlackBand - rightBlackBand;
-        int dstHeight = dst.h - topBlackBand - bottomBlackBand;
+        var dst = SDL_GetWindowSurface(wnd);
+        int dstWidth = dst->w - leftBlackBand - rightBlackBand;
+        int dstHeight = dst->h - topBlackBand - bottomBlackBand;
         if (Screen.useOpenGL())
         {
-#if !__NO_OPENGL
+    #if !__NO_OPENGL
             if (glOut.buffer_surface != null)
             {
-                SDL_BlitSurface(src.pixels, 0, glOut.buffer_surface.getSurface().pixels, 0); // TODO; this is less than ideal...
-
-                glOut.refresh(glOut.linear, glOut.iwidth, glOut.iheight, (uint)dst.w, (uint)dst.h, topBlackBand, bottomBlackBand, leftBlackBand, rightBlackBand);
-                SDL_GL_SwapWindow(dst.pixels); //SDL_GL_SwapBuffers()
+                SDL_BlitSurface(src, null, glOut.buffer_surface.getSurface(), null); // TODO; this is less than ideal...
+            
+                glOut.refresh(glOut.linear, glOut.iwidth, glOut.iheight, (uint)dst->w, (uint)dst->h, topBlackBand, bottomBlackBand, leftBlackBand, rightBlackBand);
+                SDL_GL_SwapWindow(wnd); //SDL_GL_SwapBuffers()
             }
-#endif
+    #endif
         }
         else if (topBlackBand <= 0 && bottomBlackBand <= 0 && leftBlackBand <= 0 && rightBlackBand <= 0)
         {
             _zoomSurfaceY(src, dst, 0, 0);
         }
-        else if (dstWidth == src.w && dstHeight == src.h)
+        else if (dstWidth == src->w && dstHeight == src->h)
         {
-            var dstrect = new SDL_Rect { x = (short)leftBlackBand, y = (short)topBlackBand, w = (ushort)src.w, h = (ushort)src.h };
-            SDL_BlitSurface(src.pixels, 0, dst.pixels, ref dstrect);
+            SDL_Rect dstrect;
+            dstrect.x = (short)leftBlackBand; dstrect.y = (short)topBlackBand; dstrect.w = (ushort)src->w; dstrect.h = (ushort)src->h;
+            SDL_BlitSurface(src, null, dst, &dstrect);
         }
         else
         {
-            var tmp = Marshal.PtrToStructure<SDL_Surface>(SDL_CreateRGBSurface(dst.flags, dstWidth, dstHeight, Surface.getFormat(dst).BitsPerPixel, 0, 0, 0, 0));
-		    _zoomSurfaceY(src, tmp, 0, 0);
-            var palette = Surface.getPalette(src);
+            var tmp = SDL_CreateSurface(dstWidth, dstHeight, SDL_GetPixelFormatForMasks(Surface.getFormat(dst)->bits_per_pixel, 0, 0, 0, 0));
+            _zoomSurfaceY(src, tmp, 0, 0);
+            var palette = SDL_GetSurfacePalette(src);
             if (palette != null)
             {
-                SDL_SetPaletteColors(tmp.pixels, /* SDL_LOGPAL|SDL_PHYSPAL, */ palette, 0, palette.Length);
+                SDL_SetPaletteColors(SDL_GetSurfacePalette(tmp), /* SDL_LOGPAL|SDL_PHYSPAL */ palette->colors, 0, palette->ncolors);
             }
-            var dstrect = new SDL_Rect { x = (short)leftBlackBand, y = (short)topBlackBand, w = (ushort)tmp.w, h = (ushort)tmp.h };
-            SDL_BlitSurface(tmp.pixels, 0, dst.pixels, ref dstrect);
-            SDL_FreeSurface(tmp.pixels);
+            SDL_Rect dstrect;
+            dstrect.x = (short)leftBlackBand; dstrect.y = (short)topBlackBand; dstrect.w = (ushort)tmp->w; dstrect.h = (ushort)tmp->h;
+            SDL_BlitSurface(tmp, null, dst, &dstrect);
+            SDL_DestroySurface(tmp);
         }
     }
 
@@ -89,7 +92,7 @@ internal class Zoom
 	 * @param flipy Flag indicating if the image should be vertically flipped.
 	 * @return 0 for success or -1 for error.
 	 */
-    unsafe static int _zoomSurfaceY(SDL_Surface src, SDL_Surface dst, int flipx, int flipy)
+    unsafe static int _zoomSurfaceY(SDL_Surface* src, SDL_Surface* dst, int flipx, int flipy)
     {
         int x, y;
         uint* csax, csay;
@@ -214,12 +217,12 @@ internal class Zoom
         /*
 		* Allocate memory for row increments
 		*/
-        if ((sax = (uint*)Marshal.ReAllocHGlobal((nint)sax, (dst.w + 1) * sizeof(uint))) == (uint*)0)
+        if ((sax = (uint*)Marshal.ReAllocHGlobal((nint)sax, (dst->w + 1) * sizeof(uint))) == (uint*)0)
         {
             sax = (uint*)0;
             return (-1);
         }
-        if ((say = (uint*)Marshal.ReAllocHGlobal((nint)say, (dst.h + 1) * sizeof(uint))) == (uint*)0)
+        if ((say = (uint*)Marshal.ReAllocHGlobal((nint)say, (dst->h + 1) * sizeof(uint))) == (uint*)0)
         {
             say = (uint*)0;
             //free(sax);
@@ -229,25 +232,25 @@ internal class Zoom
         /*
 		* Pointer setup
 		*/
-        sp = csp = (byte*)src.pixels;
-        dp = (byte*)dst.pixels;
-        dgap = dst.pitch - dst.w;
+        sp = csp = (byte*)src->pixels;
+        dp = (byte*)dst->pixels;
+        dgap = dst->pitch - dst->w;
 
-        if (flipx != 0) csp += (src.w - 1);
-        if (flipy != 0) csp = ((byte*)csp + src.pitch * (src.h - 1));
+        if (flipx != 0) csp += (src->w - 1);
+        if (flipy != 0) csp = ((byte*)csp + src->pitch * (src->h - 1));
 
         /*
 		* Precalculate row increments
 		*/
         csx = 0;
         csax = sax;
-        for (x = 0; x < dst.w; x++)
+        for (x = 0; x < dst->w; x++)
         {
-            csx += src.w;
+            csx += src->w;
             *csax = 0;
-            while (csx >= dst.w)
+            while (csx >= dst->w)
             {
-                csx -= dst.w;
+                csx -= dst->w;
                 (*csax)++;
             }
             (*csax) = (uint)((*csax) * (flipx != 0 ? -1 : 1));
@@ -255,27 +258,27 @@ internal class Zoom
         }
         csy = 0;
         csay = say;
-        for (y = 0; y < dst.h; y++)
+        for (y = 0; y < dst->h; y++)
         {
-            csy += src.h;
+            csy += src->h;
             *csay = 0;
-            while (csy >= dst.h)
+            while (csy >= dst->h)
             {
-                csy -= dst.h;
+                csy -= dst->h;
                 (*csay)++;
             }
-            (*csay) = (uint)((*csay) * src.pitch * (flipy != 0 ? -1 : 1));
+            (*csay) = (uint)((*csay) * src->pitch * (flipy != 0 ? -1 : 1));
             csay++;
         }
         /*
 		* Draw
 		*/
         csay = say;
-        for (y = 0; y < dst.h; y++)
+        for (y = 0; y < dst->h; y++)
         {
             csax = sax;
             sp = csp;
-            for (x = 0; x < dst.w; x++)
+            for (x = 0; x < dst->w; x++)
             {
                 /*
 				* Draw

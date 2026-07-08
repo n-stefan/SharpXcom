@@ -82,7 +82,7 @@ internal class Options
     private static int _preferredVideo;
     internal static VideoFormat preferredVideo { get => (VideoFormat)_preferredVideo; set => _preferredVideo = (int)value; }
     private static bool _captureMouse;
-    internal static SDL_bool /* SDL_GrabMode */ captureMouse { get => _captureMouse ? SDL_bool.SDL_TRUE : SDL_bool.SDL_FALSE; set => _captureMouse = value == SDL_bool.SDL_TRUE; }
+    internal static SDLBool /* SDL_GrabMode */ captureMouse { get => _captureMouse; set => _captureMouse = value; }
     private static int _wordwrap;
     internal static TextWrapping wordwrap => (TextWrapping)_wordwrap;
     internal static SDL_Keycode keyOk, keyCancel, keyScreenshot, keyFps, keyQuickLoad, keyQuickSave;
@@ -167,7 +167,8 @@ internal class Options
         loadArgs(args);
         setFolders();
         _setDefaultMods();
-        updateOptions();
+        //TODO: Uncomment
+        //updateOptions();
 
         string s = getUserFolder();
         s += "sharpxcom.log";
@@ -517,9 +518,9 @@ internal class Options
         _info.Add(new OptionInfo("useOpenGLSmoothing", ref useOpenGLSmoothing, true));
         _info.Add(new OptionInfo("debug", ref debug, false));
         _info.Add(new OptionInfo("debugUi", ref debugUi, false));
-        _info.Add(new OptionInfo("soundVolume", ref soundVolume, 2 * (MIX_MAX_VOLUME / 3)));
-        _info.Add(new OptionInfo("musicVolume", ref musicVolume, 2 * (MIX_MAX_VOLUME / 3)));
-        _info.Add(new OptionInfo("uiVolume", ref uiVolume, MIX_MAX_VOLUME / 3));
+        _info.Add(new OptionInfo("soundVolume", ref soundVolume, (int)(2 * (/* MIX_MAX_VOLUME */ 1.0f / 3))));
+        _info.Add(new OptionInfo("musicVolume", ref musicVolume, (int)(2 * (/* MIX_MAX_VOLUME */ 1.0f / 3))));
+        _info.Add(new OptionInfo("uiVolume", ref uiVolume, (int)(/* MIX_MAX_VOLUME */ 1.0f / 3)));
         _info.Add(new OptionInfo("language", ref language, string.Empty));
         _info.Add(new OptionInfo("battleScrollSpeed", ref battleScrollSpeed, 8));
         _info.Add(new OptionInfo("battleEdgeScroll", ref _battleEdgeScroll, (int)ScrollType.SCROLL_AUTO));
@@ -633,14 +634,14 @@ internal class Options
         _info.Add(new OptionInfo("keyGeoSpeed4", ref keyGeoSpeed4, SDL_Keycode.SDLK_4, "STR_30_MINUTES", "STR_GEOSCAPE"));
         _info.Add(new OptionInfo("keyGeoSpeed5", ref keyGeoSpeed5, SDL_Keycode.SDLK_5, "STR_1_HOUR", "STR_GEOSCAPE"));
         _info.Add(new OptionInfo("keyGeoSpeed6", ref keyGeoSpeed6, SDL_Keycode.SDLK_6, "STR_1_DAY", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoIntercept", ref keyGeoIntercept, SDL_Keycode.SDLK_i, "STR_INTERCEPT", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoBases", ref keyGeoBases, SDL_Keycode.SDLK_b, "STR_BASES", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoGraphs", ref keyGeoGraphs, SDL_Keycode.SDLK_g, "STR_GRAPHS", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoUfopedia", ref keyGeoUfopedia, SDL_Keycode.SDLK_u, "STR_UFOPAEDIA_UC", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoIntercept", ref keyGeoIntercept, SDL_Keycode.SDLK_I, "STR_INTERCEPT", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoBases", ref keyGeoBases, SDL_Keycode.SDLK_B, "STR_BASES", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoGraphs", ref keyGeoGraphs, SDL_Keycode.SDLK_G, "STR_GRAPHS", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoUfopedia", ref keyGeoUfopedia, SDL_Keycode.SDLK_U, "STR_UFOPAEDIA_UC", "STR_GEOSCAPE"));
         _info.Add(new OptionInfo("keyGeoOptions", ref keyGeoOptions, SDL_Keycode.SDLK_ESCAPE, "STR_OPTIONS_UC", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoFunding", ref keyGeoFunding, SDL_Keycode.SDLK_f, "STR_FUNDING_UC", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoFunding", ref keyGeoFunding, SDL_Keycode.SDLK_F, "STR_FUNDING_UC", "STR_GEOSCAPE"));
         _info.Add(new OptionInfo("keyGeoToggleDetail", ref keyGeoToggleDetail, SDL_Keycode.SDLK_TAB, "STR_TOGGLE_COUNTRY_DETAIL", "STR_GEOSCAPE"));
-        _info.Add(new OptionInfo("keyGeoToggleRadar", ref keyGeoToggleRadar, SDL_Keycode.SDLK_r, "STR_TOGGLE_RADAR_RANGES", "STR_GEOSCAPE"));
+        _info.Add(new OptionInfo("keyGeoToggleRadar", ref keyGeoToggleRadar, SDL_Keycode.SDLK_R, "STR_TOGGLE_RADAR_RANGES", "STR_GEOSCAPE"));
         _info.Add(new OptionInfo("keyBaseSelect1", ref keyBaseSelect1, SDL_Keycode.SDLK_1, "STR_SELECT_BASE_1", "STR_GEOSCAPE"));
         _info.Add(new OptionInfo("keyBaseSelect2", ref keyBaseSelect2, SDL_Keycode.SDLK_2, "STR_SELECT_BASE_2", "STR_GEOSCAPE"));
         _info.Add(new OptionInfo("keyBaseSelect3", ref keyBaseSelect3, SDL_Keycode.SDLK_3, "STR_SELECT_BASE_3", "STR_GEOSCAPE"));
@@ -659,22 +660,22 @@ internal class Options
         _info.Add(new OptionInfo("keyBattlePrevUnit", ref keyBattlePrevUnit, SDL_Keycode.SDLK_LSHIFT, "STR_PREVIOUS_UNIT", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleNextUnit", ref keyBattleNextUnit, SDL_Keycode.SDLK_TAB, "STR_NEXT_UNIT", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleDeselectUnit", ref keyBattleDeselectUnit, SDL_Keycode.SDLK_BACKSLASH, "STR_DESELECT_UNIT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleUseLeftHand", ref keyBattleUseLeftHand, SDL_Keycode.SDLK_q, "STR_USE_LEFT_HAND", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleUseRightHand", ref keyBattleUseRightHand, SDL_Keycode.SDLK_e, "STR_USE_RIGHT_HAND", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleInventory", ref keyBattleInventory, SDL_Keycode.SDLK_i, "STR_INVENTORY", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleMap", ref keyBattleMap, SDL_Keycode.SDLK_m, "STR_MINIMAP", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleUseLeftHand", ref keyBattleUseLeftHand, SDL_Keycode.SDLK_Q, "STR_USE_LEFT_HAND", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleUseRightHand", ref keyBattleUseRightHand, SDL_Keycode.SDLK_E, "STR_USE_RIGHT_HAND", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleInventory", ref keyBattleInventory, SDL_Keycode.SDLK_I, "STR_INVENTORY", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleMap", ref keyBattleMap, SDL_Keycode.SDLK_M, "STR_MINIMAP", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleOptions", ref keyBattleOptions, SDL_Keycode.SDLK_ESCAPE, "STR_OPTIONS", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleEndTurn", ref keyBattleEndTurn, SDL_Keycode.SDLK_BACKSPACE, "STR_END_TURN", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleAbort", ref keyBattleAbort, SDL_Keycode.SDLK_a, "STR_ABORT_MISSION", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleStats", ref keyBattleStats, SDL_Keycode.SDLK_s, "STR_UNIT_STATS", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleKneel", ref keyBattleKneel, SDL_Keycode.SDLK_k, "STR_KNEEL", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleReload", ref keyBattleReload, SDL_Keycode.SDLK_r, "STR_RELOAD", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattlePersonalLighting", ref keyBattlePersonalLighting, SDL_Keycode.SDLK_l, "STR_TOGGLE_PERSONAL_LIGHTING", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleAbort", ref keyBattleAbort, SDL_Keycode.SDLK_A, "STR_ABORT_MISSION", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleStats", ref keyBattleStats, SDL_Keycode.SDLK_S, "STR_UNIT_STATS", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleKneel", ref keyBattleKneel, SDL_Keycode.SDLK_K, "STR_KNEEL", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleReload", ref keyBattleReload, SDL_Keycode.SDLK_R, "STR_RELOAD", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattlePersonalLighting", ref keyBattlePersonalLighting, SDL_Keycode.SDLK_L, "STR_TOGGLE_PERSONAL_LIGHTING", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleReserveNone", ref keyBattleReserveNone, SDL_Keycode.SDLK_F1, "STR_DONT_RESERVE_TIME_UNITS", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleReserveSnap", ref keyBattleReserveSnap, SDL_Keycode.SDLK_F2, "STR_RESERVE_TIME_UNITS_FOR_SNAP_SHOT", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleReserveAimed", ref keyBattleReserveAimed, SDL_Keycode.SDLK_F3, "STR_RESERVE_TIME_UNITS_FOR_AIMED_SHOT", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleReserveAuto", ref keyBattleReserveAuto, SDL_Keycode.SDLK_F4, "STR_RESERVE_TIME_UNITS_FOR_AUTO_SHOT", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyBattleReserveKneel", ref keyBattleReserveKneel, SDL_Keycode.SDLK_j, "STR_RESERVE_TIME_UNITS_FOR_KNEEL", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyBattleReserveKneel", ref keyBattleReserveKneel, SDL_Keycode.SDLK_J, "STR_RESERVE_TIME_UNITS_FOR_KNEEL", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleZeroTUs", ref keyBattleZeroTUs, SDL_Keycode.SDLK_DELETE, "STR_EXPEND_ALL_TIME_UNITS", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleCenterEnemy1", ref keyBattleCenterEnemy1, SDL_Keycode.SDLK_1, "STR_CENTER_ON_ENEMY_1", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleCenterEnemy2", ref keyBattleCenterEnemy2, SDL_Keycode.SDLK_2, "STR_CENTER_ON_ENEMY_2", "STR_BATTLESCAPE"));
@@ -687,10 +688,10 @@ internal class Options
         _info.Add(new OptionInfo("keyBattleCenterEnemy9", ref keyBattleCenterEnemy9, SDL_Keycode.SDLK_9, "STR_CENTER_ON_ENEMY_9", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleCenterEnemy10", ref keyBattleCenterEnemy10, SDL_Keycode.SDLK_0, "STR_CENTER_ON_ENEMY_10", "STR_BATTLESCAPE"));
         _info.Add(new OptionInfo("keyBattleVoxelView", ref keyBattleVoxelView, SDL_Keycode.SDLK_F10, "STR_SAVE_VOXEL_VIEW", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyInvCreateTemplate", ref keyInvCreateTemplate, SDL_Keycode.SDLK_c, "STR_CREATE_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyInvApplyTemplate", ref keyInvApplyTemplate, SDL_Keycode.SDLK_v, "STR_APPLY_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyInvClear", ref keyInvClear, SDL_Keycode.SDLK_x, "STR_CLEAR_INVENTORY", "STR_BATTLESCAPE"));
-        _info.Add(new OptionInfo("keyInvAutoEquip", ref keyInvAutoEquip, SDL_Keycode.SDLK_z, "STR_AUTO_EQUIP", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyInvCreateTemplate", ref keyInvCreateTemplate, SDL_Keycode.SDLK_C, "STR_CREATE_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyInvApplyTemplate", ref keyInvApplyTemplate, SDL_Keycode.SDLK_V, "STR_APPLY_INVENTORY_TEMPLATE", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyInvClear", ref keyInvClear, SDL_Keycode.SDLK_X, "STR_CLEAR_INVENTORY", "STR_BATTLESCAPE"));
+        _info.Add(new OptionInfo("keyInvAutoEquip", ref keyInvAutoEquip, SDL_Keycode.SDLK_Z, "STR_AUTO_EQUIP", "STR_BATTLESCAPE"));
 
         _info.Add(new OptionInfo("FPS", ref FPS, 60, "STR_FPS_LIMIT", "STR_GENERAL"));
         _info.Add(new OptionInfo("FPSInactive", ref FPSInactive, 30, "STR_FPS_INACTIVE_LIMIT", "STR_GENERAL"));

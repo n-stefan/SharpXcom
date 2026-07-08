@@ -29,22 +29,22 @@ internal class Palette
     /// Position of the background colors block in an X-Com palette (used for background images in screens).
     internal const int backPos = 224;
 
-    SDL_Color[] _colors;
+    unsafe SDL_Color* _colors;
     int _count;
 
     /**
      * Initializes a brand new palette.
      */
-    internal Palette()
+    unsafe internal Palette()
     {
-        //_colors(0)
+        _colors = null;
         _count = 0;
     }
 
     /**
      * Deletes any colors contained within.
      */
-    ~Palette() =>
+    unsafe ~Palette() =>
         _colors = null;
 
     /**
@@ -54,8 +54,8 @@ internal class Palette
      * @param color Requested color in the palette.
      * @return Hexadecimal RGBA value.
      */
-    internal static uint getRGBA(SDL_Color[] pal, byte color) =>
-        ((uint)pal[color].r << 24) | ((uint)pal[color].g << 16) | ((uint)pal[color].b << 8) | 0xFF;
+    unsafe internal static uint getRGBA(SDL_Color* pal, byte color) =>
+        ((uint)pal[color].r << 24) | ((uint)pal[color].g << 16) | ((uint)pal[color].b << 8) | (uint)0xFF;
 
     /// Gets the position of a certain color block in a palette.
     /**
@@ -72,8 +72,8 @@ internal class Palette
      * @param offset Offset to a specific color.
      * @return Pointer to the requested SDL_Color.
      */
-    internal Span<SDL_Color> getColors(int offset = 0) =>
-        _colors.AsSpan(offset);
+    unsafe internal SDL_Color* getColors(int offset = 0) =>
+        _colors + offset;
 
     /// Gets the position of a given palette.
     /**
@@ -94,12 +94,13 @@ internal class Palette
      * @param offset Position of the palette in the file (in bytes).
      * @sa http://www.ufopaedia.org/index.php?title=PALETTES.DAT
      */
-    internal void loadDat(string filename, int ncolors, int offset = 0)
+    unsafe internal void loadDat(string filename, int ncolors, int offset = 0)
     {
         if (_colors != null)
             throw new Exception("loadDat can be run only once");
         _count = ncolors;
-        _colors = new SDL_Color[_count];
+        _colors = null; //new SDL_Color[_count];
+        NativeMemory.Fill(_colors, (nuint)(4 * _count), 0); //memset(_colors, 0, sizeof(SDL_Color) * _count);
 
         try
         {
@@ -129,12 +130,13 @@ internal class Palette
         }
     }
 
-    internal void setColors(SDL_Color[] pal, int ncolors)
+    unsafe internal void setColors(SDL_Color* pal, int ncolors)
     {
         if (_colors != null)
             throw new Exception("setColors can be run only once");
         _count = ncolors;
-        _colors = new SDL_Color[_count];
+        _colors = null; //new SDL_Color[_count];
+        NativeMemory.Fill(_colors, (nuint)(4 * _count), 0); //memset(_colors, 0, sizeof(SDL_Color) * _count);
 
         for (int i = 0; i < _count; ++i)
         {
@@ -159,7 +161,7 @@ internal class Palette
         _colors[0].a = 0;
     }
 
-    void savePal(string file)
+    unsafe void savePal(string file)
     {
         using var @out = new BinaryWriter(new FileStream(file, FileMode.Create));
         short count = (short)_count;
@@ -179,14 +181,15 @@ internal class Palette
         @out.Write(count);
 
         // Colors
-        Span<SDL_Color> color = getColors();
+        SDL_Color* color = getColors();
         for (short i = 0; i < count; ++i)
         {
             byte c = 0;
-            @out.Write(color[i].r);
-            @out.Write(color[i].g);
-            @out.Write(color[i].b);
+            @out.Write(color->r);
+            @out.Write(color->g);
+            @out.Write(color->b);
             @out.Write(c);
+            color++;
         }
         @out.Close();
     }

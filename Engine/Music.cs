@@ -25,36 +25,36 @@ namespace SharpXcom.Engine;
  */
 internal class Music
 {
-    nint /* Mix_Music */ _music;
+    unsafe static MIX_Audio* _music;
 
     /**
      * Initializes a new music track.
      */
-    internal Music() =>
-        _music = nint.Zero;
+    unsafe internal Music() =>
+        _music = null;
 
     /**
      * Deletes the loaded music content.
      */
-    ~Music()
+    unsafe ~Music()
     {
 #if !__NO_MUSIC
         stop();
-        Mix_FreeMusic(_music);
+        MIX_DestroyAudio(_music);
 #endif
     }
 
     /**
      * Stops all music playing.
      */
-    internal static void stop()
+    unsafe internal static void stop()
     {
 #if !__NO_MUSIC
         if (!Options.mute)
         {
             func_mute();
-            Mix_HookMusic(null, nint.Zero);
-            Mix_HaltMusic();
+            MIX_SetTrackAudioStream(Game.Tracks[0], null);
+            MIX_StopTrack(Game.Tracks[0], 0);
         }
 #endif
     }
@@ -63,18 +63,22 @@ internal class Music
      * Plays the contained music track.
      * @param loop Amount of times to loop the track. -1 = infinite
      */
-    internal virtual void play(int loop = -1)
+    unsafe internal virtual void play(int loop = -1)
     {
 #if !__NO_MUSIC
         if (!Options.mute)
         {
-            if (_music != nint.Zero)
+            if (_music != null)
             {
                 stop();
-                if (Mix_PlayMusic(_music, loop) == -1)
+                MIX_SetTrackAudio(Game.Tracks[0], _music);
+                SDL_PropertiesID props = SDL_CreateProperties();
+                SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, loop);
+                if (!MIX_PlayTrack(Game.Tracks[0], props))
                 {
-                    Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {Mix_GetError()}");
+                    Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} {SDL_GetError()}");
                 }
+                SDL_DestroyProperties(props);
             }
         }
 #endif
@@ -85,17 +89,17 @@ internal class Music
      * @param data Pointer to the music file in memory
      * @param size Size of the music file in bytes.
      */
-    internal virtual void load(byte[] data, int size)
+    unsafe internal virtual void load(byte[] data, int size)
     {
 #if !__NO_MUSIC
         nint dataPtr = Marshal.AllocHGlobal(size);
         Marshal.Copy(data, 0, dataPtr, size);
-        nint rwops = SDL_RWFromConstMem(dataPtr, size);
-        _music = Mix_LoadMUS_RW(rwops);
-        SDL_FreeRW(rwops);
-        if (_music == nint.Zero)
+        SDL_IOStream* iostream = SDL_IOFromConstMem(dataPtr, (nuint)size);
+        _music = MIX_LoadAudio_IO(Game.Mixer, iostream, true, true);
+        SDL_CloseIO(iostream);
+        if (_music == null)
         {
-            throw new Exception(Mix_GetError());
+            throw new Exception(SDL_GetError());
         }
 #endif
     }
@@ -104,14 +108,14 @@ internal class Music
      * Loads a music file from a specified filename.
      * @param filename Filename of the music file.
      */
-    internal virtual void load(string filename)
+    unsafe internal virtual void load(string filename)
     {
 #if !__NO_MUSIC
         string utf8 = Unicode.convPathToUtf8(filename);
-        _music = Mix_LoadMUS(utf8);
-        if (_music == nint.Zero)
+        _music = MIX_LoadAudio(Game.Mixer, utf8, true);
+        if (_music == null)
         {
-            throw new Exception(Mix_GetError());
+            throw new Exception(SDL_GetError());
         }
 #endif
     }
@@ -119,14 +123,14 @@ internal class Music
     /**
      * Pauses music playback when game loses focus.
      */
-    static void pause()
+    unsafe static void pause()
     {
 #if !__NO_MUSIC
         if (!Options.mute)
         {
-            Mix_PauseMusic();
-            if (Mix_GetMusicType(0) == Mix_MusicType.MUS_NONE)
-                Mix_HookMusic(null, nint.Zero);
+            MIX_PauseTrack(Game.Tracks[0]);
+            if (GetMusicType() == "NONE")
+                MIX_SetTrackAudioStream(Game.Tracks[0], null);
         }
 #endif
     }
@@ -134,14 +138,18 @@ internal class Music
     /**
      * Resumes music playback when game gains focus.
      */
-    static void resume()
+    unsafe static void resume()
     {
 #if !__NO_MUSIC
         if (!Options.mute)
         {
-            Mix_ResumeMusic();
-            if (Mix_GetMusicType(0) == Mix_MusicType.MUS_NONE)
-                Mix_HookMusic(new AdlibMusic().player, nint.Zero);
+            MIX_ResumeTrack(Game.Tracks[0]);
+            if (GetMusicType() == "NONE")
+            {
+                SDL_AudioStream* stream = SDL_CreateAudioStream(null, null);
+                SDL_SetAudioStreamGetCallback(stream, &AdlibMusic.player, nint.Zero);
+                MIX_SetTrackAudioStream(Game.Tracks[0], stream);
+            }
         }
 #endif
     }
@@ -149,14 +157,22 @@ internal class Music
     /**
      * Checks if any music is playing.
      */
-    static bool isPlaying()
+    unsafe static bool isPlaying()
     {
 #if !__NO_MUSIC
         if (!Options.mute)
         {
-            return Mix_Playing(-1) != 0;
+            return MIX_TrackPlaying(Game.Tracks[0]);
         }
 #endif
         return false;
+    }
+
+    unsafe internal static string GetMusicType()
+    {
+        SDL_PropertiesID props = MIX_GetAudioProperties(_music);
+        string musicType = SDL_GetStringProperty(props, MIX_PROP_AUDIO_DECODER_STRING, null);
+        SDL_DestroyProperties(props);
+        return musicType;
     }
 }

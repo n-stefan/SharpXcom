@@ -31,7 +31,7 @@ delegate void ActionHandler(Action _);
 internal class InteractiveSurface : Surface
 {
     const int NUM_BUTTONS = 7;
-    const SDL_Keycode SDLK_ANY = (SDL_Keycode)(-1); // using an unused keycode to represent an "any key"
+    const SDL_Keycode SDLK_ANY = unchecked((SDL_Keycode)(-1)); // using an unused keycode to represent an "any key"
 
     byte _buttonsPressed;
     protected ActionHandler _in, _over, _out;
@@ -70,20 +70,20 @@ internal class InteractiveSurface : Surface
      * @param action Pointer to an action.
      * @param state State that the action handlers belong to.
      */
-    internal virtual void handle(Action action, State state)
+    unsafe internal virtual void handle(Action action, State state)
     {
         if (!_visible || _hidden)
             return;
 
         action.setSender(this);
 
-        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONUP || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP || action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN)
         {
-            action.setMouseAction(action.getDetails().button.x, action.getDetails().button.y, getX(), getY());
+            action.setMouseAction((int)action.getDetails().button.x, (int)action.getDetails().button.y, getX(), getY());
         }
-        else if (action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+        else if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION)
         {
-            action.setMouseAction(action.getDetails().motion.x, action.getDetails().motion.y, getX(), getY());
+            action.setMouseAction((int)action.getDetails().motion.x, (int)action.getDetails().motion.y, getX(), getY());
         }
 
         if (action.isMouseAction())
@@ -96,9 +96,9 @@ internal class InteractiveSurface : Surface
                     _isHovered = true;
                     mouseIn(action, state);
                 }
-                if (_listButton && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+                if (_listButton && action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION)
                 {
-                    _buttonsPressed = (byte)SDL_GetMouseState(0, 0);
+                    _buttonsPressed = (byte)SDL_GetMouseState(null, null);
                     for (byte i = 1; i <= NUM_BUTTONS; ++i)
                     {
                         if (isButtonPressed(i))
@@ -116,7 +116,7 @@ internal class InteractiveSurface : Surface
                 {
                     _isHovered = false;
                     mouseOut(action, state);
-                    if (_listButton && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+                    if (_listButton && action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION)
                     {
                         for (byte i = 1; i <= NUM_BUTTONS; ++i)
                         {
@@ -132,7 +132,7 @@ internal class InteractiveSurface : Surface
             }
         }
 
-        if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN)
         {
             if (_isHovered && !isButtonPressed(action.getDetails().button.button))
             {
@@ -140,7 +140,7 @@ internal class InteractiveSurface : Surface
                 mousePress(action, state);
             }
         }
-        else if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONUP)
+        else if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP)
         {
             if (isButtonPressed(action.getDetails().button.button))
             {
@@ -155,11 +155,11 @@ internal class InteractiveSurface : Surface
 
         if (_isFocused)
         {
-            if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+            if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN)
             {
                 keyboardPress(action, state);
             }
-            else if (action.getDetails().type == SDL_EventType.SDL_KEYUP)
+            else if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_UP)
             {
                 keyboardRelease(action, state);
             }
@@ -174,7 +174,7 @@ internal class InteractiveSurface : Surface
         }
         else
         {
-            return (_buttonsPressed & SDL_BUTTON(button)) != 0;
+            return (_buttonsPressed & (byte)SDL_BUTTON((SDLButton)button)) != 0;
         }
     }
 
@@ -182,11 +182,11 @@ internal class InteractiveSurface : Surface
     {
         if (pressed)
         {
-            _buttonsPressed = (byte)(_buttonsPressed | SDL_BUTTON(button));
+            _buttonsPressed = (byte)(_buttonsPressed | (byte)SDL_BUTTON((SDLButton)button));
         }
         else
         {
-            _buttonsPressed = (byte)(_buttonsPressed & ~SDL_BUTTON(button));
+            _buttonsPressed = (byte)(_buttonsPressed & ~(byte)SDL_BUTTON((SDLButton)button));
         }
     }
 
@@ -261,8 +261,8 @@ internal class InteractiveSurface : Surface
             allHandler(action);
         }
         // Check if Ctrl, Alt and Shift aren't pressed
-        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL | SDL_Keymod.KMOD_ALT | SDL_Keymod.KMOD_SHIFT)) != 0);
-        if (_keyPress.TryGetValue(action.getDetails().key.keysym.sym, out ActionHandler oneHandler) && !mod)
+        bool mod = ((action.getDetails().key.mod & (SDL_Keymod.SDL_KMOD_CTRL | SDL_Keymod.SDL_KMOD_ALT | SDL_Keymod.SDL_KMOD_SHIFT)) != 0);
+        if (_keyPress.TryGetValue(action.getDetails().key.key, out ActionHandler oneHandler) && !mod)
         {
             oneHandler(action);
         }
@@ -282,8 +282,8 @@ internal class InteractiveSurface : Surface
             allHandler(action);
         }
         // Check if Ctrl, Alt and Shift aren't pressed
-        bool mod = ((action.getDetails().key.keysym.mod & (SDL_Keymod.KMOD_CTRL | SDL_Keymod.KMOD_ALT | SDL_Keymod.KMOD_SHIFT)) != 0);
-        if (_keyRelease.TryGetValue(action.getDetails().key.keysym.sym, out ActionHandler oneHandler) && !mod)
+        bool mod = ((action.getDetails().key.mod & (SDL_Keymod.SDL_KMOD_CTRL | SDL_Keymod.SDL_KMOD_ALT | SDL_Keymod.SDL_KMOD_SHIFT)) != 0);
+        if (_keyRelease.TryGetValue(action.getDetails().key.key, out ActionHandler oneHandler) && !mod)
         {
             oneHandler(action);
         }
@@ -329,9 +329,9 @@ internal class InteractiveSurface : Surface
         if (isButtonPressed())
         {
             _buttonsPressed = 0;
-            var ev = new SDL_Event();
-            ev.type = SDL_EventType.SDL_MOUSEBUTTONUP;
-            ev.button.button = (byte)SDL_BUTTON_LEFT;
+            SDL_Event ev = default;
+            ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP;
+            ev.button.button = SDL_BUTTON_LEFT;
             Action a = new Action(ev, 0.0, 0.0, 0, 0);
             mouseRelease(a, state);
         }
