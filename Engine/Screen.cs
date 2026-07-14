@@ -42,14 +42,17 @@ internal class Screen
     SDL_WindowFlags _flags;
     int _numColors, _firstColor;
     bool _pushPalette;
-    SDL_Color[] deferredPalette = new SDL_Color[256];
+    unsafe SDL_Color* deferredPalette; //SDL_Color[] deferredPalette = new SDL_Color[256];
     int _topBlackBand, _bottomBlackBand, _leftBlackBand, _rightBlackBand, _cursorTopBlackBand, _cursorLeftBlackBand;
     SDL_Rect _clear;
     int _bpp;
     OpenGL glOutput;
-    /* SDL_Window */ nint _screen;
-    /* SDL_Renderer */ nint _renderer;
+    unsafe SDL_Window* _screen;
+    unsafe static SDL_Renderer* _renderer;
+    unsafe SDL_Texture* _texture;
     Surface _surface;
+
+    unsafe internal static SDL_Renderer* Renderer => _renderer;
 
     /**
      * Initializes a new display screen for the game to render contents to.
@@ -151,7 +154,7 @@ internal class Screen
      * Returns the screen's 8bpp palette.
      * @return Pointer to the palette's colors.
      */
-    internal SDL_Color[] getPalette() =>
+    unsafe internal SDL_Color* getPalette() =>
         deferredPalette;
 
     /**
@@ -159,22 +162,22 @@ internal class Screen
      * as they don't automatically take effect.
      * @param resetVideo Reset display surface.
      */
-    internal void resetDisplay(bool resetVideo = true)
+    unsafe internal void resetDisplay(bool resetVideo = true)
     {
         int width = Options.displayWidth;
         int height = Options.displayHeight;
 
         makeVideoFlags();
 
-        if (_surface == null || (Surface.getFormat(_surface.getSurface()).BitsPerPixel != _bpp ||
-            _surface.getSurface().w != _baseWidth ||
-            _surface.getSurface().h != _baseHeight)) // don't reallocate _surface if not necessary, it's a waste of CPU cycles
+        if (_surface == null || (Surface.getFormat(_surface.getSurface())->bits_per_pixel != _bpp ||
+            _surface.getSurface()->w != _baseWidth ||
+            _surface.getSurface()->h != _baseHeight)) // don't reallocate _surface if not necessary, it's a waste of CPU cycles
         {
             if (_surface != null) _surface = null;
             _surface = new Surface(_baseWidth, _baseHeight, 0, 0, use32bitScaler() ? 32 : 8); // only HQX/XBRZ needs 32bpp for this surface; the OpenGL class has its own 32bpp buffer
-            if (Surface.getFormat(_surface.getSurface()).BitsPerPixel == 8) _surface.setPalette(deferredPalette);
+            if (Surface.getFormat(_surface.getSurface())->bits_per_pixel == 8) _surface.setPalette(deferredPalette);
         }
-        SDL_SetColorKey(_surface.getSurfacePtr(), 0, 0); // turn off color key!
+        SDL_SetSurfaceColorKey(_surface.getSurface(), false, 0); // turn off color key!
 
         if (resetVideo || getBitsPerPixel() != _bpp)
         {
@@ -184,26 +187,39 @@ internal class Screen
                 // Workaround for segfault when switching to opengl
                 if (!((oldFlags & SDL_WindowFlags.SDL_WINDOW_OPENGL) != 0) && (_flags & SDL_WindowFlags.SDL_WINDOW_OPENGL) != 0)
                 {
-                    byte cursor = 0;
-                    string _oldtitle = SDL_GetWindowTitle(nint.Zero); //SDL_WM_GetCaption(&_oldtitle, NULL);
+                    byte* cursor = (byte*)Marshal.AllocHGlobal(1);
+                    string _oldtitle = SDL_GetWindowTitle(_screen); //SDL_WM_GetCaption(&_oldtitle, NULL);
                     string title = _oldtitle;
-                    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-                    SDL_InitSubSystem(SDL_INIT_VIDEO);
-                    SDL_ShowCursor(SDL_ENABLE);
+                    SDL_QuitSubSystem(SDL_InitFlags.SDL_INIT_VIDEO);
+                    SDL_InitSubSystem(SDL_InitFlags.SDL_INIT_VIDEO);
+                    SDL_ShowCursor(/* SDL_ENABLE */);
                     //SDL_EnableUNICODE(1);
-                    SDL_SetWindowTitle(nint.Zero, title); //SDL_WM_SetCaption(title, 0);
+                    SDL_SetWindowTitle(_screen, title); //SDL_WM_SetCaption(title, 0);
                     SDL_SetCursor(SDL_CreateCursor(cursor, cursor, 1, 1, 0, 0));
                 }
             }
 
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Attempting to set display to {width}x{height}x{_bpp}...");
-            _screen = SDL_CreateWindow(string.Empty, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, _flags);
-            if (_screen == nint.Zero)
+            SDL_PropertiesID props = SDL_CreateProperties();
+            SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, string.Empty);
+            SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_UNDEFINED);
+            SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_UNDEFINED);
+            SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, width);
+            SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, height);
+            SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, (long)_flags);
+            _screen = SDL_CreateWindowWithProperties(props);
+            _renderer = SDL_CreateRenderer(_screen, (byte*)null);
+            _texture = SDL_CreateTexture(_renderer, SDL_PixelFormat.SDL_PIXELFORMAT_ARGB8888, SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING, width, height);
+            if (_screen == null)
             {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {SDL_GetError()}");
                 Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Attempting to set display to default resolution...");
-                _screen = SDL_CreateWindow(string.Empty, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 400, _flags);
-                if (_screen == nint.Zero)
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, 640);
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, 400);
+                _screen = SDL_CreateWindowWithProperties(props);
+                _renderer = SDL_CreateRenderer(_screen, (byte*)null);
+                _texture = SDL_CreateTexture(_renderer, SDL_PixelFormat.SDL_PIXELFORMAT_ARGB8888, SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING, 640, 400);
+                if (_screen == null)
                 {
                     if ((_flags & SDL_WindowFlags.SDL_WINDOW_OPENGL) != 0)
                     {
@@ -212,9 +228,8 @@ internal class Screen
                     throw new Exception(SDL_GetError());
                 }
             }
+            SDL_DestroyProperties(props);
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} Display set to {getWidth()}x{getHeight()}x{(int)getBitsPerPixel()}.");
-
-            _renderer = SDL_CreateRenderer(_screen, -1, 0);
         }
         else
         {
@@ -343,11 +358,11 @@ internal class Screen
         if (useOpenGL())
         {
             _flags = SDL_WindowFlags.SDL_WINDOW_OPENGL;
-            SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_RED_SIZE, 5);
-            SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_GREEN_SIZE, 5);
-            SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_BLUE_SIZE, 5);
-            SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_DEPTH_SIZE, 16);
-            SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_DOUBLEBUFFER, 1);
+            SDL_GL_SetAttribute(SDL_GLAttr.SDL_GL_RED_SIZE, 5);
+            SDL_GL_SetAttribute(SDL_GLAttr.SDL_GL_GREEN_SIZE, 5);
+            SDL_GL_SetAttribute(SDL_GLAttr.SDL_GL_BLUE_SIZE, 5);
+            SDL_GL_SetAttribute(SDL_GLAttr.SDL_GL_DEPTH_SIZE, 16);
+            SDL_GL_SetAttribute(SDL_GLAttr.SDL_GL_DOUBLEBUFFER, 1);
         }
         if (Options.allowResize)
         {
@@ -391,36 +406,29 @@ internal class Screen
      * Returns the width of the screen.
      * @return Width in pixels.
      */
-    internal int getWidth()
+    unsafe internal int getWidth()
     {
-        SDL_GetWindowSizeInPixels(_screen, out int width, out int _);
-        return width;
+        var surface = SDL_GetWindowSurface(_screen);
+        return surface->w;
     }
 
     /**
      * Returns the height of the screen.
      * @return Height in pixels
      */
-    internal int getHeight()
+    unsafe internal int getHeight()
     {
-        SDL_GetWindowSizeInPixels(_screen, out int _, out int height);
-        return height;
+        var surface = SDL_GetWindowSurface(_screen);
+        return surface->h;
     }
 
-    internal byte getBitsPerPixel()
+    unsafe internal byte getBitsPerPixel()
     {
-        var format = SDL_GetWindowPixelFormat(_screen);
-        SDL_PixelFormatEnumToMasks(format, out int bpp, out uint _, out uint _, out uint _, out uint _);
-        return (byte)bpp;
+        var surface = SDL_GetWindowSurface(_screen);
+        return Surface.getFormat(surface)->bits_per_pixel;
     }
 
-    SDL_PixelFormat getFormat()
-    {
-        var surface = Marshal.PtrToStructure<SDL_Surface>(SDL_GetWindowSurface(_screen));
-        return Marshal.PtrToStructure<SDL_PixelFormat>(surface.format);
-    }
-
-    internal nint getWindow() =>
+    unsafe internal SDL_Window* getWindow() =>
         _screen;
 
     /**
@@ -484,12 +492,13 @@ internal class Screen
     unsafe internal void clear()
     {
         _surface.clear();
-        if ((_flags & SDL_SWSURFACE) != 0)
-        {
-            var surface = Marshal.PtrToStructure<SDL_Surface>(SDL_GetWindowSurface(_screen));
-            NativeMemory.Fill((void*)surface.pixels, (nuint)(surface.h * surface.pitch), 0); //memset(_screen->pixels, 0, _screen->h*_screen->pitch);
-        }
-        else SDL_FillRect(SDL_GetWindowSurface(_screen), ref _clear, 0);
+        //TODO: Needed?
+        //if ((_flags & SDL_SWSURFACE) != 0)
+        //{
+        //    var surface = SDL_GetWindowSurface(_screen);
+        //    NativeMemory.Fill((void*)surface->pixels, (nuint)(surface->h * surface->pitch), 0); //memset(_screen->pixels, 0, _screen->h*_screen->pitch);
+        //}
+        /*else*/ fixed (SDL_Rect* p = &_clear) { SDL_FillSurfaceRect(SDL_GetWindowSurface(_screen), p, 0); }
     }
 
     /**
@@ -499,47 +508,47 @@ internal class Screen
      * @param ncolors Amount of colors to replace.
      * @param immediately Apply palette changes immediately, otherwise wait for next blit.
      */
-    internal void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256, bool immediately = false)
+    unsafe internal void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256, bool immediately = false)
     {
         if (_numColors != 0 && (_numColors != ncolors) && (_firstColor != firstcolor))
-        {
+	    {
             // an initial palette setup has not been committed to the screen yet
             // just update it with whatever colors are being sent now
-            Array.Copy(colors, 0, deferredPalette, firstcolor, ncolors); //memmove(&(deferredPalette[firstcolor]), colors, sizeof(SDL_Color) * ncolors);
+            NativeMemory.Copy(colors, &deferredPalette[firstcolor], (nuint)(4 * ncolors)); //memmove(&(deferredPalette[firstcolor]), colors, sizeof(SDL_Color) * ncolors);
             _numColors = 256; // all the use cases are just a full palette with 16-color follow-ups
             _firstColor = 0;
-        }
+	    }
         else
-        {
-            Array.Copy(colors, 0, deferredPalette, firstcolor, ncolors); //memmove(&(deferredPalette[firstcolor]), colors, sizeof(SDL_Color) * ncolors);
+	    {
+            NativeMemory.Copy(colors, &deferredPalette[firstcolor], (nuint)(4 * ncolors)); //memmove(&(deferredPalette[firstcolor]), colors, sizeof(SDL_Color) * ncolors);
             _numColors = ncolors;
             _firstColor = firstcolor;
-        }
+	    }
 
         _surface.setPalette(colors, firstcolor, ncolors);
 
         // defer actual update of screen until SDL_Flip()
-        if (immediately && getBitsPerPixel() == 8 && SDL_SetPaletteColors(getFormat().palette, colors, firstcolor, ncolors) == 0)
+        if (immediately && getBitsPerPixel() == 8 && !SDL_SetPaletteColors(SDL_GetSurfacePalette(SDL_GetWindowSurface(_screen)), colors, firstcolor, ncolors))
         {
             Console.WriteLine($"{Log(SeverityLevel.LOG_DEBUG)} Display palette doesn't match requested palette");
         }
 
-        // Sanity check
-        /*
-        SDL_Color *newcolors = _screen->format->palette->colors;
-        for (int i = firstcolor, j = 0; i < firstcolor + ncolors; i++, j++)
-        {
-            Log(LOG_DEBUG) << (int)newcolors[i].r << " - " << (int)newcolors[i].g << " - " << (int)newcolors[i].b;
-            Log(LOG_DEBUG) << (int)colors[j].r << " + " << (int)colors[j].g << " + " << (int)colors[j].b;
-            if (newcolors[i].r != colors[j].r ||
-                newcolors[i].g != colors[j].g ||
-                newcolors[i].b != colors[j].b)
-            {
-                Log(LOG_ERROR) << "Display palette doesn't match requested palette";
-                break;
-            }
-        }
-        */
+	    // Sanity check
+	    /*
+	    SDL_Color *newcolors = _screen->format->palette->colors;
+	    for (int i = firstcolor, j = 0; i < firstcolor + ncolors; i++, j++)
+	    {
+		    Log(LOG_DEBUG) << (int)newcolors[i].r << " - " << (int)newcolors[i].g << " - " << (int)newcolors[i].b;
+		    Log(LOG_DEBUG) << (int)colors[j].r << " + " << (int)colors[j].g << " + " << (int)colors[j].b;
+		    if (newcolors[i].r != colors[j].r ||
+			    newcolors[i].g != colors[j].g ||
+			    newcolors[i].b != colors[j].b)
+		    {
+			    Log(LOG_ERROR) << "Display palette doesn't match requested palette";
+			    break;
+		    }
+	    }
+	    */
     }
 
     /**
@@ -578,7 +587,7 @@ internal class Screen
     {
         if (Options.debug)
         {
-            if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_F8)
+            if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN && action.getDetails().key.key == SDL_Keycode.SDLK_F8)
             {
                 switch (Timer.gameSlowSpeed)
                 {
@@ -589,12 +598,12 @@ internal class Screen
             }
         }
 
-        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_RETURN && (SDL_GetModState() & SDL_Keymod.KMOD_ALT) != 0)
+        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN && action.getDetails().key.key == SDL_Keycode.SDLK_RETURN && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_ALT) != 0)
         {
             Options.fullscreen = !Options.fullscreen;
             resetDisplay();
         }
-        else if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN && action.getDetails().key.keysym.sym == Options.keyScreenshot)
+        else if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN && action.getDetails().key.key == Options.keyScreenshot)
         {
             string ss;
             int i = 0;
@@ -616,28 +625,32 @@ internal class Screen
      * of the buffer are resized by that factor (eg. 2 = doubled)
      * before being put on screen.
      */
-    internal void flip()
+    unsafe internal void flip()
     {
+        var windowSurface = SDL_GetWindowSurface(_screen);
         if (getWidth() != _baseWidth || getHeight() != _baseHeight || useOpenGL())
         {
-            Zoom.flipWithZoom(_surface.getSurface(), Marshal.PtrToStructure<SDL_Surface>(SDL_GetWindowSurface(_screen)), _topBlackBand, _bottomBlackBand, _leftBlackBand, _rightBlackBand, glOutput);
+            Zoom.flipWithZoom(_surface.getSurface(), _screen, _topBlackBand, _bottomBlackBand, _leftBlackBand, _rightBlackBand, glOutput);
         }
         else
         {
-            SDL_BlitSurface(_surface.getSurfacePtr(), nint.Zero, SDL_GetWindowSurface(_screen), nint.Zero);
+            SDL_BlitSurface(_surface.getSurface(), null, windowSurface, null);
         }
-
+        
         // perform any requested palette update
         if (_pushPalette && _numColors != 0 && getBitsPerPixel() == 8)
         {
-            if (getBitsPerPixel() == 8 && SDL_SetPaletteColors(getFormat().palette, deferredPalette[_firstColor..], _firstColor, _numColors) == 0)
+            if (getBitsPerPixel() == 8 && !SDL_SetPaletteColors(SDL_GetSurfacePalette(windowSurface), &deferredPalette[_firstColor], _firstColor, _numColors))
             {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_DEBUG)} Display palette doesn't match requested palette");
             }
             _numColors = 0;
             _pushPalette = false;
         }
-
+        
+        SDL_UpdateTexture(_texture, null, windowSurface->pixels, windowSurface->pitch);
+        SDL_RenderClear(_renderer);
+        SDL_RenderTexture(_renderer, _texture, null, null);
         SDL_RenderPresent(_renderer); //SDL_Flip(_screen)
     }
 
@@ -647,8 +660,7 @@ internal class Screen
      */
     unsafe void screenshot(string filename)
     {
-        nint screenshot = SDL_CreateRGBSurface(0, getWidth() - getWidth() % 4, getHeight(), 24, 0xff, 0xff00, 0xff0000, 0); //SDL_AllocSurface
-        SDL_Surface surface = Marshal.PtrToStructure<SDL_Surface>(screenshot);
+        SDL_Surface* screenshot = SDL_CreateSurface(getWidth() - getWidth() % 4, getHeight(), SDL_GetPixelFormatForMasks(24, 0xff, 0xff00, 0xff0000, 0)); //SDL_AllocSurface
 
         if (useOpenGL())
         {
@@ -657,23 +669,22 @@ internal class Screen
 
             for (int y = 0; y < getHeight(); ++y)
             {
-                glReadPixels(0, getHeight() - (y + 1), getWidth() - getWidth() % 4, 1, format, GL_UNSIGNED_BYTE, nint.Add(surface.pixels, y * surface.pitch));
+                glReadPixels(0, getHeight() - (y + 1), getWidth() - getWidth() % 4, 1, format, GL_UNSIGNED_BYTE, nint.Add(screenshot->pixels, y * screenshot->pitch));
             }
             glErrorCheck();
 #endif
         }
         else
         {
-            SDL_BlitSurface(SDL_GetWindowSurface(_screen), nint.Zero, screenshot, nint.Zero);
+            SDL_BlitSurface(SDL_GetWindowSurface(_screen), null, screenshot, null);
         }
 
         //unsigned error = lodepng::encode(filename, (const unsigned char *)(screenshot->pixels), getWidth() - getWidth()%4, getHeight(), LCT_RGB);
-        var error = IMG_SavePNG(screenshot, filename);
-        if (error == -1)
+        if (!IMG_SavePNG(screenshot, filename))
         {
             Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {SDL_GetError()}");
         }
 
-        SDL_FreeSurface(screenshot);
+        SDL_DestroySurface(screenshot);
     }
 }
