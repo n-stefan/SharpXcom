@@ -476,12 +476,12 @@ internal class CrossPlatform
 	 * @param ev SDL event.
 	 * @return Is quitting necessary?
 	 */
-    unsafe internal static bool isQuitShortcut(SDL_Event* ev)
+    internal static bool isQuitShortcut(SDL_Event ev)
     {
         if (OperatingSystem.IsWindows())
         {
             // Alt + F4
-            return (ev->Type == SDL_EventType.SDL_EVENT_KEY_DOWN && ev->key.key == SDL_Keycode.SDLK_F4 && (ev->key.mod & SDL_Keymod.SDL_KMOD_ALT) != 0);
+            return (ev.Type == SDL_EventType.SDL_EVENT_KEY_DOWN && ev.key.key == SDL_Keycode.SDLK_F4 && (ev.key.mod & SDL_Keymod.SDL_KMOD_ALT) != 0);
         }
         else
         {

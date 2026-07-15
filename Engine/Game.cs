@@ -43,13 +43,18 @@ internal class Game
     int _timeUntilNextFrame;
     List<State> _states = [], _deleted = [];
     SDL_Event _event;
+    unsafe static MIX_Mixer* _mixer;
+    unsafe static MIX_Track*[] _tracks;
+
+    unsafe internal static MIX_Mixer* Mixer { get => _mixer; set => _mixer = value; }
+    unsafe internal static MIX_Track*[] Tracks => _tracks;
 
     /**
      * Starts up all the SDL subsystems,
      * creates the display screen and sets up the cursor.
      * @param title Title of the game window.
      */
-    internal Game(string title)
+    unsafe internal Game(string title)
     {
         _screen = null;
         _cursor = null;
@@ -65,14 +70,14 @@ internal class Game
         Options.mute = false;
 
         // Initialize SDL
-        if (SDL_Init(SDL_INIT_VIDEO) < 0)
+        if (!SDL_Init(SDL_InitFlags.SDL_INIT_VIDEO))
         {
             throw new Exception(SDL_GetError());
         }
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} SDL initialized successfully.");
 
         // Initialize SDL_mixer
-        if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
+        if (!SDL_InitSubSystem(SDL_InitFlags.SDL_INIT_AUDIO))
         {
             Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {SDL_GetError()}");
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} No sound device detected, audio disabled.");
@@ -83,18 +88,18 @@ internal class Game
             initAudio();
         }
 
+        // Create display
+        _screen = new Screen();
+
         // trap the mouse inside the window
-        SDL_SetRelativeMouseMode(Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
+        SDL_SetWindowRelativeMouseMode(_screen.getWindow(), Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
 
         // Set the window icon
-        CrossPlatform.setWindowIcon(/* IDI_ICON1, */ FileMap.getFilePath("sharpxcom.png"));
+        CrossPlatform.setWindowIcon(/* IDI_ICON1 */ _screen.getWindow(), FileMap.getFilePath("sharpxcom.png"));
 
         // Set up unicode
         //SDL_EnableUNICODE(1);
         Unicode.getUtf8Locale();
-
-        // Create display
-        _screen = new Screen();
 
         // Set the window caption
         SDL_SetWindowTitle(_screen.getWindow(), title); //SDL_WM_SetCaption(title, 0);
@@ -103,8 +108,8 @@ internal class Game
         _cursor = new Interface.Cursor(9, 13);
 
         // Create invisible hardware cursor to workaround bug with absolute positioning pointing devices
-        SDL_ShowCursor(SDL_ENABLE);
-        nint cursor = Marshal.AllocHGlobal(1);
+        SDL_ShowCursor(/* SDL_ENABLE */);
+        var cursor = (byte*)Marshal.AllocHGlobal(1);
         SDL_SetCursor(SDL_CreateCursor(cursor, cursor, 1, 1, 0, 0));
 
         // Create fps counter
@@ -119,14 +124,14 @@ internal class Game
     /**
      * Deletes the display screen, cursor, states and shuts down all the SDL subsystems.
      */
-    ~Game()
+    unsafe ~Game()
     {
         Sound.stop();
         Music.stop();
 
         _states.Clear();
 
-        SDL_FreeCursor(SDL_GetCursor());
+        SDL_DestroyCursor(SDL_GetCursor());
 
         _cursor = null;
         _lang = null;
@@ -135,7 +140,7 @@ internal class Game
         _screen = null;
         _fpsCounter = null;
 
-        Mix_CloseAudio();
+        MIX_DestroyMixer(_mixer);
 
         SDL_Quit();
     }
@@ -178,11 +183,11 @@ internal class Game
     /**
      * Initializes the audio subsystem.
      */
-    internal void initAudio()
+    unsafe internal void initAudio()
     {
-        ushort format = MIX_DEFAULT_FORMAT;
+        SDL_AudioFormat format = SDL_AUDIO_S16;
         if (Options.audioBitDepth == 8)
-            format = AUDIO_S8;
+            format = SDL_AudioFormat.SDL_AUDIO_S8;
 
         if (Options.audioSampleRate % 11025 != 0)
         {
@@ -192,18 +197,25 @@ internal class Game
         int minChunk = Options.audioSampleRate / 11025 * 512;
         Options.audioChunkSize = Math.Max(minChunk, Options.audioChunkSize);
 
-        if (Mix_OpenAudio(Options.audioSampleRate, format, MIX_DEFAULT_CHANNELS, Options.audioChunkSize) != 0)
+        SDL_AudioSpec audioSpec;
+        audioSpec.format = format;
+        audioSpec.channels = 2;
+        audioSpec.freq = Options.audioSampleRate;
+        _mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audioSpec);
+        if (_mixer == null)
         {
-            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {Mix_GetError()}");
+            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {SDL_GetError()}");
             Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} No sound device detected, audio disabled.");
             Options.mute = true;
         }
         else
         {
-            Mix_AllocateChannels(16);
+            _tracks = new MIX_Track*[16];
+            for (var i = 0; i < _tracks.Length; i++) _tracks[i] = MIX_CreateTrack(_mixer);
             // Set up UI channels
-            Mix_ReserveChannels(4);
-            Mix_GroupChannels(1, 2, 0);
+            //Mix_ReserveChannels(4); //TODO: no equivalent in SDL3_mixer
+            MIX_TagTrack(_tracks[1], "0");
+            MIX_TagTrack(_tracks[2], "0");
             Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} SDL_mixer initialized successfully.");
             setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
         }
@@ -216,40 +228,51 @@ internal class Game
      * @param music Music volume, from 0 to MIX_MAX_VOLUME.
      * @param ui UI volume, from 0 to MIX_MAX_VOLUME.
      */
-    internal void setVolume(int sound, int music, int ui)
+    //TODO: Map [0 - 128] to [0.0f - 1.0f]
+    unsafe internal void setVolume(int sound, int music, int ui)
     {
         if (!Options.mute)
         {
             if (sound >= 0)
             {
-                sound = (int)(volumeExponent(sound) * SDL_MIX_MAXVOLUME);
-                Mix_Volume(-1, sound);
+                sound = (int)(volumeExponent(sound) * 1.0f);
+                for (var i = 1; i < _tracks.Length; i++) MIX_SetTrackGain(_tracks[i], sound);
                 if (_save != null && _save.getSavedBattle() != null)
                 {
-                    Mix_Volume(3, (int)(sound * _save.getSavedBattle().getAmbientVolume()));
+                    MIX_SetTrackGain(_tracks[3], (float)(sound * _save.getSavedBattle().getAmbientVolume()));
                 }
                 else
                 {
                     // channel 3: reserved for ambient sound effect.
-                    Mix_Volume(3, sound / 2);
+                    MIX_SetTrackGain(_tracks[3], sound / 2);
                 }
             }
             if (music >= 0)
             {
-                music = (int)(volumeExponent(music) * SDL_MIX_MAXVOLUME);
-                Mix_VolumeMusic(music);
+                music = (int)(volumeExponent(music) * 1.0f);
+                MIX_SetTrackGain(_tracks[0], music);
             }
             if (ui >= 0)
             {
-                ui = (int)(volumeExponent(ui) * SDL_MIX_MAXVOLUME);
-                Mix_Volume(1, ui);
-                Mix_Volume(2, ui);
+                ui = (int)(volumeExponent(ui) * 1.0f);
+                MIX_SetTrackGain(_tracks[1], ui);
+                MIX_SetTrackGain(_tracks[2], ui);
             }
         }
     }
 
     internal static double volumeExponent(int volume) =>
-        (Math.Exp(Math.Log(VOLUME_GRADIENT + 1.0) * volume / SDL_MIX_MAXVOLUME) - 1.0) / VOLUME_GRADIENT;
+        (Math.Exp(Math.Log(VOLUME_GRADIENT + 1.0) * volume / 1.0f) - 1.0) / VOLUME_GRADIENT;
+
+    unsafe internal static int GroupAvailable()
+    {
+        if (!MIX_TrackPlaying(_tracks[1]))
+            return 1;
+        else if (!MIX_TrackPlaying(_tracks[2]))
+            return 2;
+        else
+            return -1;
+    }
 
     /**
      * Returns the saved game currently in use by the game.
@@ -312,7 +335,7 @@ internal class Game
      * active state, running any code within and blitting all the states and
      * cursor to the screen. This is run indefinitely until the game quits.
      */
-    internal void run()
+    unsafe internal void run()
     {
         var runningState = ApplicationState.RUNNING;
         // this will avoid processing SDL's resize event on startup, workaround for the heap allocation error it causes.
@@ -332,10 +355,10 @@ internal class Game
                 _states.Last().resetAll();
 
                 // Refresh mouse position
-                var ev = new SDL_Event();
-                int x, y;
-                SDL_GetMouseState(out x, out y);
-                ev.type = SDL_EventType.SDL_MOUSEMOTION;
+                SDL_Event ev = default;
+                float x, y;
+                SDL_GetMouseState(&x, &y);
+                ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_MOTION;
                 ev.motion.x = x;
                 ev.motion.y = y;
                 Action action = new Action(ev, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
@@ -343,19 +366,19 @@ internal class Game
             }
 
             // Process events
-            while (SDL_PollEvent(out _event) != 0)
+            fixed (SDL_Event* p = &_event) while (SDL_PollEvent(p))
             {
                 if (CrossPlatform.isQuitShortcut(_event))
-                    _event.type = SDL_EventType.SDL_QUIT;
-                switch (_event.type)
+                    _event.type = (uint)SDL_EventType.SDL_EVENT_QUIT;
+                switch (_event.Type)
                 {
-                    case SDL_EventType.SDL_QUIT:
+                    case SDL_EventType.SDL_EVENT_QUIT:
                         quit();
                         break;
                     // An event other than SDL_APPMOUSEFOCUS change happened.
-                    case SDL_EventType.SDL_WINDOWEVENT when _event.window.windowEvent != SDL_WindowEventID.SDL_WINDOWEVENT_ENTER && _event.window.windowEvent != SDL_WindowEventID.SDL_WINDOWEVENT_LEAVE: //SDL_ACTIVEEVENT
+                    case >= SDL_EventType.SDL_EVENT_WINDOW_FIRST and <= SDL_EventType.SDL_EVENT_WINDOW_LAST and not SDL_EventType.SDL_EVENT_WINDOW_MOUSE_ENTER and not SDL_EventType.SDL_EVENT_WINDOW_MOUSE_LEAVE: //SDL_ACTIVEEVENT
                         // Game is minimized
-                        if (_event.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_MINIMIZED)
+                        if (_event.Type == SDL_EventType.SDL_EVENT_WINDOW_MINIMIZED)
                         {
                             runningState = stateRun[Options.pauseMode];
                             if (Options.backgroundMute)
@@ -364,7 +387,7 @@ internal class Game
                             }
                         }
                         // Game is not minimized but has no keyboard focus.
-                        else if (_event.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST)
+                        else if (_event.Type == SDL_EventType.SDL_EVENT_WINDOW_FOCUS_LOST)
                         {
                             runningState = kbFocusRun[Options.pauseMode];
                             if (Options.backgroundMute)
@@ -373,7 +396,7 @@ internal class Game
                             }
                         }
                         // Game has keyboard focus.
-                        else if (_event.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED)
+                        else if (_event.Type == SDL_EventType.SDL_EVENT_WINDOW_FOCUS_GAINED)
                         {
                             runningState = ApplicationState.RUNNING;
                             if (Options.backgroundMute)
@@ -381,7 +404,7 @@ internal class Game
                                 setVolume(Options.soundVolume, Options.musicVolume, Options.uiVolume);
                             }
                         }
-                        else if (_event.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED) //SDL_VIDEORESIZE
+                        else if (_event.Type == SDL_EventType.SDL_EVENT_WINDOW_RESIZED) //SDL_VIDEORESIZE
                         {
                             if (Options.allowResize)
                             {
@@ -405,9 +428,9 @@ internal class Game
                             }
                         }
                         break;
-                    case SDL_EventType.SDL_MOUSEMOTION:
-                    case SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                    case SDL_EventType.SDL_MOUSEBUTTONUP:
+                    case SDL_EventType.SDL_EVENT_MOUSE_MOTION:
+                    case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
+                    case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
                         // Skip mouse events if they're disabled
                         if (!_mouseActive) continue;
                         // re-gain focus on mouse-over or keypress.
@@ -419,22 +442,22 @@ internal class Game
                         _screen.handle(action);
                         _cursor.handle(action);
                         _fpsCounter.handle(action);
-                        if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+                        if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN)
                         {
                             // "ctrl-g" grab input
-                            if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_g && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                            if (action.getDetails().key.key == SDL_Keycode.SDLK_G && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                             {
-                                Options.captureMouse = Options.captureMouse == SDL_bool.SDL_TRUE ? SDL_bool.SDL_FALSE : SDL_bool.SDL_TRUE;
-                                SDL_SetRelativeMouseMode(Options.captureMouse);
+                                Options.captureMouse = !Options.captureMouse;
+                                SDL_SetWindowRelativeMouseMode(_screen.getWindow(), Options.captureMouse); //SDL_WM_GrabInput(Options.captureMouse);
                             }
                             else if (Options.debug)
                             {
-                                if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_t && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                                if (action.getDetails().key.key == SDL_Keycode.SDLK_T && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                                 {
                                     setState(new TestState());
                                 }
                                 // "ctrl-u" debug UI
-                                else if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_u && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                                else if (action.getDetails().key.key == SDL_Keycode.SDLK_U && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                                 {
                                     Options.debugUi = !Options.debugUi;
                                     _states.Last().redrawText();
@@ -462,7 +485,7 @@ internal class Game
                 {
                     // Update our FPS delay time based on the time of the last draw.
                     // SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED && _event.window.windowEvent != SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST
-                    int fps = _event.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED ? Options.FPS : Options.FPSInactive;
+                    int fps = _event.Type == SDL_EventType.SDL_EVENT_WINDOW_FOCUS_GAINED ? Options.FPS : Options.FPSInactive;
 
                     _timeUntilNextFrame = (int)((1000.0f / fps) - (SDL_GetTicks() - _timeOfLastFrame));
                 }
@@ -474,7 +497,7 @@ internal class Game
                 if (_init && _timeUntilNextFrame <= 0)
                 {
                     // make a note of when this frame update occurred.
-                    _timeOfLastFrame = SDL_GetTicks();
+                    _timeOfLastFrame = (uint)SDL_GetTicks();
                     _fpsCounter.addFrame();
                     _screen.clear();
                     var i = _states.Count;
