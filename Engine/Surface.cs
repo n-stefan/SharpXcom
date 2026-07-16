@@ -83,8 +83,7 @@ struct StandardShade : IColorFunc<nint, nint, int, int, int>
  */
 internal class Surface
 {
-    protected nint _surfacePtr;
-    protected SDL_Surface _surface;
+    unsafe protected SDL_Surface* _surface;
     protected int _x, _y;
     protected SDL_Rect _crop, _clear;
     protected bool _visible, _hidden, _redraw, _tftdMode;
@@ -103,7 +102,7 @@ internal class Surface
      * @param y Y position in pixels.
      * @param bpp Bits-per-pixel depth.
      */
-    internal Surface(int width, int height, int x = 0, int y = 0, int bpp = 8)
+    unsafe internal Surface(int width, int height, int x = 0, int y = 0, int bpp = 8)
     {
         _x = x;
         _y = y;
@@ -114,14 +113,13 @@ internal class Surface
 
         _alignedBuffer = NewAligned(bpp, width, height);
 
-        _surfacePtr = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, GetPitch(bpp, width), 0, 0, 0, 0);
-        if (_surfacePtr == nint.Zero)
+        _surface = SDL_CreateSurfaceFrom(width, height, SDL_GetPixelFormatForMasks(bpp, 0, 0, 0, 0), _alignedBuffer, GetPitch(bpp, width));
+        if (_surface == null)
         {
             throw new Exception(SDL_GetError());
         }
-        _surface = Marshal.PtrToStructure<SDL_Surface>(_surfacePtr);
 
-        SDL_SetColorKey(_surfacePtr, (int)SDL_bool.SDL_TRUE /* SDL_SRCCOLORKEY */, 0);
+        SDL_SetSurfaceColorKey(_surface, true /* SDL_SRCCOLORKEY */, 0);
 
         _crop.w = 0;
         _crop.h = 0;
@@ -142,26 +140,24 @@ internal class Surface
         //if is native SharpXcom aligned surface
         if (other._alignedBuffer != nint.Zero)
         {
-            byte bpp = getFormat(other._surface).BitsPerPixel;
+            byte bpp = getFormat(other._surface)->bits_per_pixel;
             int width = other.getWidth();
             int height = other.getHeight();
             int pitch = GetPitch(bpp, width);
             _alignedBuffer = NewAligned(bpp, width, height);
-            _surfacePtr = SDL_CreateRGBSurfaceFrom(_alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
-            _surface = Marshal.PtrToStructure<SDL_Surface>(_surfacePtr);
-            SDL_SetColorKey(_surfacePtr, (int)SDL_bool.SDL_TRUE /* SDL_SRCCOLORKEY */, 0);
+            _surface = SDL_CreateSurfaceFrom(width, height, SDL_GetPixelFormatForMasks(bpp, 0, 0, 0, 0), _alignedBuffer, pitch);
+            SDL_SetSurfaceColorKey(_surface, true /* SDL_SRCCOLORKEY */, 0);
             //cant call `setPalette` because its virtual function and it dont work correctly in constructor
-            SDL_SetPaletteColors(getFormat(_surface).palette, other.getPalette(), 0, 255);
-            new Span<byte>((byte*)other._alignedBuffer, height * pitch).CopyTo(new Span<byte>((byte*)_alignedBuffer, height * pitch)); //memcpy(_alignedBuffer, other._alignedBuffer, height * pitch);
+            SDL_SetPaletteColors(SDL_GetSurfacePalette(_surface), other.getPalette(), 0, 255);
+            NativeMemory.Copy((void*)other._alignedBuffer, (void*)_alignedBuffer, (nuint)(height * pitch)); //memcpy(_alignedBuffer, other._alignedBuffer, height * pitch);
         }
         else
         {
-            _surfacePtr = SDL_ConvertSurface(other._surfacePtr, other._surface.format, other._surface.flags);
-            _surface = Marshal.PtrToStructure<SDL_Surface>(_surfacePtr);
-            _alignedBuffer = 0;
+            _surface = SDL_ConvertSurface(other._surface, other._surface->format);
+            _alignedBuffer = nint.Zero;
         }
 
-        if (_surfacePtr == nint.Zero)
+        if (_surface == null)
         {
             throw new Exception(SDL_GetError());
         }
@@ -184,25 +180,25 @@ internal class Surface
     /**
      * Deletes the surface from memory.
      */
-    ~Surface()
+    unsafe ~Surface()
     {
         DeleteAligned(_alignedBuffer);
-        SDL_FreeSurface(_surfacePtr);
+        SDL_DestroySurface(_surface);
     }
 
     /**
 	 * Returns the width of the surface.
 	 * @return Width in pixels.
 	 */
-    internal int getWidth() =>
-        _surface.w;
+    unsafe internal int getWidth() =>
+        _surface->w;
 
     /**
 	 * Returns the height of the surface.
 	 * @return Height in pixels
 	 */
-    internal int getHeight() =>
-        _surface.h;
+    unsafe internal int getHeight() =>
+        _surface->h;
 
     /**
      * Helper function counting pitch in bytes with 16byte padding
@@ -246,27 +242,14 @@ internal class Surface
     }
 
     /**
-	 * Returns the surface's 8bpp palette.
-	 * @return Pointer to the palette's colors.
-	 */
-    internal SDL_Color[] getPalette() =>
-        getPalette(_surface);
+     * Returns the surface's 8bpp palette.
+     * @return Pointer to the palette's colors.
+     */
+    unsafe internal SDL_Color* getPalette() =>
+    	SDL_GetSurfacePalette(_surface)->colors;
 
-    internal static SDL_Color[] getPalette(SDL_Surface surface)
-    {
-        var format = Marshal.PtrToStructure<SDL_PixelFormat>(surface.format);
-        var palette = Marshal.PtrToStructure<SDL_Palette>(format.palette);
-        var size = Marshal.SizeOf(typeof(SDL_Color));
-        var colors = new SDL_Color[palette.ncolors];
-        for (var i = 0; i < colors.Length; i++)
-        {
-            colors[i] = Marshal.PtrToStructure<SDL_Color>(nint.Add(palette.colors, i * size));
-        }
-	    return colors;
-    }
-
-    internal static SDL_PixelFormat getFormat(SDL_Surface surface) =>
-        Marshal.PtrToStructure<SDL_PixelFormat>(surface.format);
+    unsafe internal static SDL_PixelFormatDetails* getFormat(SDL_Surface* surface) =>
+        SDL_GetPixelFormatDetails(surface->format);
 
     /**
 	 * Returns the pointer to a specified pixel in the surface.
@@ -274,10 +257,10 @@ internal class Surface
 	 * @param y Y position of the pixel.
 	 * @return Pointer to the pixel.
 	 */
-    nint getRaw(int x, int y)
+    unsafe nint getRaw(int x, int y)
     {
-        var bpp = getFormat(_surface).BytesPerPixel;
-        return nint.Add(_surface.pixels, y * _surface.pitch + x * bpp);
+        var bpp = getFormat(_surface)->bytes_per_pixel;
+        return nint.Add(_surface->pixels, y * _surface->pitch + x * bpp);
     }
 
     /**
@@ -317,16 +300,16 @@ internal class Surface
      * afterwards.
      * @sa unlock()
      */
-    internal void @lock() =>
-        SDL_LockSurface(_surfacePtr);
+    unsafe internal void @lock() =>
+        SDL_LockSurface(_surface);
 
     /**
      * Unlocks the surface after it's been locked
      * to resume blitting operations.
      * @sa lock()
      */
-    internal void unlock() =>
-        SDL_UnlockSurface(_surfacePtr);
+    unsafe internal void unlock() =>
+        SDL_UnlockSurface(_surface);
 
     /**
      * Specific blit function to blit battlescape terrain data in different shades in a fast way.
@@ -392,11 +375,10 @@ internal class Surface
      * @param firstcolor Offset of the first color to replace.
      * @param ncolors Amount of colors to replace.
      */
-    internal virtual void setPalette(SDL_Color[] colors, int firstcolor = 0, int ncolors = 256)
+    unsafe internal virtual void setPalette(SDL_Color* colors, int firstcolor = 0, int ncolors = 256)
     {
-        var format = getFormat(_surface);
-	    if (format.BitsPerPixel == 8)
-		    SDL_SetPaletteColors(format.palette, colors, firstcolor, ncolors);
+        if (getFormat(_surface)->bits_per_pixel == 8)
+            SDL_SetPaletteColors(SDL_GetSurfacePalette(_surface), colors, firstcolor, ncolors);
     }
 
     /// Initializes the surface's various text resources.
@@ -434,11 +416,8 @@ internal class Surface
 	 * Returns the internal SDL_Surface for SDL calls.
 	 * @return Pointer to the surface.
 	 */
-    internal SDL_Surface getSurface() =>
+    unsafe internal SDL_Surface* getSurface() =>
         _surface;
-
-    internal nint getSurfacePtr() =>
-        _surfacePtr;
 
     /**
      * Draws the graphic that the surface contains before it
@@ -459,14 +438,15 @@ internal class Surface
      */
     unsafe internal void clear(uint color = 0)
     {
-        if ((_surface.flags & SDL_SWSURFACE) != 0)
-        {
-            NativeMemory.Fill((void*)_surface.pixels, (nuint)(_surface.h * _surface.pitch), (byte)color); //memset(_surface->pixels, color, _surface->h * _surface->pitch);
-        }
-        else
-        {
-            SDL_FillRect(_surfacePtr, ref _clear, color);
-        }
+        //TODO: Needed?
+        //if ((_surface->flags & SDL_SWSURFACE) != 0)
+        //{
+        //    NativeMemory.Fill((void*)_surface->pixels, (nuint)(_surface->h * _surface->pitch), (byte)color); //memset(_surface->pixels, color, _surface->h * _surface->pitch);
+        //}
+        //else
+        //{
+            fixed (SDL_Rect* p = &_clear) { SDL_FillSurfaceRect(_surface, p, color); }
+        //}
     }
 
     /**
@@ -477,8 +457,8 @@ internal class Surface
      * @param y2 End y coordinate in pixels.
      * @param color Color of the line.
      */
-    internal void drawLine(short x1, short y1, short x2, short y2, byte color) =>
-        lineColor(Screen.Renderer /*_surfacePtr*/, x1, y1, x2, y2, Palette.getRGBA(getPalette(), color));
+    unsafe internal void drawLine(short x1, short y1, short x2, short y2, byte color) =>
+        lineColor((nint)Screen.Renderer /*_surface*/, x1, y1, x2, y2, Palette.getRGBA(getPalette(), color));
 
     /**
      * This is a separate visibility setting intended
@@ -502,22 +482,22 @@ internal class Surface
      * known format into the surface.
      * @param filename Filename of the image.
      */
-    internal void loadImage(string filename)
+    unsafe internal void loadImage(string filename)
     {
         // Destroy current surface (will be replaced)
         DeleteAligned(_alignedBuffer);
-        SDL_FreeSurface(_surfacePtr);
+        SDL_DestroySurface(_surface);
         _alignedBuffer = nint.Zero;
-        _surfacePtr = nint.Zero;
+        _surface = null;
 
         Console.WriteLine($"{Log(SeverityLevel.LOG_VERBOSE)} Loading image: {filename}");
 
         string utf8 = Unicode.convPathToUtf8(filename);
-        _surfacePtr = IMG_Load(utf8);
+        _surface = IMG_Load(utf8);
 
-        if (_surfacePtr == nint.Zero)
+        if (_surface == null)
         {
-            string err = filename + ":" + IMG_GetError();
+            string err = filename + ":" + SDL_GetError();
             throw new Exception(err);
         }
 
@@ -539,26 +519,26 @@ internal class Surface
      * that is blitted.
      * @param surface Pointer to surface to blit onto.
      */
-    internal virtual void blit(Surface surface)
+    unsafe internal virtual void blit(Surface surface)
     {
         if (_visible && !_hidden)
         {
             if (_redraw)
                 draw();
-
-            SDL_Rect cropper;
-            var target = new SDL_Rect();
+            
+            SDL_Rect* cropper;
+            SDL_Rect target;
             if (_crop.w == 0 && _crop.h == 0)
             {
-                cropper = default;
+                cropper = null;
             }
             else
             {
-                cropper = _crop;
+                fixed (SDL_Rect* p = &_crop) { cropper = p; }
             }
             target.x = getX();
             target.y = getY();
-            SDL_BlitSurface(_surfacePtr, ref cropper, surface.getSurfacePtr(), ref target);
+            SDL_BlitSurface(_surface, cropper, surface.getSurface(), &target);
         }
     }
 
@@ -604,8 +584,8 @@ internal class Surface
      * @param rect Pointer to Rect.
      * @param color Color of the rectangle.
      */
-    internal void drawRect(ref SDL_Rect rect, byte color) =>
-        SDL_FillRect(_surfacePtr, ref rect, color);
+    unsafe internal void drawRect(SDL_Rect rect, byte color) =>
+        SDL_FillSurfaceRect(_surface, &rect, color);
 
     /**
      * Draws a filled rectangle on the surface.
@@ -615,14 +595,14 @@ internal class Surface
      * @param h Height in pixels.
      * @param color Color of the rectangle.
      */
-    internal void drawRect(short x, short y, short w, short h, byte color)
+    unsafe internal void drawRect(short x, short y, short w, short h, byte color)
     {
-        var rect = new SDL_Rect();
+        SDL_Rect rect;
         rect.w = w;
         rect.h = h;
         rect.x = x;
         rect.y = y;
-        SDL_FillRect(_surfacePtr, ref rect, color);
+        SDL_FillSurfaceRect(_surface, &rect, color);
     }
 
     /**
@@ -632,29 +612,29 @@ internal class Surface
      * @param width Width in pixels.
      * @param height Height in pixels.
      */
-    void resize(int width, int height)
+    unsafe void resize(int width, int height)
     {
         // Set up new surface
-        var bpp = getFormat(_surface).BitsPerPixel;
+        var bpp = getFormat(_surface)->bits_per_pixel;
         int pitch = GetPitch(bpp, width);
         nint alignedBuffer = NewAligned(bpp, width, height);
-        nint surfacePtr = SDL_CreateRGBSurfaceFrom(alignedBuffer, width, height, bpp, pitch, 0, 0, 0, 0);
+        SDL_Surface* surface = SDL_CreateSurfaceFrom(width, height, SDL_GetPixelFormatForMasks(bpp, 0, 0, 0, 0), alignedBuffer, pitch);
 
-        if (surfacePtr == nint.Zero)
+        if (surface == null)
         {
             throw new Exception(SDL_GetError());
         }
 
         // Copy old contents
-        SDL_SetColorKey(surfacePtr, (int)SDL_bool.SDL_TRUE /* SDL_SRCCOLORKEY */, 0);
-        SDL_SetPaletteColors(surfacePtr, getPalette(), 0, 256);
-        SDL_BlitSurface(_surfacePtr, nint.Zero, surfacePtr, nint.Zero);
+        SDL_SetSurfaceColorKey(surface, true /* SDL_SRCCOLORKEY */, 0);
+        SDL_SetPaletteColors(SDL_GetSurfacePalette(surface), getPalette(), 0, 256);
+        SDL_BlitSurface(_surface, null, surface, null);
 
         // Delete old surface
         DeleteAligned(_alignedBuffer);
-        SDL_FreeSurface(_surfacePtr);
+        SDL_DestroySurface(_surface);
         _alignedBuffer = alignedBuffer;
-        _surfacePtr = surfacePtr;
+        _surface = surface;
 
         _clear.w = getWidth();
         _clear.h = getHeight();
@@ -893,26 +873,24 @@ internal class Surface
      * Performs a fast copy of a pixel array, accounting for pitch.
      * @param src Source array.
      */
-    unsafe void rawCopy<T>(T[] src)
+    unsafe void rawCopy(byte[] src)
     {
         // Copy whole thing
-        if (_surface.pitch == _surface.w)
+        if (_surface->pitch == _surface->w)
         {
-            int end = Math.Min(_surface.w * _surface.h * getFormat(_surface).BytesPerPixel, src.Length);
-            var source = MemoryExtensions.AsMemory(src, 0, end);
-            Unsafe.Copy((void*)_surface.pixels, ref source);
+            int end = Math.Min(_surface->w * _surface->h * getFormat(_surface)->bytes_per_pixel, src.Length);
+            Marshal.Copy(src, 0, _surface->pixels, end);
         }
         // Copy row by row
         else
         {
-            for (int y = 0; y < _surface.h; ++y)
+            for (int y = 0; y < _surface->h; ++y)
             {
-                int begin = y * _surface.w;
-                int end = Math.Min(begin + _surface.w, src.Length);
+                int begin = y * _surface->w;
+                int end = Math.Min(begin + _surface->w, src.Length);
                 if (begin >= src.Length)
                     break;
-                var source = MemoryExtensions.AsMemory(src, begin, end - begin);
-                Unsafe.Copy((void*)getRaw(0, y), ref source);
+                Marshal.Copy(src, begin, getRaw(0, y), end);
             }
         }
     }
@@ -1024,8 +1002,8 @@ internal class Surface
      * @param r Radius in pixels.
      * @param color Color of the circle.
      */
-    protected void drawCircle(short x, short y, short r, byte color) =>
-        filledCircleColor(Screen.Renderer /*_surfacePtr*/, x, y, r, Palette.getRGBA(getPalette(), color));
+    unsafe protected void drawCircle(short x, short y, short r, byte color) =>
+        filledCircleColor((nint)Screen.Renderer /*_surface*/, x, y, r, Palette.getRGBA(getPalette(), color));
 
     /**
      * Draws a textured polygon on the surface.
@@ -1036,8 +1014,8 @@ internal class Surface
      * @param dx X offset of texture relative to the screen.
      * @param dy Y offset of texture relative to the screen.
      */
-    protected void drawTexturedPolygon(short[] x, short[] y, int n, Surface texture, int dx, int dy) =>
-        texturedPolygon(Screen.Renderer /*_surfacePtr*/, x, y, n, texture.getSurfacePtr(), dx, dy);
+    unsafe protected void drawTexturedPolygon(short[] x, short[] y, int n, Surface texture, int dx, int dy) =>
+        texturedPolygon((nint)Screen.Renderer /*_surface*/, x, y, n, (nint)texture.getSurface(), dx, dy);
 
     /**
      * Shifts all the colors in the surface by a set amount, but
