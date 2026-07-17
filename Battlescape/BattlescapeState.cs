@@ -537,7 +537,7 @@ internal class BattlescapeState : State
      * @param abort Was the mission aborted?
      * @param inExitArea Number of soldiers in the exit area OR number of survivors when battle finished due to either all aliens or objective being destroyed.
      */
-    internal void finishBattle(bool abort, int inExitArea)
+    unsafe internal void finishBattle(bool abort, int inExitArea)
     {
         while (!_game.isState(this))
         {
@@ -876,7 +876,7 @@ internal class BattlescapeState : State
     /**
      * Initializes the battlescapestate.
      */
-    internal override void init()
+    unsafe internal override void init()
     {
         if (_save.getAmbientSound() != -1)
         {
@@ -989,11 +989,11 @@ internal class BattlescapeState : State
      * Takes care of any events from the core game engine.
      * @param action Pointer to an action.
      */
-    internal override void handle(Action action)
+    unsafe internal override void handle(Action action)
     {
         if (!_firstInit)
         {
-            if (_game.getCursor().getVisible() || ((action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN || action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONUP) && action.getDetails().button.button == SDL_BUTTON_RIGHT))
+            if (_game.getCursor().getVisible() || ((action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN || action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP) && action.getDetails().button.button == SDL_BUTTON_RIGHT))
             {
                 base.handle(action);
 
@@ -1002,7 +1002,7 @@ internal class BattlescapeState : State
                     _map.setSelectorPosition((int)((_cursorPosition.x - _game.getScreen().getCursorLeftBlackBand()) / action.getXScale()), (int)((_cursorPosition.y - _game.getScreen().getCursorTopBlackBand()) / action.getYScale()));
                 }
 
-                if (action.getDetails().type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+                if (action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN)
                 {
                     if (action.getDetails().button.button == SDL_BUTTON_X1)
                     {
@@ -1014,24 +1014,24 @@ internal class BattlescapeState : State
                     }
                 }
 
-                if (action.getDetails().type == SDL_EventType.SDL_KEYDOWN)
+                if (action.getDetails().Type == SDL_EventType.SDL_EVENT_KEY_DOWN)
                 {
                     if (Options.debug)
                     {
                         // "ctrl-d" - enable debug mode
-                        if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_d && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                        if (action.getDetails().key.key == SDL_Keycode.SDLK_D && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                         {
                             _save.setDebugMode();
                             debug("Debug Mode");
                         }
                         // "ctrl-v" - reset tile visibility
-                        else if (_save.getDebugMode() && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_v && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                        else if (_save.getDebugMode() && action.getDetails().key.key == SDL_Keycode.SDLK_V && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                         {
                             debug("Resetting tile visibility");
                             _save.resetTiles();
                         }
                         // "ctrl-k" - kill all aliens
-                        else if (_save.getDebugMode() && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_k && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                        else if (_save.getDebugMode() && action.getDetails().key.key == SDL_Keycode.SDLK_K && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                         {
                             debug("Influenza bacterium dispersed");
                             foreach (var i in _save.getUnits())
@@ -1045,7 +1045,7 @@ internal class BattlescapeState : State
                             }
                         }
                         // "ctrl-j" - stun all aliens
-                        else if (_save.getDebugMode() && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_j && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                        else if (_save.getDebugMode() && action.getDetails().key.key == SDL_Keycode.SDLK_J && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                         {
                             debug("Deploying Celine Dion album");
                             foreach (var i in _save.getUnits())
@@ -1059,7 +1059,7 @@ internal class BattlescapeState : State
                             _save.getBattleGame().handleState();
                         }
                         // "ctrl-w" - warp unit
-                        else if (_save.getDebugMode() && action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_w && (SDL_GetModState() & SDL_Keymod.KMOD_CTRL) != 0)
+                        else if (_save.getDebugMode() && action.getDetails().key.key == SDL_Keycode.SDLK_W && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_CTRL) != 0)
                         {
                             debug("Beam me up Scotty");
                             BattleUnit unit = _save.getSelectedUnit();
@@ -1074,12 +1074,12 @@ internal class BattlescapeState : State
                             }
                         }
                         // f11 - voxel map dump
-                        else if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_F11)
+                        else if (action.getDetails().key.key == SDL_Keycode.SDLK_F11)
                         {
                             saveVoxelMap();
                         }
                         // f9 - ai
-                        else if (action.getDetails().key.keysym.sym == SDL_Keycode.SDLK_F9 && Options.traceAI)
+                        else if (action.getDetails().key.key == SDL_Keycode.SDLK_F9 && Options.traceAI)
                         {
                             saveAIMap();
                         }
@@ -1087,18 +1087,18 @@ internal class BattlescapeState : State
                     // quick save and quick load
                     if (!_game.getSavedGame().isIronman())
                     {
-                        if (action.getDetails().key.keysym.sym == Options.keyQuickSave)
+                        if (action.getDetails().key.key == Options.keyQuickSave)
                         {
                             _game.pushState(new SaveGameState(OptionsOrigin.OPT_BATTLESCAPE, SaveType.SAVE_QUICK, _palette));
                         }
-                        else if (action.getDetails().key.keysym.sym == Options.keyQuickLoad)
+                        else if (action.getDetails().key.key == Options.keyQuickLoad)
                         {
                             _game.pushState(new LoadGameState(OptionsOrigin.OPT_BATTLESCAPE, SaveType.SAVE_QUICK, _palette));
                         }
                     }
 
                     // voxel view dump
-                    if (action.getDetails().key.keysym.sym == Options.keyBattleVoxelView)
+                    if (action.getDetails().key.key == Options.keyBattleVoxelView)
                     {
                         saveVoxelView();
                     }
@@ -1138,7 +1138,7 @@ internal class BattlescapeState : State
     /**
      * Saves each layer of voxels on the bettlescape as a png.
      */
-    void saveVoxelMap()
+    unsafe void saveVoxelMap()
     {
         string ss;
         var image = new byte[_save.getMapSizeX() * 16 * _save.getMapSizeY() * 16];
@@ -1194,14 +1194,16 @@ internal class BattlescapeState : State
 
             ss = $"{Options.getMasterUserFolder()}voxel{z:D2}.png";
 
-            var surface = Marshal.AllocHGlobal(image.Length);
-            Marshal.Copy(image, 0, surface, image.Length);
-            int error = IMG_SavePNG(surface, ss);
-            if (error != 0)
+            var imagePtr = Marshal.AllocHGlobal(image.Length);
+            Marshal.Copy(image, 0, imagePtr, image.Length);
+            SDL_Surface* surface = SDL_CreateSurfaceFrom(_save.getMapSizeX() * 16, _save.getMapSizeY() * 16, SDL_PixelFormat.SDL_PIXELFORMAT_INDEX8, imagePtr, _save.getMapSizeX() * 16);
+            //unsigned error = lodepng::encode(ss.str(), image, _save->getMapSizeX()*16, _save->getMapSizeY()*16, LCT_RGB);
+            if (!IMG_SavePNG(surface, ss))
             {
-                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {IMG_GetError()}");
+                Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {SDL_GetError()}");
             }
-            Marshal.FreeHGlobal(surface);
+            SDL_DestroySurface(surface);
+            Marshal.FreeHGlobal(imagePtr);
         }
         return;
     }
@@ -1211,17 +1213,16 @@ internal class BattlescapeState : State
      */
     unsafe void saveAIMap()
     {
-        uint start = SDL_GetTicks();
+        uint start = (uint)SDL_GetTicks();
         BattleUnit unit = _save.getSelectedUnit();
         if (unit == null) return;
 
         int w = _save.getMapSizeX();
         int h = _save.getMapSizeY();
 
-        nint imgPtr = SDL_CreateRGBSurface(0, w * 8, h * 8, 24, 0xff, 0xff00, 0xff0000, 0); //SDL_AllocSurface
-        SDL_Surface img = Marshal.PtrToStructure<SDL_Surface>(imgPtr);
+        SDL_Surface* img = SDL_CreateSurface(w * 8, h * 8, SDL_GetPixelFormatForMasks(24, 0xff, 0xff00, 0xff0000, 0)); //SDL_AllocSurface
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} unit = {unit.getId()}");
-        NativeMemory.Fill((void*)img.pixels, (nuint)(img.pitch * img.h), 0); //memset(img->pixels, 0, img->pitch * img->h);
+        NativeMemory.Fill((void*)img->pixels, (nuint)(img->pitch * img->h), 0); //memset(img->pixels, 0, img->pitch * img->h);
 
         Position tilePos = unit.getPosition();
         SDL_Rect r;
@@ -1257,12 +1258,12 @@ internal class BattlescapeState : State
 
                 if (t.getTUCost((int)TilePart.O_FLOOR, MovementType.MT_FLY) != 255 && t.getTUCost((int)TilePart.O_OBJECT, MovementType.MT_FLY) != 255)
                 {
-                    SDL_FillRect(img.pixels, ref r, SDL_MapRGB(img.format, 255, 0, 0x20));
-                    characterRGBA(img.pixels, (short)r.x, (short)r.y, '*', 0x7f, 0x7f, 0x7f, 0x7f);
+                    SDL_FillSurfaceRect(img, &r, SDL_MapSurfaceRGB(img, 255, 0, 0x20));
+                    characterRGBA((nint)Screen.Renderer /*img*/, (short)r.x, (short)r.y, '*', 0x7f, 0x7f, 0x7f, 0x7f);
                 }
                 else
                 {
-                    if (t.getUnit() == null) SDL_FillRect(img.pixels, ref r, SDL_MapRGB(img.format, 0x50, 0x50, 0x50)); // gray for blocked tile
+                    if (t.getUnit() == null) SDL_FillSurfaceRect(img, &r, SDL_MapSurfaceRGB(img, 0x50, 0x50, 0x50)); // gray for blocked tile
                 }
 
                 for (int z = tilePos.z; z >= 0; --z)
@@ -1276,13 +1277,13 @@ internal class BattlescapeState : State
                         {
                             case UnitFaction.FACTION_HOSTILE:
                                 // #4080C0 is Volutar Blue
-                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'a' : 'A', 0x40, 0x80, 0xC0, 0xff);
+                                characterRGBA((nint)Screen.Renderer /*img*/, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'a' : 'A', 0x40, 0x80, 0xC0, 0xff);
                                 break;
                             case UnitFaction.FACTION_PLAYER:
-                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'x' : 'X', 255, 255, 127, 0xff);
+                                characterRGBA((nint)Screen.Renderer /*img*/, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'x' : 'X', 255, 255, 127, 0xff);
                                 break;
                             case UnitFaction.FACTION_NEUTRAL:
-                                characterRGBA(img.pixels, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'c' : 'C', 255, 127, 127, 0xff);
+                                characterRGBA((nint)Screen.Renderer /*img*/, (short)r.x, (short)r.y, (tilePos.z - z != 0) ? 'c' : 'C', 255, 127, 127, 0xff);
                                 break;
                         }
                         break;
@@ -1293,12 +1294,12 @@ internal class BattlescapeState : State
 
                 if (t.getMapData(TilePart.O_NORTHWALL) != null && t.getMapData(TilePart.O_NORTHWALL).getTUCost(MovementType.MT_FLY) == 255)
                 {
-                    lineRGBA(img.pixels, (short)r.x, (short)r.y, (short)(r.x + r.w), (short)r.y, 0x50, 0x50, 0x50, 255);
+                    lineRGBA((nint)Screen.Renderer /*img*/, (short)r.x, (short)r.y, (short)(r.x + r.w), (short)r.y, 0x50, 0x50, 0x50, 255);
                 }
 
                 if (t.getMapData(TilePart.O_WESTWALL) != null && t.getMapData(TilePart.O_WESTWALL).getTUCost(MovementType.MT_FLY) == 255)
                 {
-                    lineRGBA(img.pixels, (short)r.x, (short)r.y, (short)r.x, (short)(r.y + r.h), 0x50, 0x50, 0x50, 255);
+                    lineRGBA((nint)Screen.Renderer /*img*/, (short)r.x, (short)r.y, (short)r.x, (short)(r.y + r.h), 0x50, 0x50, 0x50, 255);
                 }
             }
         }
@@ -1306,7 +1307,7 @@ internal class BattlescapeState : State
         string ss;
 
         ss = $"z = {tilePos.z}";
-        stringRGBA(img.pixels, 12, 12, ss, 0, 0, 0, 0x7f);
+        stringRGBA((nint)Screen.Renderer /*img*/, 12, 12, ss, 0, 0, 0, 0x7f);
 
         int i = 0;
         do
@@ -1317,13 +1318,12 @@ internal class BattlescapeState : State
         while (CrossPlatform.fileExists(ss));
 
         //unsigned error = lodepng::encode(ss.str(), (const unsigned char*)img->pixels, img->w, img->h, LCT_RGB);
-        var error = IMG_SavePNG(img.pixels, ss);
-        if (error == -1)
+        if (!IMG_SavePNG(img, ss))
         {
             Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {SDL_GetError()}");
         }
 
-        SDL_FreeSurface(img.pixels);
+        SDL_DestroySurface(img);
 
         Console.WriteLine($"{Log(SeverityLevel.LOG_INFO)} saveAIMap() completed in {SDL_GetTicks() - start}ms.");
     }
@@ -1334,7 +1334,7 @@ internal class BattlescapeState : State
     /**
 	 * Saves a first-person voxel view of the battlescape.
 	 */
-    void saveVoxelView()
+    unsafe void saveVoxelView()
     {
         BattleUnit bu = _save.getSelectedUnit();
         if (bu == null) return; //no unit selected
@@ -1445,14 +1445,16 @@ internal class BattlescapeState : State
         }
         while (CrossPlatform.fileExists(ss));
 
-        var surface = Marshal.AllocHGlobal(image.Length);
-        Marshal.Copy(image, 0, surface, image.Length);
-        int error = IMG_SavePNG(surface, ss);
-        if (error != 0)
+        var imagePtr = Marshal.AllocHGlobal(image.Length);
+        Marshal.Copy(image, 0, imagePtr, image.Length);
+        SDL_Surface* surface = SDL_CreateSurfaceFrom(512, 512, SDL_PixelFormat.SDL_PIXELFORMAT_INDEX8, imagePtr, 512);
+        //unsigned error = lodepng::encode(ss.str(), image, 512, 512, LCT_RGB);
+        if (!IMG_SavePNG(surface, ss))
         {
-            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {IMG_GetError()}");
+            Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} Saving to PNG failed: {SDL_GetError()}");
         }
-        Marshal.FreeHGlobal(surface);
+        SDL_DestroySurface(surface);
+        Marshal.FreeHGlobal(imagePtr);
 
         return;
     }
@@ -1517,15 +1519,15 @@ internal class BattlescapeState : State
 	 * Processes any mouse moving over the map.
 	 * @param action Pointer to an action.
 	 */
-    void mapOver(Action action)
+    unsafe void mapOver(Action action)
     {
-        if (_isMouseScrolling && action.getDetails().type == SDL_EventType.SDL_MOUSEMOTION)
+        if (_isMouseScrolling && action.getDetails().Type == SDL_EventType.SDL_EVENT_MOUSE_MOTION)
         {
             // The following is the workaround for a rare problem where sometimes
             // the mouse-release event is missed for any reason.
             // (checking: is the dragScroll-mouse-button still pressed?)
             // However if the SDL is also missed the release event, then it is to no avail :(
-            if ((SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)) == 0)
+            if ((SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.battleDragScrollButton)) == 0)
             { // so we missed again the mouse-release :(
               // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
                 if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
@@ -1542,14 +1544,14 @@ internal class BattlescapeState : State
             if (Options.touchEnabled == false)
             {
                 // Set the mouse cursor back
-                SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_IGNORE);
+                SDL_SetEventEnabled(SDL_EventType.SDL_EVENT_MOUSE_MOTION, false);
                 SDL_WarpMouseGlobal(_game.getScreen().getWidth() / 2, _game.getScreen().getHeight() / 2 - _map.getIconHeight() / 2);
-                SDL_EventState(SDL_EventType.SDL_MOUSEMOTION, SDL_ENABLE);
+                SDL_SetEventEnabled(SDL_EventType.SDL_EVENT_MOUSE_MOTION, true);
             }
 
             // Check the threshold
-            _totalMouseMoveX += action.getDetails().motion.xrel;
-            _totalMouseMoveY += action.getDetails().motion.yrel;
+            _totalMouseMoveX += (int)action.getDetails().motion.xrel;
+            _totalMouseMoveY += (int)action.getDetails().motion.yrel;
             if (!_mouseMovedOverThreshold)
             {
                 _mouseMovedOverThreshold = ((Math.Abs(_totalMouseMoveX) > Options.dragScrollPixelTolerance) || (Math.Abs(_totalMouseMoveY) > Options.dragScrollPixelTolerance));
@@ -1646,7 +1648,7 @@ internal class BattlescapeState : State
 	 * Processes any presses on the map.
 	 * @param action Pointer to an action.
 	 */
-    void mapPress(Action action)
+    unsafe void mapPress(Action action)
     {
         // don't handle mouseclicks over the buttons (it overlaps with map surface)
         if (_mouseOverIcons) return;
@@ -1655,18 +1657,20 @@ internal class BattlescapeState : State
         {
             _isMouseScrolling = true;
             _isMouseScrolled = false;
-            SDL_GetMouseState(out _xBeforeMouseScrolling, out _yBeforeMouseScrolling);
+            float xBeforeMouseScrolling, yBeforeMouseScrolling;
+            SDL_GetMouseState(&xBeforeMouseScrolling, &yBeforeMouseScrolling);
+            _xBeforeMouseScrolling = (int)xBeforeMouseScrolling; _yBeforeMouseScrolling = (int)yBeforeMouseScrolling;
             _mapOffsetBeforeMouseScrolling = _map.getCamera().getMapOffset();
             if (!Options.battleDragScrollInvert && _cursorPosition.z == 0)
             {
-                _cursorPosition.x = action.getDetails().motion.x;
-                _cursorPosition.y = action.getDetails().motion.y;
+                _cursorPosition.x = (int)action.getDetails().motion.x;
+                _cursorPosition.y = (int)action.getDetails().motion.y;
                 // the Z is irrelevant to our mouse position, but we can use it as a boolean to check if the position is set or not
                 _cursorPosition.z = 1;
             }
             _totalMouseMoveX = 0; _totalMouseMoveY = 0;
             _mouseMovedOverThreshold = false;
-            _mouseScrollingStartTime = SDL_GetTicks();
+            _mouseScrollingStartTime = (uint)SDL_GetTicks();
         }
     }
 
@@ -1675,7 +1679,7 @@ internal class BattlescapeState : State
 	 * command units.
 	 * @param action Pointer to an action.
 	 */
-    void mapClick(Action action)
+    unsafe void mapClick(Action action)
     {
         // The following is the workaround for a rare problem where sometimes
         // the mouse-release event is missed for any reason.
@@ -1684,7 +1688,7 @@ internal class BattlescapeState : State
         if (_isMouseScrolling)
         {
             if (action.getDetails().button.button != Options.battleDragScrollButton
-            && (SDL_GetMouseState(0, 0) & SDL_BUTTON((uint)Options.battleDragScrollButton)) == 0)
+            && (SDL_GetMouseState(null, null) & SDL_BUTTON((SDLButton)Options.battleDragScrollButton)) == 0)
             {   // so we missed again the mouse-release :(
                 // Check if we have to revoke the scrolling, because it was too short in time, so it was a click
                 if ((!_mouseMovedOverThreshold) && ((int)(SDL_GetTicks() - _mouseScrollingStartTime) <= (Options.dragScrollTimeTolerance)))
@@ -1744,7 +1748,7 @@ internal class BattlescapeState : State
 
         if (_save.getTile(pos) != null) // don't allow to click into void
         {
-            if ((action.getDetails().button.button == SDL_BUTTON_RIGHT || (action.getDetails().button.button == SDL_BUTTON_LEFT && (SDL_GetModState() & SDL_Keymod.KMOD_ALT) != 0)) && playableUnitSelected())
+            if ((action.getDetails().button.button == SDL_BUTTON_RIGHT || (action.getDetails().button.button == SDL_BUTTON_LEFT && (SDL_GetModState() & SDL_Keymod.SDL_KMOD_ALT) != 0)) && playableUnitSelected())
             {
                 _battleGame.secondaryAction(pos);
             }
@@ -1975,7 +1979,7 @@ internal class BattlescapeState : State
         {
             bool scroll = false;
             if (ScrollType.SCROLL_TRIGGER == Options.battleEdgeScroll &&
-                SDL_EventType.SDL_MOUSEBUTTONUP == action.getDetails().type && SDL_BUTTON_LEFT == action.getDetails().button.button)
+                SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP == action.getDetails().Type && SDL_BUTTON_LEFT == action.getDetails().button.button)
             {
                 int posX = action.getXMouse();
                 int posY = action.getYMouse();
@@ -2092,9 +2096,9 @@ internal class BattlescapeState : State
     {
         if (allowButtons())
         {
-            var ev = new SDL_Event();
-            ev.type = SDL_EventType.SDL_MOUSEBUTTONDOWN;
-            ev.button.button = (byte)SDL_BUTTON_LEFT;
+            SDL_Event ev = default;
+            ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN;
+            ev.button.button = SDL_BUTTON_LEFT;
             var a = new Action(ev, 0.0, 0.0, 0, 0);
             action.getSender().mousePress(a, this);
 
@@ -2124,9 +2128,9 @@ internal class BattlescapeState : State
     {
         if (allowButtons())
         {
-            var ev = new SDL_Event();
-            ev.type = SDL_EventType.SDL_MOUSEBUTTONDOWN;
-            ev.button.button = (byte)SDL_BUTTON_LEFT;
+            SDL_Event ev = default;
+            ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN;
+            ev.button.button = SDL_BUTTON_LEFT;
             var a = new Action(ev, 0.0, 0.0, 0, 0);
             action.getSender().mousePress(a, this);
             _battleGame.setKneelReserved(!_battleGame.getKneelReserved());
@@ -2150,9 +2154,9 @@ internal class BattlescapeState : State
     {
         if (allowButtons())
         {
-            var ev = new SDL_Event();
-            ev.type = SDL_EventType.SDL_MOUSEBUTTONDOWN;
-            ev.button.button = (byte)SDL_BUTTON_LEFT;
+            SDL_Event ev = default;
+            ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN;
+            ev.button.button = SDL_BUTTON_LEFT;
             var a = new Action(ev, 0.0, 0.0, 0, 0);
             action.getSender().mousePress(a, this);
             if (_battleGame.getSave().getSelectedUnit() != null)
@@ -2208,7 +2212,7 @@ internal class BattlescapeState : State
             _map.getCamera().centerOnPosition(_visibleUnit[btnID].getPosition());
         }
 
-        action.getDetails().type = SDL_EventType.SDL_FIRSTEVENT; //SDL_NOEVENT // consume the event
+        action.getDetails().type = (uint)SDL_EventType.SDL_EVENT_FIRST; //SDL_NOEVENT // consume the event
     }
 
     /**
@@ -2218,7 +2222,7 @@ internal class BattlescapeState : State
     void btnLaunchClick(Action action)
     {
         _battleGame.launchAction();
-        action.getDetails().type = SDL_EventType.SDL_FIRSTEVENT; //SDL_NOEVENT // consume the event
+        action.getDetails().type = (uint)SDL_EventType.SDL_EVENT_FIRST; //SDL_NOEVENT // consume the event
     }
 
     /**
@@ -2228,7 +2232,7 @@ internal class BattlescapeState : State
     void btnPsiClick(Action action)
     {
         _battleGame.psiButtonAction();
-        action.getDetails().type = SDL_EventType.SDL_FIRSTEVENT; //SDL_NOEVENT // consume the event
+        action.getDetails().type = (uint)SDL_EventType.SDL_EVENT_FIRST; //SDL_NOEVENT // consume the event
     }
 
     /**
