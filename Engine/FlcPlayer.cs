@@ -96,9 +96,9 @@ internal class FlcPlayer
     uint _audioFrameSize;
     ushort _audioFrameType;
     System.Action _frameCallBack;
-    SDL_Surface _mainScreen;
+    unsafe SDL_Surface* _mainScreen;
     Screen _realScreen;
-    SDL_Color[] _colors = new SDL_Color[256];
+    unsafe SDL_Color* _colors; //SDL_Color[] _colors = new SDL_Color[256];
     int _screenWidth;
     int _screenHeight;
     int _screenDepth;
@@ -108,13 +108,13 @@ internal class FlcPlayer
     bool _hasAudio, _useInternalAudio;
     int _videoDelay;
     double _volume;
-    AudioData _audioData;
+    static AudioData _audioData;
     Game _game;
 
-    internal FlcPlayer()
+    unsafe internal FlcPlayer()
     {
         _fileBuf = null;
-        _mainScreen = default;
+        _mainScreen = null;
         _realScreen = null;
         _game = null;
 
@@ -124,14 +124,14 @@ internal class FlcPlayer
     ~FlcPlayer() =>
         deInit();
 
-    internal void deInit()
+    unsafe internal void deInit()
     {
-        if (_mainScreen.pixels != nint.Zero && _realScreen != null)
+        if (_mainScreen != null && _realScreen != null)
         {
-            if (_mainScreen.pixels != _realScreen.getSurface().getSurface().pixels)
-                SDL_FreeSurface(_mainScreen.pixels);
+            if (_mainScreen != _realScreen.getSurface().getSurface())
+                SDL_DestroySurface(_mainScreen);
 
-            _mainScreen = default;
+            _mainScreen = null;
         }
 
         if (_fileBuf != null)
@@ -153,30 +153,30 @@ internal class FlcPlayer
 
     internal void delay(uint milliseconds)
     {
-        uint pauseStart = SDL_GetTicks();
+        uint pauseStart = (uint)SDL_GetTicks();
         while (_playingState != (int)PlayingState.SKIPPED && SDL_GetTicks() < (pauseStart + milliseconds))
         {
             SDLPolling();
         }
     }
 
-    void SDLPolling()
+    unsafe void SDLPolling()
     {
         SDL_Event @event;
-        while (SDL_PollEvent(out @event) != 0)
+        while (SDL_PollEvent(&@event))
         {
-            switch (@event.type)
+            switch (@event.Type)
             {
-                case SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                case SDL_EventType.SDL_KEYDOWN:
+                case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
+                case SDL_EventType.SDL_EVENT_KEY_DOWN:
                     _playingState = (int)PlayingState.SKIPPED;
                     break;
-                case SDL_EventType.SDL_WINDOWEVENT: //SDL_VIDEORESIZE
-                    if (Options.allowResize && @event.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED)
+                case SDL_EventType.SDL_EVENT_WINDOW_RESIZED: //SDL_VIDEORESIZE
+                    if (Options.allowResize)
                     {
                         Options.newDisplayWidth = Options.displayWidth = Math.Max(Screen.ORIGINAL_WIDTH, @event.window.data1);
                         Options.newDisplayHeight = Options.displayHeight = Math.Max(Screen.ORIGINAL_HEIGHT, @event.window.data2);
-                        if (_mainScreen.pixels != _realScreen.getSurface().getSurface().pixels)
+                        if (_mainScreen != _realScreen.getSurface().getSurface())
                         {
                             _realScreen.resetDisplay();
                         }
@@ -187,7 +187,7 @@ internal class FlcPlayer
                         }
                     }
                     break;
-                case SDL_EventType.SDL_QUIT:
+                case SDL_EventType.SDL_EVENT_QUIT:
                     Environment.Exit(0);
                     goto default;
                 default:
@@ -196,14 +196,14 @@ internal class FlcPlayer
         }
     }
 
-    void deInitAudio()
+    unsafe void deInitAudio()
     {
         if (_game != null)
         {
             if (!Options.mute)
             {
-                Mix_HookMusic(null, nint.Zero);
-                Mix_CloseAudio();
+                MIX_SetTrackAudioStream(Game.Tracks[0], null);
+                MIX_DestroyMixer(Game.Mixer);
                 _game.initAudio();
             }
         }
@@ -231,7 +231,7 @@ internal class FlcPlayer
 	 * @param dx An offset on the x axis for the video to be rendered
 	 * @param dy An offset on the y axis for the video to be rendered
 	 */
-    internal bool init(string filename, System.Action frameCallBack, Game game, bool useInternalAudio, int dx, int dy)
+    unsafe internal bool init(string filename, System.Action frameCallBack, Game game, bool useInternalAudio, int dx, int dy)
     {
         if (_fileBuf != null)
         {
@@ -302,14 +302,13 @@ internal class FlcPlayer
             _realScreen.resetDisplay();
         }
         // If the current surface used is at 8bpp use it
-        if (Surface.getFormat(_realScreen.getSurface().getSurface()).BitsPerPixel == 8)
+        if (Surface.getFormat(_realScreen.getSurface().getSurface())->bits_per_pixel == 8)
         {
             _mainScreen = _realScreen.getSurface().getSurface();
         }
         else // Otherwise create a new one
         {
-            nint mainScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, _realScreen.getSurface().getWidth(), _realScreen.getSurface().getHeight(), 8, 0, 0, 0, 0); //SDL_AllocSurface
-            _mainScreen = Marshal.PtrToStructure<SDL_Surface>(mainScreen);
+            _mainScreen = SDL_CreateSurface(_realScreen.getSurface().getWidth(), _realScreen.getSurface().getHeight(), SDL_GetPixelFormatForMasks(8, 0, 0, 0, 0)); //SDL_AllocSurface
         }
 
         return true;
@@ -341,14 +340,14 @@ internal class FlcPlayer
     /**
 	 * Starts decoding and playing the FLI/FLC file
 	 */
-    internal void play(bool skipLastFrame)
+    unsafe internal void play(bool skipLastFrame)
     {
         _playingState = (int)PlayingState.PLAYING;
 
         // Vertically center the video
-        _dy = (_mainScreen.h - _headerHeight) / 2;
+        _dy = (_mainScreen->h - _headerHeight) / 2;
 
-        _offset = _dy * _mainScreen.pitch + Surface.getFormat(_mainScreen).BytesPerPixel * _dx;
+        _offset = _dy * _mainScreen->pitch + Surface.getFormat(_mainScreen)->bytes_per_pixel * _dx;
 
         // Skip file header
         _videoFrameData = new Memory<byte>(_fileBuf, 127, _fileBuf.Length - 128);
@@ -436,7 +435,7 @@ internal class FlcPlayer
             {
                 _audioData.sampleRate = sampleRate;
                 _hasAudio = true;
-                initAudio(AUDIO_S16SYS, 1);
+                initAudio(SDL_AUDIO_S16, 1);
             }
             else
             {
@@ -458,7 +457,7 @@ internal class FlcPlayer
 
             for (int i = 0; i < _audioFrameSize; i++)
             {
-                *((short*)loadingBuff.samples + loadingBuff.sampleCount + i) = (short)((float)((_chunkData.Span[i]) - 128) * 240 * _volume);
+                ((float*)loadingBuff.samples)[loadingBuff.sampleCount + i] = (float)((_chunkData.Span[i] - 128) * 240 * _volume);
             }
             loadingBuff.sampleCount = (int)(loadingBuff.sampleCount + _audioFrameSize);
 
@@ -470,16 +469,21 @@ internal class FlcPlayer
         }
     }
 
-    void initAudio(ushort format, byte channels)
+    unsafe void initAudio(SDL_AudioFormat format, byte channels)
     {
         _videoDelay = (int)(1000 / (_audioData.sampleRate / _audioFrameSize));
         if (_useInternalAudio)
         {
+            SDL_AudioSpec audioSpec;
+            audioSpec.format = format;
+            audioSpec.channels = channels;
+            audioSpec.freq = _audioData.sampleRate;
             if (!Options.mute)
             {
-                if (Mix_OpenAudio(_audioData.sampleRate, format, channels, (int)(_audioFrameSize * 2)) != 0)
+                Game.Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audioSpec);
+                if (Game.Mixer == null)
                 {
-                    Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {Mix_GetError()}");
+                    Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {SDL_GetError()}");
                     Console.WriteLine($"{Log(SeverityLevel.LOG_WARNING)} Failed to init cutscene audio");
                     Options.mute = true;
                 }
@@ -502,43 +506,47 @@ internal class FlcPlayer
 
             if (!Options.mute)
             {
-                Mix_HookMusic(audioCallback, /* _audioData */ nint.Zero);
+                //var _audioDataPtr = nint.Zero;
+                //Marshal.StructureToPtr(_audioData, _audioDataPtr, true);
+                SDL_AudioStream* stream = SDL_CreateAudioStream(&audioSpec, null);
+                SDL_SetAudioStreamGetCallback(stream, &audioCallback, nint.Zero /* _audioDataPtr */);
+                MIX_SetTrackAudioStream(Game.Tracks[0], stream);
             }
         }
     }
 
-    unsafe void audioCallback(nint userData, nint stream, int len)
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    unsafe static void audioCallback(nint userData, SDL_AudioStream* stream, int len, int total)
     {
-        //AudioData audio = (AudioData)userData;
-
-        //AudioBuffer playBuff = audio.playingBuffer;
-
+        //AudioData audio = Marshal.PtrToStructure<AudioData>(userData);
+        
+        AudioBuffer playBuff = /* audio */ _audioData.playingBuffer;
+        
         while (len > 0)
         {
-            if (_audioData.playingBuffer.sampleCount > 0)
+            if (playBuff.sampleCount > 0)
             {
-                int bytesToCopy = Math.Min(len, _audioData.playingBuffer.sampleCount * 2);
-                NativeMemory.Copy((byte*)(_audioData.playingBuffer.samples + _audioData.playingBuffer.currSamplePos), (byte*)stream, (nuint)bytesToCopy);
-
-                _audioData.playingBuffer.currSamplePos += bytesToCopy / 2;
-                _audioData.playingBuffer.sampleCount -= bytesToCopy / 2;
+                int bytesToCopy = Math.Min(len, playBuff.sampleCount * 2);
+                NativeMemory.Copy((void*)(playBuff.samples + playBuff.currSamplePos), stream, (nuint)bytesToCopy); //memcpy(stream, playBuff->samples + playBuff->currSamplePos, bytesToCopy);
+                
+                playBuff.currSamplePos += bytesToCopy / 2;
+                playBuff.sampleCount -= bytesToCopy / 2;
                 len -= bytesToCopy;
-
-                Debug.Assert(_audioData.playingBuffer.sampleCount >= 0);
+                
+                Debug.Assert(playBuff.sampleCount >= 0);
             }
-
+        
             if (len > 0)
             {
                 /* Need to swap buffers */
-                _audioData.playingBuffer.currSamplePos = 0;
-                _audioData.sharedLock.Wait();
-                AudioBuffer tempBuff = _audioData.playingBuffer;
-                /* _audioData.playingBuffer = */
-                _audioData.playingBuffer = _audioData.loadingBuffer;
-                _audioData.loadingBuffer = tempBuff;
-                _audioData.sharedLock.Release();
-
-                if (_audioData.playingBuffer.sampleCount == 0)
+                playBuff.currSamplePos = 0;
+                /* audio */ _audioData.sharedLock.Wait();
+                AudioBuffer tempBuff = playBuff;
+                /* audio */ _audioData.playingBuffer = playBuff = /* audio */ _audioData.loadingBuffer;
+                /* audio */ _audioData.loadingBuffer = tempBuff;
+                /* audio */ _audioData.sharedLock.Release();
+                
+                if (playBuff.sampleCount == 0)
                     break;
             }
         }
@@ -612,7 +620,7 @@ internal class FlcPlayer
         uint newTick;
         uint currentTick;
 
-        currentTick = SDL_GetTicks();
+        currentTick = (uint)SDL_GetTicks();
         if (oldTick == 0)
         {
             oldTick = currentTick;
@@ -628,10 +636,10 @@ internal class FlcPlayer
                 while ((newTick - currentTick) > 10 && !isEndOfFile(_audioFrameData))
                 {
                     decodeAudio(1);
-                    currentTick = SDL_GetTicks();
+                    currentTick = (uint)SDL_GetTicks();
                 }
                 SDL_Delay(1);
-                currentTick = SDL_GetTicks();
+                currentTick = (uint)SDL_GetTicks();
             }
         }
         else
@@ -639,16 +647,16 @@ internal class FlcPlayer
             while (currentTick < newTick)
             {
                 SDL_Delay(1);
-                currentTick = SDL_GetTicks();
+                currentTick = (uint)SDL_GetTicks();
             }
         }
-        oldTick = SDL_GetTicks();
+        oldTick = (uint)SDL_GetTicks();
     }
 
-    void playVideoFrame()
+    unsafe void playVideoFrame()
     {
         ++_frameCount;
-        if (SDL_LockSurface(_mainScreen.pixels) < 0)
+        if (!SDL_LockSurface(_mainScreen))
             return;
         int chunkCount = _frameChunks;
 
@@ -690,17 +698,17 @@ internal class FlcPlayer
             _chunkData = _chunkData.Slice((int)_chunkSize);
         }
 
-        SDL_UnlockSurface(_mainScreen.pixels);
+        SDL_UnlockSurface(_mainScreen);
 
         /* TODO: Track which rectangles have really changed */
         //SDL_UpdateRect(_mainScreen, 0, 0, 0, 0);
-        if (_mainScreen.pixels != _realScreen.getSurface().getSurface().pixels)
-            SDL_BlitSurface(_mainScreen.pixels, nint.Zero, _realScreen.getSurface().getSurface().pixels, nint.Zero);
+        if (_mainScreen != _realScreen.getSurface().getSurface())
+            SDL_BlitSurface(_mainScreen, null, _realScreen.getSurface().getSurface(), null);
 
         _realScreen.flip();
     }
 
-    void color256()
+    unsafe void color256()
     {
         Span<byte> pSrc;
         ushort numColorPackets;
@@ -727,8 +735,8 @@ internal class FlcPlayer
                 _colors[i].b = pSrc[0]; pSrc = pSrc.Slice(1);
             }
 
-            if (_mainScreen.pixels != _realScreen.getSurface().getSurface().pixels)
-                SDL_SetPaletteColors(_mainScreen.pixels, _colors, numColorsSkip, numColors);
+            if (_mainScreen != _realScreen.getSurface().getSurface())
+                SDL_SetPaletteColors(SDL_GetSurfacePalette(_mainScreen), _colors, numColorsSkip, numColors);
             _realScreen.setPalette(_colors, numColorsSkip, numColors, true);
 
             if (numColorPackets >= 1)
@@ -749,7 +757,7 @@ internal class FlcPlayer
         byte lastByte = 0;
 
         pSrc = _chunkData.Span.Slice(6);
-        pDst = new Span<byte>((byte*)_mainScreen.pixels + _offset, _mainScreen.w * _mainScreen.h * (_screenDepth / 8) - _offset);
+        pDst = new Span<byte>((byte*)_mainScreen->pixels + _offset, _mainScreen->w * _mainScreen->h * (_screenDepth / 8) - _offset);
 
         lines = readU16(pSrc);
 
@@ -762,7 +770,7 @@ internal class FlcPlayer
 
             if (((ChunkOpcodes)count & ChunkOpcodes.MASK) == ChunkOpcodes.SKIP_LINES)
             {
-                pDst = pDst.Slice((-count) * _mainScreen.pitch);
+                pDst = pDst.Slice((-count) * _mainScreen->pitch);
                 ++lines;
                 continue;
             }
@@ -810,14 +818,14 @@ internal class FlcPlayer
                 if (setLastByte)
                 {
                     setLastByte = false;
-                    pDst[_mainScreen.pitch - 1] = lastByte;
+                    pDst[_mainScreen->pitch - 1] = lastByte;
                 }
-                pDst = pDst.Slice(_mainScreen.pitch);
+                pDst = pDst.Slice(_mainScreen->pitch);
             }
         }
     }
 
-    void color64()
+    unsafe void color64()
     {
         Span<byte> pSrc;
         ushort NumColors, NumColorPackets;
@@ -844,8 +852,8 @@ internal class FlcPlayer
                 _colors[i].b = (byte)(pSrc[0] << 2); pSrc = pSrc.Slice(1);
             }
 
-            if (_mainScreen.pixels != _realScreen.getSurface().getSurface().pixels)
-                SDL_SetPaletteColors(_mainScreen.pixels, _colors, NumColorsSkip, NumColors);
+            if (_mainScreen != _realScreen.getSurface().getSurface())
+                SDL_SetPaletteColors(SDL_GetSurfacePalette(_mainScreen), _colors, NumColorsSkip, NumColors);
             _realScreen.setPalette(_colors, NumColorsSkip, NumColors, true);
         }
     }
@@ -860,11 +868,11 @@ internal class FlcPlayer
         int packetsCount;
 
         pSrc = _chunkData.Span.Slice(6);
-        pDst = new Span<byte>((byte*)_mainScreen.pixels + _offset, _mainScreen.w * _mainScreen.h * (_screenDepth / 8) - _offset);
+        pDst = new Span<byte>((byte*)_mainScreen->pixels + _offset, _mainScreen->w * _mainScreen->h * (_screenDepth / 8) - _offset);
 
         tmp = readU16(pSrc);
         pSrc = pSrc.Slice(2);
-        pDst = pDst.Slice(tmp * _mainScreen.pitch);
+        pDst = pDst.Slice(tmp * _mainScreen->pitch);
         lines = readU16(pSrc);
         pSrc = pSrc.Slice(2);
 
@@ -899,7 +907,7 @@ internal class FlcPlayer
                     }
                 }
             }
-            pDst = pDst.Slice(_mainScreen.pitch);
+            pDst = pDst.Slice(_mainScreen->pitch);
         }
     }
 
@@ -907,12 +915,12 @@ internal class FlcPlayer
     {
         Span<byte> pDst;
         int Lines = _screenHeight;
-        pDst = new Span<byte>((byte*)_mainScreen.pixels + _offset, _mainScreen.w * _mainScreen.h * (_screenDepth / 8) - _offset);
+        pDst = new Span<byte>((byte*)_mainScreen->pixels + _offset, _mainScreen->w * _mainScreen->h * (_screenDepth / 8) - _offset);
 
         while (Lines-- > 0)
         {
             pDst.Slice(0, _screenHeight).Fill(0);
-            pDst = pDst.Slice(_mainScreen.pitch);
+            pDst = pDst.Slice(_mainScreen->pitch);
         }
     }
 
@@ -924,7 +932,7 @@ internal class FlcPlayer
 
         heightCount = _headerHeight;
         pSrc = _chunkData.Span.Slice(6); // Skip chunk header
-        pDst = new Span<byte>((byte*)_mainScreen.pixels + _offset, _mainScreen.w * _mainScreen.h * (_screenDepth / 8) - _offset);
+        pDst = new Span<byte>((byte*)_mainScreen->pixels + _offset, _mainScreen->w * _mainScreen->h * (_screenDepth / 8) - _offset);
 
         while (heightCount-- != 0)
         {
@@ -956,7 +964,7 @@ internal class FlcPlayer
                     }
                 }
             }
-            pDst = pDst.Slice(_mainScreen.pitch);
+            pDst = pDst.Slice(_mainScreen->pitch);
         }
     }
 
@@ -965,13 +973,13 @@ internal class FlcPlayer
         Span<byte> pSrc, pDst;
         int Lines = _screenHeight;
         pSrc = _chunkData.Span.Slice(6);
-        pDst = new Span<byte>((byte*)_mainScreen.pixels + _offset, _mainScreen.w * _mainScreen.h * (_screenDepth / 8) - _offset);
+        pDst = new Span<byte>((byte*)_mainScreen->pixels + _offset, _mainScreen->w * _mainScreen->h * (_screenDepth / 8) - _offset);
 
         while (Lines-- != 0)
         {
             pSrc.Slice(0, _screenWidth).CopyTo(pDst);
             pSrc = pSrc.Slice(_screenWidth);
-            pDst = pDst.Slice(_mainScreen.pitch);
+            pDst = pDst.Slice(_mainScreen->pitch);
         }
     }
 
