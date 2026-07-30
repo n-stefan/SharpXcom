@@ -11,10 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ppy.SDL3-CS" Version="2026.629.0" />
-    <PackageReference Include="ppy.SDL3_image-CS" Version="2026.629.0" />
-    <PackageReference Include="ppy.SDL3_mixer-CS" Version="2026.629.0" />
-    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    <PackageReference Include="ppy.SDL3-CS" Version="2026.722.0" />
+    <PackageReference Include="ppy.SDL3_image-CS" Version="2026.722.0" />
+    <PackageReference Include="ppy.SDL3_mixer-CS" Version="2026.722.0" />
+    <PackageReference Include="YamlDotNet" Version="18.1.0" />
   </ItemGroup>
 
   <ItemGroup>
