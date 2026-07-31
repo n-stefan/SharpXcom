@@ -119,6 +119,11 @@ internal class Surface
             throw new Exception(SDL_GetError());
         }
 
+        if (_surface->format == SDL_PixelFormat.SDL_PIXELFORMAT_INDEX8)
+        {
+            SDL_CreateSurfacePalette(_surface);
+        }
+
         SDL_SetSurfaceColorKey(_surface, true /* SDL_SRCCOLORKEY */, 0);
 
         _crop.w = 0;
@@ -246,7 +251,7 @@ internal class Surface
      * @return Pointer to the palette's colors.
      */
     unsafe internal SDL_Color* getPalette() =>
-    	SDL_GetSurfacePalette(_surface)->colors;
+        SDL_GetSurfacePalette(_surface)->colors;
 
     unsafe internal static SDL_PixelFormatDetails* getFormat(SDL_Surface* surface) =>
         SDL_GetPixelFormatDetails(surface->format);

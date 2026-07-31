@@ -143,7 +143,7 @@ internal class Font
         Marshal.Copy(dosFont, 0, dosFontPtr, DOSFONT_SIZE);
         SDL_IOStream* io = SDL_IOFromConstMem(dosFontPtr, DOSFONT_SIZE);
         SDL_Surface* s = SDL_LoadBMP_IO(io, true);
-        SDL_CloseIO(io);
+        //SDL_CloseIO(io);
         Marshal.FreeHGlobal(dosFontPtr);
         image.surface = new Surface(s->w, s->h);
         var terminal = new SDL_Color[] { new() { r = 0, g = 0, b = 0, a = 0 }, new() { r = 185, g = 185, b = 185, a = 255 } };

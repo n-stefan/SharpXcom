@@ -48,7 +48,7 @@ internal class State
      * By default states are full-screen.
      * @param game Pointer to the core game.
      */
-    internal State()
+    unsafe internal State()
     {
         _screen = true;
         _modal = null;
@@ -56,13 +56,18 @@ internal class State
         _ruleInterfaceParent = null;
 
         _cursorColor = _game.getCursor().getColor();
+
+        _palette = (SDL_Color*)Marshal.AllocHGlobal(256 * 4);
     }
 
     /**
      * Deletes all the child elements contained in the state.
      */
-    ~State() =>
+    unsafe ~State()
+    {
         _surfaces.Clear();
+        Marshal.FreeHGlobal((nint)_palette);
+    }
 
     /**
      * Replaces a certain amount of colors in the state's palette.

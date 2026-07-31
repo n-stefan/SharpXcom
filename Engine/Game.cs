@@ -197,6 +197,8 @@ internal class Game
         int minChunk = Options.audioSampleRate / 11025 * 512;
         Options.audioChunkSize = Math.Max(minChunk, Options.audioChunkSize);
 
+        MIX_Init();
+
         SDL_AudioSpec audioSpec;
         audioSpec.format = format;
         audioSpec.channels = 2;

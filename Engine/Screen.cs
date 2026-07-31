@@ -58,7 +58,7 @@ internal class Screen
      * Initializes a new display screen for the game to render contents to.
      * The screen is set up based on the current options.
      */
-    internal Screen()
+    unsafe internal Screen()
     {
         _baseWidth = ORIGINAL_WIDTH;
         _baseHeight = ORIGINAL_HEIGHT;
@@ -69,6 +69,7 @@ internal class Screen
         _firstColor = 0;
         _pushPalette = false;
         _surface = null;
+        deferredPalette = (SDL_Color*)Marshal.AllocHGlobal(256 * 4);
 
         resetDisplay();
     }
@@ -77,8 +78,11 @@ internal class Screen
      * Deletes the buffer from memory. The display screen itself
      * is automatically freed once SDL shuts down.
      */
-    ~Screen() =>
+    unsafe ~Screen()
+    {
         _surface = null;
+        Marshal.FreeHGlobal((nint)deferredPalette);
+    }
 
     /**
      * Changes a given scale, and if necessary, switch the current base resolution.
@@ -209,7 +213,7 @@ internal class Screen
             SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, (long)_flags);
             _screen = SDL_CreateWindowWithProperties(props);
             _renderer = SDL_CreateRenderer(_screen, (byte*)null);
-            _texture = SDL_CreateTexture(_renderer, SDL_PixelFormat.SDL_PIXELFORMAT_ARGB8888, SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING, width, height);
+            _texture = SDL_CreateTexture(_renderer, SDL_PixelFormat.SDL_PIXELFORMAT_INDEX8 /*SDL_PIXELFORMAT_ARGB8888*/, SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING, width, height);
             if (_screen == null)
             {
                 Console.WriteLine($"{Log(SeverityLevel.LOG_ERROR)} {SDL_GetError()}");
@@ -218,7 +222,7 @@ internal class Screen
                 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, 400);
                 _screen = SDL_CreateWindowWithProperties(props);
                 _renderer = SDL_CreateRenderer(_screen, (byte*)null);
-                _texture = SDL_CreateTexture(_renderer, SDL_PixelFormat.SDL_PIXELFORMAT_ARGB8888, SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING, 640, 400);
+                _texture = SDL_CreateTexture(_renderer, SDL_PixelFormat.SDL_PIXELFORMAT_INDEX8 /*SDL_PIXELFORMAT_ARGB8888*/, SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING, 640, 400);
                 if (_screen == null)
                 {
                     if ((_flags & SDL_WindowFlags.SDL_WINDOW_OPENGL) != 0)
