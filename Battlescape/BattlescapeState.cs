@@ -2099,7 +2099,7 @@ internal class BattlescapeState : State
             SDL_Event ev = default;
             ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN;
             ev.button.button = SDL_BUTTON_LEFT;
-            var a = new Action(ev, 0.0, 0.0, 0, 0);
+            var a = new Action(ref ev, 0.0, 0.0, 0, 0);
             action.getSender().mousePress(a, this);
 
             if (_reserve == _btnReserveNone)
@@ -2131,7 +2131,7 @@ internal class BattlescapeState : State
             SDL_Event ev = default;
             ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN;
             ev.button.button = SDL_BUTTON_LEFT;
-            var a = new Action(ev, 0.0, 0.0, 0, 0);
+            var a = new Action(ref ev, 0.0, 0.0, 0, 0);
             action.getSender().mousePress(a, this);
             _battleGame.setKneelReserved(!_battleGame.getKneelReserved());
 
@@ -2157,7 +2157,7 @@ internal class BattlescapeState : State
             SDL_Event ev = default;
             ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN;
             ev.button.button = SDL_BUTTON_LEFT;
-            var a = new Action(ev, 0.0, 0.0, 0, 0);
+            var a = new Action(ref ev, 0.0, 0.0, 0, 0);
             action.getSender().mousePress(a, this);
             if (_battleGame.getSave().getSelectedUnit() != null)
             {

@@ -433,7 +433,7 @@ internal class GeoscapeState : State
         var ev = new SDL_Event();
         ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN;
         ev.button.button = (byte)SDL_BUTTON_LEFT;
-        var a = new Action(ev, 0.0, 0.0, 0, 0);
+        var a = new Action(ref ev, 0.0, 0.0, 0, 0);
         action.getSender().mousePress(a, this);
     }
 
@@ -765,7 +765,7 @@ internal class GeoscapeState : State
     {
         var ev = new SDL_Event();
         ev.button.button = (byte)SDL_BUTTON_LEFT;
-        var act = new Action(ev, _game.getScreen().getXScale(), _game.getScreen().getYScale(), _game.getScreen().getCursorTopBlackBand(), _game.getScreen().getCursorLeftBlackBand());
+        var act = new Action(ref ev, _game.getScreen().getXScale(), _game.getScreen().getYScale(), _game.getScreen().getCursorTopBlackBand(), _game.getScreen().getCursorLeftBlackBand());
         _btn5Secs.mousePress(act, this);
     }
 

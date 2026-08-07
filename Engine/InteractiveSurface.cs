@@ -332,7 +332,7 @@ internal class InteractiveSurface : Surface
             SDL_Event ev = default;
             ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP;
             ev.button.button = SDL_BUTTON_LEFT;
-            Action a = new Action(ev, 0.0, 0.0, 0, 0);
+            Action a = new Action(ref ev, 0.0, 0.0, 0, 0);
             mouseRelease(a, state);
         }
     }

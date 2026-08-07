@@ -363,7 +363,7 @@ internal class Game
                 ev.type = (uint)SDL_EventType.SDL_EVENT_MOUSE_MOTION;
                 ev.motion.x = x;
                 ev.motion.y = y;
-                Action action = new Action(ev, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
+                Action action = new Action(ref ev, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
                 _states.Last().handle(action);
             }
 
@@ -440,7 +440,7 @@ internal class Game
                         // Go on, feed the event to others
                         goto default;
                     default:
-                        Action action = new Action(_event, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
+                        Action action = new Action(ref _event, _screen.getXScale(), _screen.getYScale(), _screen.getCursorTopBlackBand(), _screen.getCursorLeftBlackBand());
                         _screen.handle(action);
                         _cursor.handle(action);
                         _fpsCounter.handle(action);

@@ -39,7 +39,7 @@ internal class Action
      * @param leftBlackBand Screen's left black band width.
      * @param ev Pointer to SDL_event.
      */
-    internal Action(SDL_Event ev, double scaleX, double scaleY, int topBlackBand, int leftBlackBand)
+    internal Action(ref SDL_Event ev, double scaleX, double scaleY, int topBlackBand, int leftBlackBand)
     {
         _ev = ev;
         _scaleX = scaleX;
